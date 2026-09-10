@@ -1,0 +1,312 @@
+.sheet {
+  display: block;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(20px, 2.2vw, 28px);
+}
+
+.intro {
+  font-size: var(--t-sm);
+  line-height: var(--lh-body);
+  color: var(--ink-muted);
+  max-width: 50ch;
+  margin-top: 14px;
+}
+
+/* ---- Unit toggle ---- */
+
+.units {
+  display: flex;
+  gap: 8px;
+}
+
+.unit {
+  padding: 6px 14px;
+  font-size: var(--t-micro);
+  letter-spacing: 0.05em;
+  border: 1px solid var(--gold-28);
+  background: transparent;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.unit[aria-pressed='true'] {
+  border-color: var(--gold);
+  background: var(--gold-12);
+}
+
+/* ---- Guide plate ---- */
+
+.guide {
+  margin-top: 26px;
+  background: var(--bone-soft);
+  padding: clamp(14px, 2vw, 22px);
+  border: 1px solid var(--gold-25);
+}
+
+.guideImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  mix-blend-mode: multiply;
+}
+
+.guideFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.guideNote {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+}
+
+/* ---- Progress ---- */
+
+.progress {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.progressLabel {
+  font-size: var(--t-micro);
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 1px;
+  background: var(--gold-25);
+}
+
+.progressFill {
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.5s var(--ease);
+}
+
+/* ---- Rows ---- *
+   Desktop lays out number / label+hint / field. Below 640 the field drops to
+   its own line so the hint keeps a readable measure and the input stays a
+   full-width tap target. */
+
+.rows {
+  margin-top: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 34px 1fr 116px;
+  gap: 14px;
+  align-items: baseline;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--gold-22);
+  transition: border-color var(--dur) var(--ease);
+}
+
+.row[data-active='true'] {
+  border-bottom-color: var(--gold);
+}
+
+.row[data-error='true'] {
+  border-bottom-color: #8c3a2e;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-secondary);
+  transition: color var(--dur) var(--ease);
+}
+
+/* The atelier works in Vietnamese, and this is the word it uses. Set in the
+   annotation voice, beside the English rather than instead of it. */
+.vi {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+}
+
+.row[data-active='true'] .label {
+  color: var(--ink);
+}
+
+.hint {
+  font-size: var(--t-micro);
+  line-height: 1.55;
+  color: var(--ink-hint);
+  margin-top: 5px;
+  max-width: 44ch;
+  opacity: 0.55;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.row[data-active='true'] .hint {
+  opacity: 1;
+}
+
+.error {
+  font-size: var(--t-micro);
+  line-height: 1.5;
+  color: #8c3a2e;
+  margin-top: 5px;
+}
+
+.field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid rgba(42, 38, 32, 0.25);
+  background: transparent;
+  font-size: 15px;
+  padding: 0 0 6px;
+  text-align: right;
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.row[data-active='true'] .input {
+  border-bottom-color: var(--gold);
+}
+
+.suffix {
+  font-size: var(--t-micro);
+  color: var(--ink-muted);
+  min-width: 16px;
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 28px 1fr;
+    row-gap: 10px;
+  }
+
+  .field {
+    grid-column: 2;
+    justify-content: flex-start;
+    max-width: 140px;
+  }
+
+  .input {
+    text-align: left;
+  }
+}
+
+/* ---- Footer actions ---- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 26px;
+  margin-top: 26px;
+  font-size: var(--t-xs);
+}
+
+.saved {
+  font-size: var(--t-xs);
+  color: var(--gold);
+}
+
+/* ---- Review ---- */
+
+.review {
+  margin-top: 40px;
+  padding-top: 24px;
+}
+
+.reviewHead {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-muted);
+}
+
+.reviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 4px 40px;
+  margin-top: 16px;
+}
+
+.reviewRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--gold-18);
+  font-size: var(--t-sm-tight);
+}
+
+.reviewValue {
+  font-family: var(--font-serif);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Garment group ----
+   Set apart from the body measurements above it, because it is a decision
+   rather than a fact. */
+
+.groupHead {
+  margin-top: 34px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gold-35);
+}
+
+.groupTitle {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(18px, 2vw, 22px);
+}
+
+.groupNote {
+  font-size: var(--t-xs);
+  line-height: 1.7;
+  color: var(--ink-muted);
+  margin-top: 10px;
+  max-width: 52ch;
+}
+
+.guideToggle {
+  font-size: var(--t-xxs);
+  border-bottom: 1px solid var(--gold-60);
+  padding-bottom: 2px;
+}

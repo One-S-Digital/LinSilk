@@ -1,0 +1,68 @@
+/* A photographic frame. Until real photography exists, the frame renders a
+   woven placeholder with the art direction printed on it — the same way a
+   contact sheet carries its notes. */
+
+.frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bone-soft);
+}
+
+.weave {
+  position: absolute;
+  inset: 0;
+}
+
+.weave[data-weave='bone'] {
+  background: repeating-linear-gradient(118deg, #ded3bf 0 11px, #e7ddcb 11px 22px);
+}
+
+.weave[data-weave='sand'] {
+  background: repeating-linear-gradient(118deg, #d6c9b2 0 11px, #e1d6c1 11px 22px);
+}
+
+.weave[data-weave='dark'] {
+  background: repeating-linear-gradient(122deg, #6e6252 0 14px, #7c7060 14px 28px);
+}
+
+.weave[data-weave='forest'] {
+  background: repeating-linear-gradient(118deg, #4a5540 0 12px, #54604a 12px 24px);
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The direction note. Monospace, lower case, set small — a working annotation
+   rather than a caption for the reader. */
+.note {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+  pointer-events: none;
+}
+
+.note[data-on='dark'] {
+  color: var(--on-dark-72);
+}
+
+/* Optional hover zoom. Lives here because the weave and image are owned by
+   this module — a sibling module's class cannot reach them. */
+.frame[data-zoom='true'] .weave,
+.frame[data-zoom='true'] .image {
+  transition: transform 1.2s var(--ease);
+}
+
+.frame[data-zoom='true']:hover .weave,
+.frame[data-zoom='true']:hover .image {
+  transform: scale(1.04);
+}

@@ -1,0 +1,149 @@
+.page {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: clamp(28px, 3vw, 44px) var(--gutter) clamp(72px, 9vw, 140px);
+}
+
+.crumb {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-nav);
+  color: var(--ink-muted);
+  margin-bottom: clamp(28px, 4vw, 56px);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: clamp(32px, 5vw, 80px);
+  align-items: start;
+}
+
+/* ---- Gallery ---- */
+
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+/* ---- Detail column ---- *
+   Sticky on desktop so the measurement sheet stays beside the garment while
+   the client works down it. Released below 900, where sticky would trap the
+   form against the top of a short viewport. */
+
+.detail {
+  position: sticky;
+  top: calc(var(--header-h) + 35px);
+}
+
+@media (max-width: 900px) {
+  .detail {
+    position: static;
+  }
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: clamp(30px, 4vw, 54px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  margin-top: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--gold-35);
+}
+
+.material {
+  font-size: var(--t-sm-tight);
+  color: var(--ink-muted);
+}
+
+.price {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.description {
+  font-size: var(--t-body);
+  line-height: var(--lh-body-loose);
+  color: var(--ink-body);
+  margin-top: 26px;
+}
+
+/* A run that is capped and never repeated is the whole proposition, so it is
+   stated as a fact on the page rather than as an urgency badge. */
+.run {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 22px;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+}
+
+.clothLabel {
+  margin-top: 38px;
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-muted);
+}
+
+.sheetWrap {
+  margin-top: 46px;
+  border-top: 1px solid var(--gold-35);
+  padding-top: 26px;
+}
+
+/* ---- Reserve ---- */
+
+.reserve {
+  margin-top: 40px;
+}
+
+.reserveNote {
+  font-size: var(--t-xxs);
+  color: var(--ink-muted);
+  margin: 16px 0 0;
+  max-width: 46ch;
+  line-height: 1.7;
+}
+
+.blocked {
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  margin-top: 14px;
+  max-width: 46ch;
+  line-height: 1.7;
+}
+
+.done {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 20px;
+  margin-top: 18px;
+  font-size: var(--t-sm-tight);
+}
+
+.doneMark {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  color: var(--gold);
+}

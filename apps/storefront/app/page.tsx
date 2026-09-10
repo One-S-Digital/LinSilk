@@ -1,0 +1,257 @@
+import Link from 'next/link';
+import {
+  ChalkMark,
+  ClothWipe,
+  Count,
+  HeroMedia,
+  LineRise,
+  Parallax,
+  Reveal,
+  RuleDraw,
+} from '@/components/motion';
+import { DragRail } from '@/components/drag-rail';
+import { ShotFrame } from '@/components/shot';
+import { ButtonLink } from '@/components/ui/button';
+import { currentCollection, money, piecesIn } from '@/lib/catalog';
+import styles from './home.module.css';
+
+/* The season rail leads with the women's opening five, then the men's first
+   three — the order the lookbook is shot in. Always the open collection. */
+const OPEN = currentCollection();
+const IN_SEASON = piecesIn(OPEN.slug);
+const SEASON = [
+  ...IN_SEASON.filter((p) => p.group === 'women').slice(0, 5),
+  ...IN_SEASON.filter((p) => p.group === 'men').slice(0, 3),
+];
+
+export default function HomePage() {
+  return (
+    <>
+      {/* ---- Hero ---- */}
+      <section className={styles.hero}>
+        <HeroMedia className={styles.heroMedia}>
+          <ShotFrame weave="dark" ratio="auto" style={{ height: '100%' }} />
+        </HeroMedia>
+        <div className={styles.heroScrim} />
+        <span className={styles.heroNote}>
+          hero — macro of hand-woven silk, low warm light
+        </span>
+
+        <div className={styles.heroInner}>
+          <LineRise delay={0.15}>
+            <span className={styles.kicker} style={{ display: 'block' }}>
+              {OPEN.title}
+            </span>
+            <span className={styles.heroLine} style={{ display: 'block' }}>
+              Cut from silk.
+            </span>
+            <span className={styles.heroLine} style={{ display: 'block' }}>
+              Woven by hand.
+            </span>
+            <span
+              className={`${styles.heroLine} ${styles.heroLineItalic}`}
+              style={{ display: 'block' }}
+            >
+              Fitted to you.
+            </span>
+          </LineRise>
+
+          <div className={styles.heroCtas}>
+            <ButtonLink href="/collection/women" variant="onDark">
+              Women’s collection
+            </ButtonLink>
+            <ButtonLink href="/collection/men" variant="onDark">
+              Men’s collection
+            </ButtonLink>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Statement ---- */}
+      <section className={styles.statement}>
+        <Reveal>
+          <p className={`${styles.statementText} u-balance`}>
+            Each season, a small number of pieces. Made once, then never again.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* ---- This season ----
+          Rendered only when the open collection actually holds pieces; an
+          empty rail is worse than no rail. */}
+      {SEASON.length > 0 && (
+      <section className={styles.season} aria-labelledby="season-heading">
+        <div className="u-wrap">
+          <RuleDraw />
+        </div>
+        <div className={styles.sectionHead}>
+          <h2 id="season-heading" className={styles.sectionTitle}>
+            This season
+          </h2>
+          <span className={styles.sectionMeta}>{OPEN.season} 26</span>
+        </div>
+
+        <DragRail label="This season">
+            {SEASON.map((piece) => (
+              <article key={piece.id} className={styles.tile}>
+                <Link href={`/piece/${piece.id}`}>
+                  <ShotFrame note={piece.shot} weave={piece.group === 'men' ? 'sand' : 'bone'} />
+                  <div className={styles.tileMeta}>
+                    <span>{piece.name}</span>
+                    <span className={styles.tilePrice}>{money(piece.price)}</span>
+                  </div>
+                  <div className={styles.tileMaterial}>{piece.material}</div>
+                </Link>
+              </article>
+            ))}
+        </DragRail>
+
+        <p className={styles.railHint}>
+          Drag, scroll or use the arrows to move through the season
+        </p>
+      </section>
+      )}
+
+      {/* ---- Design your own ---- */}
+      <section className={styles.commission} aria-labelledby="commission-heading">
+        <div className={styles.commissionGrid}>
+          <ClothWipe>
+            <ShotFrame
+              weave="forest"
+              ratio="4 / 5"
+              note="commission — chalk marks on unfinished cloth"
+              onDark
+            />
+          </ClothWipe>
+
+          <Reveal delay={0.12}>
+            <span className={styles.eyebrow}>Design Your Own</span>
+            <h2 id="commission-heading" className={`${styles.commissionTitle} u-balance`}>
+              A piece that exists because you described it.
+            </h2>
+            <p className={styles.commissionBody}>
+              Choose a base silhouette, choose the cloth, write to the tailor, submit
+              your measurements. The atelier builds one garment to that brief. It is
+              the only path where the design is yours before it is ours.
+            </p>
+            <div className={styles.commissionCta}>
+              <ButtonLink href="/design" variant="ruleOnDark">
+                Begin a commission
+              </ButtonLink>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---- The atelier ---- */}
+      <section className={styles.atelier} aria-labelledby="atelier-heading">
+        <div className={styles.atelierGrid}>
+          <Reveal>
+            <span className={styles.eyebrowDark}>The Atelier</span>
+            <h2 id="atelier-heading" className={`${styles.sectionHeading} u-balance`}>
+              Nine people, one bench, no machine that finishes a seam.
+            </h2>
+            <p className={styles.prose}>
+              The house works out of a single room in Hội An. Cloth is cut flat by
+              hand against a paper pattern drawn for one client. Seams are closed on a
+              machine; hems, facings, buttonholes and linings are finished by hand. A
+              silk dress takes between eleven and sixteen hours at the bench, and it is
+              checked twice against your measurement sheet before it leaves.
+            </p>
+            <div className={styles.commissionCta}>
+              <ButtonLink href="/atelier" variant="rule">
+                Inside the atelier
+              </ButtonLink>
+            </div>
+          </Reveal>
+
+          <div className={styles.atelierPair}>
+            <Parallax distance={34} style={{ aspectRatio: '3 / 4' }}>
+              <ShotFrame
+                weave="bone"
+                ratio="auto"
+                style={{ height: '130%', marginTop: '-15%' }}
+              >
+                <ChalkMark
+                  label="shoulder · 41"
+                  style={{ position: 'absolute', right: -8, top: '38%' }}
+                />
+              </ShotFrame>
+            </Parallax>
+
+            <Parallax
+              distance={-34}
+              className={styles.atelierPairLower}
+              style={{ aspectRatio: '3 / 4' }}
+            >
+              <ShotFrame
+                weave="sand"
+                ratio="auto"
+                style={{ height: '130%', marginTop: '-15%' }}
+              />
+            </Parallax>
+          </div>
+        </div>
+
+        <div className={styles.directionRow}>
+          <span>needle mid-stitch</span>
+          <span>pinning a shoulder</span>
+        </div>
+      </section>
+
+      {/* ---- The cloth ---- */}
+      <section className={styles.cloth} aria-labelledby="cloth-heading">
+        <div className={styles.clothInner}>
+          <Reveal>
+            <span className={styles.eyebrowDark}>The Cloth</span>
+            <h2 id="cloth-heading" className={`${styles.clothTitle} u-balance`}>
+              Silk and linen. Nothing else enters the room.
+            </h2>
+          </Reveal>
+
+          <div className={styles.clothColumns}>
+            <Reveal delay={0.08}>
+              <p className={styles.clothProse}>
+                Mulberry silk from Bảo Lộc and wet-spun linen from Kortrijk. No
+                polyester in the shell, the lining, the pocket bag or the thread.
+                Synthetic fibre is cheaper to sew and it holds a press longer, which is
+                precisely why most houses use it where you cannot see.
+              </p>
+            </Reveal>
+            <Reveal delay={0.16}>
+              <p className={styles.clothProse}>
+                Natural fibre moves, creases and ages. A linen jacket worn through one
+                summer will not look the way it looked in the photograph, and that is
+                the point of it. Every bolt is logged with its mill and its date, and
+                that record travels with the garment.
+              </p>
+            </Reveal>
+          </div>
+
+          <RuleDraw color="var(--gold-45)" style={{ marginTop: 'clamp(48px,6vw,86px)' }} />
+
+          <dl className={styles.clothStats}>
+            <div className={styles.stat}>
+              <dd className={styles.statNum}>
+                <Count to={100} suffix="%" />
+              </dd>
+              <dt className={styles.statLabel}>natural fibre, shell to thread</dt>
+            </div>
+            <div className={styles.stat}>
+              <dd className={styles.statNum}>
+                <Count to={IN_SEASON.length} />
+              </dd>
+              <dt className={styles.statLabel}>designs in {OPEN.title.split('—')[1].trim()}</dt>
+            </div>
+            <div className={styles.stat}>
+              <dd className={styles.statNum}>
+                <Count to={0} />
+              </dd>
+              <dt className={styles.statLabel}>designs ever restocked</dt>
+            </div>
+          </dl>
+        </div>
+      </section>
+    </>
+  );
+}

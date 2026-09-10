@@ -1,0 +1,107 @@
+/* Three button roles, no more. The house never uses a filled accent colour —
+   emphasis comes from the ink block, and everything else is a rule. */
+
+.base {
+  display: inline-block;
+  font-size: var(--t-sm-tight);
+  letter-spacing: 0.05em;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.base:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Solid ink. The single commitment on a page: reserve, submit, pay. */
+.solid {
+  background: var(--ink);
+  color: var(--on-dark);
+  padding: 17px 40px;
+  border: 1px solid var(--ink);
+}
+
+.solid:hover:not(:disabled) {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--on-dark);
+}
+
+/* Outlined, for choices offered side by side. */
+.outline {
+  background: transparent;
+  color: var(--ink);
+  padding: 15px 30px;
+  border: 1px solid var(--gold-60);
+}
+
+.outline:hover:not(:disabled) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-dark);
+}
+
+/* The same, reversed out of a photograph. */
+.onDark {
+  background: transparent;
+  color: var(--on-dark);
+  padding: 15px 30px;
+  border: 1px solid rgba(237, 230, 217, 0.55);
+}
+
+.onDark:hover:not(:disabled) {
+  background: var(--on-dark);
+  border-color: var(--on-dark);
+  color: var(--ink);
+}
+
+/* A rule that draws in on hover — the house's quiet link. */
+.rule {
+  display: inline-block;
+  position: relative;
+  font-size: var(--t-sm-tight);
+  letter-spacing: 0.05em;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--gold-60);
+}
+
+.rule::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.rule:hover::after {
+  transform: scaleX(1);
+}
+
+.ruleOnDark {
+  border-bottom-color: rgba(237, 230, 217, 0.45);
+  color: var(--on-dark);
+}
+
+.ruleOnDark::after {
+  background: var(--on-dark);
+}
+
+.ruleOnDark:hover {
+  color: var(--on-dark);
+}
+
+.block {
+  display: block;
+  width: 100%;
+}

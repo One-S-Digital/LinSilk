@@ -1,0 +1,123 @@
+.page {
+  padding: clamp(48px, 6vw, 96px) 0 clamp(72px, 9vw, 130px);
+}
+
+.head {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: var(--t-page-title);
+  line-height: var(--lh-display);
+}
+
+.lede {
+  max-width: 50ch;
+  font-size: var(--t-body);
+  line-height: var(--lh-body-loose);
+  color: var(--ink-secondary);
+  margin-top: 24px;
+}
+
+.rail {
+  margin-top: clamp(44px, 5vw, 72px);
+}
+
+.season {
+  flex: 0 0 auto;
+  width: min(84vw, 720px);
+}
+
+.seasonMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.seasonName {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(18px, 2vw, 26px);
+}
+
+/* Archived is a state, not a label to shout — it sits in the same mono voice
+   as the art direction notes. */
+.state {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.seasonNote {
+  font-size: var(--t-sm-tight);
+  color: var(--ink-muted);
+  margin-top: 6px;
+}
+
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.foot {
+  max-width: var(--page-max);
+  margin: 28px auto 0;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.footRule {
+  width: 52px;
+  height: 1px;
+  background: var(--gold);
+  flex: 0 0 auto;
+}
+
+.footHint {
+  font-size: var(--t-micro);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-muted);
+}
+
+.seasonLink {
+  display: block;
+}
+
+.enter {
+  display: inline-block;
+  position: relative;
+  margin-top: 18px;
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-nav);
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--gold-60);
+}
+
+.enter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.seasonLink:hover .enter::after {
+  transform: scaleX(1);
+}

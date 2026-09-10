@@ -1,0 +1,163 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: rgba(237, 230, 217, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gold-28);
+}
+
+.inner {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 18px var(--gutter);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.wordmark {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wordmark:hover {
+  color: var(--ink);
+}
+
+/* ---- Desktop navigation ---- */
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 2vw, 30px);
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-nav);
+}
+
+/* The rule under each link draws in from the left rather than switching on,
+   echoing the chalk lines used throughout the site. */
+.navLink {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.navLink:hover::after,
+.navLink[data-current='true']::after {
+  transform: scaleX(1);
+}
+
+.navLink[data-current='true'] {
+  color: var(--ink);
+}
+
+/* ---- Utility cluster ---- */
+
+.utility {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(12px, 1.6vw, 22px);
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-nav);
+  white-space: nowrap;
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+
+.desktopOnly {
+  display: contents;
+}
+
+.menuButton {
+  display: none;
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-nav);
+}
+
+/* ---- Mobile ---- */
+
+@media (max-width: 900px) {
+  .nav {
+    display: none;
+  }
+
+  .menuButton {
+    display: block;
+  }
+
+  .inner {
+    align-items: center;
+  }
+}
+
+/* ---- Full-screen mobile panel ---- *
+   Deliberately not a dropdown: the panel gives the navigation the same
+   editorial scale as the rest of the house. */
+
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--bone);
+  display: flex;
+  flex-direction: column;
+  padding: 18px var(--gutter) var(--gutter);
+  overflow-y: auto;
+}
+
+.panelTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--gold-28);
+}
+
+.panelNav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: clamp(28px, 6vw, 56px);
+}
+
+.panelLink {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: clamp(30px, 8vw, 46px);
+  line-height: 1.18;
+  padding: 6px 0;
+}
+
+.panelFoot {
+  margin-top: auto;
+  padding-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 28px;
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-nav);
+  color: var(--ink-muted);
+}

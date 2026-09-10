@@ -1,0 +1,371 @@
+/* Home. Breakpoints: 640 mobile→tablet, 900 tablet→desktop, 1200 wide. */
+
+/* ------------------------------------------------------------------ *
+ * Hero
+ * ------------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  height: min(92vh, 900px);
+  min-height: 560px;
+}
+
+.heroMedia {
+  position: absolute;
+  inset: 0;
+}
+
+/* Two stops rather than three: the picture stays open through the middle and
+   only darkens where type actually sits. */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 38, 32, 0.38) 0%,
+    rgba(42, 38, 32, 0.22) 40%,
+    rgba(42, 38, 32, 0.62) 100%
+  );
+  pointer-events: none;
+}
+
+.heroNote {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.08em;
+  color: var(--on-dark-72);
+  z-index: 2;
+}
+
+.heroInner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: clamp(48px, 7vw, 96px);
+  color: var(--on-dark);
+}
+
+.kicker {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-kicker);
+  color: var(--on-dark-82);
+  margin-bottom: 26px;
+}
+
+.heroLine {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: var(--t-hero);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-display);
+}
+
+.heroLineItalic {
+  font-style: italic;
+}
+
+.heroCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    height: auto;
+    min-height: 0;
+    padding-top: clamp(80px, 30vw, 160px);
+  }
+
+  .heroInner {
+    padding-block: clamp(56px, 18vw, 96px) clamp(40px, 12vw, 72px);
+  }
+
+  .kicker {
+    margin-bottom: 18px;
+  }
+
+  .heroCtas {
+    margin-top: 28px;
+  }
+
+  /* Side-by-side ghost buttons crowd at phone widths; stack them full-bleed
+     so each is a comfortable target. */
+  .heroCtas > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Statement
+ * ------------------------------------------------------------------ */
+
+.statement {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--section-y) var(--gutter);
+}
+
+.statementText {
+  max-width: 22ch;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(22px, 2.6vw, 36px);
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------------------ *
+ * This season
+ * ------------------------------------------------------------------ */
+
+.season {
+  padding-bottom: clamp(64px, 9vw, 120px);
+}
+
+.sectionHead {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 22px;
+  margin-bottom: 44px;
+}
+
+.sectionTitle {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--t-h2-sm);
+}
+
+.sectionMeta {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.railHint {
+  max-width: var(--page-max);
+  margin: 28px auto 0;
+  padding-inline: var(--gutter);
+  font-size: var(--t-micro);
+  letter-spacing: var(--ls-label);
+  color: var(--ink-muted);
+}
+
+.tile {
+  flex: 0 0 auto;
+  width: clamp(230px, 26vw, 340px);
+}
+
+@media (max-width: 640px) {
+  .tile {
+    width: 74vw;
+  }
+}
+
+.tileMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: var(--t-sm-tight);
+}
+
+.tilePrice {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tileMaterial {
+  font-size: var(--t-xxs);
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+/* ------------------------------------------------------------------ *
+ * Design your own — the one dark-green field on the page
+ * ------------------------------------------------------------------ */
+
+.commission {
+  position: relative;
+  background: var(--forest);
+  color: var(--on-dark);
+}
+
+.commissionGrid {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--section-y-lg) var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(36px, 6vw, 90px);
+  align-items: center;
+}
+
+.eyebrow {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-eyebrow);
+  color: var(--on-dark-72);
+}
+
+.eyebrowDark {
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-eyebrow);
+  color: var(--ink-muted);
+}
+
+.commissionTitle {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: var(--t-h2-lg);
+  line-height: 1.1;
+  margin-top: 18px;
+}
+
+.commissionBody {
+  max-width: 46ch;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  color: var(--on-dark-82);
+  margin-top: 26px;
+}
+
+.commissionCta {
+  margin-top: 34px;
+}
+
+/* ------------------------------------------------------------------ *
+ * The atelier
+ * ------------------------------------------------------------------ */
+
+.atelier {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: var(--section-y-lg) var(--gutter);
+}
+
+.atelierGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(32px, 5vw, 72px);
+  align-items: end;
+}
+
+.sectionHeading {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: var(--t-h2);
+  line-height: var(--lh-heading);
+  margin-top: 18px;
+}
+
+.prose {
+  max-width: 48ch;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  color: var(--ink-secondary);
+  margin-top: 26px;
+}
+
+.atelierPair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+/* The second frame drops to create a woven, offset rhythm rather than a
+   tidy pair. */
+.atelierPairLower {
+  margin-top: clamp(24px, 5vw, 72px);
+}
+
+.directionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+}
+
+/* ------------------------------------------------------------------ *
+ * The cloth
+ * ------------------------------------------------------------------ */
+
+.cloth {
+  background: var(--sand);
+}
+
+.clothInner {
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: clamp(72px, 10vw, 140px) var(--gutter);
+}
+
+.clothTitle {
+  max-width: 20ch;
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: clamp(28px, 4.2vw, 58px);
+  line-height: var(--lh-heading);
+  margin-top: 18px;
+}
+
+.clothColumns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(28px, 4vw, 64px);
+  margin-top: clamp(40px, 5vw, 70px);
+}
+
+.clothProse {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  color: var(--ink-body);
+}
+
+.clothStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(28px, 8vw, 110px);
+  /* The drawn rule above carries the separating space. */
+  margin-top: 34px;
+}
+
+.stat {
+  min-width: 128px;
+}
+
+.statNum {
+  font-family: var(--font-serif);
+  font-weight: 200;
+  font-size: var(--t-stat);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: var(--t-xxs);
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  max-width: 20ch;
+}

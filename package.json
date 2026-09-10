@@ -1,0 +1,14 @@
+{
+  "name": "maison-ayla",
+  "private": true,
+  "packageManager": "pnpm@10.16.1",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "pnpm --parallel --filter './apps/*' dev",
+    "dev:storefront": "pnpm --filter storefront dev",
+    "dev:medusa": "pnpm --filter medusa dev",
+    "build": "pnpm --filter './apps/*' build",
+    "services": "docker compose up -d",
+    "services:stop": "docker compose down"
+  }
+}

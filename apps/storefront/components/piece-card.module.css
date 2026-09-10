@@ -1,0 +1,76 @@
+.card {
+  display: block;
+}
+
+/* Tiles sit at three different heights across the grid so the collection reads
+   as hung on a rail rather than dropped into a spreadsheet. Levelled on
+   narrow screens, where the offsets only look like a mistake. */
+.card[data-offset='1'] {
+  margin-top: clamp(20px, 4vw, 64px);
+}
+
+.card[data-offset='2'] {
+  margin-top: clamp(10px, 2vw, 28px);
+}
+
+@media (max-width: 640px) {
+  .card[data-offset='1'],
+  .card[data-offset='2'] {
+    margin-top: 0;
+  }
+}
+
+.frame {
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 14px;
+  font-size: var(--t-sm);
+}
+
+.name {
+  text-wrap: balance;
+}
+
+.price {
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.material {
+  font-size: var(--t-xxs);
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+.view {
+  display: inline-block;
+  position: relative;
+  margin-top: 12px;
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-nav);
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--gold-60);
+}
+
+.view::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+.card:hover .view::after {
+  transform: scaleX(1);
+}
