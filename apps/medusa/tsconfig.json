@@ -32,5 +32,8 @@
     ".medusa/admin",
     ".cache",
     "eslint.config.*",
+    // Reads the storefront's catalogue from outside rootDir. Run from source
+    // with `medusa exec`, never shipped in the build.
+    "src/scripts/seed.ts",
   ]
 }
