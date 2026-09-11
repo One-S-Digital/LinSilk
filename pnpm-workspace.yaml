@@ -1,2 +1,10 @@
 packages:
   - 'apps/*'
+
+# One set of React types for the whole workspace. Medusa's admin pulls in
+# @types/react 18, and pnpm hoists a single copy that untyped libraries such as
+# motion fall back on — which broke the storefront's React 19 typecheck.
+# Medusa's own starter pins these to 19 for the same reason.
+overrides:
+  '@types/react': 19.2.18
+  '@types/react-dom': 19.2.7
