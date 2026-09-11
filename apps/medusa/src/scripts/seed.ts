@@ -34,6 +34,7 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { COLLECTIONS, PIECES } from "../../../storefront/lib/catalog"
+import { fetchChfRates } from "../lib/exchange-rates"
 import { CURRENCIES, fromChf, type Currency } from "../lib/pricing"
 
 /* Per-piece size of the season's capped run. Placeholder until the client
@@ -88,6 +89,12 @@ export default async function seed({ container }: { container: MedusaContainer }
     logger.info("Already seeded (Switzerland region exists). Nothing to do.")
     return
   }
+
+  /* Fetched before anything is written: a seed that cannot price in euro and
+     sterling should fail here, not halfway through. After this, the
+     refresh-exchange-rates job keeps the derived prices current. */
+  const rates = await fetchChfRates()
+  logger.info(`Pricing at ECB rates of ${rates.date}.`)
 
   /* ---- Store, sales channel, publishable key ----
      Medusa creates a default store, sales channel and publishable key on
@@ -200,7 +207,12 @@ export default async function seed({ container }: { container: MedusaContainer }
       service_zone_id: fulfillmentSet.service_zones.find((z) => z.name === r.name)!.id,
       shipping_profile_id: shippingProfile.id,
       type: { label: r.shipping.name, description: r.shipping.note, code: r.currency },
-      prices: [{ region_id: regionId(r.name), amount: fromChf(r.shipping.chf, r.currency) }],
+      /* The franc price sits beside the regional one as the source the
+         exchange-rate job derives it from. */
+      prices: [
+        { region_id: regionId(r.name), amount: fromChf(r.shipping.chf, r.currency, rates) },
+        ...(r.currency === "chf" ? [] : [{ currency_code: "chf", amount: r.shipping.chf }]),
+      ],
       rules: [
         { attribute: "enabled_in_store", value: "true", operator: "eq" as const },
         { attribute: "is_return", value: "false", operator: "eq" as const },
@@ -270,7 +282,7 @@ export default async function seed({ container }: { container: MedusaContainer }
             allow_backorder: false,
             prices: CURRENCIES.map((currency_code) => ({
               currency_code,
-              amount: fromChf(p.price, currency_code),
+              amount: fromChf(p.price, currency_code, rates),
             })),
           },
         ],
