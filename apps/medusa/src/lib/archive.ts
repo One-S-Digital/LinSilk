@@ -8,6 +8,7 @@ export type GatedVariant = {
   id: string
   product?: {
     title?: string | null
+    metadata?: Record<string, unknown> | null
     collection?: {
       title?: string | null
       metadata?: Record<string, unknown> | null
@@ -18,19 +19,14 @@ export type GatedVariant = {
 export const isOrderable = (variant: GatedVariant) =>
   variant.product?.collection?.metadata?.status === "current"
 
-/** The refusal to show the client, or null when every piece is orderable. */
-export function archiveRefusal(variants: GatedVariant[]): string | null {
-  const closed = variants.filter((v) => !isOrderable(v))
-  if (!closed.length) {
+/** Why this piece cannot be ordered, or null when it can. */
+export function archiveRefusal(variant: GatedVariant): string | null {
+  if (isOrderable(variant)) {
     return null
   }
-  return closed
-    .map((v) => {
-      const piece = v.product?.title ?? "This piece"
-      const season = v.product?.collection?.title
-      return season
-        ? `${piece} closed with ${season} and is not made again.`
-        : `${piece} is not part of an open collection.`
-    })
-    .join(" ")
+  const piece = variant.product?.title ?? "This piece"
+  const season = variant.product?.collection?.title
+  return season
+    ? `${piece} closed with ${season} and is not made again.`
+    : `${piece} is not part of an open collection.`
 }
