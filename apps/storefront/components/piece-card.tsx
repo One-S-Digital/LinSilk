@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ShotFrame } from '@/components/shot';
-import { money, type Piece } from '@/lib/catalog';
+import { isOrderable, money, type Piece } from '@/lib/catalog';
 import styles from './piece-card.module.css';
 
 export function PieceCard({
@@ -31,7 +31,8 @@ export function PieceCard({
 
       <div className={styles.meta}>
         <span className={styles.name}>{piece.name}</span>
-        <span className={styles.price}>{money(piece.price)}</span>
+        {/* An archived piece is not for sale, so it carries no price. */}
+        {isOrderable(piece) && <span className={styles.price}>{money(piece.price)}</span>}
       </div>
       <div className={styles.material}>{piece.material}</div>
       {showView && <span className={styles.view}>View</span>}

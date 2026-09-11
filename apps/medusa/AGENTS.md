@@ -44,7 +44,13 @@ pnpm --filter medusa test:integration:http      # **/integration-tests/http/*.sp
 pnpm --filter medusa exec medusa db:generate <module>
 pnpm --filter medusa exec medusa db:migrate
 pnpm --filter medusa exec medusa user -e <email> -p <password>
+pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts                    # once, on an empty DB
+pnpm --filter medusa exec medusa exec ./src/scripts/refresh-exchange-rates.ts  # re-derive EUR/GBP now
 ```
+
+Integration tests read `.env.test` (git-ignored): `DB_HOST`, `DB_PORT`, `DB_USERNAME`,
+`DB_PASSWORD` for a Postgres user that can create databases. Locally that is `localhost`,
+`5432`, `ayla`, `ayla`.
 
 Install dependencies into this package, not the root: `pnpm --filter medusa add <pkg>`.
 
