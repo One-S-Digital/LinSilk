@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { ZONES, type Group, type Zone } from '@/lib/catalog';
 import {
   formatValue,
@@ -13,6 +13,7 @@ import {
   type Measurements,
   type Unit,
 } from '@/lib/measurements';
+import { useHydrated } from '@/lib/use-hydrated';
 import styles from './measurement-sheet.module.css';
 
 const GUIDES = {
@@ -44,13 +45,15 @@ export function MeasurementSheet({
   const [active, setActive] = useState<string>(ZONES[0].key);
   const [guide, setGuide] = useState<Group>(group);
   const [saved, setSaved] = useState(false);
-  const hydrated = useRef(false);
+  const hydrated = useHydrated();
+  const [restored, setRestored] = useState(false);
 
   const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
 
   // Restore anything the client already typed on a previous visit.
-  useEffect(() => {
+  if (hydrated && !restored) {
     const stored = loadLocal();
+    setRestored(true);
     setUnit(stored.unit);
     setValues(stored.values);
     setDrafts(
@@ -60,12 +63,11 @@ export function MeasurementSheet({
           .map(([k, cm]) => [k, formatValue(cm as number, stored.unit)]),
       ),
     );
-    hydrated.current = true;
-  }, []);
+  }
 
   useEffect(() => {
-    if (hydrated.current) onChange?.(values, unit);
-  }, [values, unit, onChange]);
+    if (restored) onChange?.(values, unit);
+  }, [restored, values, unit, onChange]);
 
   /* Switching units rewrites what is on screen from the stored centimetres —
      the number the client sees changes, the measurement does not. */

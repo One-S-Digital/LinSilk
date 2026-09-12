@@ -22,7 +22,11 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
   const cartCount = ready ? ` (${count})` : '';
 
   // Close the panel on navigation.
-  useEffect(() => setOpen(false), [pathname]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
 
   // Trap the page behind the panel and allow Escape to dismiss it.
   useEffect(() => {
