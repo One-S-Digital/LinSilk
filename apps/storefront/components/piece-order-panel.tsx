@@ -75,7 +75,6 @@ export function PieceOrderPanel({ piece }: { piece: Piece }) {
 
   const reserve = () => {
     add({
-      kind: 'piece',
       pieceId: piece.id,
       name: piece.name,
       material: piece.material,

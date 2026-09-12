@@ -1,5 +1,5 @@
 import { archiveRefusal, type GatedVariant } from "./archive"
-import { missingMeasurements } from "./measurements"
+import { lengthKindsOf, missingMeasurements } from "./measurements"
 
 /* What makes a cart line one the atelier can accept:
    - the piece belongs to the current collection (archive.ts);
@@ -36,8 +36,7 @@ export function lineRefusals({ quantity, metadata, variant }: CartLine): string[
     refusals.push(`Each piece is cut for one person, so ${piece} is ordered one at a time.`)
   }
 
-  const lengthKind = variant.product?.metadata?.length_kind
-  const missing = missingMeasurements(metadata, typeof lengthKind === "string" ? lengthKind : null)
+  const missing = missingMeasurements(metadata, lengthKindsOf(variant.product?.metadata))
   if (missing.length) {
     refusals.push(
       `The atelier cannot cut ${piece} from a partial sheet: ${list(missing)} ${

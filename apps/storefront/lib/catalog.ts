@@ -75,73 +75,74 @@ export type Piece = {
   /** Art direction for the photograph that replaces the placeholder. */
   shot: string;
   sleep?: boolean;
-  /* Which garment length the sheet should ask for. The atelier takes a
+  /* Which garment lengths the sheet should ask for. The atelier takes a
      different length for a dress, a skirt, a trouser and anything hanging
-     from the shoulder, so the piece names its own. */
-  lengthKind?: LengthKind;
+     from the shoulder, so the piece names its own — and a set names both,
+     because it is two garments on one ticket. */
+  lengthKinds?: LengthKind[];
 };
 
 export const PIECES: Piece[] = [
   /* ---- Autumn — Collection IV (current) ---- */
-  { id: 'w1', collection: 'autumn-iv', group: 'women', name: 'Coat, Bảo Lộc silk', material: 'Sand silk twill, unlined', price: 1980, shot: 'full length, stone doorway', lengthKind: 'top' },
-  { id: 'w2', collection: 'autumn-iv', group: 'women', name: 'Bias dress, champagne', material: '19mm charmeuse, hand-rolled hem', price: 1640, shot: 'walking, tiled wall', lengthKind: 'dress' },
-  { id: 'w3', collection: 'autumn-iv', group: 'women', name: 'Wide trouser, flax', material: 'Wet-spun linen, unpressed crease', price: 890, shot: 'seated, low warm light', lengthKind: 'trouser' },
-  { id: 'w4', collection: 'autumn-iv', group: 'women', name: 'Shirt, cream linen', material: 'Handkerchief linen, shell buttons', price: 640, shot: 'shoulder detail', lengthKind: 'top' },
-  { id: 'w5', collection: 'autumn-iv', group: 'women', name: 'Column skirt, burgundy', material: 'Silk satin, invisible placket', price: 780, shot: 'street, mid-stride', lengthKind: 'skirt' },
-  { id: 'w6', collection: 'autumn-iv', group: 'women', name: 'Jacket, olive linen', material: 'Half-canvassed, hand-set sleeve', price: 1720, shot: 'front, courtyard', lengthKind: 'top' },
-  { id: 'w7', collection: 'autumn-iv', group: 'women', name: 'Slip, oyster', material: '16mm silk, French seams', price: 520, shot: 'draped on chair', lengthKind: 'dress' },
-  { id: 'w8', collection: 'autumn-iv', group: 'women', name: 'Sleep set, cream silk', material: '19mm silk, piped edge', price: 690, shot: 'morning window', sleep: true },
-  { id: 'w9', collection: 'autumn-iv', group: 'women', name: 'Robe, deep burgundy', material: '22mm silk crepe, tie belt', price: 840, shot: 'interior, doorway', sleep: true, lengthKind: 'top' },
+  { id: 'w1', collection: 'autumn-iv', group: 'women', name: 'Coat, Bảo Lộc silk', material: 'Sand silk twill, unlined', price: 1980, shot: 'full length, stone doorway', lengthKinds: ['top'] },
+  { id: 'w2', collection: 'autumn-iv', group: 'women', name: 'Bias dress, champagne', material: '19mm charmeuse, hand-rolled hem', price: 1640, shot: 'walking, tiled wall', lengthKinds: ['dress'] },
+  { id: 'w3', collection: 'autumn-iv', group: 'women', name: 'Wide trouser, flax', material: 'Wet-spun linen, unpressed crease', price: 890, shot: 'seated, low warm light', lengthKinds: ['trouser'] },
+  { id: 'w4', collection: 'autumn-iv', group: 'women', name: 'Shirt, cream linen', material: 'Handkerchief linen, shell buttons', price: 640, shot: 'shoulder detail', lengthKinds: ['top'] },
+  { id: 'w5', collection: 'autumn-iv', group: 'women', name: 'Column skirt, burgundy', material: 'Silk satin, invisible placket', price: 780, shot: 'street, mid-stride', lengthKinds: ['skirt'] },
+  { id: 'w6', collection: 'autumn-iv', group: 'women', name: 'Jacket, olive linen', material: 'Half-canvassed, hand-set sleeve', price: 1720, shot: 'front, courtyard', lengthKinds: ['top'] },
+  { id: 'w7', collection: 'autumn-iv', group: 'women', name: 'Slip, oyster', material: '16mm silk, French seams', price: 520, shot: 'draped on chair', lengthKinds: ['dress'] },
+  { id: 'w8', collection: 'autumn-iv', group: 'women', name: 'Sleep set, cream silk', material: '19mm silk, piped edge', price: 690, shot: 'morning window', sleep: true, lengthKinds: ['top', 'trouser'] },
+  { id: 'w9', collection: 'autumn-iv', group: 'women', name: 'Robe, deep burgundy', material: '22mm silk crepe, tie belt', price: 840, shot: 'interior, doorway', sleep: true, lengthKinds: ['top'] },
 
-  { id: 'm1', collection: 'autumn-iv', group: 'men', name: 'Overshirt, olive linen', material: 'Heavy linen, patch pockets', price: 720, shot: 'street, hands in pocket', lengthKind: 'top' },
-  { id: 'm2', collection: 'autumn-iv', group: 'men', name: 'Two-button jacket, cream', material: 'Linen canvas, hand-padded lapel', price: 2140, shot: 'full length, stone', lengthKind: 'top' },
-  { id: 'm3', collection: 'autumn-iv', group: 'men', name: 'Pleated trouser, sand', material: 'Linen, side adjusters', price: 820, shot: 'seated, tiled floor', lengthKind: 'trouser' },
-  { id: 'm4', collection: 'autumn-iv', group: 'men', name: 'Shirt, oyster silk', material: '16mm silk, hand-set collar', price: 680, shot: 'collar detail', lengthKind: 'top' },
-  { id: 'm5', collection: 'autumn-iv', group: 'men', name: 'Field coat, loden', material: 'Linen drill, bridle stitch', price: 1890, shot: 'walking, rain light', lengthKind: 'top' },
-  { id: 'm6', collection: 'autumn-iv', group: 'men', name: 'Knit-neck tee, flax', material: 'Linen jersey, bound neck', price: 340, shot: 'front, plain wall' },
-  { id: 'm7', collection: 'autumn-iv', group: 'men', name: 'Sleep trouser, cream', material: '19mm silk, drawstring', price: 480, shot: 'interior morning', sleep: true, lengthKind: 'trouser' },
-  { id: 'm8', collection: 'autumn-iv', group: 'men', name: 'Sleep shirt, sand silk', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKind: 'top' },
+  { id: 'm1', collection: 'autumn-iv', group: 'men', name: 'Overshirt, olive linen', material: 'Heavy linen, patch pockets', price: 720, shot: 'street, hands in pocket', lengthKinds: ['top'] },
+  { id: 'm2', collection: 'autumn-iv', group: 'men', name: 'Two-button jacket, cream', material: 'Linen canvas, hand-padded lapel', price: 2140, shot: 'full length, stone', lengthKinds: ['top'] },
+  { id: 'm3', collection: 'autumn-iv', group: 'men', name: 'Pleated trouser, sand', material: 'Linen, side adjusters', price: 820, shot: 'seated, tiled floor', lengthKinds: ['trouser'] },
+  { id: 'm4', collection: 'autumn-iv', group: 'men', name: 'Shirt, oyster silk', material: '16mm silk, hand-set collar', price: 680, shot: 'collar detail', lengthKinds: ['top'] },
+  { id: 'm5', collection: 'autumn-iv', group: 'men', name: 'Field coat, loden', material: 'Linen drill, bridle stitch', price: 1890, shot: 'walking, rain light', lengthKinds: ['top'] },
+  { id: 'm6', collection: 'autumn-iv', group: 'men', name: 'Knit-neck tee, flax', material: 'Linen jersey, bound neck', price: 340, shot: 'front, plain wall', lengthKinds: ['top'] },
+  { id: 'm7', collection: 'autumn-iv', group: 'men', name: 'Sleep trouser, cream', material: '19mm silk, drawstring', price: 480, shot: 'interior morning', sleep: true, lengthKinds: ['trouser'] },
+  { id: 'm8', collection: 'autumn-iv', group: 'men', name: 'Sleep shirt, sand silk', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKinds: ['top'] },
 
   /* ---- Summer — Collection III (archived) ---- */
-  { id: 's1', collection: 'summer-iii', group: 'women', name: 'Shirt dress, flax', material: 'Wet-spun linen, shell buttons', price: 1180, shot: 'courtyard, midday', lengthKind: 'dress' },
-  { id: 's2', collection: 'summer-iii', group: 'women', name: 'Wide trouser, olive', material: 'Wet-spun linen, unpressed crease', price: 860, shot: 'walking, white wall', lengthKind: 'trouser' },
-  { id: 's3', collection: 'summer-iii', group: 'women', name: 'Camp shirt, flax', material: 'Handkerchief linen, open collar', price: 590, shot: 'seated, shutters' },
-  { id: 's4', collection: 'summer-iii', group: 'women', name: 'Sleeveless column, olive', material: 'Linen, bias-cut skirt', price: 1240, shot: 'stone steps', lengthKind: 'dress' },
-  { id: 's5', collection: 'summer-iii', group: 'women', name: 'Coat, undyed linen', material: 'Linen drill, unlined', price: 1690, shot: 'full length, doorway', lengthKind: 'top' },
-  { id: 's6', collection: 'summer-iii', group: 'women', name: 'Wrap skirt, flax', material: 'Wet-spun linen, tie waist', price: 640, shot: 'mid-stride, gravel', lengthKind: 'skirt' },
-  { id: 's7', collection: 'summer-iii', group: 'men', name: 'Camp-collar shirt, olive', material: 'Handkerchief linen, one-piece collar', price: 610, shot: 'front, shaded wall', lengthKind: 'top' },
-  { id: 's8', collection: 'summer-iii', group: 'men', name: 'Drawstring trouser, flax', material: 'Wet-spun linen, no belt loops', price: 720, shot: 'seated, courtyard', lengthKind: 'trouser' },
-  { id: 's9', collection: 'summer-iii', group: 'men', name: 'Unlined blazer, olive', material: 'Linen canvas, patch pockets', price: 1780, shot: 'full length, rain light', lengthKind: 'top' },
-  { id: 's10', collection: 'summer-iii', group: 'men', name: 'Short-sleeve shirt, flax', material: 'Handkerchief linen, bound cuff', price: 520, shot: 'shoulder detail', lengthKind: 'top' },
-  { id: 's11', collection: 'summer-iii', group: 'men', name: 'Linen tee, undyed', material: 'Linen jersey, bound neck', price: 310, shot: 'front, plain wall' },
-  { id: 's12', collection: 'summer-iii', group: 'men', name: 'Field jacket, olive', material: 'Linen drill, bridle stitch', price: 1620, shot: 'walking, wet street', lengthKind: 'top' },
+  { id: 's1', collection: 'summer-iii', group: 'women', name: 'Shirt dress, flax', material: 'Wet-spun linen, shell buttons', price: 1180, shot: 'courtyard, midday', lengthKinds: ['dress'] },
+  { id: 's2', collection: 'summer-iii', group: 'women', name: 'Wide trouser, olive', material: 'Wet-spun linen, unpressed crease', price: 860, shot: 'walking, white wall', lengthKinds: ['trouser'] },
+  { id: 's3', collection: 'summer-iii', group: 'women', name: 'Camp shirt, flax', material: 'Handkerchief linen, open collar', price: 590, shot: 'seated, shutters', lengthKinds: ['top'] },
+  { id: 's4', collection: 'summer-iii', group: 'women', name: 'Sleeveless column, olive', material: 'Linen, bias-cut skirt', price: 1240, shot: 'stone steps', lengthKinds: ['dress'] },
+  { id: 's5', collection: 'summer-iii', group: 'women', name: 'Coat, undyed linen', material: 'Linen drill, unlined', price: 1690, shot: 'full length, doorway', lengthKinds: ['top'] },
+  { id: 's6', collection: 'summer-iii', group: 'women', name: 'Wrap skirt, flax', material: 'Wet-spun linen, tie waist', price: 640, shot: 'mid-stride, gravel', lengthKinds: ['skirt'] },
+  { id: 's7', collection: 'summer-iii', group: 'men', name: 'Camp-collar shirt, olive', material: 'Handkerchief linen, one-piece collar', price: 610, shot: 'front, shaded wall', lengthKinds: ['top'] },
+  { id: 's8', collection: 'summer-iii', group: 'men', name: 'Drawstring trouser, flax', material: 'Wet-spun linen, no belt loops', price: 720, shot: 'seated, courtyard', lengthKinds: ['trouser'] },
+  { id: 's9', collection: 'summer-iii', group: 'men', name: 'Unlined blazer, olive', material: 'Linen canvas, patch pockets', price: 1780, shot: 'full length, rain light', lengthKinds: ['top'] },
+  { id: 's10', collection: 'summer-iii', group: 'men', name: 'Short-sleeve shirt, flax', material: 'Handkerchief linen, bound cuff', price: 520, shot: 'shoulder detail', lengthKinds: ['top'] },
+  { id: 's11', collection: 'summer-iii', group: 'men', name: 'Linen tee, undyed', material: 'Linen jersey, bound neck', price: 310, shot: 'front, plain wall', lengthKinds: ['top'] },
+  { id: 's12', collection: 'summer-iii', group: 'men', name: 'Field jacket, olive', material: 'Linen drill, bridle stitch', price: 1620, shot: 'walking, wet street', lengthKinds: ['top'] },
 
   /* ---- Spring — Collection II (archived) ---- */
-  { id: 'p1', collection: 'spring-ii', group: 'women', name: 'Bias slip, oyster', material: '19mm charmeuse, French seams', price: 780, shot: 'draped, morning light', lengthKind: 'dress' },
-  { id: 'p2', collection: 'spring-ii', group: 'women', name: 'Blouse, champagne', material: '16mm charmeuse, covered placket', price: 690, shot: 'collar detail', lengthKind: 'top' },
-  { id: 'p3', collection: 'spring-ii', group: 'women', name: 'Column dress, oyster', material: '19mm charmeuse, hand-rolled hem', price: 1560, shot: 'full length, plaster wall', lengthKind: 'dress' },
-  { id: 'p4', collection: 'spring-ii', group: 'women', name: 'Wide trouser, champagne', material: 'Silk charmeuse, side adjusters', price: 940, shot: 'seated, low light', lengthKind: 'trouser' },
-  { id: 'p5', collection: 'spring-ii', group: 'women', name: 'Camisole, oyster', material: '16mm silk, bias straps', price: 430, shot: 'flat, raking light', lengthKind: 'top' },
-  { id: 'p6', collection: 'spring-ii', group: 'women', name: 'Robe, champagne', material: '22mm silk, tie belt', price: 890, shot: 'interior, window', sleep: true, lengthKind: 'top' },
-  { id: 'p7', collection: 'spring-ii', group: 'women', name: 'Slip skirt, oyster', material: 'Charmeuse, invisible placket', price: 620, shot: 'mid-stride, tile', lengthKind: 'skirt' },
-  { id: 'p8', collection: 'spring-ii', group: 'men', name: 'Shirt, oyster charmeuse', material: '16mm silk, hand-set collar', price: 720, shot: 'front, plain wall', lengthKind: 'top' },
-  { id: 'p9', collection: 'spring-ii', group: 'men', name: 'Pyjama trouser, champagne', material: '19mm silk, drawstring', price: 500, shot: 'interior morning', sleep: true, lengthKind: 'trouser' },
-  { id: 'p10', collection: 'spring-ii', group: 'men', name: 'Overshirt, oyster', material: 'Silk crepe, patch pockets', price: 840, shot: 'street, hands in pocket', lengthKind: 'top' },
-  { id: 'p11', collection: 'spring-ii', group: 'men', name: 'Sleep shirt, champagne', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKind: 'top' },
-  { id: 'p12', collection: 'spring-ii', group: 'men', name: 'Silk tee, oyster', material: '16mm silk jersey, bound neck', price: 390, shot: 'front, shaded wall' },
-  { id: 'p13', collection: 'spring-ii', group: 'men', name: 'Lounge trouser, oyster', material: 'Silk crepe, elastic waist', price: 610, shot: 'seated, interior', lengthKind: 'trouser' },
+  { id: 'p1', collection: 'spring-ii', group: 'women', name: 'Bias slip, oyster', material: '19mm charmeuse, French seams', price: 780, shot: 'draped, morning light', lengthKinds: ['dress'] },
+  { id: 'p2', collection: 'spring-ii', group: 'women', name: 'Blouse, champagne', material: '16mm charmeuse, covered placket', price: 690, shot: 'collar detail', lengthKinds: ['top'] },
+  { id: 'p3', collection: 'spring-ii', group: 'women', name: 'Column dress, oyster', material: '19mm charmeuse, hand-rolled hem', price: 1560, shot: 'full length, plaster wall', lengthKinds: ['dress'] },
+  { id: 'p4', collection: 'spring-ii', group: 'women', name: 'Wide trouser, champagne', material: 'Silk charmeuse, side adjusters', price: 940, shot: 'seated, low light', lengthKinds: ['trouser'] },
+  { id: 'p5', collection: 'spring-ii', group: 'women', name: 'Camisole, oyster', material: '16mm silk, bias straps', price: 430, shot: 'flat, raking light', lengthKinds: ['top'] },
+  { id: 'p6', collection: 'spring-ii', group: 'women', name: 'Robe, champagne', material: '22mm silk, tie belt', price: 890, shot: 'interior, window', sleep: true, lengthKinds: ['top'] },
+  { id: 'p7', collection: 'spring-ii', group: 'women', name: 'Slip skirt, oyster', material: 'Charmeuse, invisible placket', price: 620, shot: 'mid-stride, tile', lengthKinds: ['skirt'] },
+  { id: 'p8', collection: 'spring-ii', group: 'men', name: 'Shirt, oyster charmeuse', material: '16mm silk, hand-set collar', price: 720, shot: 'front, plain wall', lengthKinds: ['top'] },
+  { id: 'p9', collection: 'spring-ii', group: 'men', name: 'Pyjama trouser, champagne', material: '19mm silk, drawstring', price: 500, shot: 'interior morning', sleep: true, lengthKinds: ['trouser'] },
+  { id: 'p10', collection: 'spring-ii', group: 'men', name: 'Overshirt, oyster', material: 'Silk crepe, patch pockets', price: 840, shot: 'street, hands in pocket', lengthKinds: ['top'] },
+  { id: 'p11', collection: 'spring-ii', group: 'men', name: 'Sleep shirt, champagne', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKinds: ['top'] },
+  { id: 'p12', collection: 'spring-ii', group: 'men', name: 'Silk tee, oyster', material: '16mm silk jersey, bound neck', price: 390, shot: 'front, shaded wall', lengthKinds: ['top'] },
+  { id: 'p13', collection: 'spring-ii', group: 'men', name: 'Lounge trouser, oyster', material: 'Silk crepe, elastic waist', price: 610, shot: 'seated, interior', lengthKinds: ['trouser'] },
 
   /* ---- Winter — Collection I (archived) ---- */
-  { id: 'i1', collection: 'winter-i', group: 'women', name: 'Crepe dress, burgundy', material: '22mm silk crepe, hand-rolled hem', price: 1720, shot: 'full length, dark room', lengthKind: 'dress' },
-  { id: 'i2', collection: 'winter-i', group: 'women', name: 'Blouse, burgundy', material: '19mm crepe, covered placket', price: 710, shot: 'collar detail', lengthKind: 'top' },
-  { id: 'i3', collection: 'winter-i', group: 'women', name: 'Column skirt, burgundy', material: 'Silk crepe, invisible placket', price: 760, shot: 'mid-stride, stone', lengthKind: 'skirt' },
-  { id: 'i4', collection: 'winter-i', group: 'women', name: 'Wide trouser, burgundy', material: 'Silk crepe, side adjusters', price: 900, shot: 'seated, warm light', lengthKind: 'trouser' },
-  { id: 'i5', collection: 'winter-i', group: 'women', name: 'Robe, burgundy', material: '22mm crepe, tie belt', price: 870, shot: 'interior, doorway', sleep: true, lengthKind: 'top' },
-  { id: 'i6', collection: 'winter-i', group: 'women', name: 'Slip, burgundy', material: '16mm silk, French seams', price: 490, shot: 'draped on chair', lengthKind: 'dress' },
-  { id: 'i7', collection: 'winter-i', group: 'men', name: 'Crepe shirt, burgundy', material: '19mm crepe, hand-set collar', price: 700, shot: 'front, plain wall', lengthKind: 'top' },
-  { id: 'i8', collection: 'winter-i', group: 'men', name: 'Pyjama set, burgundy', material: '19mm silk, piped edge', price: 980, shot: 'bed, low light', sleep: true },
-  { id: 'i9', collection: 'winter-i', group: 'men', name: 'Overshirt, burgundy', material: 'Silk crepe, patch pockets', price: 830, shot: 'street, evening', lengthKind: 'top' },
-  { id: 'i10', collection: 'winter-i', group: 'men', name: 'Trouser, burgundy', material: 'Silk crepe, flat front', price: 780, shot: 'seated, tiled floor', lengthKind: 'trouser' },
+  { id: 'i1', collection: 'winter-i', group: 'women', name: 'Crepe dress, burgundy', material: '22mm silk crepe, hand-rolled hem', price: 1720, shot: 'full length, dark room', lengthKinds: ['dress'] },
+  { id: 'i2', collection: 'winter-i', group: 'women', name: 'Blouse, burgundy', material: '19mm crepe, covered placket', price: 710, shot: 'collar detail', lengthKinds: ['top'] },
+  { id: 'i3', collection: 'winter-i', group: 'women', name: 'Column skirt, burgundy', material: 'Silk crepe, invisible placket', price: 760, shot: 'mid-stride, stone', lengthKinds: ['skirt'] },
+  { id: 'i4', collection: 'winter-i', group: 'women', name: 'Wide trouser, burgundy', material: 'Silk crepe, side adjusters', price: 900, shot: 'seated, warm light', lengthKinds: ['trouser'] },
+  { id: 'i5', collection: 'winter-i', group: 'women', name: 'Robe, burgundy', material: '22mm crepe, tie belt', price: 870, shot: 'interior, doorway', sleep: true, lengthKinds: ['top'] },
+  { id: 'i6', collection: 'winter-i', group: 'women', name: 'Slip, burgundy', material: '16mm silk, French seams', price: 490, shot: 'draped on chair', lengthKinds: ['dress'] },
+  { id: 'i7', collection: 'winter-i', group: 'men', name: 'Crepe shirt, burgundy', material: '19mm crepe, hand-set collar', price: 700, shot: 'front, plain wall', lengthKinds: ['top'] },
+  { id: 'i8', collection: 'winter-i', group: 'men', name: 'Pyjama set, burgundy', material: '19mm silk, piped edge', price: 980, shot: 'bed, low light', sleep: true, lengthKinds: ['top', 'trouser'] },
+  { id: 'i9', collection: 'winter-i', group: 'men', name: 'Overshirt, burgundy', material: 'Silk crepe, patch pockets', price: 830, shot: 'street, evening', lengthKinds: ['top'] },
+  { id: 'i10', collection: 'winter-i', group: 'men', name: 'Trouser, burgundy', material: 'Silk crepe, flat front', price: 780, shot: 'seated, tiled floor', lengthKinds: ['trouser'] },
   { id: 'i11', collection: 'winter-i', group: 'men', name: 'Scarf, burgundy', material: '22mm crepe, hand-rolled edge', price: 260, shot: 'flat, raking light' },
 ];
 
@@ -221,35 +222,37 @@ export const ZONES: Zone[] = [
 
 export type LengthKind = 'dress' | 'skirt' | 'trouser' | 'top';
 
+/* Each length has its own key, so a sleep set can carry a top length and a
+   trouser length on the same sheet without one overwriting the other. */
 export const LENGTH_ZONE: Record<LengthKind, Zone> = {
   dress: {
-    key: 'length',
+    key: 'lengthDress',
     label: 'Dress length',
     vi: 'Chiều dài đầm',
     hint: 'From the top of the shoulder, over the bust, straight down to where you want the hem to fall. Measure against a dress you already own and like.',
   },
   skirt: {
-    key: 'length',
+    key: 'lengthSkirt',
     label: 'Skirt length',
     vi: 'Dài váy',
     hint: 'From the natural waist straight down to where you want the hem to fall.',
   },
   trouser: {
-    key: 'length',
+    key: 'lengthTrouser',
     label: 'Trouser length',
     vi: 'Dài quần',
     hint: 'From the natural waist down the outside of the leg to where you want the hem to fall, without shoes.',
   },
   top: {
-    key: 'length',
+    key: 'lengthTop',
     label: 'Desired length',
     vi: 'Dài áo',
     hint: 'From the top of the shoulder seam straight down to where you want the hem to fall. Measure against a garment you already own and like.',
   },
 };
 
-export const garmentZonesFor = (piece: Pick<Piece, 'lengthKind'>): Zone[] =>
-  piece.lengthKind ? [LENGTH_ZONE[piece.lengthKind]] : [];
+export const garmentZonesFor = (piece: Pick<Piece, 'lengthKinds'>): Zone[] =>
+  (piece.lengthKinds ?? []).map((kind) => LENGTH_ZONE[kind]);
 
 /* ---- Cloth ---- */
 
@@ -294,25 +297,32 @@ export const FABRICS: Fabric[] = [
 
 /* ---- Commission ---- */
 
-/* `estimate` is the opening figure quoted before the tailor has read the note,
-   and it tracks bench hours: a half-canvassed jacket is roughly forty, a shirt
-   closer to eight. `lengthKind` decides which finished length the commission
-   sheet asks for. */
-export const SILHOUETTES = [
-  { key: 'shirt', name: 'Shirt', note: 'Set sleeve, one-piece collar.', estimate: 1200, lengthKind: 'top' as const },
-  { key: 'trouser', name: 'Trouser', note: 'Flat or pleated front.', estimate: 1450, lengthKind: 'trouser' as const },
-  { key: 'dress', name: 'Dress', note: 'Bias or straight cut.', estimate: 2200, lengthKind: 'top' as const },
-  { key: 'jacket', name: 'Jacket', note: 'Half-canvassed, two button.', estimate: 3200, lengthKind: 'top' as const },
-] as const;
+/* Seed input only: the silhouettes live in the backend, where the house edits
+   the opening figure without a deploy. `estimate` is the figure quoted before
+   the tailor has read the note, and it tracks bench hours — a half-canvassed
+   jacket is roughly forty, a shirt closer to eight. `lengthKinds` decides
+   which finished lengths the commission sheet asks for. */
+export type Silhouette = {
+  key: string;
+  name: string;
+  note: string;
+  estimate: number;
+  lengthKinds: LengthKind[];
+};
 
-export type Silhouette = (typeof SILHOUETTES)[number];
+export const SILHOUETTES: Silhouette[] = [
+  { key: 'shirt', name: 'Shirt', note: 'Set sleeve, one-piece collar.', estimate: 1200, lengthKinds: ['top'] },
+  { key: 'trouser', name: 'Trouser', note: 'Flat or pleated front.', estimate: 1450, lengthKinds: ['trouser'] },
+  { key: 'dress', name: 'Dress', note: 'Bias or straight cut.', estimate: 2200, lengthKinds: ['dress'] },
+  { key: 'jacket', name: 'Jacket', note: 'Half-canvassed, two button.', estimate: 3200, lengthKinds: ['top'] },
+];
 
 export const COMMISSION_STEPS = [
   'Silhouette',
   'Cloth',
   'Notes',
   'Measurements',
-  'Review',
+  'Send',
 ] as const;
 
 /* ---- Editorial ---- *

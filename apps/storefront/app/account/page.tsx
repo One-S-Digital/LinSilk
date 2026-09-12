@@ -13,7 +13,7 @@ export default function AccountPage() {
     <DocPage
       eyebrow="The house"
       title="Your account"
-      lead="An account holds the eleven measurements so you never type them twice, keeps every order and its production status, and records the paper patterns the atelier has drawn for you."
+      lead="An account holds the fifteen measurements so you never type them twice, keeps every order and its production status, and records the paper patterns the atelier has drawn for you."
       foot={
         <>
           <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>

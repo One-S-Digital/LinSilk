@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CM_PER_INCH,
+  RANGES,
   formatValue,
   isComplete,
   takenCount,
@@ -9,7 +10,7 @@ import {
   toLineItemMetadata,
   validate,
 } from './measurements';
-import { LENGTH_ZONE, ZONES } from './catalog';
+import { LENGTH_ZONE, PIECES, ZONES, garmentZonesFor } from './catalog';
 
 /* The sheet is the order. A measurement that converts wrongly does not produce
  * a rendering bug, it produces a garment cut to the wrong body — so the
@@ -110,10 +111,21 @@ describe('the atelier chart', () => {
     expect(LENGTH_ZONE.dress.vi).toBe('Chiều dài đầm');
     expect(LENGTH_ZONE.trouser.vi).toBe('Dài quần');
     expect(LENGTH_ZONE.skirt.vi).toBe('Dài váy');
-    // All four write to the same field; only one is ever asked for at a time.
-    for (const zone of Object.values(LENGTH_ZONE)) {
-      expect(zone.key).toBe('length');
+    // Each length has its own field, so a set can carry a top length and a
+    // trouser length on one sheet, and each is range-checked.
+    const keys = Object.values(LENGTH_ZONE).map((zone) => zone.key);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const key of keys) {
+      expect(RANGES[key], key).toBeDefined();
     }
+  });
+
+  it('asks a set for both of its lengths', () => {
+    const set = PIECES.find((p) => p.id === 'w8')!;
+    expect(garmentZonesFor(set).map((z) => z.label)).toEqual([
+      'Desired length',
+      'Trouser length',
+    ]);
   });
 });
 
@@ -126,7 +138,7 @@ describe('completeness', () => {
     expect(takenCount(full)).toBe(ZONES.length);
   });
 
-  it('is complete only with all eleven', () => {
+  it('is complete only with all fifteen', () => {
     expect(isComplete({ neck: 38 })).toBe(false);
     expect(isComplete(full)).toBe(true);
   });

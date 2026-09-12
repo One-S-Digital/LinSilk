@@ -24,3 +24,5 @@ build
 !.yarn/versions
 
 .medusa
+# Files uploaded in development (catalogues, references).
+/static

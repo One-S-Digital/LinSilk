@@ -8,7 +8,7 @@ import { formatValue } from '@/lib/measurements';
 import styles from './cart.module.css';
 
 export default function CartPage() {
-  const { lines, ready, remove, subtotal, hasEstimate } = useCart();
+  const { lines, ready, remove, subtotal } = useCart();
 
   return (
     <div className={styles.page}>
@@ -30,7 +30,7 @@ export default function CartPage() {
               Enter the collection
             </ButtonLink>
             <ButtonLink href="/design" variant="rule">
-              Begin a commission
+              Commission something
             </ButtonLink>
           </div>
         </div>
@@ -53,12 +53,6 @@ export default function CartPage() {
                     <p className={styles.lineMaterial}>{line.material}</p>
 
                     <div className={styles.brief}>
-                      {line.silhouette && (
-                        <div className={styles.briefRow}>
-                          <span className={styles.briefKey}>Silhouette</span>
-                          <span>{line.silhouette}</span>
-                        </div>
-                      )}
                       <div className={styles.briefRow}>
                         <span className={styles.briefKey}>Cloth</span>
                         <span>{line.fabricName}</span>
@@ -80,14 +74,10 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {line.note && <p className={styles.note}>{line.note}</p>}
                   </div>
 
                   <div className={styles.lineAside}>
                     <span className={styles.linePrice}>{money(line.price)}</span>
-                    {line.estimate && (
-                      <span className={styles.estimateTag}>estimate</span>
-                    )}
                     <button
                       type="button"
                       className={styles.remove}
@@ -131,13 +121,10 @@ export default function CartPage() {
                 </ButtonLink>
               </div>
 
-              {hasEstimate && (
-                <p className={styles.estimateNotice}>
-                  One or more lines is an estimate. The tailor confirms the figure in
-                  writing after reading your note, and you are not charged the
-                  difference without agreeing to it first.
-                </p>
-              )}
+              <p className={styles.estimateNotice}>
+                Every figure here is the price of the piece. A commission is quoted
+                separately: a tailor reads the brief and writes to you with its price.
+              </p>
             </div>
           </div>
         </>

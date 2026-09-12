@@ -25,8 +25,15 @@ export function archiveRefusal(variant: GatedVariant): string | null {
     return null
   }
   const piece = variant.product?.title ?? "This piece"
-  const season = variant.product?.collection?.title
-  return season
-    ? `${piece} closed with ${season} and is not made again.`
+  const collection = variant.product?.collection
+
+  /* A silhouette is not archived — it was never for sale. It is the shape a
+     commission starts from, and a person sets its price. */
+  if (collection?.metadata?.status === "silhouettes") {
+    return `${piece} is a commission: a tailor reads the brief and writes back with a price, so it cannot be bought from the page.`
+  }
+
+  return collection?.title
+    ? `${piece} closed with ${collection.title} and is not made again.`
     : `${piece} is not part of an open collection.`
 }

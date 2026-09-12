@@ -46,9 +46,12 @@ export const RANGES: Record<string, [number, number]> = {
   bicep: [20, 50],
   wrist: [13, 24],
   rise: [50, 95],
-  /* A chosen garment length rather than a body fact, so the range spans a
+  /* Chosen garment lengths rather than body facts, so the range spans a
      cropped top through a full-length coat or an ankle-length dress. */
-  length: [30, 180],
+  lengthDress: [30, 180],
+  lengthSkirt: [30, 180],
+  lengthTrouser: [30, 180],
+  lengthTop: [30, 180],
 };
 
 export function validate(key: string, cm: number, unit: Unit): string | null {
@@ -62,7 +65,7 @@ export function validate(key: string, cm: number, unit: Unit): string | null {
 }
 
 /* Both counts take the zone list the sheet is actually showing: a coat asks
-   for a finished length on top of the eleven body measurements, a trouser does
+   for a finished length on top of the fifteen body measurements, a trouser does
    not, and "complete" has to mean whatever that garment needs. */
 export const takenCount = (m: Measurements, zones: Zone[] = ZONES) =>
   zones.filter((z) => typeof m[z.key] === 'number').length;

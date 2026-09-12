@@ -29,7 +29,7 @@ export default function QuestionsPage() {
 
       <DocSection title="Why is there no size chart?">
         <DocP>
-          Because nothing is made to a size. A pattern is drawn to your eleven
+          Because nothing is made to a size. A pattern is drawn to your fifteen
           measurements and kept, which is also why the second piece you order fits like
           the first.
         </DocP>

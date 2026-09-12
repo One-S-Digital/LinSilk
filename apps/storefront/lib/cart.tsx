@@ -2,10 +2,13 @@
 
 /* The cart.
  *
+ * Seasonal pieces only, each at the price the house set. A commission never
+ * enters the cart: its price is not known until a tailor has read the brief,
+ * so Design Your Own asks for a quote instead and the house writes back.
+ *
  * Every line is a made-to-measure garment: quantity is always one, and the
- * line carries the whole brief — cloth, measurement sheet, and for a
- * commission the silhouette and the client's note. That payload is what
- * reaches the bench, so it lives on the line rather than in a side table.
+ * line carries the whole brief — cloth and measurement sheet. That payload is
+ * what reaches the bench, so it lives on the line rather than in a side table.
  *
  * State is held here and mirrored to localStorage. When Medusa is wired, this
  * module's internals become Store API calls against a real cart id and every
@@ -22,28 +25,26 @@ import {
   type ReactNode,
 } from 'react';
 import type { Measurements, Unit } from './measurements';
+import { useHydrated } from './use-hydrated';
 
 export type CartLine = {
-  /** Unique per line — two commissions can share a silhouette. */
+  /** Unique per line — the same piece can be cut twice from one sheet. */
   id: string;
-  kind: 'piece' | 'commission';
-  /** Catalogue id for a seasonal piece; absent on a commission. */
-  pieceId?: string;
+  /** Catalogue id of the seasonal piece. */
+  pieceId: string;
   name: string;
   material: string;
-  /** Whole Swiss francs. A commission price is an estimate until confirmed. */
+  /** Whole Swiss francs, as the house set it. */
   price: number;
-  estimate?: boolean;
   fabricKey: string;
   fabricName: string;
   measurements: Measurements;
   unit: Unit;
   /* How many measurements this garment required. A coat asks for a finished
-     length on top of the eleven body zones; a trouser does not. Stored on the
-     line so the cart can report "12 of 12" without re-deriving the garment. */
+     length on top of the fifteen body zones, a set asks for two, a scarf asks
+     for none. Stored on the line so the cart can report "16 of 16" without
+     re-deriving the garment. */
   zoneCount: number;
-  silhouette?: string;
-  note?: string;
   addedAt: number;
 };
 
@@ -55,25 +56,32 @@ type CartState = {
   clear: () => void;
   count: number;
   subtotal: number;
-  hasEstimate: boolean;
 };
 
 const CartContext = createContext<CartState | null>(null);
-const KEY = 'ayla.cart.v1';
+/* v2 dropped commission lines from the cart. A cart saved under v1 could
+   still hold one, and it must never reach a payment. */
+const KEY = 'ayla.cart.v2';
+
+function readStored(): CartLine[] {
+  try {
+    const raw = window.localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw) as CartLine[];
+  } catch {
+    // Storage unavailable or unreadable; an empty cart is the safe start.
+  }
+  return [];
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const hydrated = useHydrated();
   const [lines, setLines] = useState<CartLine[]>([]);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) setLines(JSON.parse(raw) as CartLine[]);
-    } catch {
-      // Storage unavailable or unreadable; an empty cart is the safe start.
-    }
+  if (hydrated && !ready) {
     setReady(true);
-  }, []);
+    setLines(readStored());
+  }
 
   useEffect(() => {
     if (!ready) return;
@@ -106,7 +114,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clear,
       count: lines.length,
       subtotal: lines.reduce((sum, l) => sum + l.price, 0),
-      hasEstimate: lines.some((l) => l.estimate),
     }),
     [lines, ready, add, remove, clear],
   );

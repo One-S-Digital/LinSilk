@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <DocPage
       eyebrow="Legal"
       title="Privacy"
-      lead="The house collects your contact details, delivery address and eleven body measurements. Body measurements are personal data, and under GDPR they need a lawful basis, a retention period and a deletion route like anything else."
+      lead="The house collects your contact details, delivery address and fifteen body measurements. Body measurements are personal data, and under GDPR they need a lawful basis, a retention period and a deletion route like anything else."
     >
       <DocSection title="Awaiting legal review">
         <DocP>

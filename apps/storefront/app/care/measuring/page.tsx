@@ -6,14 +6,14 @@ import { ZONES } from '@/lib/catalog';
 export const metadata: Metadata = {
   title: 'Measurement guide',
   description:
-    'How to take the eleven measurements the atelier needs, and what to do if you would rather a tailor took them.',
+    'How to take the fifteen measurements the atelier needs, and what to do if you would rather a tailor took them.',
 };
 
 export default function MeasuringPage() {
   return (
     <DocPage
       title="Measurement guide"
-      lead="There is no small, medium or large. Eleven measurements decide the garment, and they are the part of the order worth slowing down for. Ten minutes with a soft tape and someone to help you is enough."
+      lead="There is no small, medium or large. Fifteen measurements decide the garment, and they are the part of the order worth slowing down for. Ten minutes with a soft tape and someone to help you is enough."
       foot={
         <>
           <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>
@@ -34,7 +34,7 @@ export default function MeasuringPage() {
         />
       </DocSection>
 
-      <DocSection title="The eleven">
+      <DocSection title="The fifteen">
         <DocList
           items={ZONES.map((z) => (
             <>
@@ -50,7 +50,7 @@ export default function MeasuringPage() {
 
       <DocSection title="If you would rather not">
         <DocP>
-          Any tailor or alterations shop will take these eleven in a few minutes, often
+          Any tailor or alterations shop will take these fifteen in a few minutes, often
           for nothing. Print this page, or show them the list on your phone. In Zürich
           the house keeps appointments on Thursday afternoons — write to
           hello@maisonayla.ch and someone will take them for you and enter the sheet.

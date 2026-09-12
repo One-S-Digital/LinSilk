@@ -56,7 +56,7 @@ const LABELS: Record<keyof Details, string> = {
 };
 
 export default function CheckoutPage() {
-  const { lines, ready, subtotal, hasEstimate } = useCart();
+  const { lines, ready, subtotal } = useCart();
   const [open, setOpen] = useState(0);
   const [details, setDetails] = useState<Details>(EMPTY);
   const [touched, setTouched] = useState(false);
@@ -115,8 +115,8 @@ export default function CheckoutPage() {
         <h1 className={styles.title}>Checkout</h1>
         <div className={styles.empty}>
           <p style={{ fontSize: 'var(--t-body)', color: 'var(--ink-secondary)', maxWidth: '40ch', lineHeight: 1.8 }}>
-            There is nothing to check out. Reserve a piece from the season, or begin a
-            commission, and it will appear here.
+            There is nothing to check out. Reserve a piece from the season and it will
+            appear here. A commission is quoted by email rather than paid for here.
           </p>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 28 }}>
             <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>
@@ -274,15 +274,6 @@ export default function CheckoutPage() {
                   </p>
                 </div>
 
-                {hasEstimate && (
-                  <p className={styles.answer}>
-                    Your order contains a commission quoted as an estimate. Only the
-                    confirmed seasonal pieces are charged now; the commission is
-                    invoiced separately once the tailor has written to you and you have
-                    agreed the figure.
-                  </p>
-                )}
-
                 <div className={styles.continue}>
                   <Button disabled>Pay {money(total)}</Button>
                 </div>
@@ -308,7 +299,6 @@ export default function CheckoutPage() {
                     <div className={styles.asideName}>{line.name}</div>
                     <div className={styles.asideMeta}>
                       {line.fabricName}
-                      {line.estimate ? ' · estimate' : ''}
                     </div>
                   </div>
                   <span className={styles.asidePrice}>{money(line.price)}</span>
@@ -335,8 +325,10 @@ export default function CheckoutPage() {
           </div>
 
           <p className={styles.reassure}>
-            Nothing is cut until the atelier has confirmed your measurement sheet in
-            writing. Alterations to a piece the house made are free for the first year.
+            Every figure here is the price of the piece; there is nothing to settle
+            afterwards. Nothing is cut until the atelier has confirmed your measurement
+            sheet in writing, and alterations to a piece the house made are free for
+            the first year.
           </p>
         </aside>
       </div>
