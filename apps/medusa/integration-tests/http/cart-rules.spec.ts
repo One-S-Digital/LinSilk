@@ -7,15 +7,16 @@ import {
   createRegionsWorkflow,
   updateCollectionsWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { BODY_ZONES } from "../../src/lib/measurements"
+import { BODY_ZONES, LENGTH_ZONES } from "../../src/lib/measurements"
 
 jest.setTimeout(120 * 1000)
 
-/* A complete sheet as the storefront's toLineItemMetadata() writes it. */
+/* A complete sheet as the storefront's toLineItemMetadata() writes it, for a
+   piece that asks for a top length. */
 const SHEET: Record<string, string> = {
   measurement_unit: "cm",
   ...Object.fromEntries(BODY_ZONES.map((z, i) => [`measure_${z.key}_cm`, String(30 + i)])),
-  measure_length_cm: "112",
+  [`measure_${LENGTH_ZONES.top.key}_cm`]: "112",
 }
 
 medusaIntegrationTestRunner({
@@ -74,7 +75,7 @@ medusaIntegrationTestRunner({
         handle,
         status: "published" as const,
         collection_id: collectionId(collection),
-        metadata: { length_kind: lengthKind },
+        metadata: { length_kinds: [lengthKind] },
         sales_channels: [{ id: store.default_sales_channel_id! }],
         options: [{ title: "Cut", values: ["Made to measure"] }],
         variants: [
@@ -178,7 +179,7 @@ medusaIntegrationTestRunner({
 
       it("refuses a sheet missing the garment length", async () => {
         const { data: { cart } } = await newCart()
-        const { measure_length_cm: _length, ...noLength } = SHEET
+        const { [`measure_${LENGTH_ZONES.top.key}_cm`]: _length, ...noLength } = SHEET
         const response = await add(cart.id, { variant_id: openVariantId, quantity: 1, metadata: noLength })
         expect(refusal(response)).toEqual({
           status: 400,
