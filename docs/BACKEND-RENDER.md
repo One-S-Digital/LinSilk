@@ -118,11 +118,13 @@ business, and modelling one is how you end up fighting the platform later.
 | `shot` | `metadata.shot` — art direction, shown as the frame's caption |
 | `group` | `metadata.group` — `women` \| `men` |
 | `sleep` | `metadata.sleep` |
-| `lengthKind` | `metadata.length_kind` — `dress` \| `skirt` \| `trouser` \| `top`, absent if none |
+| `lengthKinds` | `metadata.length_kinds` — a list of `dress` \| `skirt` \| `trouser` \| `top`, absent if none |
 | `collection` | collection relation |
 
-`metadata.length_kind` decides which garment length the measurement sheet asks for. Get it wrong
-and the atelier receives a dress with no length.
+`metadata.length_kinds` decides which garment lengths the sheet asks for. Get it wrong and the
+atelier receives a dress with no length. It is a **list**, because a set is two garments on one
+ticket: a sleep set asks for a top length and a trouser length, and each has its own field
+(`measure_lengthTop_cm`, `measure_lengthTrouser_cm`).
 
 ### 3.4 Inventory — the capped run
 
@@ -140,6 +142,11 @@ toLineItemMetadata(values, unit, zones)
 // → { measurement_unit: 'cm' | 'in', measure_bust_cm: '96.52', … }
 ```
 
+The backend keeps its own copy of the zones in `apps/medusa/src/lib/measurements.ts`, with the
+Vietnamese terms the bench reads. `apps/storefront/lib/backend-parity.test.ts` pins the two
+together and runs the storefront's real payload through the backend's check, so they cannot
+drift.
+
 `measurement_unit` records what the client *saw*; every figure is metric regardless. Keep it that
 way — it is the whole point of the conversion fix.
 
@@ -148,51 +155,68 @@ to a shared package or duplicate it with a test that pins the two copies togethe
 missing a required zone must be rejected — the storefront blocks it, but the storefront is not a
 security boundary.
 
-### 3.6 Commissions ⚠
+### 3.6 Commissions — built
 
-**This is the one piece that does not map onto a normal Medusa order, and the design decision
-that matters most.**
+**A commission is a request for a quote, not a purchase.** Its price is not known until a tailor
+has read the brief, so it never enters the cart and nothing is charged on the page. Design Your
+Own collects the brief; the house is emailed; a tailor sets a figure and sends it; the client
+agrees before anything is cut.
 
-A commission's price is an *estimate* until a person has read the brief. So a commission cannot
-go through checkout with a seasonal piece.
-
-**Recommended: a custom `commission` module** with its own lifecycle:
+The `atelier` module holds the record (`apps/medusa/src/modules/atelier`), with this lifecycle:
 
 ```
 submitted → reviewed → quoted → approved → in_production → shipped
 ```
 
-carrying: silhouette, cloth, the client's note, uploaded references, the measurement sheet, the
-estimate, and the confirmed price once set.
+carrying the client's name and email, the silhouette, the cloth **in the client's own words**,
+their note, the reference files, the measurement sheet, the opening figure they were shown, and
+the figure the tailor set.
 
-**At checkout, a mixed cart splits:**
-- Seasonal pieces → a normal Medusa order, paid immediately
-- Commissions → `commission` records in `submitted`, invoiced separately once quoted
+| Route | What it does |
+|---|---|
+| `POST /store/commissions` | Takes the brief as multipart. Refuses an unknown silhouette or a partial sheet; stores references privately. |
+| `GET /store/silhouettes` | The shapes and their opening figures. |
+| `GET /store/fabric-catalogues` | The published cloth catalogues. |
+| `GET/POST /admin/commissions[/:id]` | The queue, and one brief: set a figure, and send it when ready. |
+| `GET/POST/DELETE /admin/fabric-catalogues[/:id]` | Publish, hide and delete a catalogue. |
 
-The storefront already models this: `CartLine.estimate` flags it, `hasEstimate` drives the notice
-on both `/cart` and `/checkout`, and the copy already promises the client is not charged the
-difference without agreeing first. **Honour that promise in the backend.**
+**The silhouettes are products** in a `commission-silhouettes` collection, so the house edits a
+name, a note or an opening figure in the admin rather than in code, and the exchange-rate job
+keeps their euro and sterling figures derived from the franc. The collection's `metadata.status`
+is neither `current` nor `past`, so the cart refuses them.
 
-Approval should produce a Stripe payment link against the confirmed figure — not a silent charge.
+⚠ **Accepting a quote is still by reply.** The email asks the client to reply, and the house
+sends a payment link by hand. Wiring that link to Stripe automatically is the next step (§6).
 
-### 3.7 The atelier console
+### 3.7 Cloth catalogues — built
+
+The client does not pick cloth from a swatch list: the house publishes catalogues (PDFs or
+plates) in the admin, the client reads them, and then **writes down the cloth they chose**. A
+shelf is larger than any dropdown, and a client may want the fourth silk on page two.
+
+### 3.8 The atelier console
 
 The bench needs somewhere to read a confirmed sheet and move a piece through production. Medusa
 Admin is extensible; add a widget or a route rather than building a second app. Minimum viable:
 
-- Queue of commissions awaiting a quote
-- The full measurement sheet, **displayed in both English and Vietnamese** (the terms are in
-  `lib/catalog.ts` — they are what is written on the ticket in Hội An)
-- Set confirmed price → notify client
-- Production status per order
+- Queue of commissions awaiting a quote — **built**
+- The full measurement sheet, displayed in both English and Vietnamese — **built** (the terms
+  live in `apps/medusa/src/lib/measurements.ts`, pinned to `lib/catalog.ts` by a storefront test)
+- Set confirmed price → notify client — **built**
+- Production status per order — not built; the status field exists, the screens do not
 
 ---
 
 ## 4. Phase 3 — Seed
 
-Write `apps/medusa/src/scripts/seed.ts` reading directly from
-`apps/storefront/lib/catalog.ts`. It is already typed for this: 4 collections, 53 pieces, 4
-fabrics, 4 silhouettes with estimates.
+`apps/medusa/src/scripts/seed.ts` reads directly from `apps/storefront/lib/catalog.ts`:
+4 collections, 53 pieces and 4 commission silhouettes.
+
+**It is safe to run again.** Anything missing is created; anything present has its wording,
+collection and metadata brought back in line with the catalogue. Prices are written once, at
+creation — after that the house owns them in the admin, and the exchange-rate job keeps the
+derived currencies current. It is excluded from the compiled build (it reads a file outside the
+backend), so it runs from source, against whichever database `DATABASE_URL` points at.
 
 ```bash
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
@@ -376,12 +400,39 @@ ADMIN_CORS = https://ayla-medusa.onrender.com
 AUTH_CORS  = <both of the above>
 ```
 
-### 8.5 File storage
+### 8.5 File storage — Cloudflare R2
 
-Render's disks do not persist across deploys on all plans, and commission references are client
-property. **Use S3 or Cloudflare R2**, not a local disk.
+Two kinds of file: **cloth catalogues**, which are public, and **commission references**, which
+are the client's property and are stored privately, read back through short-lived signed links.
 
----
+Render's disks do not survive a deploy and are not shared between the web service and the
+worker, so object storage is not optional in production. **Cloudflare R2** is the default: it
+speaks the S3 API, so Medusa's stock `file-s3` provider drives it unchanged, and it charges
+nothing for egress — the difference that matters for a house serving photography and PDFs.
+Nothing about the choice is one-way: any S3-compatible bucket works by changing four variables.
+
+Development needs none of this. Without `S3_BUCKET` the file module writes to `apps/medusa/static`.
+
+```bash
+S3_BUCKET=maison-ayla
+S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+S3_REGION=auto
+S3_ACCESS_KEY_ID=<R2 API token>
+S3_SECRET_ACCESS_KEY=<R2 API token secret>
+S3_FILE_URL=https://files.maisonayla.ch   # a custom domain on the bucket, or the r2.dev URL
+S3_PREFIX=
+```
+
+Two things to get right when the bucket is made:
+
+- **Create it in the EU jurisdiction.** Measurement sheets and reference photographs are personal
+  data about a named person; keeping the files in the EU is one less thing to explain in the
+  privacy notice, which already has a Việt Nam transfer to account for (`HANDOVER.md` §8).
+- **Do not make the bucket public.** Only the catalogues are public, and they are served through
+  `S3_FILE_URL`; references are fetched with signed links the admin mints per view.
+
+Roughly $0.015 per GB per month and no egress charge, against Render disk at $0.25 per GB and no
+durability guarantee across deploys.
 
 ## 9. Post-deploy checklist
 
@@ -394,7 +445,11 @@ property. **Use S3 or Cloudflare R2**, not a local disk.
 - [ ] **A cart line missing a required measurement is rejected server-side**
 - [ ] `metadata.length_kind` present on every piece that needs a length
 - [ ] Stripe test payment end to end; webhook received
-- [ ] Commission submits, appears in the atelier queue, can be quoted and approved
+- [ ] Commission submits, appears in the atelier queue, can be quoted and sent
+- [ ] `RESEND_API_KEY`, `RESEND_FROM` and `ATELIER_EMAIL` set — without them briefs are saved
+      but nobody is told
+- [ ] `S3_*` set and a catalogue uploaded through the admin actually opens from the storefront
+- [ ] A commission reference is **not** reachable without a signed link
 - [ ] Transactional email at every state change
 - [ ] Automated Postgres backups on, and a restore actually tested
 - [ ] `NEXT_PUBLIC_*` vars contain nothing secret
@@ -428,15 +483,15 @@ permanently.
 
 ## 11. Suggested order of work
 
-1. Scaffold Medusa, migrate, admin user — **prove it runs**
-2. Regions and currencies
-3. Collections + pieces + seed — **prove the archive gate works**
-4. Wire `lib/cart.tsx` to the Store API — **the storefront goes live against real data**
-5. Stripe, seasonal checkout end to end
-6. Accounts + saved measurement profiles
-7. Commission module + atelier console
+1. ~~Scaffold Medusa, migrate, admin user~~ — done
+2. ~~Regions and currencies~~ — done, with euro and sterling derived from the franc hourly
+3. ~~Collections + pieces + seed~~ — done; the archive gate is enforced in the cart and tested
+4. ~~Commission module + cloth catalogues + atelier console~~ — done (§3.6–3.8)
+5. Wire `lib/cart.tsx` to the Store API — **the storefront goes live against real data**
+6. Stripe, seasonal checkout end to end, and a payment link when a quote is accepted
+7. Accounts + saved measurement profiles
 8. Payload for editorial
-9. Deploy to Render
-10. Email, then the go-live checklist
+9. Deploy to Render, with R2 and Resend configured
+10. The go-live checklist
 
-Steps 1–5 are a working store. Everything after is what makes it Maison Ayla's store.
+Step 5 is what remains before the storefront stops reading its own catalogue file.

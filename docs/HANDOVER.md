@@ -2,7 +2,10 @@
 
 **Client:** Maison Ayla — made-to-measure house. Atelier in Hội An, Việt Nam; office in Zürich.
 **Agency:** one S Digital
-**Status as of 2026-09-10:** Storefront complete and building. Backend not yet started.
+**Status as of 2026-09-12:** Storefront complete. Medusa backend built: catalogue, regions and
+derived pricing, the archive gate, commissions as quote requests, and cloth catalogues. The
+storefront still reads its own `lib/catalog.ts` for the collection pages — wiring the cart and
+catalogue to the Store API is the next step.
 **Repo:** pnpm monorepo, `master` branch, **no commits yet** — the tree is untracked by deliberate choice.
 
 ---
@@ -18,7 +21,7 @@ Two ways to buy:
 | Path | What it is |
 |---|---|
 | **Seasonal piece** | A design the house drew, cut to your measurements. Reserve → atelier confirms the sheet in writing → cut. |
-| **Commission** | A garment that exists because the client described it. Silhouette + cloth + written note + reference images + measurements. Priced as an **estimate** until the tailor has read the brief. |
+| **Commission** | A garment that exists because the client described it. Silhouette + cloth + written note + reference images + measurements. **A request for a quote**: it never enters the cart, nothing is charged on the page, and a tailor writes back with the price. |
 
 The design came from a Claude Design prototype, kept for reference at
 `Maison Ayla prototype with Framer Motion/`. It is a **visual reference, not a spec** — treat it
@@ -148,7 +151,9 @@ these calls are correct.
 what let a flat pattern sit on a specific body, and no amount of chest-and-waist substitutes for
 them. They were entirely absent from the prototype.
 
-Plus **one garment length**, which varies by garment and is a decision rather than a body fact:
+Plus the **garment lengths**, which vary by garment and are a decision rather than a body fact.
+A piece names its own in `lengthKinds`, and a set names two — a sleep set is a top and a trouser
+on one ticket:
 
 | Kind | Label | Vietnamese |
 |---|---|---|
@@ -157,17 +162,19 @@ Plus **one garment length**, which varies by garment and is a decision rather th
 | `trouser` | Trouser length | Dài quần |
 | `top` | Desired length | Dài áo |
 
-All four write to the same `length` field; only one is ever asked for. A piece declares its
-`lengthKind`; a piece without one (a tee) is complete at 15.
+Each writes to its own field (`lengthDress`, `lengthSkirt`, `lengthTrouser`, `lengthTop`), so a
+set can carry two lengths without one overwriting the other. A piece declares `lengthKinds`; the
+scarf declares none and is complete at 15.
 
 `RANGES` catches misplaced decimals and inches typed into a cm field — it does not reject a
 body, and says so in the error text.
 
 ### `cart.tsx`
 
-Quantity is always one — every line is a garment cut for one person. The line carries the whole
-brief: cloth, measurement sheet, unit, `zoneCount`, and for a commission the silhouette and the
-client's note. **That payload is what reaches the bench**, so it lives on the line.
+Quantity is always one — every line is a garment cut for one person. Seasonal pieces only: a
+commission is quoted by a person and never enters the cart. The line carries the whole brief —
+cloth, measurement sheet, unit, `zoneCount`. **That payload is what reaches the bench**, so it
+lives on the line. The backend enforces all of this again in `cart-rules.ts`.
 
 State is React context mirrored to `localStorage`. **This module is the swap point**: replace
 its internals with Medusa Store API calls against a real cart id and every consumer is unchanged.
@@ -250,17 +257,27 @@ vertical gesture is handed to Lenis explicitly so the easing stays continuous.
 
 ---
 
-## 10. Not built yet
+## 10. Built since, and still to build
 
-- Medusa backend — **see `docs/BACKEND-RENDER.md`**
+Built — **see `docs/BACKEND-RENDER.md`**:
+
+- Medusa backend: catalogue, three regions, the capped run, the archive gate and the cart rules
+- Euro and sterling prices derived hourly from the franc at the ECB's rate
+- Commissions as quote requests, cloth catalogues, and the atelier's screens for both
+- Reference files stored privately; catalogues public
+- Transactional email through Resend (a key and `ATELIER_EMAIL` are needed, or nobody is told)
+
+Still to build:
+
+- **The storefront's own data**: collection pages still read `lib/catalog.ts` rather than the
+  Store API, and the cart is still `localStorage`. This is the next step.
 - Payload CMS for the editorial pages
-- Accounts, order history, saved measurement profiles (`/account` is a placeholder explaining this)
+- Accounts, order history, saved measurement profiles (`/account` explains this)
 - Stripe (`/checkout` has the Elements mount point marked and the section flow working; card
-  fields are **deliberately** not built — they belong inside Stripe's iframe, never on our origin)
-- Transactional email
-- Currency switcher (CHF/EUR/GBP; regions exist in the plan, no UI yet)
-- Real file upload for commission references — the flow validates type, size and count, but
-  files are not yet persisted anywhere
+  fields are **deliberately** not built — they belong inside Stripe's iframe, never on our
+  origin), and a payment link when a client accepts a quote
+- Currency switcher (CHF/EUR/GBP; the regions and prices exist, no UI yet)
+- Production status screens for the bench
 
 ---
 
