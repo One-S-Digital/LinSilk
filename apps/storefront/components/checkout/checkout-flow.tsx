@@ -9,9 +9,11 @@ import {
   completeCart,
   getCart,
   getPaymentProviders,
+  getShippableCountries,
   getShippingOptions,
   startPayment,
   updateCart,
+  type ShippableCountry,
   type ApiCheckoutCart,
   type ApiPaymentSession,
   type ApiShippingOption,
@@ -57,11 +59,18 @@ export function CheckoutFlow({
   cartId,
   onOrdered,
   intro,
+  /* A cart of seasonal pieces can follow the client to another region: its
+     lines are rebuilt from their variants, keeping their sheets and taking
+     that region's prices. A commission cannot — its line is a run of one, and
+     Medusa drops what it cannot rebuild — so its country is settled before
+     the cart is made and cannot be changed here. */
+  allowRegionChange = true,
 }: {
   cartId: string;
   /** Runs once the order exists — the seasonal cart forgets itself here. */
   onOrdered?: () => void;
   intro?: React.ReactNode;
+  allowRegionChange?: boolean;
 }) {
   const router = useRouter();
   const [cart, setCart] = useState<ApiCheckoutCart | null>(null);
@@ -72,6 +81,14 @@ export function CheckoutFlow({
   const [touched, setTouched] = useState(false);
   const [working, setWorking] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
+  const [shippable, setShippable] = useState<ShippableCountry[]>([]);
+
+  useEffect(() => {
+    if (!allowRegionChange) return;
+    getShippableCountries()
+      .then(setShippable)
+      .catch(() => setShippable([]));
+  }, [allowRegionChange]);
 
   useEffect(() => {
     getCart(cartId)
@@ -96,7 +113,10 @@ export function CheckoutFlow({
       .catch((error) => setProblem((error as Error).message));
   }, [cartId]);
 
-  const countries = cart?.region?.countries ?? [];
+  const countries =
+    allowRegionChange && shippable.length
+      ? shippable
+      : (cart?.region?.countries ?? []).map((c) => ({ ...c, region_id: cart!.region!.id }));
 
   const errors = useMemo(() => {
     const out: Partial<Record<keyof Details, string>> = {};
@@ -128,6 +148,13 @@ export function CheckoutFlow({
       phone: details.phone,
     };
     try {
+      /* Where it goes decides the currency and the shipping, so the cart
+         follows the address before the address is saved to it. */
+      const destination = countries.find((c) => c.iso_2 === details.country);
+      if (allowRegionChange && destination && destination.region_id !== cart.region?.id) {
+        await updateCart(cart.id, { region_id: destination.region_id });
+      }
+
       const updated = await updateCart(cart.id, {
         email: details.email,
         shipping_address: address,

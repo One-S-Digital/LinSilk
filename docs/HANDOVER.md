@@ -176,8 +176,10 @@ commission is quoted by a person and never enters the cart. The line carries the
 cloth, measurement sheet, unit, `zoneCount`. **That payload is what reaches the bench**, so it
 lives on the line. The backend enforces all of this again in `cart-rules.ts`.
 
-State is React context mirrored to `localStorage`. **This module is the swap point**: replace
-its internals with Medusa Store API calls against a real cart id and every consumer is unchanged.
+The cart itself is a Medusa cart; only its id is kept in the browser, which is what lets someone
+close the tab and come back to it. A line carries the zones **its own garment** asked for — a
+coat one length, a set two — because serialising a sheet with the fifteen body zones alone drops
+the length and the backend rightly refuses the line.
 
 ---
 
@@ -267,24 +269,33 @@ Built — **see `docs/BACKEND-RENDER.md`**:
 - Reference files stored privately; catalogues public
 - Transactional email through Resend (a key and `ATELIER_EMAIL` are needed, or nobody is told)
 
+- Checkout on the backend: a Medusa cart, real shipping options, Stripe Elements, and an order
+  at the end of it. A seasonal cart follows the client to their region, so a Swiss cart becomes a
+  euro one at a German address; a commission cart cannot, and does not try.
+- A quote becomes payable by itself: the figure a tailor sets makes the commission a product of
+  its own — one variant, stock of one — and emails an unguessable link to pay for it. Paying it
+  produces an ordinary order, moves the brief to `in_production` and retires the link.
+
 Still to build:
 
-- **The storefront's own data**: collection pages still read `lib/catalog.ts` rather than the
-  Store API, and the cart is still `localStorage`. This is the next step.
-- Payload CMS for the editorial pages
 - Accounts, order history, saved measurement profiles (`/account` explains this)
-- Stripe (`/checkout` has the Elements mount point marked and the section flow working; card
-  fields are **deliberately** not built — they belong inside Stripe's iframe, never on our
-  origin), and a payment link when a client accepts a quote
-- Currency switcher (CHF/EUR/GBP; the regions and prices exist, no UI yet)
+- Payload CMS for the editorial pages
+- Currency switcher for browsing (checkout already switches; the shop pages read `lib/catalog.ts`
+  for copy and art direction)
 - Production status screens for the bench
+
+Configuration, not code, is what stands between this and taking money: a Stripe key (checkout
+falls back to a provider that authorises without charging, and says so on the page), a Resend key
+and a verified sender, and an R2 bucket. See `BACKEND-RENDER.md` §6 and §8.5.
 
 ---
 
 ## 11. Verified
 
-- Build clean, 77 pages prerendered
-- 19 Vitest tests on measurement maths
+- Build clean on both apps
+- 25 Vitest tests on the storefront, 36 unit and 16 API tests on the backend
+- Reserve, check out and pay end to end, by hand in a browser: a seasonal piece in Swiss francs,
+  the same cart re-priced in euro at a German address, and a commission accepted from its link
 - **No horizontal overflow** on any route at 375 / 768 / 1440 — audited programmatically
 - Rail wheel handling: 1:1 with the gesture, hands back at both ends
 - Archived pieces show no reserve form; garment length appears only where it applies

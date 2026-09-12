@@ -161,5 +161,5 @@ export function CommissionPayment({ token }: { token: string }) {
     );
   }
 
-  return <CheckoutFlow cartId={cartId} intro={brief} />;
+  return <CheckoutFlow cartId={cartId} intro={brief} allowRegionChange={false} />;
 }

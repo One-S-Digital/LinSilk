@@ -255,20 +255,33 @@ being on Shopify — worth stating to the client plainly.
 
 ---
 
-## 6. Phase 5 — Stripe
+## 6. Phase 5 — Stripe — built
 
-```bash
-pnpm --filter medusa add @medusajs/payment-stripe
-```
+`@medusajs/payment-stripe` ships with Medusa; `medusa-config.ts` registers it **only when
+`STRIPE_API_KEY` is set**, and falls back to Medusa's system provider, which authorises without
+charging. That is how checkout was built and tested before any keys existed.
 
-- Register the provider per region. **TWINT matters in Switzerland** — it is a large share of
-  Swiss checkout and its absence will be noticed.
-- Webhook → `POST /hooks/payment/stripe`
-- The storefront already has the Elements mount point marked at
-  `#stripe-payment-element` in `app/checkout/page.tsx`.
+The seed puts whatever providers exist onto every region, and prefers a real one: the moment
+Stripe is configured, the system provider is dropped from every region, so a live store can never
+offer "pay without paying".
 
-> **Card fields stay inside Stripe's iframe.** They were deliberately not built. Do not add a card
-> number input to this codebase — it drags the whole application into PCI scope for no benefit.
+**Which methods appear is the Stripe account's business, not the code's.** The provider runs with
+`automatic_payment_methods`, so Stripe offers whatever that account has enabled for the currency
+and the amount — card, **TWINT** (which matters in Switzerland and will be noticed if absent),
+Apple and Google Pay, Klarna. Adding one later needs no deploy.
+
+To switch it on:
+
+1. Set `STRIPE_API_KEY` and `STRIPE_WEBHOOK_SECRET` on the host, and
+   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` on the storefront.
+2. Point the Stripe webhook at `POST /hooks/payment/stripe_stripe`.
+3. Re-run the seed so the regions pick Stripe up.
+4. Enable TWINT, Klarna and the wallets in the Stripe dashboard. Wallets need domain
+   verification.
+
+> **Card fields stay inside Stripe's iframe.** The storefront mounts Stripe Elements at
+> `#stripe-payment-element`; no card number touches this origin. Do not add a card input to this
+> codebase — it drags the whole application into PCI scope for no benefit.
 
 **Tax.** Medusa's tax module handles rates but not EU VAT/OSS filing. Budget for Stripe Tax
 (calculation) plus something like Quaderno or Lovat (filing). This is the most commonly
@@ -276,99 +289,60 @@ underestimated cost of leaving Shopify — flag it to the client in writing.
 
 ---
 
-## 7. Phase 6 — Wire the storefront
+## 7. Phase 6 — Wire the storefront — built
 
-**One file changes: `apps/storefront/lib/cart.tsx`.** It was written as the swap point. Replace
-its internals with Store API calls against a real cart id; every consumer stays untouched.
+The cart is a Medusa cart; only its id is kept in the browser. Reserving a piece adds a real line,
+so the house's rules (§3.2, §3.5) stand between a client and a garment, and a refusal is shown in
+the words it was written in.
 
-Then:
-- Replace `lib/catalog.ts` reads with Store API queries (products, collections, regions)
-- Add a publishable API key to the storefront env
-- Currency switcher backed by Medusa regions — CHF/EUR/GBP, no UI yet
-- Persist commission reference uploads (S3 or Render disk) — the flow already validates type,
-  size and count but does not store anything
+| Piece | Where |
+|---|---|
+| Cart, on the Store API | `lib/cart.tsx` |
+| Calls and totals | `lib/checkout.ts`, `lib/medusa.ts` |
+| Address, shipping, payment | `components/checkout/checkout-flow.tsx` |
+| Stripe Elements, and the no-charge fallback | `components/checkout/payment-panel.tsx` |
+| Accepting a quote | `app/commission/[token]`, `components/checkout/commission-payment.tsx` |
+| Confirmation, readable by a guest holding the id | `app/order/[id]` |
+
+Two things worth knowing before changing any of it:
+
+- **A line carries the zones its own garment asked for.** Serialising a sheet with the fifteen
+  body zones silently drops a garment length, and the backend then refuses the line as
+  incomplete. A set asks for two lengths.
+- **A seasonal cart may follow the client to another region** — its lines are rebuilt from their
+  variants, keeping their metadata and taking that region's prices, so a Swiss cart becomes a
+  euro one when the address is German. **A commission cart may not:** its line is a run of one,
+  and Medusa drops what it cannot rebuild. Hence `allowRegionChange`.
+
+Still to do here:
+- A currency switcher for browsing (regions and prices exist; only checkout switches today)
 - Accounts: register, login, password reset, order history, and the saved measurement profile
   that `/account` currently only describes
+- `lib/catalog.ts` still supplies the storefront's copy and art direction; products, prices and
+  collections now come from the backend
 
 ---
 
 ## 8. Phase 7 — Deploy to Render
 
-### 8.1 `render.yaml`
+### 8.1 `render.yaml` — committed
 
-Commit this at the repo root.
+The blueprint is `render.yaml` at the repo root; read it rather than this section. In outline:
 
-```yaml
-services:
-  - type: web
-    name: ayla-medusa
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter medusa build
-    startCommand: pnpm --filter medusa start
-    healthCheckPath: /health
-    envVars:
-      - key: MEDUSA_WORKER_MODE
-        value: server
-      - key: DATABASE_URL
-        fromDatabase: { name: ayla-postgres, property: connectionString }
-      - key: REDIS_URL
-        fromService: { name: ayla-redis, type: keyvalue, property: connectionString }
-      - key: JWT_SECRET
-        generateValue: true
-      - key: COOKIE_SECRET
-        generateValue: true
-      - key: STORE_CORS
-        sync: false
-      - key: ADMIN_CORS
-        sync: false
-      - key: AUTH_CORS
-        sync: false
-      - key: STRIPE_API_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_SECRET
-        sync: false
-
-  - type: worker
-    name: ayla-worker
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter medusa build
-    startCommand: pnpm --filter medusa start
-    envVars:
-      - key: MEDUSA_WORKER_MODE
-        value: worker
-      - key: DATABASE_URL
-        fromDatabase: { name: ayla-postgres, property: connectionString }
-      - key: REDIS_URL
-        fromService: { name: ayla-redis, type: keyvalue, property: connectionString }
-
-  - type: web
-    name: ayla-storefront
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter storefront build
-    startCommand: pnpm --filter storefront start
-    envVars:
-      - key: NEXT_PUBLIC_MEDUSA_BACKEND_URL
-        fromService: { name: ayla-medusa, type: web, property: host }
-      - key: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-        sync: false
-      - key: PAYLOAD_SECRET
-        generateValue: true
-      - key: DATABASE_URI
-        sync: false          # ayla_payload on the same server
-
-  - type: keyvalue
-    name: ayla-redis
-    plan: starter
-    ipAllowList: []          # private network only
-
-databases:
-  - name: ayla-postgres
-    plan: basic-256mb
-    databaseName: ayla_medusa
-```
+- `ayla-medusa` (web), `ayla-worker` (worker), `ayla-storefront` (web), `ayla-postgres`,
+  `ayla-redis`, all in Frankfurt.
+- **Every secret comes from Render, never the repo.** `generateValue` mints `JWT_SECRET` and
+  `COOKIE_SECRET`; `sync: false` values are typed into the dashboard once; the database and key
+  value store hand out their own connection strings. Two environment groups — `ayla-secrets` and
+  `ayla-urls` — are shared by the server and the worker, which must agree about all of it.
+- Migrations run as `preDeployCommand`, so they happen before the new version takes traffic and
+  never on a rollback the way a build step would.
+- `medusa-config.ts` refuses to boot in production without `DATABASE_URL`, `REDIS_URL`, both
+  secrets and the three CORS values, naming what is missing rather than failing at the first
+  request.
+- **Redis is not optional with a worker.** Server and worker share an event bus, a workflow
+  engine, a cache and a lock; in memory each process would keep its own, and a job would run
+  twice or not at all.
 
 ### 8.2 Migrations
 
@@ -487,11 +461,13 @@ permanently.
 2. ~~Regions and currencies~~ — done, with euro and sterling derived from the franc hourly
 3. ~~Collections + pieces + seed~~ — done; the archive gate is enforced in the cart and tested
 4. ~~Commission module + cloth catalogues + atelier console~~ — done (§3.6–3.8)
-5. Wire `lib/cart.tsx` to the Store API — **the storefront goes live against real data**
-6. Stripe, seasonal checkout end to end, and a payment link when a quote is accepted
+5. ~~Wire the storefront to the Store API~~ — done (§7)
+6. ~~Stripe, seasonal checkout end to end, and a payment link when a quote is accepted~~ — done;
+   dormant until keys exist (§6)
 7. Accounts + saved measurement profiles
 8. Payload for editorial
 9. Deploy to Render, with R2 and Resend configured
 10. The go-live checklist
 
-Step 5 is what remains before the storefront stops reading its own catalogue file.
+What remains before go-live is configuration rather than code: Stripe keys, a Resend key and a
+verified sender, an R2 bucket, and the client's own content (§8.5, and `HANDOVER.md` §8).

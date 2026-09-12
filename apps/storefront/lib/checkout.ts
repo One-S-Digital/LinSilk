@@ -108,3 +108,18 @@ export const getPaymentProviders = async (regionId: string) =>
   (await medusaFetch<{ payment_providers: { id: string }[] }>(
     `/store/payment-providers?region_id=${regionId}`,
   )).payment_providers;
+
+/** Every country the house ships to, and the region each belongs to. */
+export type ShippableCountry = { iso_2: string; display_name: string; region_id: string };
+
+export async function getShippableCountries(): Promise<ShippableCountry[]> {
+  const { regions } = await medusaFetch<{
+    regions: { id: string; countries?: { iso_2: string; display_name: string }[] }[];
+  }>('/store/regions?fields=id,*countries');
+
+  return regions
+    .flatMap((region) =>
+      (region.countries ?? []).map((country) => ({ ...country, region_id: region.id })),
+    )
+    .sort((a, b) => a.display_name.localeCompare(b.display_name));
+}
