@@ -5,6 +5,7 @@ import { ChalkMark, ClothWipe, Reveal } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
 import { PieceOrderPanel } from '@/components/piece-order-panel';
 import { PIECES, collectionBySlug, findPiece, isOrderable, money, roman } from '@/lib/catalog';
+import { getVariantId } from '@/lib/medusa';
 import styles from './piece.module.css';
 
 export function generateStaticParams() {
@@ -126,7 +127,10 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
             </div>
           </Reveal>
 
-          <PieceOrderPanel piece={piece} />
+          <PieceOrderPanel
+            piece={piece}
+            variantId={orderable ? await getVariantId(piece.id) : null}
+          />
         </div>
       </div>
     </div>

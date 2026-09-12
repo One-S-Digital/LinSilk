@@ -18,7 +18,15 @@ import {
 import { isComplete, takenCount, type Measurements, type Unit } from '@/lib/measurements';
 import styles from '@/app/piece/[id]/piece.module.css';
 
-export function PieceOrderPanel({ piece }: { piece: Piece }) {
+export function PieceOrderPanel({
+  piece,
+  variantId,
+}: {
+  piece: Piece;
+  /* The backend's own id for this piece. Absent only if the house is
+     unreachable, in which case there is nothing to reserve against. */
+  variantId: string | null;
+}) {
   const { add } = useCart();
   const [fabric, setFabric] = useState(FABRICS[0].key);
   const [sheet, setSheet] = useState<{ values: Measurements; unit: Unit }>({
@@ -26,6 +34,8 @@ export function PieceOrderPanel({ piece }: { piece: Piece }) {
     unit: 'cm',
   });
   const [reserved, setReserved] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const [refusal, setRefusal] = useState<string | null>(null);
 
   const onSheetChange = useCallback(
     (values: Measurements, unit: Unit) => setSheet({ values, unit }),
@@ -73,19 +83,28 @@ export function PieceOrderPanel({ piece }: { piece: Piece }) {
     );
   }
 
-  const reserve = () => {
-    add({
-      pieceId: piece.id,
-      name: piece.name,
-      material: piece.material,
-      price: piece.price,
-      fabricKey: chosen.key,
-      fabricName: chosen.name,
-      measurements: sheet.values,
-      unit: sheet.unit,
-      zoneCount: allZones.length,
-    });
-    setReserved(true);
+  /* The atelier has the final word on what it can cut, so a refusal from the
+     backend is shown as it was written rather than translated into a shrug. */
+  const reserve = async () => {
+    if (!variantId) return;
+    setHolding(true);
+    setRefusal(null);
+    try {
+      await add({
+        variantId,
+        pieceId: piece.id,
+        fabricKey: chosen.key,
+        fabricName: chosen.name,
+        measurements: sheet.values,
+        unit: sheet.unit,
+        zones: allZones,
+      });
+      setReserved(true);
+    } catch (error) {
+      setRefusal((error as Error).message);
+    } finally {
+      setHolding(false);
+    }
   };
 
   return (
@@ -101,9 +120,18 @@ export function PieceOrderPanel({ piece }: { piece: Piece }) {
         />
 
         <div className={styles.reserve}>
-          <Button onClick={reserve} disabled={!complete || reserved}>
-            {reserved ? 'Reserved' : 'Reserve this piece'}
+          <Button onClick={reserve} disabled={!complete || reserved || holding || !variantId}>
+            {reserved ? 'Reserved' : holding ? 'Holding…' : 'Reserve this piece'}
           </Button>
+
+          {refusal && <p className={styles.blocked}>{refusal}</p>}
+
+          {!variantId && (
+            <p className={styles.blocked}>
+              The house cannot be reached just now, so nothing can be held. Write to
+              hello@maisonayla.ch and the atelier will hold it by hand.
+            </p>
+          )}
 
           {!complete && (
             <p className={styles.blocked}>

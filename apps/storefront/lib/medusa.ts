@@ -55,3 +55,46 @@ export const getSilhouettes = async () =>
 export const getFabricCatalogues = async () =>
   (await medusaGet<{ fabric_catalogues: ApiFabricCatalogue[] }>('/store/fabric-catalogues'))
     ?.fabric_catalogues ?? null;
+
+/* The browser's own calls: the cart, and paying for it. These carry no
+   `next` options — they are live, not cached — and they turn the backend's
+   refusal into an Error the page can show, because the house's refusals are
+   written to be read ("The atelier cannot cut ... from a partial sheet"). */
+export async function medusaFetch<T>(
+  path: string,
+  init: RequestInit & { json?: unknown } = {},
+): Promise<T> {
+  const { json, ...rest } = init;
+  const response = await fetch(`${MEDUSA_URL}${path}`, {
+    ...rest,
+    headers: {
+      ...medusaHeaders(),
+      ...(json ? { 'content-type': 'application/json' } : {}),
+      ...(rest.headers ?? {}),
+    },
+    ...(json ? { body: JSON.stringify(json) } : {}),
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(
+      (body as { message?: string } | null)?.message ??
+        'The house could not be reached. Try again in a moment.',
+    );
+  }
+  return body as T;
+}
+
+/** Prices come back in the cart's own currency, already tax-inclusive. */
+export const formatMoney = (amount: number, currency: string) =>
+  `${currency.toUpperCase()} ${amount.toLocaleString('de-CH')}`;
+
+/* The backend's id for a piece, looked up by the handle the catalogue uses.
+   Read on the server when a piece page renders, so the browser is handed the
+   id rather than having to go and find it. */
+export async function getVariantId(handle: string): Promise<string | null> {
+  const body = await medusaGet<{ products: { variants: { id: string }[] }[] }>(
+    `/store/products?handle=${encodeURIComponent(handle)}&fields=variants.id`,
+  );
+  return body?.products?.[0]?.variants?.[0]?.id ?? null;
+}

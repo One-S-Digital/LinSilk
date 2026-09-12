@@ -159,7 +159,13 @@ export default async function seed({ container }: { container: MedusaContainer }
     entity: "payment_provider",
     fields: ["id", "is_enabled"],
   })
-  const enabled = providers.filter((p) => p.is_enabled !== false).map((p) => p.id)
+  /* The system provider authorises without charging, which is how checkout
+     is worked on before Stripe has keys. The moment a real provider exists it
+     takes over alone: a region that still offered the system one would let
+     anybody take a garment for nothing. */
+  const available = providers.filter((p) => p.is_enabled !== false).map((p) => p.id)
+  const real = available.filter((id) => !id.includes("system"))
+  const enabled = real.length ? real : available
   if (enabled.length) {
     await updateRegionsWorkflow(container).run({
       input: {

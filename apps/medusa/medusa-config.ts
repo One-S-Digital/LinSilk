@@ -2,6 +2,53 @@ import { loadEnv, defineConfig } from '@medusajs/framework/utils'
 
 loadEnv(process.env.NODE_ENV || 'development', process.cwd())
 
+/* Configuration comes from the environment the host provides — Render's
+   environment groups in production, apps/medusa/.env in development. A .env
+   file is never read in preference to a real environment variable, so the
+   host always wins and no secret needs to live in the repo.
+   
+   What the house cannot run without is checked here rather than discovered
+   at the first request. */
+const inProduction = process.env.NODE_ENV === 'production'
+
+const required = (key: string) => {
+  const value = process.env[key]
+  if (!value && inProduction) {
+    throw new Error(
+      `${key} is not set. In production it comes from the host's environment ` +
+        `(on Render, the service's environment group), not from a file.`
+    )
+  }
+  return value
+}
+
+for (const key of ['DATABASE_URL', 'JWT_SECRET', 'COOKIE_SECRET', 'STORE_CORS', 'ADMIN_CORS', 'AUTH_CORS']) {
+  required(key)
+}
+
+/* Server and worker are separate processes in production, so the event bus,
+   the workflow engine and the lock they share have to live outside either of
+   them. Without Redis, Medusa keeps all three in memory — fine for one
+   process on a laptop, silently wrong for two on Render. */
+const redisUrl = process.env.REDIS_URL
+if (!redisUrl && inProduction) {
+  throw new Error(
+    'REDIS_URL is not set. The server and the worker share an event bus, a ' +
+      'workflow engine and a lock through it; in memory, each process would keep its own.'
+  )
+}
+
+const redisModules = redisUrl
+  ? [
+      { resolve: '@medusajs/medusa/event-bus-redis', options: { redisUrl } },
+      { resolve: '@medusajs/medusa/workflow-engine-redis', options: { redis: { redisUrl } } },
+      { resolve: '@medusajs/medusa/cache-redis', options: { redisUrl } },
+      { resolve: '@medusajs/medusa/locking', options: { providers: [
+        { resolve: '@medusajs/medusa/locking-redis', id: 'redis', is_default: true, options: { redisUrl } },
+      ] } },
+    ]
+  : []
+
 /* Files: cloth catalogues the house publishes, and the reference images a
    client attaches to a commission. Those references are the client's own
    property and are stored privately; catalogues are public.
@@ -78,6 +125,7 @@ const paymentProviders = process.env.STRIPE_API_KEY
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    workerMode: (process.env.MEDUSA_WORKER_MODE as 'server' | 'worker' | 'shared') || 'shared',
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
@@ -87,6 +135,7 @@ module.exports = defineConfig({
     }
   },
   modules: [
+    ...redisModules,
     { resolve: './src/modules/atelier' },
     { resolve: '@medusajs/medusa/file', options: { providers: fileProviders } },
     {
