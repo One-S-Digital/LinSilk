@@ -109,8 +109,12 @@ export function commissionReceivedEmail(commission: CommissionRecord) {
   }
 }
 
-/** To the client: the tailor has read it, and this is the price. */
-export function commissionQuotedEmail(commission: CommissionRecord) {
+/** Where the client goes to accept a quote and pay for it. */
+export const commissionPaymentUrl = (token: string) =>
+  `${(process.env.STOREFRONT_URL || "http://localhost:3000").replace(/\/$/, "")}/commission/${token}`
+
+/** To the client: the tailor has read it, this is the price, here is the door. */
+export function commissionQuotedEmail(commission: CommissionRecord & { access_token?: string | null }) {
   const figure = money(commission.quote_amount!, commission.currency_code ?? "chf")
 
   return {
@@ -128,9 +132,19 @@ export function commissionQuotedEmail(commission: CommissionRecord) {
         "That figure includes the pattern drawn for your sheet, the cutting and",
         "the handwork at the bench. It does not change once you have agreed it.",
         "",
-        "Reply to this email to accept, and we will send you a payment link.",
+        ...(commission.access_token
+          ? [
+              "To accept it, pay here:",
+              commissionPaymentUrl(commission.access_token),
+              "",
+              "The link is yours alone — it carries your measurements — so please do",
+              "not forward it. You choose where the piece is sent on that page.",
+            ]
+          : ["Reply to this email to accept."]),
+        "",
         "Cutting begins once the payment has cleared; the piece takes four to six",
-        "weeks from that point.",
+        "weeks from that point. If anything here is wrong, reply and it is amended",
+        "before a pattern is drawn.",
         "",
         "Maison Ayla",
         "Zürich · Hội An",

@@ -40,7 +40,18 @@ export const Commission = model
     currency_code: model.text().default("chf"),
     quoted_at: model.dateTime().nullable(),
 
+    /* Paying for a commission.
+
+       The figure the tailor set becomes a cart of one line, and the client is
+       sent a link carrying `access_token` — the brief holds a person's
+       measurements, so the link has to be unguessable rather than merely
+       obscure. Once paid, the cart becomes an order like any other. */
+    access_token: model.text().nullable(),
+    cart_id: model.text().nullable(),
+    order_id: model.text().nullable(),
+    paid_at: model.dateTime().nullable(),
+
     /** Written by the house, never shown to the client. */
     internal_note: model.text().nullable(),
   })
-  .indexes([{ on: ["status"] }, { on: ["email"] }])
+  .indexes([{ on: ["status"] }, { on: ["email"] }, { on: ["access_token"] }, { on: ["cart_id"] }])

@@ -49,6 +49,32 @@ const notificationProviders = process.env.RESEND_API_KEY
       },
     ]
 
+/* Payment. Card, TWINT, Apple and Google Pay and Klarna are switched on in
+   the Stripe dashboard, not here: `automatic_payment_methods` asks Stripe for
+   whatever that account offers for the currency and the amount, so adding a
+   method later needs no deploy.
+
+   Without a key the store falls back to Medusa's system provider, which
+   authorises without charging — enough to work on checkout, never enough to
+   take money. */
+const paymentProviders = process.env.STRIPE_API_KEY
+  ? [
+      {
+        resolve: '@medusajs/medusa/payment-stripe',
+        id: 'stripe',
+        options: {
+          apiKey: process.env.STRIPE_API_KEY,
+          webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+          /* The atelier cuts to order, so the money is taken when the client
+             pays rather than held and captured later. */
+          capture: true,
+          automatic_payment_methods: true,
+          payment_description: 'Maison Ayla',
+        },
+      },
+    ]
+  : []
+
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -67,5 +93,8 @@ module.exports = defineConfig({
       resolve: '@medusajs/medusa/notification',
       options: { providers: notificationProviders },
     },
+    ...(paymentProviders.length
+      ? [{ resolve: '@medusajs/medusa/payment', options: { providers: paymentProviders } }]
+      : []),
   ],
 })

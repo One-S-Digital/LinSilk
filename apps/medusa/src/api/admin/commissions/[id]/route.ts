@@ -59,14 +59,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   }
 
   const { result: commission } = await updateCommissionWorkflow(req.scope).run({
-    input: {
-      id: req.params.id,
-      ...update,
-      ...(update.quote_amount !== undefined
-        ? { quoted_at: new Date(), status: update.status ?? "quoted" }
-        : {}),
-      notify,
-    },
+    input: { id: req.params.id, ...update, notify },
   })
 
   res.json({ commission })

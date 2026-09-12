@@ -38,11 +38,12 @@ import {
   linkSalesChannelsToStockLocationWorkflow,
   updateCollectionsWorkflow,
   updateProductsWorkflow,
+  updateRegionsWorkflow,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { COLLECTIONS, PIECES, SILHOUETTES } from "../../../storefront/lib/catalog"
 import { fetchChfRates } from "../lib/exchange-rates"
-import { SILHOUETTE_COLLECTION } from "../lib/commission-catalogue"
+import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../lib/commission-catalogue"
 import { CURRENCIES, fromChf, type Currency } from "../lib/pricing"
 
 /* Per-piece size of the season's capped run. Placeholder until the client
@@ -151,6 +152,24 @@ export default async function seed({ container }: { container: MedusaContainer }
   const { data: regions } = await query.graph({ entity: "region", fields: ["id", "name"] })
   const regionId = (name: string) => regions.find((r) => r.name === name)!.id
 
+  /* Every region offers whatever payment providers are configured: the system
+     provider on its own until STRIPE_API_KEY is set, Stripe as well once it
+     is. Re-running this is how a region picks Stripe up. */
+  const { data: providers } = await query.graph({
+    entity: "payment_provider",
+    fields: ["id", "is_enabled"],
+  })
+  const enabled = providers.filter((p) => p.is_enabled !== false).map((p) => p.id)
+  if (enabled.length) {
+    await updateRegionsWorkflow(container).run({
+      input: {
+        selector: { id: regions.map((r) => r.id) },
+        update: { payment_providers: enabled },
+      },
+    })
+    logger.info(`Payment providers on every region: ${enabled.join(", ")}.`)
+  }
+
   await updateStoresWorkflow(container).run({
     input: {
       selector: { id: store.id },
@@ -255,6 +274,14 @@ export default async function seed({ container }: { container: MedusaContainer }
         ...(c.closes ? { closes: c.closes } : {}),
       } as Record<string, unknown>,
     })),
+    {
+      handle: COMMISSION_COLLECTION,
+      title: "Commissions",
+      metadata: {
+        status: "commission",
+        note: "One product per quoted commission: a run of one, priced at the figure the tailor set. Created when a quote is sent; not for browsing.",
+      } as Record<string, unknown>,
+    },
     {
       handle: SILHOUETTE_COLLECTION,
       title: "Commission silhouettes",

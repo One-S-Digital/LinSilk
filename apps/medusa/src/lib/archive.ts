@@ -16,8 +16,13 @@ export type GatedVariant = {
   } | null
 }
 
+/* `current` is the open season. `commission` is a garment a tailor has
+   already priced for one person: it carries its own figure and a stock of
+   one, so paying for it is accepting the quote. */
+const ORDERABLE = ["current", "commission"]
+
 export const isOrderable = (variant: GatedVariant) =>
-  variant.product?.collection?.metadata?.status === "current"
+  ORDERABLE.includes(String(variant.product?.collection?.metadata?.status))
 
 /** Why this piece cannot be ordered, or null when it can. */
 export function archiveRefusal(variant: GatedVariant): string | null {
