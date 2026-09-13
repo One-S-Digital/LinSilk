@@ -2,11 +2,11 @@
 
 **Client:** Maison Ayla — made-to-measure house. Atelier in Hội An, Việt Nam; office in Zürich.
 **Agency:** one S Digital
-**Status as of 2026-09-12:** Storefront complete. Medusa backend built: catalogue, regions and
-derived pricing, the archive gate, commissions as quote requests, and cloth catalogues. The
-storefront still reads its own `lib/catalog.ts` for the collection pages — wiring the cart and
-catalogue to the Store API is the next step.
-**Repo:** pnpm monorepo, `master` branch, **no commits yet** — the tree is untracked by deliberate choice.
+**Status as of 2026-09-13:** Storefront and backend both built. A client can reserve a piece or
+commission one, pay for either, and manage all of it from an account — or do any of it as a
+guest. What is left is Payload for editorial, a currency switcher for browsing, and
+configuration rather than code. See §10.
+**Repo:** pnpm monorepo. Work sits on the `backend` branch, unmerged with `master`.
 
 ---
 
@@ -36,9 +36,9 @@ as art direction. `support.js` in that folder is the Claude Design runtime and w
 | Storefront | **Next.js 16.3.4** (App Router), React 19.2 | Full design control over the checkout, which is where this design lives or dies |
 | Styling | **CSS Modules + token layer** | The design is `clamp()` and exact hex throughout; Tailwind arbitrary values would be strictly worse |
 | Motion | **motion 13** (Framer Motion) + **lenis** | Scroll-linked work needs interpolated scroll or it reads as jitter |
-| Commerce | **Medusa v2** *(not built yet)* | Open source, TypeScript end to end, multi-currency regions in core, line-item metadata carries the measurement sheet |
+| Commerce | **Medusa v2**, self-hosted | Open source, TypeScript end to end, multi-currency regions in core, line-item metadata carries the measurement sheet |
 | CMS | **Payload 3** *(not built yet)* | Open source, TypeScript, runs on the same Postgres, installs into the Next app |
-| Tests | **Vitest** | 19 tests on the measurement maths |
+| Tests | **Vitest** | 28 tests on the measurement maths |
 
 **Shopify was rejected deliberately.** Two reasons, both sound: the client will not accept
 per-feature paywalls, and more importantly Shopify's model is cart → checkout → paid, which
@@ -77,7 +77,7 @@ pnpm --filter storefront dev     # http://localhost:3000
 ```
 
 ```bash
-pnpm --filter storefront test    # 19 tests, measurement maths
+pnpm --filter storefront test    # 28 tests, measurement maths
 ```
 
 ```bash
@@ -276,13 +276,21 @@ Built — **see `docs/BACKEND-RENDER.md`**:
   its own — one variant, stock of one — and emails an unguessable link to pay for it. Paying it
   produces an ordinary order, moves the brief to `in_production` and retires the link.
 
+- Accounts: register, sign in, and a password reset by email — Medusa's own auth, the storefront
+  just asks for it now. Order history, a saved measurement profile (`toLineItemMetadata` and its
+  inverse, `fromLineItemMetadata`, both in `lib/measurements.ts`), and settings to edit the name
+  and phone on file, change the password, keep an address book, and close the account. The
+  session is a Medusa JWT in an httpOnly cookie, never in reach of client JS the way the cart id
+  is — which is why account pages are Server Components rather than the cart's client pattern.
+  Email is not editable from the account; the customer-update endpoint doesn't accept it.
+
 Still to build:
 
-- Accounts, order history, saved measurement profiles (`/account` explains this)
 - Payload CMS for the editorial pages
 - Currency switcher for browsing (checkout already switches; the shop pages read `lib/catalog.ts`
   for copy and art direction)
 - Production status screens for the bench
+- Saved addresses are not yet offered as a picker at checkout, which still asks fresh
 
 Configuration, not code, is what stands between this and taking money: a Stripe key (checkout
 falls back to a provider that authorises without charging, and says so on the page), a Resend key
@@ -293,9 +301,13 @@ and a verified sender, and an R2 bucket. See `BACKEND-RENDER.md` §6 and §8.5.
 ## 11. Verified
 
 - Build clean on both apps
-- 25 Vitest tests on the storefront, 36 unit and 16 API tests on the backend
+- 28 Vitest tests on the storefront, 39 unit and 21 API tests on the backend
 - Reserve, check out and pay end to end, by hand in a browser: a seasonal piece in Swiss francs,
   the same cart re-priced in euro at a German address, and a commission accepted from its link
+- An account end to end, by hand: register, sign in, edit the profile, add and edit and remove a
+  saved address, change the password, reset a forgotten one from a real emailed link, and close
+  the account — each wrong-password and missing-field case refused, each successful change
+  checked against Postgres directly rather than trusted from the response alone
 - **No horizontal overflow** on any route at 375 / 768 / 1440 — audited programmatically
 - Rail wheel handling: 1:1 with the gesture, hands back at both ends
 - Archived pieces show no reserve form; garment length appears only where it applies

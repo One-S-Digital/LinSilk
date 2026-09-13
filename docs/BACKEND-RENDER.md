@@ -205,6 +205,24 @@ Admin is extensible; add a widget or a route rather than building a second app. 
 - Set confirmed price → notify client — **built**
 - Production status per order — not built; the status field exists, the screens do not
 
+### 3.9 Accounts — built
+
+Medusa's own customer and auth modules do almost all of it — register, sign in, order history
+and profile storage are stock Store API routes, confirmed against a running server rather than
+assumed. Two custom routes cover what Medusa doesn't:
+
+| Route | What it does |
+|---|---|
+| `POST /store/customers/me/password` | Changes the password for a signed-in customer. The emailed reset link's own endpoint only accepts a token minted for that purpose, not an ordinary session, so this checks the current password and calls the same provider method the reset route does, wrapped in `changePasswordWorkflow` — a direct service mutation in the route handler fails the project's `@medusajs/no-service-mutations-in-api-route` lint rule. |
+| `POST /store/customers/me/account` | Closes the account. Runs `removeCustomerAccountWorkflow` — the same workflow the admin's own delete-customer route runs — which detaches the auth identity and leaves past orders exactly as reachable as a guest's already are. A password confirms it first. |
+
+The `auth.password_reset` event, fired by Medusa's own reset-token workflow, is handled by
+`src/subscribers/password-reset-requested.ts`, which emails the link through the same Resend
+setup the commission emails use.
+
+⚠ **Email is not editable from the account.** `StoreUpdateCustomer` doesn't accept it, and
+decoupling it from the login identity is a sharper edge than this pass reaches for.
+
 ---
 
 ## 4. Phase 3 — Seed
@@ -316,10 +334,9 @@ Two things worth knowing before changing any of it:
 
 Still to do here:
 - A currency switcher for browsing (regions and prices exist; only checkout switches today)
-- Accounts: register, login, password reset, order history, and the saved measurement profile
-  that `/account` currently only describes
 - `lib/catalog.ts` still supplies the storefront's copy and art direction; products, prices and
   collections now come from the backend
+- Saved addresses (§3.9) are not yet offered as a picker here; checkout still asks fresh
 
 ---
 
@@ -464,10 +481,11 @@ permanently.
 5. ~~Wire the storefront to the Store API~~ — done (§7)
 6. ~~Stripe, seasonal checkout end to end, and a payment link when a quote is accepted~~ — done;
    dormant until keys exist (§6)
-7. Accounts + saved measurement profiles
+7. ~~Accounts + saved measurement profiles~~ — done, with settings besides (§3.9)
 8. Payload for editorial
 9. Deploy to Render, with R2 and Resend configured
 10. The go-live checklist
 
-What remains before go-live is configuration rather than code: Stripe keys, a Resend key and a
-verified sender, an R2 bucket, and the client's own content (§8.5, and `HANDOVER.md` §8).
+Payload aside — editorial content, not the commerce path — what remains before go-live is
+configuration rather than code: Stripe keys, a Resend key and a verified sender, an R2 bucket,
+and the client's own content (§8.5, and `HANDOVER.md` §8).
