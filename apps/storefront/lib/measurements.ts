@@ -120,3 +120,18 @@ export function toLineItemMetadata(
     ),
   };
 }
+
+/** The inverse of `toLineItemMetadata` — reads a sheet back out of whatever
+    carried it, a cart line or a saved account profile alike. Keys it does
+    not recognise are ignored, so metadata carrying other fields besides the
+    sheet is safe to pass in whole. */
+export function fromLineItemMetadata(
+  metadata: Record<string, unknown> | null | undefined,
+): { unit: Unit; values: Measurements } {
+  const values: Measurements = {};
+  for (const [key, value] of Object.entries(metadata ?? {})) {
+    const zone = key.match(/^measure_(.+)_cm$/)?.[1];
+    if (zone) values[zone] = Number(value);
+  }
+  return { unit: metadata?.measurement_unit === 'in' ? 'in' : 'cm', values };
+}

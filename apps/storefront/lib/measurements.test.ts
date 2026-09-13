@@ -3,6 +3,7 @@ import {
   CM_PER_INCH,
   RANGES,
   formatValue,
+  fromLineItemMetadata,
   isComplete,
   takenCount,
   toCm,
@@ -157,5 +158,22 @@ describe('line item payload', () => {
     const payload = toLineItemMetadata({ neck: 38 }, 'cm');
     expect(payload).toHaveProperty('measure_neck_cm');
     expect(payload).not.toHaveProperty('measure_waist_cm');
+  });
+});
+
+describe('reading a sheet back out of metadata', () => {
+  it('round-trips through the line item payload', () => {
+    const values = { neck: 38, bust: 96 };
+    const payload = toLineItemMetadata(values, 'in');
+    expect(fromLineItemMetadata(payload)).toEqual({ unit: 'in', values });
+  });
+
+  it('ignores metadata that is not a measurement', () => {
+    const { values } = fromLineItemMetadata({ fabric_name: 'Oyster silk', piece_id: 'w1' });
+    expect(values).toEqual({});
+  });
+
+  it('defaults to centimetres, and to nothing at all, given nothing', () => {
+    expect(fromLineItemMetadata(null)).toEqual({ unit: 'cm', values: {} });
   });
 });

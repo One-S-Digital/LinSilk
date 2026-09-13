@@ -29,8 +29,8 @@ export default function CartPage() {
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
             </ButtonLink>
-            <ButtonLink href="/design" variant="rule">
-              Commission something
+            <ButtonLink href="/design" variant="solid">
+              Design an outfit
             </ButtonLink>
           </div>
         </div>

@@ -27,6 +27,9 @@ export function MeasurementSheet({
   onChange,
   title = 'Your measurements',
   showIntro = true,
+  initialValues,
+  initialUnit,
+  onSave,
 }: {
   group: Group;
   /* Measurements that describe the garment rather than the body — a coat's
@@ -36,17 +39,33 @@ export function MeasurementSheet({
   onChange?: (values: Measurements, unit: Unit) => void;
   title?: string;
   showIntro?: boolean;
+  /* An account's saved profile, read once and shown instead of whatever is
+     on this device. When set, the local-storage restore below is skipped —
+     a signed-in profile is the sheet, not a fallback for it. */
+  initialValues?: Measurements;
+  initialUnit?: Unit;
+  /* Where "Save this profile" writes when someone is signed in. Absent, it
+     writes to this device instead, as it always has. */
+  onSave?: (values: Measurements, unit: Unit) => Promise<{ error?: string } | void>;
 }) {
   const uid = useId();
-  const [unit, setUnit] = useState<Unit>('cm');
-  const [values, setValues] = useState<Measurements>({});
+  const [unit, setUnit] = useState<Unit>(initialUnit ?? 'cm');
+  const [values, setValues] = useState<Measurements>(initialValues ?? {});
   /** What is literally in each input, in the current unit, so typing "17." works. */
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>(
+    Object.fromEntries(
+      Object.entries(initialValues ?? {})
+        .filter(([, cm]) => typeof cm === 'number')
+        .map(([k, cm]) => [k, formatValue(cm as number, initialUnit ?? 'cm')]),
+    ),
+  );
   const [active, setActive] = useState<string>(ZONES[0].key);
   const [guide, setGuide] = useState<Group>(group);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const hydrated = useHydrated();
-  const [restored, setRestored] = useState(false);
+  const [restored, setRestored] = useState(Boolean(initialValues));
 
   const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
 
@@ -82,11 +101,13 @@ export function MeasurementSheet({
       ),
     );
     setSaved(false);
+    setSaveError(null);
   };
 
   const setField = (key: string, raw: string) => {
     setDrafts((d) => ({ ...d, [key]: raw }));
     setSaved(false);
+    setSaveError(null);
 
     const cleaned = raw.replace(',', '.').trim();
     if (cleaned === '') {
@@ -270,13 +291,33 @@ export function MeasurementSheet({
         </a>
         <button
           type="button"
-          onClick={() => setSaved(saveLocal(unit, values))}
-          disabled={taken === 0}
+          onClick={async () => {
+            setSaveError(null);
+            if (!onSave) {
+              setSaved(saveLocal(unit, values));
+              return;
+            }
+            setSaving(true);
+            const result = await onSave(values, unit);
+            setSaving(false);
+            if (result?.error) setSaveError(result.error);
+            else setSaved(true);
+          }}
+          disabled={taken === 0 || saving}
           style={{ color: 'var(--ink-muted)' }}
         >
-          Save this profile
+          {saving ? 'Saving…' : 'Save this profile'}
         </button>
-        {saved && <span className={styles.saved}>Saved to this device</span>}
+        {saved && (
+          <span className={styles.saved}>
+            {onSave ? 'Saved to your account' : 'Saved to this device'}
+          </span>
+        )}
+        {saveError && (
+          <span className={styles.error} role="status">
+            {saveError}
+          </span>
+        )}
       </div>
 
       {summary.length > 0 && (
