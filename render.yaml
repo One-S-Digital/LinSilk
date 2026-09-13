@@ -99,6 +99,13 @@ services:
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
+      - key: PAYLOAD_SECRET
+        generateValue: true
+      # Render provisions one database per instance (ayla_medusa, below), so
+      # ayla_payload is created manually and typed in here once
+      # (docs/BACKEND-RENDER.md §8.3).
+      - key: DATABASE_URI
+        sync: false
 
   - type: keyvalue
     name: ayla-redis

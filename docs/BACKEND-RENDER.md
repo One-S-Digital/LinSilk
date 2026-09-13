@@ -248,25 +248,51 @@ seed script's input only.
 
 ---
 
-## 5. Phase 4 — Payload CMS
+## 5. Phase 4 — Payload CMS — `pages` built, the rest is schema only
 
-Payload 3 installs **into the Next.js app**, so there is no fifth service.
+Payload 3 installs **into the Next.js app**, so there is no fifth service. It was added by hand
+rather than with `create-payload-app` — that generator defaults to Mongo and a `src/` layout this
+storefront doesn't have. What's there instead: `payload`, `@payloadcms/next`,
+`@payloadcms/db-postgres`, `graphql` and `sharp` as dependencies of `apps/storefront`;
+`payload.config.ts` at its root; and the `app/(payload)/` route group copied from Payload's own
+blank template. Those route files are generated and are not meant to be hand-edited — regenerate
+`app/(payload)/admin/importMap.js` with `pnpm --filter storefront generate:importmap` if the
+admin's own registered components ever change, and `payload-types.ts` (gitignored, like
+`next-env.d.ts`) with `pnpm --filter storefront generate:types`.
+
+Points at `ayla_payload` via `DATABASE_URI` — `docker/init-db.sql` already creates that database
+locally, alongside Medusa's. `PAYLOAD_SECRET` is Payload's own encryption/signing secret and must
+never be the same value as Medusa's `JWT_SECRET` or `COOKIE_SECRET`.
+
+All five collections from the original plan exist, but only one is wired to a page yet:
+
+| Collection | Content | Status |
+|---|---|---|
+| `pages` | The Atelier, The Cloth, The house | **Built.** Seeded from `lib/catalog.ts`'s `STORY` constant by `payload/seed.ts`; read live by the three routes that used to read `STORY` directly (`lib/payload.ts`'s `getStoryPage`) |
+| `care` | Shipping, Measurement guide, Returns and alterations, Questions | Schema only (`key`, `title`, `lead`). The four `/care` pages still render their own hand-built sections, lists and comparison rows (`components/doc-page.tsx`) — moving that into Payload needs a content model for sections/lists/rows, which is separate work from standing the CMS up |
+| `legal` | Terms, Privacy ⚠ **awaiting a lawyer — do not draft these** | Schema only, same reasoning as `care` — and there is nothing real to put in it yet regardless |
+| `seasons` | Editorial per collection, keyed to the Medusa collection handle | Schema only. Nothing renders this yet: the archive pages carry only the one-line `collection.note` already in Medusa metadata |
+| `media` | Photography, once it exists | Schema only — upload-enabled, one `alt` text field. Empty: everything today is a placeholder woven gradient (`HANDOVER.md` §8) |
 
 ```bash
-cd apps/storefront
-pnpm dlx create-payload-app@latest --db postgres
+pnpm --filter storefront exec payload run ./payload/seed.ts
 ```
 
-Point it at `ayla_payload`. Collections to model — copy is final, it is all in `lib/catalog.ts`
-under `STORY`:
+Safe to run again — a `pages` document that already exists is updated in place, brought back in
+line with `STORY`, rather than duplicated. Like the Medusa seed, it reads straight from the
+storefront's own source of truth; `STORY` is the seed's input only from here on.
 
-| Collection | Content |
-|---|---|
-| `pages` | The Atelier, The Cloth, The house |
-| `care` | Shipping, Measurement guide, Returns and alterations, Questions |
-| `legal` | Terms, Privacy ⚠ **awaiting a lawyer — do not draft these** |
-| `seasons` | Editorial per collection, keyed to the Medusa collection handle |
-| `media` | Photography, once it exists |
+⚠ **`payload run` needs two workarounds under this exact toolchain** — Next 16.3, no
+`"type": "module"` in `apps/storefront/package.json`. First, every relative import inside
+`payload.config.ts`, and inside any script run via `payload run`, needs an explicit `.ts`
+extension (`allowImportingTsExtensions` in `tsconfig.json` permits the syntax) — an open issue
+against Payload under Next 16 (github.com/payloadcms/payload/issues/16684). Second, a standalone
+script needs genuine top-level `await`, not a `.then()/.catch()` chain, or the CLI exits 0 the
+instant `getPayload()` is called, before the connection settles — which is why `payload/` is its
+own ESM package (`payload/package.json`) and `payload/seed.ts` loads `.env.local` itself with
+`process.loadEnvFile()` before dynamically importing anything that reads `process.env`. Neither
+workaround touches the normal path: Next loads `.env.local` and this config the ordinary way (via
+`@payload-config` from `app/(payload)/layout.tsx`) for `dev`, `build` and `start` alike.
 
 Payload's admin lands at `/admin`; Medusa's is on its own service. Two admins is the cost of not
 being on Shopify — worth stating to the client plainly.
@@ -444,6 +470,10 @@ durability guarantee across deploys.
 - [ ] Transactional email at every state change
 - [ ] Automated Postgres backups on, and a restore actually tested
 - [ ] `NEXT_PUBLIC_*` vars contain nothing secret
+- [ ] `ayla_payload` database created manually (§8.3); `DATABASE_URI` and `PAYLOAD_SECRET` set on
+      `ayla-storefront`
+- [ ] Payload admin reachable at `/admin`, first user created, seed run
+      (`pnpm --filter storefront exec payload run ./payload/seed.ts`)
 - [ ] Storefront still passes `pnpm --filter storefront test`
 
 ---
@@ -482,10 +512,13 @@ permanently.
 6. ~~Stripe, seasonal checkout end to end, and a payment link when a quote is accepted~~ — done;
    dormant until keys exist (§6)
 7. ~~Accounts + saved measurement profiles~~ — done, with settings besides (§3.9)
-8. Payload for editorial
+8. ~~Payload, with its `pages` collection~~ — done (§5); `care`, `legal`, `seasons` and `media`
+   still need a content model — and, for `legal`, a lawyer — before there is anything to wire them
+   to
 9. Deploy to Render, with R2 and Resend configured
 10. The go-live checklist
 
-Payload aside — editorial content, not the commerce path — what remains before go-live is
-configuration rather than code: Stripe keys, a Resend key and a verified sender, an R2 bucket,
-and the client's own content (§8.5, and `HANDOVER.md` §8).
+The remaining editorial work aside (`care`/`legal`/`seasons`/`media`, §5) — none of it the commerce
+path — what stands between this and go-live is configuration rather than code: Stripe keys, a
+Resend key and a verified sender, an R2 bucket, and the client's own content (§8.5, and
+`HANDOVER.md` §8).

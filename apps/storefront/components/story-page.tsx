@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { Parallax, Reveal, RuleDraw } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
-import { STORY, type StoryKey } from '@/lib/catalog';
+import type { StoryKey } from '@/lib/catalog';
+import { getStoryPage } from '@/lib/payload';
 import styles from './story-page.module.css';
 
 const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
@@ -22,14 +23,14 @@ const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
   ],
 };
 
-export function StoryPage({
+export async function StoryPage({
   storyKey,
   children,
 }: {
   storyKey: StoryKey;
   children?: ReactNode;
 }) {
-  const story = STORY[storyKey];
+  const story = await getStoryPage(storyKey);
   const plates = PLATES[storyKey];
 
   return (

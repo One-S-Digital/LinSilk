@@ -8,16 +8,23 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap"
   },
   "dependencies": {
+    "@payloadcms/db-postgres": "^3.89.0",
+    "@payloadcms/next": "^3.89.0",
     "@stripe/react-stripe-js": "^6.10.0",
     "@stripe/stripe-js": "^9.16.0",
+    "graphql": "^16.14.2",
     "lenis": "^1.3.26",
     "motion": "^13.2.0",
     "next": "16.3.4",
+    "payload": "^3.89.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@types/node": "^20",

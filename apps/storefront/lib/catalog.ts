@@ -326,7 +326,10 @@ export const COMMISSION_STEPS = [
 ] as const;
 
 /* ---- Editorial ---- *
- * Moves to Payload once the CMS is wired; the copy is final either way. */
+ * Seeds Payload's `pages` collection (payload/seed.ts) — the storefront reads
+ * this copy back from there now (lib/payload.ts's getStoryPage), not from
+ * this constant. Kept here because it is the seed's input and the copy is
+ * final either way. */
 
 export const STORY = {
   atelier: {

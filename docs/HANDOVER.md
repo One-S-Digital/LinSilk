@@ -4,8 +4,10 @@
 **Agency:** one S Digital
 **Status as of 2026-09-13:** Storefront and backend both built. A client can reserve a piece or
 commission one, pay for either, and manage all of it from an account — or do any of it as a
-guest. What is left is Payload for editorial, a currency switcher for browsing, and
-configuration rather than code. See §10.
+guest. Payload is installed and its `pages` collection (Atelier, Cloth, The house) is wired end to
+end; `care`, `legal`, `seasons` and `media` exist as collections but nothing reads from them yet.
+What is left is that remaining editorial work, a currency switcher for browsing, and configuration
+rather than code otherwise. See §10.
 **Repo:** pnpm monorepo. Work sits on the `backend` branch, unmerged with `master`.
 
 ---
@@ -37,7 +39,7 @@ as art direction. `support.js` in that folder is the Claude Design runtime and w
 | Styling | **CSS Modules + token layer** | The design is `clamp()` and exact hex throughout; Tailwind arbitrary values would be strictly worse |
 | Motion | **motion 13** (Framer Motion) + **lenis** | Scroll-linked work needs interpolated scroll or it reads as jitter |
 | Commerce | **Medusa v2**, self-hosted | Open source, TypeScript end to end, multi-currency regions in core, line-item metadata carries the measurement sheet |
-| CMS | **Payload 3** *(not built yet)* | Open source, TypeScript, runs on the same Postgres, installs into the Next app |
+| CMS | **Payload 3**, installed into the Next app | Open source, TypeScript, runs on the same Postgres — `pages` is wired; `care`/`legal`/`seasons`/`media` are schema only |
 | Tests | **Vitest** | 28 tests on the measurement maths |
 
 **Shopify was rejected deliberately.** Two reasons, both sound: the client will not accept
@@ -54,10 +56,12 @@ fights a house where the price of a commission is not known until a person has r
 
 ```
 Maison Ayla/
-├─ apps/storefront/          Next.js 16 · the whole storefront
-│  ├─ app/                   Routes (App Router)
+├─ apps/storefront/          Next.js 16 · the whole storefront, and Payload
+│  ├─ app/                   Routes (App Router), incl. app/(payload) — Payload's admin and API
 │  ├─ components/            Design system, motion primitives, commerce widgets
 │  ├─ lib/                   Catalogue, measurements, cart · the domain layer
+│  ├─ payload/               Payload's collections and its seed script
+│  ├─ payload.config.ts      Payload's own config — its Postgres db, secret, collections
 │  └─ public/measure/        Measurement guide plates  ⚠ see §8
 ├─ docs/                     This file, and BACKEND-RENDER.md
 ├─ docker/init-db.sql        Creates the Payload database alongside Medusa's
@@ -65,7 +69,7 @@ Maison Ayla/
 └─ Maison Ayla prototype…/   Original Claude Design output · reference only
 ```
 
-**57 source files, ~7,970 lines, 20 route files, 77 prerendered pages.**
+**76 source files, ~7,540 lines, 30 route files, 84 prerendered pages.**
 
 ---
 
@@ -284,9 +288,20 @@ Built — **see `docs/BACKEND-RENDER.md`**:
   is — which is why account pages are Server Components rather than the cart's client pattern.
   Email is not editable from the account; the customer-update endpoint doesn't accept it.
 
+- Payload 3, installed into the Next app on its own `ayla_payload` Postgres database (no fifth
+  service). The `pages` collection — Atelier, Cloth, The house — is wired end to end: seeded from
+  the old `STORY` constant in `lib/catalog.ts` (`payload/seed.ts`), read live from Payload by the
+  three routes that used to read `STORY` directly (`lib/payload.ts`'s `getStoryPage`). `care`,
+  `legal`, `seasons` and `media` exist as collections with a minimal schema but nothing reads from
+  them yet — see `BACKEND-RENDER.md` §5 for why those four are scoped out of this pass.
+
 Still to build:
 
-- Payload CMS for the editorial pages
+- A content model for `care` and `legal` — sections, lists, comparison rows — so the four /care
+  pages and two /legal pages can actually be edited in Payload rather than in code. `legal` has
+  nothing real to put there yet regardless (awaiting a lawyer, §8).
+- `seasons` and `media` need a consuming page before populating either one means anything —
+  today's archive pages carry nothing beyond the one-line `collection.note` already in Medusa
 - Currency switcher for browsing (checkout already switches; the shop pages read `lib/catalog.ts`
   for copy and art direction)
 - Production status screens for the bench
@@ -311,6 +326,11 @@ and a verified sender, and an R2 bucket. See `BACKEND-RENDER.md` §6 and §8.5.
 - **No horizontal overflow** on any route at 375 / 768 / 1440 — audited programmatically
 - Rail wheel handling: 1:1 with the gesture, hands back at both ends
 - Archived pieces show no reserve form; garment length appears only where it applies
+- Payload boots locally against Postgres (schema pushed, no migration written yet — dev only) and
+  `/admin` reaches the first-user screen. The `pages` collection round-trips: seeded, then read
+  back by the storefront — Atelier, Cloth and The house render byte-identical title, description
+  and body copy to before, confirmed against the rendered HTML and against Postgres directly, and
+  survive a full `next build` (still prerendered, not merely working in dev)
 
 **Not verified:** the Lenis handover at the end of a rail. Lenis animates on `requestAnimationFrame`,
 which is suspended while a browser pane is hidden, so it could not be confirmed headlessly.

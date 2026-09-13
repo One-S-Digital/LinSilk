@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { StoryPage } from '@/components/story-page';
 import { ButtonLink } from '@/components/ui/button';
-import { STORY } from '@/lib/catalog';
+import { getStoryPage } from '@/lib/payload';
 
-export const metadata: Metadata = {
-  title: STORY.atelier.title,
-  description: STORY.atelier.lead,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const story = await getStoryPage('atelier');
+  return { title: story.title, description: story.lead };
+}
 
 export default function AtelierPage() {
   return (
