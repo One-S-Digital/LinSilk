@@ -25,7 +25,7 @@ export default async function DesignPage() {
         <h1 className={styles.title}>Design your own</h1>
         <p className={styles.lede}>
           Commissions cannot be sent just now — the atelier’s desk is unreachable. Write
-          to <a href="mailto:hello@maisonayla.ch">hello@maisonayla.ch</a> and a tailor
+          to <a href="mailto:hello@linsilk.ch">hello@linsilk.ch</a> and a tailor
           will take your brief by email instead.
         </p>
       </div>

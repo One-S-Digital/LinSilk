@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -48,8 +49,8 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
     <>
       <header className={styles.header}>
         <div className={styles.inner}>
-          <Link href="/" className={styles.wordmark}>
-            Maison Ayla
+          <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
+            <Image src="/brand/mark-gold.png" alt="LinSilk" width={40} height={40} priority />
           </Link>
 
           <nav className={styles.nav} aria-label="Primary">
@@ -96,8 +97,8 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             transition={{ duration: 0.4, ease: EASE }}
           >
             <div className={styles.panelTop}>
-              <Link href="/" className={styles.wordmark}>
-                Maison Ayla
+              <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
+                <Image src="/brand/mark-gold.png" alt="LinSilk" width={44} height={44} />
               </Link>
               <button type="button" onClick={() => setOpen(false)}>
                 Close

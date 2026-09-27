@@ -23,7 +23,9 @@ export function PieceCard({
     >
       <ShotFrame
         className={styles.frame}
-        note={piece.shot}
+        src={piece.images[0]}
+        alt={piece.name}
+        note={piece.images.length ? undefined : piece.shot}
         weave={piece.group === 'men' ? 'sand' : 'bone'}
         ratio={ratio}
         zoom

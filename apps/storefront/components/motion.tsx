@@ -1,6 +1,6 @@
 'use client';
 
-/* Maison Ayla — motion primitives.
+/* LinSilk — motion primitives.
  *
  * Ported and extended from the prototype's `motion-fx.jsx`. The vocabulary is
  * deliberately drawn from the house's own craft rather than generic web motion:

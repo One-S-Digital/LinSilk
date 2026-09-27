@@ -11,7 +11,7 @@ import {
   toLineItemMetadata,
   validate,
 } from './measurements';
-import { LENGTH_ZONE, PIECES, ZONES, garmentZonesFor } from './catalog';
+import { LENGTH_ZONE, ZONES, garmentZonesFor, type LengthKind } from './catalog';
 
 /* The sheet is the order. A measurement that converts wrongly does not produce
  * a rendering bug, it produces a garment cut to the wrong body — so the
@@ -122,7 +122,7 @@ describe('the atelier chart', () => {
   });
 
   it('asks a set for both of its lengths', () => {
-    const set = PIECES.find((p) => p.id === 'w8')!;
+    const set = { lengthKinds: ['top', 'trouser'] as LengthKind[] };
     expect(garmentZonesFor(set).map((z) => z.label)).toEqual([
       'Desired length',
       'Trouser length',

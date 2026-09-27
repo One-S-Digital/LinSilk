@@ -56,7 +56,7 @@ const openCommissionCartStep = createStep(
     if (!region) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        "The house does not ship there yet. Write to hello@maisonayla.ch and we will arrange it."
+        "The house does not ship there yet. Write to hello@linsilk.ch and we will arrange it."
       )
     }
 

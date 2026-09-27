@@ -77,7 +77,7 @@ export const isComplete = (m: Measurements, zones: Zone[] = ZONES) =>
    A convenience for guests. Signed-in clients get the sheet on their account,
    which is what "Save this profile" writes to. */
 
-const KEY = 'ayla.measurements.v1';
+const KEY = 'linsilk.measurements.v1';
 
 export function loadLocal(): { unit: Unit; values: Measurements } {
   if (typeof window === 'undefined') return { unit: 'cm', values: {} };

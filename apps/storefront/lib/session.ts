@@ -10,7 +10,7 @@
 import { cookies } from 'next/headers';
 import { MEDUSA_URL, medusaHeaders } from './medusa';
 
-const COOKIE = 'ayla_session';
+const COOKIE = 'linsilk_session';
 const DEFAULT_MAX_AGE = 60 * 60 * 24; // Medusa's own default token lifetime.
 
 /** Reads a JWT's `exp` claim without verifying it — the token just came

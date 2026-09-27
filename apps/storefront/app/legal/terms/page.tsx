@@ -3,7 +3,7 @@ import { DocPage, DocSection, DocP, DocList } from '@/components/doc-page';
 
 export const metadata: Metadata = {
   title: 'Terms',
-  description: 'Terms of sale for Maison Ayla.',
+  description: 'Terms of sale for LinSilk.',
   robots: { index: false },
 };
 
@@ -12,7 +12,7 @@ export default function TermsPage() {
     <DocPage
       eyebrow="Legal"
       title="Terms of sale"
-      lead="Maison Ayla sells made-to-measure garments from Zürich, manufactured in Hội An, Việt Nam. These terms govern reservations, confirmation, payment, delivery and alterations."
+      lead="LinSilk sells made-to-measure garments from Zürich, manufactured in Hội An, Việt Nam. These terms govern reservations, confirmation, payment, delivery and alterations."
     >
       <DocSection title="Awaiting legal review">
         <DocP>

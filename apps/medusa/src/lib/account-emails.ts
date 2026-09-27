@@ -16,7 +16,7 @@ export function passwordResetEmail(email: string, token: string) {
     channel: "email",
     template: "password-reset",
     content: {
-      subject: "Reset your password — Maison Ayla",
+      subject: "Reset your password — LinSilk",
       text: [
         "A password reset was requested for this account.",
         "",
@@ -26,7 +26,7 @@ export function passwordResetEmail(email: string, token: string) {
         "If you did not ask for this, ignore this email — nothing changes",
         "unless the link above is opened.",
         "",
-        "Maison Ayla",
+        "LinSilk",
         "Zürich · Hội An",
       ].join("\n"),
     },

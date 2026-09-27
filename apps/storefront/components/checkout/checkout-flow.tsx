@@ -359,7 +359,7 @@ export function CheckoutFlow({
                 {options.length === 0 && (
                   <p className={styles.answer}>
                     The house does not ship to that address yet. Write to
-                    hello@maisonayla.ch and the atelier will arrange it.
+                    hello@linsilk.ch and the atelier will arrange it.
                   </p>
                 )}
               </div>

@@ -34,37 +34,44 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://maisonayla.ch'),
+  metadataBase: new URL('https://linsilk.ch'),
   title: {
-    default: 'Maison Ayla — made to measure in pure natural fibre',
-    template: '%s — Maison Ayla',
+    default: 'LinSilk — made to measure in pure natural fibre',
+    template: '%s — LinSilk',
   },
   description:
     'Silk and linen garments cut to your measurements in a single atelier in Hội An. Four small collections a year, each made once and never restocked.',
   openGraph: {
     type: 'website',
-    siteName: 'Maison Ayla',
+    siteName: 'LinSilk',
     locale: 'en_CH',
+    images: ['/brand/social-card.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/brand/social-card.png'],
   },
 };
 
 /* Built here, on the server, from whatever collections actually exist. */
-function buildNav() {
+async function buildNav() {
   return [
     { href: '/collection', label: 'Collection' },
     { href: '/design', label: 'Design Your Own' },
     { href: '/atelier', label: 'The Atelier' },
     { href: '/cloth', label: 'The Cloth' },
-    ...(pastCollections().length > 0
+    ...((await pastCollections()).length > 0
       ? [{ href: '/archive', label: 'Past Collections' }]
       : []),
     { href: '/contact', label: 'Contact' },
   ];
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const nav = await buildNav();
+
   return (
     <html
       lang="en"
@@ -85,7 +92,7 @@ export default function RootLayout({
             <a href="#main" className="sr-only">
               Skip to content
             </a>
-            <SiteHeader nav={buildNav()} />
+            <SiteHeader nav={nav} />
             <main id="main">{children}</main>
             <SiteFooter />
           </SmoothScroll>

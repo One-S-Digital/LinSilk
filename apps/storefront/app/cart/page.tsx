@@ -3,7 +3,7 @@
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
-import { findPiece, money } from '@/lib/catalog';
+import { money } from '@/lib/catalog';
 import { formatValue } from '@/lib/measurements';
 import styles from './cart.module.css';
 
@@ -22,9 +22,7 @@ export default function CartPage() {
           state at someone who has three pieces reserved. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>
-            Nothing reserved yet. The season closes in February.
-          </p>
+          <p className={styles.emptyText}>Nothing reserved yet.</p>
           <div className={styles.emptyActions}>
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
@@ -38,13 +36,12 @@ export default function CartPage() {
         <>
           <div className={styles.lines}>
             {lines.map((line) => {
-              const piece = line.pieceId ? findPiece(line.pieceId) : undefined;
               const taken = Object.keys(line.measurements).length;
               return (
                 <article key={line.id} className={styles.line}>
                   <ShotFrame
-                    note={piece?.shot}
-                    weave={piece?.group === 'men' ? 'sand' : 'bone'}
+                    note={line.shot}
+                    weave={line.group === 'men' ? 'sand' : 'bone'}
                     ratio="3 / 4"
                   />
 

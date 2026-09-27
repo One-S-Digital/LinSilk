@@ -35,13 +35,23 @@ const schema = z.object({
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  /* Multipart sends every field as a string; `measurements` arrives as JSON. */
+  /* Multipart sends every field as a string; `measurements` arrives as JSON.
+     A sheet that is not JSON at all is a refusal like any other, not a
+     crash — so it is read here rather than left to throw past the schema. */
   const body = req.body as Record<string, unknown>
-  const parsed = schema.safeParse({
-    ...body,
-    measurements:
-      typeof body.measurements === "string" ? JSON.parse(body.measurements) : body.measurements,
-  })
+  let measurements: unknown = body.measurements
+  if (typeof measurements === "string") {
+    try {
+      measurements = JSON.parse(measurements)
+    } catch {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "measurements: the sheet could not be read; it should be a JSON object of measurements."
+      )
+    }
+  }
+
+  const parsed = schema.safeParse({ ...body, measurements })
   if (!parsed.success) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,

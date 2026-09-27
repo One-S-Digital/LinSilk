@@ -2,7 +2,7 @@
 
 ## Overview
 
-Maison Ayla's commerce backend: a Medusa v2 application (`@medusajs/medusa` 2.20.x, Node 20+,
+LinSilk's commerce backend: a Medusa v2 application (`@medusajs/medusa` 2.20.x, Node 20+,
 PostgreSQL 15+). It is the `medusa` package in the repo's pnpm workspace; the storefront is the
 sibling `apps/storefront` (Next.js).
 
@@ -50,7 +50,7 @@ pnpm --filter medusa exec medusa exec ./src/scripts/refresh-exchange-rates.ts  #
 
 Integration tests read `.env.test` (git-ignored): `DB_HOST`, `DB_PORT`, `DB_USERNAME`,
 `DB_PASSWORD` for a Postgres user that can create databases. Locally that is `localhost`,
-`5432`, `ayla`, `ayla`.
+`5432`, `linsilk`, `linsilk`.
 
 Install dependencies into this package, not the root: `pnpm --filter medusa add <pkg>`.
 

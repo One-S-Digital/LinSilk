@@ -19,7 +19,7 @@ import { ATELIER_MODULE } from "../../modules/atelier"
 import type AtelierModuleService from "../../modules/atelier/service"
 import { commissionQuotedEmail, type CommissionRecord } from "../../lib/commission-emails"
 import { COMMISSION_COLLECTION } from "../../lib/commission-catalogue"
-import { fetchChfRates } from "../../lib/exchange-rates"
+import { chfRates } from "../../lib/exchange-rates"
 import { CURRENCIES, fromChf } from "../../lib/pricing"
 
 /* Writing a commission down, and later putting a price on it. Both are
@@ -79,6 +79,7 @@ const prepareQuoteStep = createStep(
   async ({ id, quote_amount }: { id: string; quote_amount: number }, { container }) => {
     const atelier: AtelierModuleService = container.resolve(ATELIER_MODULE)
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     const carts = container.resolve(Modules.CART)
     const commission = await atelier.retrieveCommission(id)
 
@@ -94,7 +95,7 @@ const prepareQuoteStep = createStep(
       await carts.deleteCarts([commission.cart_id as string]).catch(() => undefined)
     }
 
-    const rates = await fetchChfRates()
+    const rates = await chfRates(logger)
     const prices = CURRENCIES.map((currency_code) => ({
       currency_code,
       amount: fromChf(quote_amount, currency_code, rates),
@@ -153,7 +154,7 @@ const prepareQuoteStep = createStep(
               variants: [
                 {
                   title: "Made to measure",
-                  sku: `AYLA-${id.toUpperCase()}`,
+                  sku: `LINSILK-${id.toUpperCase()}`,
                   options: { Cut: "Made to measure" },
                   manage_inventory: true,
                   allow_backorder: false,
@@ -166,14 +167,17 @@ const prepareQuoteStep = createStep(
       })
       createdProductId = created[0].id
 
-      /* A run of one: once it is paid for, the link buys nothing. */
-      const { data: items } = await query.graph({
+      /* A run of one: once it is paid for, the link buys nothing.
+
+         The item is asked for by the sku the variant was just given, rather
+         than by reading every inventory item in the house and looking for
+         the one that points back — that list grows with every piece and
+         every commission ever quoted, and this is the payment path. */
+      const { data: [item] } = await query.graph({
         entity: "inventory_item",
-        fields: ["id", "variants.id"],
+        fields: ["id"],
+        filters: { sku: `LINSILK-${id.toUpperCase()}` },
       })
-      const item = items.find((i) =>
-        (i.variants ?? []).some((v) => v?.id === created[0].variants![0]!.id)
-      )
       const { data: [location] } = await query.graph({
         entity: "stock_location",
         fields: ["id"],

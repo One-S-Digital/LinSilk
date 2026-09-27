@@ -4,21 +4,21 @@ import type { Metadata } from 'next';
 import { ChalkMark, ClothWipe, Reveal } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
 import { PieceOrderPanel } from '@/components/piece-order-panel';
-import { PIECES, collectionBySlug, findPiece, isOrderable, money, roman } from '@/lib/catalog';
+import { collectionBySlug, findPiece, getPieces, isOrderable, money, roman } from '@/lib/catalog';
 import { getVariantId } from '@/lib/medusa';
 import styles from './piece.module.css';
 
-export function generateStaticParams() {
-  return PIECES.map((piece) => ({ id: piece.id }));
+export async function generateStaticParams() {
+  return (await getPieces()).map((piece) => ({ id: piece.id }));
 }
 
 export async function generateMetadata(
   props: PageProps<'/piece/[id]'>,
 ): Promise<Metadata> {
   const { id } = await props.params;
-  const piece = findPiece(id);
+  const piece = await findPiece(id);
   if (!piece) return {};
-  const collection = collectionBySlug(piece.collection)!;
+  const collection = (await collectionBySlug(piece.collection))!;
   return {
     title: piece.name,
     description: isOrderable(piece)
@@ -29,7 +29,7 @@ export async function generateMetadata(
 
 export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
   const { id } = await props.params;
-  const piece = findPiece(id);
+  const piece = await findPiece(id);
   if (!piece) notFound();
 
   const weave = piece.group === 'men' ? 'sand' : 'bone';
@@ -37,7 +37,7 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
 
   /* A piece from a closed season is a record, not a product: no price, no
      lead time, and the way back leads to the archive it belongs to. */
-  const collection = collectionBySlug(piece.collection)!;
+  const collection = (await collectionBySlug(piece.collection))!;
   const orderable = isOrderable(piece);
   const numeral = roman(collection.number);
 
@@ -78,7 +78,13 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
         {/* ---- Gallery ---- */}
         <div className={styles.gallery}>
           <ClothWipe>
-            <ShotFrame note={piece.shot} weave={weave} ratio="4 / 5">
+            <ShotFrame
+              src={piece.images[0]}
+              alt={piece.name}
+              note={piece.images.length ? undefined : piece.shot}
+              weave={weave}
+              ratio="4 / 5"
+            >
               <ChalkMark
                 label="sleeve · 63"
                 style={{ position: 'absolute', right: -8, top: '34%' }}
@@ -88,10 +94,22 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
 
           <div className={styles.details}>
             <ClothWipe delay={0.08}>
-              <ShotFrame note="hand-rolled hem" weave={weave} ratio="1" />
+              <ShotFrame
+                src={piece.images[1]}
+                alt={piece.name}
+                note={piece.images[1] ? undefined : 'hand-rolled hem'}
+                weave={weave}
+                ratio="1"
+              />
             </ClothWipe>
             <ClothWipe delay={0.16}>
-              <ShotFrame note="cloth, raking light" weave={weave} ratio="1" />
+              <ShotFrame
+                src={piece.images[2]}
+                alt={piece.name}
+                note={piece.images[2] ? undefined : 'cloth, raking light'}
+                weave={weave}
+                ratio="1"
+              />
             </ClothWipe>
           </div>
         </div>

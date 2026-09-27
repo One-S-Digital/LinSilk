@@ -12,7 +12,7 @@ export default function QuestionsPage() {
   return (
     <DocPage
       title="Questions"
-      lead="What the office in Zürich is asked most often. Anything not here, write to hello@maisonayla.ch — a person answers, usually within a day."
+      lead="What the office in Zürich is asked most often. Anything not here, write to hello@linsilk.ch — a person answers, usually within a day."
       foot={
         <>
           <ButtonLink href="/care/measuring" variant="rule">Measurement guide</ButtonLink>
@@ -46,8 +46,8 @@ export default function QuestionsPage() {
 
       <DocSection title="Will a design be made again?">
         <DocP>
-          No. Fourteen designs in Collection IV, and none has ever been restocked. When
-          a season closes in February its designs go to the archive and stay there.
+          No. A season is cut in a capped run and none has ever been restocked. When
+          a season closes its designs go to the archive and stay there.
         </DocP>
       </DocSection>
 

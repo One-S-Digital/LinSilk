@@ -116,7 +116,7 @@ const paymentProviders = process.env.STRIPE_API_KEY
              pays rather than held and captured later. */
           capture: true,
           automatic_payment_methods: true,
-          payment_description: 'Maison Ayla',
+          payment_description: 'LinSilk',
         },
       },
     ]

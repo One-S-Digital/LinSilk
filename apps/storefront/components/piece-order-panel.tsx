@@ -9,7 +9,6 @@ import { useCart } from '@/lib/cart';
 import {
   FABRICS,
   ZONES,
-  collectionBySlug,
   garmentZonesFor,
   isOrderable,
   money,
@@ -46,7 +45,6 @@ export function PieceOrderPanel({
   const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
 
   const orderable = isOrderable(piece);
-  const collection = collectionBySlug(piece.collection);
   const complete = isComplete(sheet.values, allZones);
   const taken = takenCount(sheet.values, allZones);
   const chosen = FABRICS.find((f) => f.key === fabric)!;
@@ -61,8 +59,8 @@ export function PieceOrderPanel({
           Archived
         </h2>
         <p className={styles.reserveNote} style={{ maxWidth: '52ch' }}>
-          This design closed with {collection?.title ?? 'its season'} and is not made
-          again. The pattern is kept at the bench, and the record of the cloth stays
+          This design closed with {piece.collectionTitle || 'its season'} and is not
+          made again. The pattern is kept at the bench, and the record of the cloth stays
           with the piece — but nothing from a closed collection is cut a second time.
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 28 }}>
@@ -129,7 +127,7 @@ export function PieceOrderPanel({
           {!variantId && (
             <p className={styles.blocked}>
               The house cannot be reached just now, so nothing can be held. Write to
-              hello@maisonayla.ch and the atelier will hold it by hand.
+              hello@linsilk.ch and the atelier will hold it by hand.
             </p>
           )}
 

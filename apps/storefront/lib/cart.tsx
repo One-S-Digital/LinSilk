@@ -48,6 +48,10 @@ export type CartLine = {
      length on top of the fifteen body zones, a set asks for two, a scarf asks
      for none. */
   zoneCount: number;
+  /* Art direction and group, carried off the product so the line can draw the
+     placeholder frame without going back to a catalogue of its own. */
+  shot?: string;
+  group?: string;
 };
 
 /** What a piece page hands over when a client reserves. */
@@ -80,7 +84,7 @@ type CartState = {
 const CartContext = createContext<CartState | null>(null);
 
 /* v3 keeps a backend cart id rather than the cart itself. */
-const KEY = 'ayla.cart.v3';
+const KEY = 'linsilk.cart.v3';
 
 const remember = (id: string | null) => {
   try {
@@ -105,7 +109,13 @@ type ApiItem = {
   subtitle?: string | null;
   unit_price: number;
   product_handle?: string | null;
-  variant?: { product?: { handle?: string | null; subtitle?: string | null } | null } | null;
+  variant?: {
+    product?: {
+      handle?: string | null;
+      subtitle?: string | null;
+      metadata?: Record<string, unknown> | null;
+    } | null;
+  } | null;
   metadata?: Record<string, unknown> | null;
 };
 
@@ -140,6 +150,8 @@ function readLine(item: ApiItem): CartLine {
     measurements,
     unit: metadata.measurement_unit === 'in' ? 'in' : 'cm',
     zoneCount: Number(metadata.zone_count ?? Object.keys(measurements).length),
+    shot: item.variant?.product?.metadata?.shot as string | undefined,
+    group: item.variant?.product?.metadata?.group as string | undefined,
   };
 }
 
@@ -191,6 +203,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       '/store/regions',
     );
     const region = regions.find((r) => r.name === 'Switzerland') ?? regions[0];
+    if (!region) {
+      throw new Error('The house is not open for orders just now. Try again in a moment.');
+    }
     const { cart: created } = await medusaFetch<{ cart: ApiCart }>('/store/carts', {
       method: 'POST',
       json: { region_id: region.id },

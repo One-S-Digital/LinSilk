@@ -5,7 +5,7 @@ import {
   missingMeasurements,
 } from '../../medusa/src/lib/measurements';
 import { toLineItemMetadata } from './measurements';
-import { LENGTH_ZONE, PIECES, ZONES, garmentZonesFor, type LengthKind } from './catalog';
+import { LENGTH_ZONE, ZONES, garmentZonesFor, type LengthKind } from './catalog';
 
 /* The backend refuses a cart line whose sheet is incomplete, using its own
    copy of the zones (apps/medusa/src/lib/measurements.ts). This file pins
@@ -39,7 +39,8 @@ describe('backend measurement sheet', () => {
   });
 
   it('accepts a set, which carries two lengths at once', () => {
-    const set = PIECES.find((p) => p.id === 'w8')!;
+    /* A sleep set is two garments on one ticket, so it asks for both. */
+    const set = { lengthKinds: ['top', 'trouser'] as LengthKind[] };
     const zones = [...ZONES, ...garmentZonesFor(set)];
     const values = Object.fromEntries(zones.map((z, i) => [z.key, 30 + i]));
     expect(missingMeasurements(toLineItemMetadata(values, 'cm', zones), set.lengthKinds!)).toEqual(

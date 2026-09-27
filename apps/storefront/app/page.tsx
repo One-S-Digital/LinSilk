@@ -15,16 +15,16 @@ import { ButtonLink } from '@/components/ui/button';
 import { currentCollection, money, piecesIn } from '@/lib/catalog';
 import styles from './home.module.css';
 
-/* The season rail leads with the women's opening five, then the men's first
-   three — the order the lookbook is shot in. Always the open collection. */
-const OPEN = currentCollection();
-const IN_SEASON = piecesIn(OPEN.slug);
-const SEASON = [
-  ...IN_SEASON.filter((p) => p.group === 'women').slice(0, 5),
-  ...IN_SEASON.filter((p) => p.group === 'men').slice(0, 3),
-];
+export default async function HomePage() {
+  /* The season rail leads with the women's opening five, then the men's first
+     three — the order the lookbook is shot in. Always the open collection. */
+  const OPEN = await currentCollection();
+  const IN_SEASON = OPEN ? await piecesIn(OPEN.slug) : [];
+  const SEASON = [
+    ...IN_SEASON.filter((p) => p.group === 'women').slice(0, 5),
+    ...IN_SEASON.filter((p) => p.group === 'men').slice(0, 3),
+  ];
 
-export default function HomePage() {
   return (
     <>
       {/* ---- Hero ---- */}
@@ -40,7 +40,7 @@ export default function HomePage() {
         <div className={styles.heroInner}>
           <LineRise delay={0.15}>
             <span className={styles.kicker} style={{ display: 'block' }}>
-              {OPEN.title}
+              {OPEN?.title ?? ''}
             </span>
             <span className={styles.heroLine} style={{ display: 'block' }}>
               Cut from silk.
@@ -88,14 +88,19 @@ export default function HomePage() {
           <h2 id="season-heading" className={styles.sectionTitle}>
             This season
           </h2>
-          <span className={styles.sectionMeta}>{OPEN.season} 26</span>
+          <span className={styles.sectionMeta}>{OPEN?.season}</span>
         </div>
 
         <DragRail label="This season">
             {SEASON.map((piece) => (
               <article key={piece.id} className={styles.tile}>
                 <Link href={`/piece/${piece.id}`}>
-                  <ShotFrame note={piece.shot} weave={piece.group === 'men' ? 'sand' : 'bone'} />
+                  <ShotFrame
+                    src={piece.images[0]}
+                    alt={piece.name}
+                    note={piece.images.length ? undefined : piece.shot}
+                    weave={piece.group === 'men' ? 'sand' : 'bone'}
+                  />
                   <div className={styles.tileMeta}>
                     <span>{piece.name}</span>
                     <span className={styles.tilePrice}>{money(piece.price)}</span>
@@ -241,7 +246,7 @@ export default function HomePage() {
               <dd className={styles.statNum}>
                 <Count to={IN_SEASON.length} />
               </dd>
-              <dt className={styles.statLabel}>designs in {OPEN.title.split('—')[1].trim()}</dt>
+              <dt className={styles.statLabel}>designs in {OPEN?.title.split('—')[1]?.trim()}</dt>
             </div>
             <div className={styles.stat}>
               <dd className={styles.statNum}>

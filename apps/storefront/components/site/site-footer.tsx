@@ -1,11 +1,12 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { pastCollections } from '@/lib/catalog';
 import styles from './site-footer.module.css';
 
-const shopLinks = () => [
+const shopLinks = async () => [
   { href: '/collection', label: 'Collection' },
   { href: '/design', label: 'Design Your Own' },
-  ...(pastCollections().length > 0
+  ...((await pastCollections()).length > 0
     ? [{ href: '/archive', label: 'Past Collections' }]
     : []),
 ];
@@ -23,13 +24,21 @@ const HOUSE = [
   { href: '/cloth', label: 'The Cloth' },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const shop = await shopLinks();
+
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
         <div className={styles.columns}>
           <div>
-            <div className={styles.brand}>Maison Ayla</div>
+            <Image
+              className={styles.brand}
+              src="/brand/lockup-gold.png"
+              alt="LinSilk"
+              width={160}
+              height={159}
+            />
             <p className={styles.blurb}>
               Made to measure in pure natural fibre. Four small collections a year,
               each made once.
@@ -41,7 +50,7 @@ export function SiteFooter() {
 
           <nav className={styles.column} aria-label="Shop">
             <div className={styles.columnHead}>Shop</div>
-            {shopLinks().map((l) => (
+            {shop.map((l) => (
               <Link key={l.href} href={l.href} className={styles.link}>
                 {l.label}
               </Link>
@@ -69,7 +78,7 @@ export function SiteFooter() {
           <div className={styles.column}>
             <div className={styles.columnHead}>Connect</div>
             <a
-              href="https://instagram.com/maisonayla"
+              href="https://instagram.com/linsilk"
               className={styles.link}
               rel="me noreferrer"
               target="_blank"
@@ -79,14 +88,14 @@ export function SiteFooter() {
             <Link href="/season-letter" className={styles.link}>
               Season letter
             </Link>
-            <a href="mailto:hello@maisonayla.ch" className={styles.link}>
-              hello@maisonayla.ch
+            <a href="mailto:hello@linsilk.ch" className={styles.link}>
+              hello@linsilk.ch
             </a>
           </div>
         </div>
 
         <div className={styles.legal}>
-          <span>© {new Date().getFullYear()} Maison Ayla</span>
+          <span>© {new Date().getFullYear()} LinSilk</span>
           <span>Prices in CHF</span>
           <Link href="/legal/terms" className={styles.link}>
             Terms

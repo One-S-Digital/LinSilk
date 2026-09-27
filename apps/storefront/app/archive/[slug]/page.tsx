@@ -3,20 +3,18 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Reveal, RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
-import { COLLECTIONS, collectionBySlug, piecesIn, roman } from '@/lib/catalog';
+import { collectionBySlug, pastCollections, piecesIn, roman } from '@/lib/catalog';
 import styles from '../../collection/[group]/listing.module.css';
 
-export function generateStaticParams() {
-  return COLLECTIONS.filter((c) => c.status === 'past').map((c) => ({
-    slug: c.slug,
-  }));
+export async function generateStaticParams() {
+  return (await pastCollections()).map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata(
   props: PageProps<'/archive/[slug]'>,
 ): Promise<Metadata> {
   const { slug } = await props.params;
-  const collection = collectionBySlug(slug);
+  const collection = await collectionBySlug(slug);
   if (!collection) return {};
   return {
     title: collection.title,
@@ -28,12 +26,12 @@ export default async function ArchivedCollectionPage(
   props: PageProps<'/archive/[slug]'>,
 ) {
   const { slug } = await props.params;
-  const collection = collectionBySlug(slug);
+  const collection = await collectionBySlug(slug);
 
   // The current collection is shopped at /collection, not read in the archive.
   if (!collection || collection.status !== 'past') notFound();
 
-  const pieces = piecesIn(slug);
+  const pieces = await piecesIn(slug);
   const women = pieces.filter((p) => p.group === 'women');
   const men = pieces.filter((p) => p.group === 'men');
 

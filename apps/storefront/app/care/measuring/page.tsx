@@ -17,7 +17,7 @@ export default function MeasuringPage() {
       foot={
         <>
           <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>
-          <ButtonLink href="mailto:hello@maisonayla.ch" variant="rule">Ask for help</ButtonLink>
+          <ButtonLink href="mailto:hello@linsilk.ch" variant="rule">Ask for help</ButtonLink>
         </>
       }
     >
@@ -53,7 +53,7 @@ export default function MeasuringPage() {
           Any tailor or alterations shop will take these fifteen in a few minutes, often
           for nothing. Print this page, or show them the list on your phone. In Zürich
           the house keeps appointments on Thursday afternoons — write to
-          hello@maisonayla.ch and someone will take them for you and enter the sheet.
+          hello@linsilk.ch and someone will take them for you and enter the sheet.
         </DocP>
       </DocSection>
 

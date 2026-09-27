@@ -1,5 +1,5 @@
-/* Provisions the house: store, regions, shipping, collections, pieces and the
- * commission silhouettes.
+/* Provisions the house: store, regions, shipping, and the commission
+ * silhouettes.
  *
  *   pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
  *
@@ -9,18 +9,26 @@
  * them in the admin, and the refresh-exchange-rates job keeps the euro and
  * sterling figures derived from the franc.
  *
- * The catalogue is read straight from the storefront's lib/catalog.ts, which
- * is the source of truth for the domain. Every piece is one product with one
- * variant — nothing in this house is sold in sizes — and the measurement
- * sheet travels on the line item, not the variant.
+ * No season and no piece is seeded. The house's own catalogue arrives through
+ * the admin or the ingestion route (docs/CATALOGUE-INGESTION.md) and lives in
+ * Medusa from then on; seeding it from a file here would mean inventing it,
+ * and invented pieces have a way of reaching production.
  *
- * Collections I-III are placeholder content. Seed them for a working archive,
- * but do not let them reach production without the client's real archive.
+ * What is seeded is the structure a piece needs to exist at all — the store,
+ * the regions and their prices, the atelier's stock location and shipping, the
+ * single `Cut` option, and the two collections that hold commissions rather
+ * than a season — plus the commission silhouettes, which are opening figures
+ * the house edits in the admin rather than content.
+ *
+ * Every piece is one product with one variant — nothing in this house is sold
+ * in sizes — and the measurement sheet travels on the line item, not the
+ * variant.
  */
 
 import { MedusaContainer } from "@medusajs/framework"
 import {
   ContainerRegistrationKeys,
+  MedusaError,
   Modules,
   ProductStatus,
 } from "@medusajs/framework/utils"
@@ -32,6 +40,7 @@ import {
   createProductsWorkflow,
   createRegionsWorkflow,
   createShippingOptionsWorkflow,
+  createShippingProfilesWorkflow,
   createStockLocationsWorkflow,
   createTaxRegionsWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
@@ -41,7 +50,7 @@ import {
   updateRegionsWorkflow,
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { COLLECTIONS, PIECES, SILHOUETTES } from "../../../storefront/lib/catalog"
+import { SILHOUETTES } from "./catalogue-fixture"
 import { fetchChfRates } from "../lib/exchange-rates"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../lib/commission-catalogue"
 import { CURRENCIES, fromChf, type Currency } from "../lib/pricing"
@@ -94,11 +103,15 @@ export default async function seed({ container }: { container: MedusaContainer }
   const rates = await fetchChfRates()
   logger.info(`Pricing at ECB rates of ${rates.date}.`)
 
-  /* ---- Store, sales channel, publishable key ----
+  /* ---- Store, sales channel, publishable key, shipping profile ----
      Medusa creates a default store, sales channel and publishable key on
-     first boot, and the shipping profile on migrate. Make sure they exist —
-     a fresh database may never have booted — and use them rather than making
-     duplicates. */
+     first boot. Make sure they exist — a fresh database may never have
+     booted — and use them rather than making duplicates.
+
+     The shipping profile is not one of them: nothing in Medusa creates it,
+     so a migrated database has none and every shipping option and product
+     below would have nothing to hang from. It is made here when it is
+     missing. */
 
   await createDefaultsWorkflow(container).run()
 
@@ -111,10 +124,22 @@ export default async function seed({ container }: { container: MedusaContainer }
     fields: ["id", "sales_channels.id"],
     filters: { type: "publishable" },
   })
-  const { data: [shippingProfile] } = await query.graph({
+
+  const { data: [existingProfile] } = await query.graph({
     entity: "shipping_profile",
     fields: ["id"],
   })
+  const shippingProfile =
+    existingProfile ??
+    (
+      await createShippingProfilesWorkflow(container).run({
+        input: { data: [{ name: "Default", type: "default" }] },
+      })
+    ).result[0]
+  if (!existingProfile) {
+    logger.info("Creating the default shipping profile...")
+  }
+
   const salesChannelId = store.default_sales_channel_id!
 
   if (!apiKey.sales_channels?.some((sc) => sc?.id === salesChannelId)) {
@@ -180,7 +205,7 @@ export default async function seed({ container }: { container: MedusaContainer }
     input: {
       selector: { id: store.id },
       update: {
-        name: "Maison Ayla",
+        name: "LinSilk",
         /* Variant prices are keyed by currency, so it is the currency's
            preference — not the region's — that decides tax inclusivity. */
         supported_currencies: CURRENCIES.map((currency_code) => ({
@@ -197,6 +222,11 @@ export default async function seed({ container }: { container: MedusaContainer }
      Everything is cut in Hội An and ships from there; the courier clears
      customs out of Việt Nam. */
 
+  /* Each of these is asked for separately rather than behind one "have we
+     ever run?" flag. A seed that fails halfway — and the first one on a fresh
+     database used to — would otherwise be skipped wholesale on the next run
+     and report success over a house with no way to ship anything. */
+
   const { data: [existingLocation] } = await query.graph({
     entity: "stock_location",
     fields: ["id"],
@@ -205,7 +235,7 @@ export default async function seed({ container }: { container: MedusaContainer }
   let atelierId = existingLocation?.id
 
   if (!atelierId) {
-    logger.info("Creating the atelier's stock location and shipping...")
+    logger.info("Creating the atelier's stock location...")
     const { result: [atelier] } = await createStockLocationsWorkflow(container).run({
       input: {
         locations: [
@@ -217,32 +247,68 @@ export default async function seed({ container }: { container: MedusaContainer }
       },
     })
     atelierId = atelier.id
+  }
 
-    await link.create({
-      [Modules.STOCK_LOCATION]: { stock_location_id: atelierId },
-      [Modules.FULFILLMENT]: { fulfillment_provider_id: "manual_manual" },
-    })
+  const FULFILLMENT_SET = "Atelier, Hội An — shipping"
 
-    const fulfillmentSet = await fulfillment.createFulfillmentSets({
-      name: "Atelier, Hội An — shipping",
+  const [existingSet] = await fulfillment.listFulfillmentSets(
+    { name: FULFILLMENT_SET },
+    { relations: ["service_zones"] }
+  )
+  const fulfillmentSet =
+    existingSet ??
+    (await fulfillment.createFulfillmentSets({
+      name: FULFILLMENT_SET,
       type: "shipping",
       service_zones: REGIONS.map((r) => ({
         name: r.name,
         geo_zones: r.countries.map((country_code) => ({ type: "country" as const, country_code })),
       })),
-    })
+    }))
+  if (!existingSet) {
+    logger.info("Creating the atelier's shipping zones...")
+  }
 
-    await link.create({
+  /* Both links are upserts on the pivot, so asking for one that is already
+     there costs a statement and changes nothing. */
+  await link.create([
+    {
+      [Modules.STOCK_LOCATION]: { stock_location_id: atelierId },
+      [Modules.FULFILLMENT]: { fulfillment_provider_id: "manual_manual" },
+    },
+    {
       [Modules.STOCK_LOCATION]: { stock_location_id: atelierId },
       [Modules.FULFILLMENT]: { fulfillment_set_id: fulfillmentSet.id },
-    })
+    },
+  ])
 
+  const zoneId = (name: string) => {
+    const zone = (fulfillmentSet.service_zones ?? []).find((z) => z.name === name)
+    if (!zone) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        `The shipping set "${FULFILLMENT_SET}" has no zone named "${name}". ` +
+          "Delete the set in the admin and seed again."
+      )
+    }
+    return zone.id
+  }
+
+  const { data: existingOptions } = await query.graph({
+    entity: "shipping_option",
+    fields: ["id", "name"],
+  })
+  const missingShipping = REGIONS.filter(
+    (r) => !existingOptions.some((o) => o.name === r.shipping.name)
+  )
+  if (missingShipping.length) {
+    logger.info(`Creating ${missingShipping.length} shipping option(s)...`)
     await createShippingOptionsWorkflow(container).run({
-      input: REGIONS.map((r) => ({
+      input: missingShipping.map((r) => ({
         name: r.shipping.name,
         price_type: "flat" as const,
         provider_id: "manual_manual",
-        service_zone_id: fulfillmentSet.service_zones.find((z) => z.name === r.name)!.id,
+        service_zone_id: zoneId(r.name),
         shipping_profile_id: shippingProfile.id,
         type: { label: r.shipping.name, description: r.shipping.note, code: r.currency },
         /* The franc price sits beside the regional one as the source the
@@ -257,7 +323,14 @@ export default async function seed({ container }: { container: MedusaContainer }
         ],
       })),
     })
+  }
 
+  const { data: [linkedLocation] } = await query.graph({
+    entity: "stock_location",
+    fields: ["id", "sales_channels.id"],
+    filters: { id: atelierId },
+  })
+  if (!linkedLocation?.sales_channels?.some((sc) => sc?.id === salesChannelId)) {
     await linkSalesChannelsToStockLocationWorkflow(container).run({
       input: { id: atelierId, add: [salesChannelId] },
     })
@@ -266,20 +339,12 @@ export default async function seed({ container }: { container: MedusaContainer }
   /* ---- Collections ----
      `metadata.status` is the gate: `current` is orderable, `past` never is
      again, and the silhouettes are never orderable at all — a commission is
-     quoted by a person, not bought. The cart enforces all three. */
+     quoted by a person, not bought. The cart enforces all three.
+
+     Only the two that are not seasons are seeded. A season is opened by the
+     house, against real pieces. */
 
   const wanted = [
-    ...COLLECTIONS.map((c) => ({
-      handle: c.slug,
-      title: c.title,
-      metadata: {
-        status: c.status,
-        season: c.season,
-        number: c.number,
-        note: c.note,
-        ...(c.closes ? { closes: c.closes } : {}),
-      } as Record<string, unknown>,
-    })),
     {
       handle: COMMISSION_COLLECTION,
       title: "Commissions",
@@ -349,25 +414,9 @@ export default async function seed({ container }: { container: MedusaContainer }
     collection: string
     metadata: Record<string, unknown>
     chf: number
-    /* A silhouette is a price on a page, not a garment in a capped run. */
-    managed: boolean
   }
 
   const wantedProducts: Wanted[] = [
-    ...PIECES.map((p) => ({
-      handle: p.id,
-      title: p.name,
-      subtitle: p.material,
-      collection: p.collection,
-      metadata: {
-        group: p.group,
-        shot: p.shot,
-        ...(p.sleep ? { sleep: true } : {}),
-        ...(p.lengthKinds ? { length_kinds: p.lengthKinds } : {}),
-      },
-      chf: p.price,
-      managed: true,
-    })),
     ...SILHOUETTES.map((s, rank) => ({
       handle: `commission-${s.key}`,
       title: s.name,
@@ -375,7 +424,6 @@ export default async function seed({ container }: { container: MedusaContainer }
       collection: SILHOUETTE_COLLECTION,
       metadata: { silhouette: s.key, length_kinds: s.lengthKinds, rank },
       chf: s.estimate,
-      managed: false,
     })),
   ]
 
@@ -404,9 +452,12 @@ export default async function seed({ container }: { container: MedusaContainer }
           variants: [
             {
               title: "Made to measure",
-              sku: `AYLA-${p.handle.toUpperCase()}`,
+              sku: `LINSILK-${p.handle.toUpperCase()}`,
               options: { Cut: "Made to measure" },
-              manage_inventory: p.managed,
+              /* A silhouette is a price on a page, not a garment in a capped
+                 run, so nothing here is stocked. A piece is, and says so when
+                 it is created. */
+              manage_inventory: false,
               allow_backorder: false,
               prices: CURRENCIES.map((currency_code) => ({
                 currency_code,
@@ -460,8 +511,9 @@ export default async function seed({ container }: { container: MedusaContainer }
   }
 
   logger.info(
-    `Provisioned ${regions.length} regions, ${collections.length} collections, ` +
-      `${PIECES.length} pieces and ${SILHOUETTES.length} silhouettes ` +
-      `(${toCreate.length} created, ${toUpdate.length} refreshed).`
+    `Provisioned ${regions.length} regions, ${collections.length} collections ` +
+      `and ${SILHOUETTES.length} silhouettes ` +
+      `(${toCreate.length} created, ${toUpdate.length} refreshed). ` +
+      `No season and no piece: the catalogue is the house's to add.`
   )
 }

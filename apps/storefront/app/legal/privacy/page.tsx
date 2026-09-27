@@ -3,7 +3,7 @@ import { DocPage, DocSection, DocP, DocList } from '@/components/doc-page';
 
 export const metadata: Metadata = {
   title: 'Privacy',
-  description: 'How Maison Ayla handles your data.',
+  description: 'How LinSilk handles your data.',
   robots: { index: false },
 };
 

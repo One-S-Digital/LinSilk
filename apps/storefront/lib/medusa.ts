@@ -65,6 +65,11 @@ export async function medusaFetch<T>(
   init: RequestInit & { json?: unknown } = {},
 ): Promise<T> {
   const { json, ...rest } = init;
+
+  /* A request that never arrives rejects with the browser's own words —
+     "Failed to fetch", "NetworkError" — which say nothing to a client and
+     would otherwise be shown to one on the page where they accept a quote.
+     A refusal the house actually wrote still comes back below, untouched. */
   const response = await fetch(`${MEDUSA_URL}${path}`, {
     ...rest,
     headers: {
@@ -73,6 +78,8 @@ export async function medusaFetch<T>(
       ...(rest.headers ?? {}),
     },
     ...(json ? { body: JSON.stringify(json) } : {}),
+  }).catch(() => {
+    throw new Error('The house could not be reached. Try again in a moment.');
   });
 
   const body = await response.json().catch(() => null);

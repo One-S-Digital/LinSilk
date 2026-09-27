@@ -28,20 +28,20 @@ describe("commissionPaymentUrl", () => {
   })
 
   it("hangs the token off the storefront", () => {
-    process.env.STOREFRONT_URL = "https://maisonayla.ch"
-    expect(commissionPaymentUrl("abc123")).toBe("https://maisonayla.ch/commission/abc123")
+    process.env.STOREFRONT_URL = "https://linsilk.ch"
+    expect(commissionPaymentUrl("abc123")).toBe("https://linsilk.ch/commission/abc123")
   })
 
   it("does not double the slash when the setting has a trailing one", () => {
-    process.env.STOREFRONT_URL = "https://maisonayla.ch/"
-    expect(commissionPaymentUrl("abc123")).toBe("https://maisonayla.ch/commission/abc123")
+    process.env.STOREFRONT_URL = "https://linsilk.ch/"
+    expect(commissionPaymentUrl("abc123")).toBe("https://linsilk.ch/commission/abc123")
   })
 })
 
 describe("what the house is sent", () => {
   it("carries the brief, the sheet in the bench's words, and the client's own note", () => {
-    const { to, content, provider_data } = commissionSubmittedEmail(brief, "hello@maisonayla.ch")
-    expect(to).toBe("hello@maisonayla.ch")
+    const { to, content, provider_data } = commissionSubmittedEmail(brief, "hello@linsilk.ch")
+    expect(to).toBe("hello@linsilk.ch")
     expect(provider_data.reply_to).toBe("ada@example.com")
     expect(content.subject).toBe("Commission — Dress, Ada Lovelace")
     expect(content.text).toContain("Oyster charmeuse, 19mm")
@@ -62,14 +62,14 @@ describe("what the client is sent", () => {
   })
 
   it("gives the figure and a link that is theirs alone", () => {
-    process.env.STOREFRONT_URL = "https://maisonayla.ch"
+    process.env.STOREFRONT_URL = "https://linsilk.ch"
     const { content } = commissionQuotedEmail({
       ...brief,
       quote_amount: 2450,
       access_token: "tok_abc",
     })
     expect(content.subject).toBe("Your commission — CHF 2'450")
-    expect(content.text).toContain("https://maisonayla.ch/commission/tok_abc")
+    expect(content.text).toContain("https://linsilk.ch/commission/tok_abc")
     expect(content.text).toContain("do")
     expect(content.text).toContain("not forward it")
   })

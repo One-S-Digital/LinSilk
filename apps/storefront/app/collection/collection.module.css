@@ -101,3 +101,17 @@
     min-height: 62vh;
   }
 }
+
+/* Shown instead of the two doors while the house has no open season. */
+.none {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  max-width: 50ch;
+  margin-inline: auto;
+  padding: clamp(80px, 12vh, 160px) var(--gutter);
+  font-size: var(--t-body);
+  line-height: var(--lh-body-loose);
+  color: var(--ink-secondary);
+}

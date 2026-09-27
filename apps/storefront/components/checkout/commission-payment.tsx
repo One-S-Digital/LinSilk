@@ -78,7 +78,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (problem && !commission) {
     return (
       <p className={styles.answer}>
-        {problem} If you believe this is a mistake, write to hello@maisonayla.ch.
+        {problem} If you believe this is a mistake, write to hello@linsilk.ch.
       </p>
     );
   }
@@ -88,7 +88,7 @@ export function CommissionPayment({ token }: { token: string }) {
     return (
       <p className={styles.answer}>
         This commission is paid for and is with the bench. Four to six weeks from the
-        day it was settled. Write to hello@maisonayla.ch if anything needs changing.
+        day it was settled. Write to hello@linsilk.ch if anything needs changing.
       </p>
     );
   }

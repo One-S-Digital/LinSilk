@@ -50,7 +50,7 @@ export default function ShippingPage() {
         <DocP>
           You are written to when the pattern is cut, when the piece passes its second
           check, and when it is dispatched with a tracking number. If a parcel stalls
-          in customs, write to hello@maisonayla.ch and the office in Zürich will chase
+          in customs, write to hello@linsilk.ch and the office in Zürich will chase
           it rather than asking you to.
         </DocP>
       </DocSection>

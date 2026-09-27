@@ -1,4 +1,4 @@
-/* The house's catalogue.
+/* The house's catalogue, as the storefront reads it.
  *
  * A collection is a first-class thing here, not a label on a product: it has a
  * slug, a number, a season and a status. `current` is open and orderable;
@@ -6,8 +6,26 @@
  * directly onto a Medusa product collection with a `status` metadata field, so
  * the storefront and the backend agree on what a collection is.
  *
+ * Both the collections and the pieces now come from Medusa rather than from
+ * this file, which is what lets a piece, a photograph or a season arrive
+ * without a deploy. The lookups below kept their names and their meaning and
+ * gained an `await`. The written-down copy the seed provisions an empty
+ * database from lives in the backend, beside the script that uses it
+ * (apps/medusa/src/scripts/catalogue-fixture.ts).
+ *
+ * A read that cannot be answered returns nothing rather than throwing:
+ * `medusaGet` already swallows an unreachable backend, and every page here is
+ * written to render what it has — an empty rail is not drawn, an empty archive
+ * says so. Quietly wrong beats a build that will not finish.
+ *
  * Counts are always derived from the pieces, never written down twice.
  */
+
+/* Explicit .ts extension: payload's CLI loads this file outside Next's own
+   bundler when it runs payload/seed.ts, which reads STORY from here, and
+   resolves a relative import only with the literal extension — the same
+   constraint payload.config.ts documents. */
+import { medusaGet } from './medusa.ts';
 
 export type Group = 'women' | 'men';
 export type CollectionStatus = 'current' | 'past';
@@ -25,42 +43,6 @@ export type Collection = {
   /** Shown on the archive; the current collection says when it closes. */
   closes?: string;
 };
-
-export const COLLECTIONS: Collection[] = [
-  {
-    slug: 'autumn-iv',
-    season: 'Autumn',
-    number: 4,
-    title: 'Autumn — Collection IV',
-    status: 'current',
-    note: 'Sand silk twill and unpressed linen.',
-    closes: 'February',
-  },
-  {
-    slug: 'summer-iii',
-    season: 'Summer',
-    number: 3,
-    title: 'Summer — Collection III',
-    status: 'past',
-    note: 'Wet-spun linen in flax and olive.',
-  },
-  {
-    slug: 'spring-ii',
-    season: 'Spring',
-    number: 2,
-    title: 'Spring — Collection II',
-    status: 'past',
-    note: 'Oyster and champagne charmeuse.',
-  },
-  {
-    slug: 'winter-i',
-    season: 'Winter',
-    number: 1,
-    title: 'Winter — Collection I',
-    status: 'past',
-    note: 'Deep burgundy silk crepe. The first.',
-  },
-];
 
 export type Piece = {
   id: string;
@@ -80,101 +62,162 @@ export type Piece = {
      from the shoulder, so the piece names its own — and a set names both,
      because it is two garments on one ticket. */
   lengthKinds?: LengthKind[];
+  /** Photography, once a piece has any. Empty until then, and an empty list is
+      what tells the frame to render the placeholder weave from `shot`. */
+  images: string[];
+  /* Both carried on the piece rather than looked up, because the order panel
+     is a client component and cannot go and read the collection itself. */
+  orderable: boolean;
+  collectionTitle: string;
 };
 
-export const PIECES: Piece[] = [
-  /* ---- Autumn — Collection IV (current) ---- */
-  { id: 'w1', collection: 'autumn-iv', group: 'women', name: 'Coat, Bảo Lộc silk', material: 'Sand silk twill, unlined', price: 1980, shot: 'full length, stone doorway', lengthKinds: ['top'] },
-  { id: 'w2', collection: 'autumn-iv', group: 'women', name: 'Bias dress, champagne', material: '19mm charmeuse, hand-rolled hem', price: 1640, shot: 'walking, tiled wall', lengthKinds: ['dress'] },
-  { id: 'w3', collection: 'autumn-iv', group: 'women', name: 'Wide trouser, flax', material: 'Wet-spun linen, unpressed crease', price: 890, shot: 'seated, low warm light', lengthKinds: ['trouser'] },
-  { id: 'w4', collection: 'autumn-iv', group: 'women', name: 'Shirt, cream linen', material: 'Handkerchief linen, shell buttons', price: 640, shot: 'shoulder detail', lengthKinds: ['top'] },
-  { id: 'w5', collection: 'autumn-iv', group: 'women', name: 'Column skirt, burgundy', material: 'Silk satin, invisible placket', price: 780, shot: 'street, mid-stride', lengthKinds: ['skirt'] },
-  { id: 'w6', collection: 'autumn-iv', group: 'women', name: 'Jacket, olive linen', material: 'Half-canvassed, hand-set sleeve', price: 1720, shot: 'front, courtyard', lengthKinds: ['top'] },
-  { id: 'w7', collection: 'autumn-iv', group: 'women', name: 'Slip, oyster', material: '16mm silk, French seams', price: 520, shot: 'draped on chair', lengthKinds: ['dress'] },
-  { id: 'w8', collection: 'autumn-iv', group: 'women', name: 'Sleep set, cream silk', material: '19mm silk, piped edge', price: 690, shot: 'morning window', sleep: true, lengthKinds: ['top', 'trouser'] },
-  { id: 'w9', collection: 'autumn-iv', group: 'women', name: 'Robe, deep burgundy', material: '22mm silk crepe, tie belt', price: 840, shot: 'interior, doorway', sleep: true, lengthKinds: ['top'] },
+/* ---- Reading the backend ---- *
+ *
+ * Collections that are not a season — the commission and silhouette holding
+ * collections, and a season still being built up — carry a `status` this file
+ * does not recognise, and are dropped here. A piece whose collection was
+ * dropped is dropped with it, so one rule keeps both the shop and the archive
+ * to seasons the house has actually opened.
+ */
 
-  { id: 'm1', collection: 'autumn-iv', group: 'men', name: 'Overshirt, olive linen', material: 'Heavy linen, patch pockets', price: 720, shot: 'street, hands in pocket', lengthKinds: ['top'] },
-  { id: 'm2', collection: 'autumn-iv', group: 'men', name: 'Two-button jacket, cream', material: 'Linen canvas, hand-padded lapel', price: 2140, shot: 'full length, stone', lengthKinds: ['top'] },
-  { id: 'm3', collection: 'autumn-iv', group: 'men', name: 'Pleated trouser, sand', material: 'Linen, side adjusters', price: 820, shot: 'seated, tiled floor', lengthKinds: ['trouser'] },
-  { id: 'm4', collection: 'autumn-iv', group: 'men', name: 'Shirt, oyster silk', material: '16mm silk, hand-set collar', price: 680, shot: 'collar detail', lengthKinds: ['top'] },
-  { id: 'm5', collection: 'autumn-iv', group: 'men', name: 'Field coat, loden', material: 'Linen drill, bridle stitch', price: 1890, shot: 'walking, rain light', lengthKinds: ['top'] },
-  { id: 'm6', collection: 'autumn-iv', group: 'men', name: 'Knit-neck tee, flax', material: 'Linen jersey, bound neck', price: 340, shot: 'front, plain wall', lengthKinds: ['top'] },
-  { id: 'm7', collection: 'autumn-iv', group: 'men', name: 'Sleep trouser, cream', material: '19mm silk, drawstring', price: 480, shot: 'interior morning', sleep: true, lengthKinds: ['trouser'] },
-  { id: 'm8', collection: 'autumn-iv', group: 'men', name: 'Sleep shirt, sand silk', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKinds: ['top'] },
+type ApiCollection = {
+  handle: string;
+  title: string;
+  metadata?: Record<string, unknown> | null;
+};
 
-  /* ---- Summer — Collection III (archived) ---- */
-  { id: 's1', collection: 'summer-iii', group: 'women', name: 'Shirt dress, flax', material: 'Wet-spun linen, shell buttons', price: 1180, shot: 'courtyard, midday', lengthKinds: ['dress'] },
-  { id: 's2', collection: 'summer-iii', group: 'women', name: 'Wide trouser, olive', material: 'Wet-spun linen, unpressed crease', price: 860, shot: 'walking, white wall', lengthKinds: ['trouser'] },
-  { id: 's3', collection: 'summer-iii', group: 'women', name: 'Camp shirt, flax', material: 'Handkerchief linen, open collar', price: 590, shot: 'seated, shutters', lengthKinds: ['top'] },
-  { id: 's4', collection: 'summer-iii', group: 'women', name: 'Sleeveless column, olive', material: 'Linen, bias-cut skirt', price: 1240, shot: 'stone steps', lengthKinds: ['dress'] },
-  { id: 's5', collection: 'summer-iii', group: 'women', name: 'Coat, undyed linen', material: 'Linen drill, unlined', price: 1690, shot: 'full length, doorway', lengthKinds: ['top'] },
-  { id: 's6', collection: 'summer-iii', group: 'women', name: 'Wrap skirt, flax', material: 'Wet-spun linen, tie waist', price: 640, shot: 'mid-stride, gravel', lengthKinds: ['skirt'] },
-  { id: 's7', collection: 'summer-iii', group: 'men', name: 'Camp-collar shirt, olive', material: 'Handkerchief linen, one-piece collar', price: 610, shot: 'front, shaded wall', lengthKinds: ['top'] },
-  { id: 's8', collection: 'summer-iii', group: 'men', name: 'Drawstring trouser, flax', material: 'Wet-spun linen, no belt loops', price: 720, shot: 'seated, courtyard', lengthKinds: ['trouser'] },
-  { id: 's9', collection: 'summer-iii', group: 'men', name: 'Unlined blazer, olive', material: 'Linen canvas, patch pockets', price: 1780, shot: 'full length, rain light', lengthKinds: ['top'] },
-  { id: 's10', collection: 'summer-iii', group: 'men', name: 'Short-sleeve shirt, flax', material: 'Handkerchief linen, bound cuff', price: 520, shot: 'shoulder detail', lengthKinds: ['top'] },
-  { id: 's11', collection: 'summer-iii', group: 'men', name: 'Linen tee, undyed', material: 'Linen jersey, bound neck', price: 310, shot: 'front, plain wall', lengthKinds: ['top'] },
-  { id: 's12', collection: 'summer-iii', group: 'men', name: 'Field jacket, olive', material: 'Linen drill, bridle stitch', price: 1620, shot: 'walking, wet street', lengthKinds: ['top'] },
+type ApiProduct = {
+  handle: string;
+  title: string;
+  subtitle?: string | null;
+  thumbnail?: string | null;
+  images?: { url: string }[] | null;
+  metadata?: Record<string, unknown> | null;
+  collection?: { handle: string } | null;
+  variants?: { calculated_price?: { calculated_amount?: number } | null }[] | null;
+};
 
-  /* ---- Spring — Collection II (archived) ---- */
-  { id: 'p1', collection: 'spring-ii', group: 'women', name: 'Bias slip, oyster', material: '19mm charmeuse, French seams', price: 780, shot: 'draped, morning light', lengthKinds: ['dress'] },
-  { id: 'p2', collection: 'spring-ii', group: 'women', name: 'Blouse, champagne', material: '16mm charmeuse, covered placket', price: 690, shot: 'collar detail', lengthKinds: ['top'] },
-  { id: 'p3', collection: 'spring-ii', group: 'women', name: 'Column dress, oyster', material: '19mm charmeuse, hand-rolled hem', price: 1560, shot: 'full length, plaster wall', lengthKinds: ['dress'] },
-  { id: 'p4', collection: 'spring-ii', group: 'women', name: 'Wide trouser, champagne', material: 'Silk charmeuse, side adjusters', price: 940, shot: 'seated, low light', lengthKinds: ['trouser'] },
-  { id: 'p5', collection: 'spring-ii', group: 'women', name: 'Camisole, oyster', material: '16mm silk, bias straps', price: 430, shot: 'flat, raking light', lengthKinds: ['top'] },
-  { id: 'p6', collection: 'spring-ii', group: 'women', name: 'Robe, champagne', material: '22mm silk, tie belt', price: 890, shot: 'interior, window', sleep: true, lengthKinds: ['top'] },
-  { id: 'p7', collection: 'spring-ii', group: 'women', name: 'Slip skirt, oyster', material: 'Charmeuse, invisible placket', price: 620, shot: 'mid-stride, tile', lengthKinds: ['skirt'] },
-  { id: 'p8', collection: 'spring-ii', group: 'men', name: 'Shirt, oyster charmeuse', material: '16mm silk, hand-set collar', price: 720, shot: 'front, plain wall', lengthKinds: ['top'] },
-  { id: 'p9', collection: 'spring-ii', group: 'men', name: 'Pyjama trouser, champagne', material: '19mm silk, drawstring', price: 500, shot: 'interior morning', sleep: true, lengthKinds: ['trouser'] },
-  { id: 'p10', collection: 'spring-ii', group: 'men', name: 'Overshirt, oyster', material: 'Silk crepe, patch pockets', price: 840, shot: 'street, hands in pocket', lengthKinds: ['top'] },
-  { id: 'p11', collection: 'spring-ii', group: 'men', name: 'Sleep shirt, champagne', material: '19mm silk, piped edge', price: 560, shot: 'bed, warm light', sleep: true, lengthKinds: ['top'] },
-  { id: 'p12', collection: 'spring-ii', group: 'men', name: 'Silk tee, oyster', material: '16mm silk jersey, bound neck', price: 390, shot: 'front, shaded wall', lengthKinds: ['top'] },
-  { id: 'p13', collection: 'spring-ii', group: 'men', name: 'Lounge trouser, oyster', material: 'Silk crepe, elastic waist', price: 610, shot: 'seated, interior', lengthKinds: ['trouser'] },
+const isStatus = (value: unknown): value is CollectionStatus =>
+  value === 'current' || value === 'past';
 
-  /* ---- Winter — Collection I (archived) ---- */
-  { id: 'i1', collection: 'winter-i', group: 'women', name: 'Crepe dress, burgundy', material: '22mm silk crepe, hand-rolled hem', price: 1720, shot: 'full length, dark room', lengthKinds: ['dress'] },
-  { id: 'i2', collection: 'winter-i', group: 'women', name: 'Blouse, burgundy', material: '19mm crepe, covered placket', price: 710, shot: 'collar detail', lengthKinds: ['top'] },
-  { id: 'i3', collection: 'winter-i', group: 'women', name: 'Column skirt, burgundy', material: 'Silk crepe, invisible placket', price: 760, shot: 'mid-stride, stone', lengthKinds: ['skirt'] },
-  { id: 'i4', collection: 'winter-i', group: 'women', name: 'Wide trouser, burgundy', material: 'Silk crepe, side adjusters', price: 900, shot: 'seated, warm light', lengthKinds: ['trouser'] },
-  { id: 'i5', collection: 'winter-i', group: 'women', name: 'Robe, burgundy', material: '22mm crepe, tie belt', price: 870, shot: 'interior, doorway', sleep: true, lengthKinds: ['top'] },
-  { id: 'i6', collection: 'winter-i', group: 'women', name: 'Slip, burgundy', material: '16mm silk, French seams', price: 490, shot: 'draped on chair', lengthKinds: ['dress'] },
-  { id: 'i7', collection: 'winter-i', group: 'men', name: 'Crepe shirt, burgundy', material: '19mm crepe, hand-set collar', price: 700, shot: 'front, plain wall', lengthKinds: ['top'] },
-  { id: 'i8', collection: 'winter-i', group: 'men', name: 'Pyjama set, burgundy', material: '19mm silk, piped edge', price: 980, shot: 'bed, low light', sleep: true, lengthKinds: ['top', 'trouser'] },
-  { id: 'i9', collection: 'winter-i', group: 'men', name: 'Overshirt, burgundy', material: 'Silk crepe, patch pockets', price: 830, shot: 'street, evening', lengthKinds: ['top'] },
-  { id: 'i10', collection: 'winter-i', group: 'men', name: 'Trouser, burgundy', material: 'Silk crepe, flat front', price: 780, shot: 'seated, tiled floor', lengthKinds: ['trouser'] },
-  { id: 'i11', collection: 'winter-i', group: 'men', name: 'Scarf, burgundy', material: '22mm crepe, hand-rolled edge', price: 260, shot: 'flat, raking light' },
-];
+const readCollection = (c: ApiCollection): Collection | null => {
+  const meta = c.metadata ?? {};
+  if (!isStatus(meta.status)) return null;
+  return {
+    slug: c.handle,
+    season: String(meta.season ?? c.title),
+    number: Number(meta.number ?? 0),
+    title: c.title,
+    status: meta.status,
+    note: String(meta.note ?? ''),
+    ...(meta.closes ? { closes: String(meta.closes) } : {}),
+  };
+};
+
+const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top'];
+
+const readPiece = (p: ApiProduct, collection: Collection): Piece => {
+  const meta = p.metadata ?? {};
+  const kinds = Array.isArray(meta.length_kinds)
+    ? meta.length_kinds.filter((k): k is LengthKind =>
+        LENGTH_KINDS.includes(k as LengthKind),
+      )
+    : [];
+  /* The thumbnail is one of the images, so it leads rather than repeats. */
+  const images = [
+    ...(p.thumbnail ? [p.thumbnail] : []),
+    ...(p.images ?? []).map((i) => i.url).filter((url) => url !== p.thumbnail),
+  ];
+
+  return {
+    id: p.handle,
+    collection: collection.slug,
+    group: meta.group === 'men' ? 'men' : 'women',
+    name: p.title,
+    material: p.subtitle ?? '',
+    price: p.variants?.[0]?.calculated_price?.calculated_amount ?? 0,
+    shot: String(meta.shot ?? ''),
+    ...(meta.sleep ? { sleep: true } : {}),
+    ...(kinds.length ? { lengthKinds: kinds } : {}),
+    images,
+    orderable: collection.status === 'current',
+    collectionTitle: collection.title,
+  };
+};
+
+/* `w2` before `w10`: the handle is a letter and a number, and sorting it as
+   text would read the catalogue out in the wrong order once a collection
+   passes nine pieces. */
+const byHandle = (a: Piece, b: Piece) =>
+  a.id.localeCompare(b.id, 'en', { numeric: true });
+
+/** The house prices in francs, so the shop is read in the Swiss region. The
+    currency a client is charged in is settled at checkout, not here. */
+async function swissRegionId(): Promise<string | null> {
+  const body = await medusaGet<{ regions: { id: string; name: string }[] }>(
+    '/store/regions',
+    3600,
+  );
+  const regions = body?.regions ?? [];
+  return (regions.find((r) => r.name === 'Switzerland') ?? regions[0])?.id ?? null;
+}
 
 /* ---- Lookups ---- */
 
-export const currentCollection = () =>
-  COLLECTIONS.find((c) => c.status === 'current')!;
+export async function getCollections(): Promise<Collection[]> {
+  const body = await medusaGet<{ collections: ApiCollection[] }>(
+    '/store/collections?limit=100&fields=handle,title,metadata',
+  );
+  return (body?.collections ?? [])
+    .map(readCollection)
+    .filter((c): c is Collection => c !== null)
+    .sort((a, b) => b.number - a.number);
+}
 
-export const pastCollections = () =>
-  COLLECTIONS.filter((c) => c.status === 'past');
+export async function getPieces(): Promise<Piece[]> {
+  const region = await swissRegionId();
+  const seasons = new Map((await getCollections()).map((c) => [c.slug, c]));
+  if (!region || seasons.size === 0) return [];
 
-export const collectionBySlug = (slug: string) =>
-  COLLECTIONS.find((c) => c.slug === slug);
+  const body = await medusaGet<{ products: ApiProduct[] }>(
+    `/store/products?limit=200&region_id=${region}` +
+      '&fields=handle,title,subtitle,thumbnail,metadata,*images,*collection,*variants.calculated_price',
+  );
 
-export const piecesIn = (slug: string) =>
-  PIECES.filter((p) => p.collection === slug);
+  return (body?.products ?? [])
+    .flatMap((p) => {
+      const collection = p.collection ? seasons.get(p.collection.handle) : undefined;
+      return collection ? [readPiece(p, collection)] : [];
+    })
+    .sort(byHandle);
+}
 
-export const findPiece = (id: string) => PIECES.find((p) => p.id === id);
+export const currentCollection = async () =>
+  (await getCollections()).find((c) => c.status === 'current');
+
+export const pastCollections = async () =>
+  (await getCollections()).filter((c) => c.status === 'past');
+
+export const collectionBySlug = async (slug: string) =>
+  (await getCollections()).find((c) => c.slug === slug);
+
+export const piecesIn = async (slug: string) =>
+  (await getPieces()).filter((p) => p.collection === slug);
+
+export const findPiece = async (id: string) =>
+  (await getPieces()).find((p) => p.id === id);
 
 /** True when the piece's collection is still open, so it can be reserved. */
-export const isOrderable = (piece: Piece) =>
-  collectionBySlug(piece.collection)?.status === 'current';
+export const isOrderable = (piece: Piece) => piece.orderable;
 
 /** Pieces in a collection, split the way the collection pages present them. */
-export const byGroup = (
-  group: Group,
-  sleep = false,
-  slug = currentCollection().slug,
-) =>
-  PIECES.filter(
-    (p) => p.collection === slug && p.group === group && Boolean(p.sleep) === sleep,
+export const byGroup = async (group: Group, sleep = false, slug?: string) => {
+  const season = slug ?? (await currentCollection())?.slug;
+  if (!season) return [];
+  return (await piecesIn(season)).filter(
+    (p) => p.group === group && Boolean(p.sleep) === sleep,
   );
+};
 
 /* ---- The measurement sheet ---- *
  *
@@ -297,26 +340,6 @@ export const FABRICS: Fabric[] = [
 
 /* ---- Commission ---- */
 
-/* Seed input only: the silhouettes live in the backend, where the house edits
-   the opening figure without a deploy. `estimate` is the figure quoted before
-   the tailor has read the note, and it tracks bench hours — a half-canvassed
-   jacket is roughly forty, a shirt closer to eight. `lengthKinds` decides
-   which finished lengths the commission sheet asks for. */
-export type Silhouette = {
-  key: string;
-  name: string;
-  note: string;
-  estimate: number;
-  lengthKinds: LengthKind[];
-};
-
-export const SILHOUETTES: Silhouette[] = [
-  { key: 'shirt', name: 'Shirt', note: 'Set sleeve, one-piece collar.', estimate: 1200, lengthKinds: ['top'] },
-  { key: 'trouser', name: 'Trouser', note: 'Flat or pleated front.', estimate: 1450, lengthKinds: ['trouser'] },
-  { key: 'dress', name: 'Dress', note: 'Bias or straight cut.', estimate: 2200, lengthKinds: ['dress'] },
-  { key: 'jacket', name: 'Jacket', note: 'Half-canvassed, two button.', estimate: 3200, lengthKinds: ['top'] },
-];
-
 export const COMMISSION_STEPS = [
   'Silhouette',
   'Cloth',
@@ -346,9 +369,9 @@ export const STORY = {
   },
   contact: {
     title: 'The house',
-    lead: 'Maison Ayla was set up to make one thing properly: clothing in pure natural fibre, cut for one body, made in small capped runs and never restocked.',
+    lead: 'LinSilk was set up to make one thing properly: clothing in pure natural fibre, cut for one body, made in small capped runs and never restocked.',
     a: 'Orders and client care are handled from Zürich; everything is made in Hội An. Prices are in Swiss francs and include duty within Switzerland and the EU. A commission takes four to six weeks from the confirmed measurement sheet; a seasonal piece takes three to five.',
-    b: 'Alterations to a piece the house made are free for the first year — send it back and it is re-set at the bench. Write to hello@maisonayla.ch for measurement help, a fabric cutting, or an appointment with a tailor in Zürich.',
+    b: 'Alterations to a piece the house made are free for the first year — send it back and it is re-set at the bench. Write to hello@linsilk.ch for measurement help, a fabric cutting, or an appointment with a tailor in Zürich.',
   },
 } as const;
 

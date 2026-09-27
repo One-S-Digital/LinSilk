@@ -1,25 +1,33 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { MedusaError } from "@medusajs/framework/utils"
+import { z } from "@medusajs/framework/zod"
 import {
   deleteFabricCatalogueWorkflow,
   updateFabricCatalogueWorkflow,
 } from "../../../../workflows/atelier/fabric-catalogues"
 
+/* Correcting a catalogue: its wording, where it sits in the order, and
+   whether the storefront shows it. Every field is optional — the admin sends
+   only what the person changed — but each one is checked, because `rank`
+   reaches a sort clause and an unread one arrives there as NaN. */
+const schema = z.object({
+  title: z.string().trim().min(1).max(200).optional(),
+  description: z.string().trim().max(2000).nullable().optional(),
+  rank: z.coerce.number().int().min(0).max(10_000).optional(),
+  published: z.boolean().optional(),
+})
+
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const body = req.body as {
-    title?: string
-    description?: string
-    rank?: number
-    published?: boolean
+  const parsed = schema.safeParse(req.body)
+  if (!parsed.success) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(" ")
+    )
   }
 
   const { result: fabric_catalogue } = await updateFabricCatalogueWorkflow(req.scope).run({
-    input: {
-      id: req.params.id,
-      ...(body.title !== undefined ? { title: body.title } : {}),
-      ...(body.description !== undefined ? { description: body.description } : {}),
-      ...(body.rank !== undefined ? { rank: Number(body.rank) } : {}),
-      ...(body.published !== undefined ? { published: Boolean(body.published) } : {}),
-    },
+    input: { id: req.params.id, ...parsed.data },
   })
 
   res.json({ fabric_catalogue })

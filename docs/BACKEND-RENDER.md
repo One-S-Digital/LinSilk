@@ -1,4 +1,4 @@
-# Maison Ayla — Backend Build & Render Deployment
+# LinSilk — Backend Build & Render Deployment
 
 **Goal:** stand up Medusa v2 + Payload 3, wire the existing storefront to it, and host the whole
 thing on Render.
@@ -16,11 +16,11 @@ was written for this handover — the backend should conform to it, not the reve
 
 | Render service | Type | What it is |
 |---|---|---|
-| `ayla-medusa` | Web Service (Node) | Medusa server — Store API, Admin API, Admin UI |
-| `ayla-worker` | Background Worker | Medusa in worker mode — events, subscribers, scheduled jobs |
-| `ayla-postgres` | Postgres | Two databases: `ayla_medusa`, `ayla_payload` |
-| `ayla-redis` | Key Value | Event bus + workflow engine |
-| `ayla-storefront` | Web Service (Node) | The Next.js app, with Payload mounted at `/admin` |
+| `linsilk-medusa` | Web Service (Node) | Medusa server — Store API, Admin API, Admin UI |
+| `linsilk-worker` | Background Worker | Medusa in worker mode — events, subscribers, scheduled jobs |
+| `linsilk-postgres` | Postgres | Two databases: `linsilk_medusa`, `linsilk_payload` |
+| `linsilk-redis` | Key Value | Event bus + workflow engine |
+| `linsilk-storefront` | Web Service (Node) | The Next.js app, with Payload mounted at `/admin` |
 
 **Why a separate worker.** Medusa runs `server` and `worker` as distinct modes. Running both in
 one process means a long subscriber (an atelier notification, a file transcode) blocks HTTP
@@ -49,12 +49,12 @@ Bring the local services up:
 pnpm services        # docker-compose.yml already defines Postgres 16 + Redis 7
 ```
 
-`docker/init-db.sql` already creates `ayla_payload` alongside `ayla_medusa`.
+`docker/init-db.sql` already creates `linsilk_payload` alongside `linsilk_medusa`.
 
 Local `apps/medusa/.env`:
 
 ```bash
-DATABASE_URL=postgres://ayla:ayla@localhost:5432/ayla_medusa
+DATABASE_URL=postgres://linsilk:linsilk@localhost:5432/linsilk_medusa
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=<openssl rand -base64 32>
 COOKIE_SECRET=<openssl rand -base64 32>
@@ -227,14 +227,15 @@ decoupling it from the login identity is a sharper edge than this pass reaches f
 
 ## 4. Phase 3 — Seed
 
-`apps/medusa/src/scripts/seed.ts` reads directly from `apps/storefront/lib/catalog.ts`:
-4 collections, 53 pieces and 4 commission silhouettes.
+`apps/medusa/src/scripts/seed.ts` reads the catalogue written down beside it in
+`apps/medusa/src/scripts/catalogue-fixture.ts`: 4 collections, 53 pieces and 4 commission
+silhouettes.
 
 **It is safe to run again.** Anything missing is created; anything present has its wording,
 collection and metadata brought back in line with the catalogue. Prices are written once, at
 creation — after that the house owns them in the admin, and the exchange-rate job keeps the
-derived currencies current. It is excluded from the compiled build (it reads a file outside the
-backend), so it runs from source, against whichever database `DATABASE_URL` points at.
+derived currencies current. It is excluded from the compiled build, so it runs from source,
+against whichever database `DATABASE_URL` points at.
 
 ```bash
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
@@ -243,8 +244,10 @@ pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
 ⚠ Collections I–III (36 pieces) are **placeholder content**. Seed them for a working archive, but
 do not let them reach production without the client's real data.
 
-Once seeding works, `lib/catalog.ts` stops being the storefront's data source and becomes the
-seed script's input only.
+Seeding provisions an empty database and then stays out of the way: the storefront reads its
+pieces and collections from the store API, so Medusa is the source of truth from the first run
+onwards. The fixture is the house's written-down copy, not a live mirror — a piece added through
+the admin or the ingestion route is not in it, and does not need to be.
 
 ---
 
@@ -260,7 +263,7 @@ blank template. Those route files are generated and are not meant to be hand-edi
 admin's own registered components ever change, and `payload-types.ts` (gitignored, like
 `next-env.d.ts`) with `pnpm --filter storefront generate:types`.
 
-Points at `ayla_payload` via `DATABASE_URI` — `docker/init-db.sql` already creates that database
+Points at `linsilk_payload` via `DATABASE_URI` — `docker/init-db.sql` already creates that database
 locally, alongside Medusa's. `PAYLOAD_SECRET` is Payload's own encryption/signing secret and must
 never be the same value as Medusa's `JWT_SECRET` or `COOKIE_SECRET`.
 
@@ -360,8 +363,8 @@ Two things worth knowing before changing any of it:
 
 Still to do here:
 - A currency switcher for browsing (regions and prices exist; only checkout switches today)
-- `lib/catalog.ts` still supplies the storefront's copy and art direction; products, prices and
-  collections now come from the backend
+- `lib/catalog.ts` now reads its pieces and collections from the store API; what stays written
+  down there is the measurement chart, the cloth, and the formatting
 - Saved addresses (§3.9) are not yet offered as a picker here; checkout still asks fresh
 
 ---
@@ -372,12 +375,12 @@ Still to do here:
 
 The blueprint is `render.yaml` at the repo root; read it rather than this section. In outline:
 
-- `ayla-medusa` (web), `ayla-worker` (worker), `ayla-storefront` (web), `ayla-postgres`,
-  `ayla-redis`, all in Frankfurt.
+- `linsilk-medusa` (web), `linsilk-worker` (worker), `linsilk-storefront` (web), `linsilk-postgres`,
+  `linsilk-redis`, all in Frankfurt.
 - **Every secret comes from Render, never the repo.** `generateValue` mints `JWT_SECRET` and
   `COOKIE_SECRET`; `sync: false` values are typed into the dashboard once; the database and key
-  value store hand out their own connection strings. Two environment groups — `ayla-secrets` and
-  `ayla-urls` — are shared by the server and the worker, which must agree about all of it.
+  value store hand out their own connection strings. Two environment groups — `linsilk-secrets` and
+  `linsilk-urls` — are shared by the server and the worker, which must agree about all of it.
 - Migrations run as `preDeployCommand`, so they happen before the new version takes traffic and
   never on a rollback the way a build step would.
 - `medusa-config.ts` refuses to boot in production without `DATABASE_URL`, `REDIS_URL`, both
@@ -398,10 +401,10 @@ pnpm --filter medusa exec medusa db:migrate
 
 ### 8.3 Second database
 
-Render provisions one database per instance. Create `ayla_payload` manually on first deploy:
+Render provisions one database per instance. Create `linsilk_payload` manually on first deploy:
 
 ```sql
-CREATE DATABASE ayla_payload OWNER ayla;
+CREATE DATABASE linsilk_payload OWNER linsilk;
 ```
 
 Then set `DATABASE_URI` for the storefront to that connection string. (Locally,
@@ -412,15 +415,18 @@ Then set `DATABASE_URI` for the storefront to that connection string. (Locally,
 Set after the first deploy, once hostnames exist:
 
 ```
-STORE_CORS = https://maisonayla.ch,https://ayla-storefront.onrender.com
-ADMIN_CORS = https://ayla-medusa.onrender.com
+STORE_CORS = https://linsilk.ch,https://linsilk-storefront.onrender.com
+ADMIN_CORS = https://linsilk-medusa.onrender.com
 AUTH_CORS  = <both of the above>
 ```
 
 ### 8.5 File storage — Cloudflare R2
 
-Two kinds of file: **cloth catalogues**, which are public, and **commission references**, which
-are the client's property and are stored privately, read back through short-lived signed links.
+Three kinds of file: **cloth catalogues**, which are public; **commission references**, which are
+the client's property and are stored privately, read back through short-lived signed links; and
+**photography**, which is public and arrives with a piece through the ingestion route
+(`CATALOGUE-INGESTION.md`). That route fetches images by URL, so the hosts it may fetch from are
+named in `CATALOGUE_IMAGE_HOSTS` — unset, every image is refused.
 
 Render's disks do not survive a deploy and are not shared between the web service and the
 worker, so object storage is not optional in production. **Cloudflare R2** is the default: it
@@ -431,12 +437,12 @@ Nothing about the choice is one-way: any S3-compatible bucket works by changing 
 Development needs none of this. Without `S3_BUCKET` the file module writes to `apps/medusa/static`.
 
 ```bash
-S3_BUCKET=maison-ayla
+S3_BUCKET=linsilk
 S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
 S3_REGION=auto
 S3_ACCESS_KEY_ID=<R2 API token>
 S3_SECRET_ACCESS_KEY=<R2 API token secret>
-S3_FILE_URL=https://files.maisonayla.ch   # a custom domain on the bucket, or the r2.dev URL
+S3_FILE_URL=https://files.linsilk.ch   # a custom domain on the bucket, or the r2.dev URL
 S3_PREFIX=
 ```
 
@@ -453,7 +459,7 @@ durability guarantee across deploys.
 
 ## 9. Post-deploy checklist
 
-- [ ] `/health` green on `ayla-medusa`
+- [ ] `/health` green on `linsilk-medusa`
 - [ ] Admin reachable, admin user created
 - [ ] Worker log shows it started in `worker` mode, not `server`
 - [ ] Seed run; 4 collections and 53 products present
@@ -470,8 +476,8 @@ durability guarantee across deploys.
 - [ ] Transactional email at every state change
 - [ ] Automated Postgres backups on, and a restore actually tested
 - [ ] `NEXT_PUBLIC_*` vars contain nothing secret
-- [ ] `ayla_payload` database created manually (§8.3); `DATABASE_URI` and `PAYLOAD_SECRET` set on
-      `ayla-storefront`
+- [ ] `linsilk_payload` database created manually (§8.3); `DATABASE_URI` and `PAYLOAD_SECRET` set on
+      `linsilk-storefront`
 - [ ] Payload admin reachable at `/admin`, first user created, seed run
       (`pnpm --filter storefront exec payload run ./payload/seed.ts`)
 - [ ] Storefront still passes `pnpm --filter storefront test`

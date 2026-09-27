@@ -1,6 +1,6 @@
-# Maison Ayla — Developer Handover
+# LinSilk — Developer Handover
 
-**Client:** Maison Ayla — made-to-measure house. Atelier in Hội An, Việt Nam; office in Zürich.
+**Client:** LinSilk — made-to-measure house. Atelier in Hội An, Việt Nam; office in Zürich.
 **Agency:** one S Digital
 **Status as of 2026-09-13:** Storefront and backend both built. A client can reserve a piece or
 commission one, pay for either, and manage all of it from an account — or do any of it as a
@@ -55,7 +55,7 @@ fights a house where the price of a commission is not known until a person has r
 ## 3. Repo layout
 
 ```
-Maison Ayla/
+Maison Ayla/                (repo folder name on disk — unchanged; brand is LinSilk)
 ├─ apps/storefront/          Next.js 16 · the whole storefront, and Payload
 │  ├─ app/                   Routes (App Router), incl. app/(payload) — Payload's admin and API
 │  ├─ components/            Design system, motion primitives, commerce widgets
@@ -239,7 +239,7 @@ under reduced motion, where hijacking scroll would be hostile.
 | **Archive contents** | Collections I–III (36 pieces) are invented, written to match each season's stated cloth. The client must supply the real archive. Collection IV is real. |
 | **Legal** | `/legal/terms` and `/legal/privacy` are structured placeholders listing what must be covered. **Not drafted, deliberately.** Privacy matters here: body measurements are personal data transferred to Việt Nam, which needs a stated GDPR transfer safeguard. |
 | **Duty & VAT position** | The footer claims duty is included in Switzerland *and* the EU. Switzerland is outside the EU customs union and the goods originate in Việt Nam — a three-way customs problem. Needs an answer from the client's accountant before go-live. |
-| **Instagram handle** | `@maisonayla` is assumed in the footer. |
+| **Instagram handle** | `@linsilk` is assumed in the footer. |
 
 ---
 
@@ -288,7 +288,7 @@ Built — **see `docs/BACKEND-RENDER.md`**:
   is — which is why account pages are Server Components rather than the cart's client pattern.
   Email is not editable from the account; the customer-update endpoint doesn't accept it.
 
-- Payload 3, installed into the Next app on its own `ayla_payload` Postgres database (no fifth
+- Payload 3, installed into the Next app on its own `linsilk_payload` Postgres database (no fifth
   service). The `pages` collection — Atelier, Cloth, The house — is wired end to end: seeded from
   the old `STORY` constant in `lib/catalog.ts` (`payload/seed.ts`), read live from Payload by the
   three routes that used to read `STORY` directly (`lib/payload.ts`'s `getStoryPage`). `care`,
@@ -302,8 +302,8 @@ Still to build:
   nothing real to put there yet regardless (awaiting a lawyer, §8).
 - `seasons` and `media` need a consuming page before populating either one means anything —
   today's archive pages carry nothing beyond the one-line `collection.note` already in Medusa
-- Currency switcher for browsing (checkout already switches; the shop pages read `lib/catalog.ts`
-  for copy and art direction)
+- Currency switcher for browsing (checkout already switches; the shop pages read the Swiss
+  region's prices)
 - Production status screens for the bench
 - Saved addresses are not yet offered as a picker at checkout, which still asks fresh
 

@@ -1,2 +1,2 @@
 -- Payload keeps its own database alongside Medusa's on the same server.
-CREATE DATABASE ayla_payload OWNER ayla;
+CREATE DATABASE linsilk_payload OWNER linsilk;
