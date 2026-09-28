@@ -20,7 +20,14 @@
 
 import type { StoryKey } from '../lib/catalog.ts';
 
-process.loadEnvFile('.env.local');
+/* .env.local exists only in local dev — Node throws on an explicit path that
+   isn't there, and in production (Render) the env is already real, injected
+   by the platform rather than read from a file. */
+try {
+  process.loadEnvFile('.env.local');
+} catch {
+  // No .env.local — production, where the environment is already set.
+}
 
 const { getPayload } = await import('payload');
 const { default: config } = await import('../payload.config.ts');

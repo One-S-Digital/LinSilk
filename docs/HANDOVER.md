@@ -40,7 +40,7 @@ as art direction. `support.js` in that folder is the Claude Design runtime and w
 | Motion | **motion 13** (Framer Motion) + **lenis** | Scroll-linked work needs interpolated scroll or it reads as jitter |
 | Commerce | **Medusa v2**, self-hosted | Open source, TypeScript end to end, multi-currency regions in core, line-item metadata carries the measurement sheet |
 | CMS | **Payload 3**, installed into the Next app | Open source, TypeScript, runs on the same Postgres — `pages` is wired; `care`/`legal`/`seasons`/`media` are schema only |
-| Tests | **Vitest** | 28 tests on the measurement maths |
+| Tests | **Vitest** | 38 tests on the measurement maths and catalogue translation |
 
 **Shopify was rejected deliberately.** Two reasons, both sound: the client will not accept
 per-feature paywalls, and more importantly Shopify's model is cart → checkout → paid, which
@@ -81,7 +81,7 @@ pnpm --filter storefront dev     # http://localhost:3000
 ```
 
 ```bash
-pnpm --filter storefront test    # 28 tests, measurement maths
+pnpm --filter storefront test    # 38 tests, measurement maths and catalogue translation
 ```
 
 ```bash
@@ -309,14 +309,14 @@ Still to build:
 
 Configuration, not code, is what stands between this and taking money: a Stripe key (checkout
 falls back to a provider that authorises without charging, and says so on the page), a Resend key
-and a verified sender, and an R2 bucket. See `BACKEND-RENDER.md` §6 and §8.5.
+and a verified sender, and two R2 buckets (one public, one never). See `BACKEND-RENDER.md` §6 and §8.5.
 
 ---
 
 ## 11. Verified
 
 - Build clean on both apps
-- 28 Vitest tests on the storefront, 39 unit and 21 API tests on the backend
+- 38 Vitest tests on the storefront, 47 unit and 38 API tests on the backend
 - Reserve, check out and pay end to end, by hand in a browser: a seasonal piece in Swiss francs,
   the same cart re-priced in euro at a German address, and a commission accepted from its link
 - An account end to end, by hand: register, sign in, edit the profile, add and edit and remove a

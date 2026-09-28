@@ -108,7 +108,9 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     }
   }
 
-  let references: { id: string; url: string; filename: string; mime_type: string }[] = []
+  /* No url is kept: the file sits in a bucket with no public address, and
+     the admin mints a signed link each time it opens the brief. */
+  let references: { id: string; filename: string; mime_type: string }[] = []
   if (uploads.length) {
     const { result } = await uploadFilesWorkflow(req.scope).run({
       input: {
@@ -122,7 +124,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     })
     references = result.map((file, i) => ({
       id: file.id,
-      url: file.url,
       filename: uploads[i].originalname,
       mime_type: uploads[i].mimetype,
     }))

@@ -293,7 +293,11 @@ against Payload under Next 16 (github.com/payloadcms/payload/issues/16684). Seco
 script needs genuine top-level `await`, not a `.then()/.catch()` chain, or the CLI exits 0 the
 instant `getPayload()` is called, before the connection settles — which is why `payload/` is its
 own ESM package (`payload/package.json`) and `payload/seed.ts` loads `.env.local` itself with
-`process.loadEnvFile()` before dynamically importing anything that reads `process.env`. Neither
+`process.loadEnvFile()`, wrapped in a `try`/`catch`, before dynamically importing anything that
+reads `process.env`. The `catch` matters in production: `.env.local` is dev-only and never
+deployed, and Node throws on an explicit path that does not exist, unlike its no-argument form —
+without it, running the seed on Render (`GO-LIVE-SETUP.md` §8) would exit before `getPayload()`
+is even called, on an environment that is already correctly set by the platform. Neither
 workaround touches the normal path: Next loads `.env.local` and this config the ordinary way (via
 `@payload-config` from `app/(payload)/layout.tsx`) for `dev`, `build` and `start` alike.
 
@@ -401,14 +405,21 @@ pnpm --filter medusa exec medusa db:migrate
 
 ### 8.3 Second database
 
-Render provisions one database per instance. Create `linsilk_payload` manually on first deploy:
+Render provisions one database per instance. Create `linsilk_payload` manually on first deploy,
+connected via the PSQL command Render's dashboard gives you for `linsilk-postgres`:
 
 ```sql
-CREATE DATABASE linsilk_payload OWNER linsilk;
+CREATE DATABASE linsilk_payload;
 ```
 
-Then set `DATABASE_URI` for the storefront to that connection string. (Locally,
-`docker/init-db.sql` already does this.)
+No explicit `OWNER` — leaving it out makes the new database owned by whichever user the PSQL
+command connected as, which is exactly Render's own generated user for that instance. That
+user is not named `linsilk`; that name is only real for the local Docker setup, where
+`docker/init-db.sql` runs the same statement with an explicit owner because the local role
+genuinely is called that.
+
+Then set `DATABASE_URI` for the storefront to that same connection string with the database name
+swapped from `linsilk_medusa` to `linsilk_payload`.
 
 ### 8.4 CORS
 
@@ -438,6 +449,7 @@ Development needs none of this. Without `S3_BUCKET` the file module writes to `a
 
 ```bash
 S3_BUCKET=linsilk
+S3_PRIVATE_BUCKET=linsilk-private      # commission references; never given a public address
 S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
 S3_REGION=auto
 S3_ACCESS_KEY_ID=<R2 API token>
@@ -451,8 +463,14 @@ Two things to get right when the bucket is made:
 - **Create it in the EU jurisdiction.** Measurement sheets and reference photographs are personal
   data about a named person; keeping the files in the EU is one less thing to explain in the
   privacy notice, which already has a Việt Nam transfer to account for (`HANDOVER.md` §8).
-- **Do not make the bucket public.** Only the catalogues are public, and they are served through
-  `S3_FILE_URL`; references are fetched with signed links the admin mints per view.
+- **Two buckets, and only one of them ever public.** R2 has no per-object ACL: once a bucket has
+  a public address (`r2.dev` or a custom domain), every object in it is readable by anyone with
+  its key, whatever the upload asked for. So catalogues and photography go to `S3_BUCKET`, which
+  may be given a public address (`S3_FILE_URL`), and references go to `S3_PRIVATE_BUCKET`, which
+  never is — they are fetched only with signed links the admin mints per view. The routing is
+  `src/modules/split-s3`, a thin wrapper around the stock S3 provider (Medusa's file module takes
+  exactly one provider); it refuses to boot without a separate private bucket. Both buckets share
+  one endpoint and one API token, so create them in the same jurisdiction.
 
 Roughly $0.015 per GB per month and no egress charge, against Render disk at $0.25 per GB and no
 durability guarantee across deploys.

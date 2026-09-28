@@ -55,11 +55,15 @@ const redisModules = redisUrl
 
    Development writes to ./static. Production uses object storage — anything
    with an S3 API, Cloudflare R2 by default (see docs/BACKEND-RENDER.md §8.5).
-   Render's disks do not survive a deploy, so this is not optional there. */
+   Render's disks do not survive a deploy, so this is not optional there.
+
+   Two buckets, because R2 cannot make one object in a bucket private while
+   another is public: S3_BUCKET may be given a public domain, S3_PRIVATE_BUCKET
+   never is (src/modules/split-s3). */
 const fileProviders = process.env.S3_BUCKET
   ? [
       {
-        resolve: '@medusajs/medusa/file-s3',
+        resolve: './src/modules/split-s3',
         id: 's3',
         options: {
           file_url: process.env.S3_FILE_URL,
@@ -67,6 +71,7 @@ const fileProviders = process.env.S3_BUCKET
           secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
           region: process.env.S3_REGION || 'auto',
           bucket: process.env.S3_BUCKET,
+          private_bucket: process.env.S3_PRIVATE_BUCKET,
           endpoint: process.env.S3_ENDPOINT,
           prefix: process.env.S3_PREFIX || '',
         },
