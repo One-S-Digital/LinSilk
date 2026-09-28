@@ -66,7 +66,8 @@ payload is a no-op update, which is what makes an agent safe to retry.
 | `length_kinds` | | `metadata.length_kinds` | Which lengths the measurement sheet asks for. Empty is a real answer — a scarf asks for none. |
 | `shot` | | `metadata.shot` | Art direction. Kept — it is the `ShotFrame` fallback until the piece is photographed. |
 | `sleep` | | `metadata.sleep` | Splits the sleepwear rail. |
-| `images[]` | | `product.images` | `{ url, alt }`, at most 8. The first becomes `thumbnail`. |
+| `images[]` | | `product.images` | `{ url, alt }`, at most 8. Left out, photography is untouched — see `images_action` below. |
+| `images_action` | | — | What `images[]` does to what the piece already carries: `replace` (default) — the fetched URLs become the whole set, dropping anything not listed; `add` — fetched and appended, refused past 8; `remove` — no fetch, the piece's own already-stored URLs (as `list_pieces` reports them back) are taken off it, refused if one is not actually on the piece. The first image left standing becomes `thumbnail`; none left, it has none. |
 | `run_size` | | stock level | The season's capped run for this piece. Defaults to 10. |
 
 The route supplies, so the agent cannot get them wrong: `status: draft`, the single
@@ -78,7 +79,9 @@ outside the chart, a handle beginning `commission-`, either commission collectio
 a new piece with no price, and a `price_chf` that moves on a piece a human has already
 published. **Price is only ever set while the piece is a draft.** Once the house has published
 it, the price is the house's to change in the admin — but re-posting the same figure is still a
-no-op, so an agent can safely retry a payload it already sent.
+no-op, so an agent can safely retry a payload it already sent. Photography is refused too:
+`images_action: 'remove'` with no URLs, or with one the piece does not actually carry; `add` or
+`replace` past the 8-image cap once fetched.
 
 An `x-medusa-idempotency-key` header is not needed: the handle is the key, and the write is an
 upsert either way.
@@ -128,15 +131,16 @@ non-franc price.
 `./static` — **which Render wipes on every deploy.** Object storage is a precondition here, not
 a later refinement. Setup is in `BACKEND-RENDER.md` §8.5.
 
-The route fetches each URL server-side and hands the bytes to `uploadFilesWorkflow` with
-`access: "public"`, the same path `admin/fabric-catalogues/route.ts` already uses for
-catalogues. It takes at most 8 images of 15 MB each, accepts `image/*` only, and rejects a URL
-it cannot fetch rather than storing a broken reference.
+For `add` and `replace`, the route fetches each URL server-side and hands the bytes to
+`uploadFilesWorkflow` with `access: "public"`, the same path `admin/fabric-catalogues/route.ts`
+already uses for catalogues. A piece carries at most 8 images of 15 MB each, accepts `image/*`
+only, and rejects a URL it cannot fetch rather than storing a broken reference. `remove` fetches
+nothing — it matches the URLs sent against what the piece already carries and drops those.
 
 Fetching by URL means the backend makes outbound requests on an agent's say-so, so the hosts it
 will fetch from are named in **`CATALOGUE_IMAGE_HOSTS`**, a comma-separated list. Unset means no
-host is allowed and every image is refused, which is the safe default rather than an oversight —
-the refusal names the variable.
+host is allowed and every `add` or `replace` is refused, which is the safe default rather than an
+oversight — the refusal names the variable. `remove` needs no host, since it fetches nothing.
 
 Rendering: `ShotFrame` stays. A piece with images renders them; a piece without renders the
 woven gradient from `metadata.shot` as it does today. That way the migration does not depend on
@@ -153,7 +157,7 @@ carries the house's own refusal back in the house's own words, because an agent 
 | `list_seasons` | `GET /admin/catalogue/seasons` — status and piece counts |
 | `list_pieces` | `GET /admin/catalogue/pieces` — optionally one season |
 | `upsert_piece` | `POST /admin/catalogue/pieces` |
-| `attach_images` | the same route, handle and images only |
+| `attach_images` | the same route — `handle`, `images`, and `action`: `add` (default), `replace` or `remove` |
 | `create_season` | `POST /admin/catalogue/seasons` |
 | `open_season` | the rollover of §5 |
 
@@ -231,6 +235,13 @@ Each step has a check that proves it before the next begins.
    URL, one field corrected on its own, the piece published by hand, the season opened — which
    archived the season before it — and the storefront rebuilt showing *Autumn VIII* with the
    photograph on it. Refusals arrive as readable text with `isError`, not as a bare status.
+
+   `attach_images`'s `add`/`replace`/`remove` split was added after this pass, once the first
+   version — one implicit action that always replaced the whole set — turned out to contradict
+   its own name: a second call meant to add more photographs silently dropped the first batch.
+   Pinned by `integration-tests/http/catalogue.spec.ts`'s "a piece's photography" cases rather
+   than a live MCP client, since the three actions are the route's own logic and `attach_images`
+   only carries the call across.
 
 ## 10. Not being built
 

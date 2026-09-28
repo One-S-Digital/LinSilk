@@ -90,7 +90,8 @@ server.registerTool(
     title: "List pieces",
     description:
       "The pieces in the catalogue, newest season first. Says which are still drafts " +
-      "waiting for a person to publish them, and which have photography.",
+      "waiting for a person to publish them, and carries each one's photograph URLs — " +
+      "the ones attach_images' remove takes.",
     inputSchema: {
       collection: z.string().optional().describe("A season's handle, to read just that one"),
     },
@@ -127,7 +128,14 @@ server.registerTool(
       shot: z.string().optional().describe("Art direction, drawn as a placeholder until photographed"),
       sleep: z.boolean().optional().describe("True for sleepwear, which has its own rail"),
       run_size: z.number().int().optional().describe("The season's capped run for this piece"),
-      images: z.array(image).optional(),
+      images: z
+        .array(image)
+        .optional()
+        .describe(
+          "Photograph URLs to fetch, which become the piece's whole set — anything already " +
+            "there and not repeated here is dropped. Left out, photography is untouched. To " +
+            "add to what is there, or take a photograph off, use attach_images instead."
+        ),
     },
   },
   (piece) => answer(() => house("/admin/catalogue/pieces", { method: "POST", body: piece }))
@@ -136,18 +144,31 @@ server.registerTool(
 server.registerTool(
   "attach_images",
   {
-    title: "Attach photography",
+    title: "Add, replace or remove photography",
     description:
-      "Adds photographs to a piece that already exists, by URL. The first becomes the " +
-      "piece's thumbnail. Until a piece has photography the site draws a placeholder " +
-      "weave from its art direction, so this is what replaces it.",
+      "Changes a piece's photography, one action at a time. `add` (the default) fetches " +
+      "the given URLs and adds them to what the piece already carries. `replace` fetches " +
+      "them and makes them the whole set, dropping anything not listed. `remove` takes " +
+      "photographs off the piece — pass the piece's own URLs, as list_pieces reports them " +
+      "back, not new ones to fetch. The first photograph left standing becomes the piece's " +
+      "thumbnail; with none left, it has none. Until a piece has photography the site draws " +
+      "a placeholder weave from its art direction, so `add` or `replace` is what replaces it.",
     inputSchema: {
       handle: z.string(),
-      images: z.array(image).min(1),
+      images: z
+        .array(image)
+        .min(1)
+        .describe("URLs to fetch (add, replace), or the piece's own stored URLs (remove)"),
+      action: z.enum(["add", "replace", "remove"]).default("add"),
     },
   },
-  ({ handle, images }) =>
-    answer(() => house("/admin/catalogue/pieces", { method: "POST", body: { handle, images } }))
+  ({ handle, images, action }) =>
+    answer(() =>
+      house("/admin/catalogue/pieces", {
+        method: "POST",
+        body: { handle, images, images_action: action },
+      })
+    )
 )
 
 server.registerTool(

@@ -49,6 +49,11 @@ const piece = (handle: string, collection: string, extra: Record<string, unknown
   ...extra,
 })
 
+/* A fake, allowlisted host: a photograph is three bytes and a jpeg content
+   type, enough for the route's own checks without a real image anywhere. */
+const IMAGE_HOST = "img.linsilk.test"
+const photo = (name: string) => ({ url: `https://${IMAGE_HOST}/${name}.jpg` })
+
 medusaIntegrationTestRunner({
   inApp: true,
   env: {},
@@ -59,9 +64,16 @@ medusaIntegrationTestRunner({
 
     beforeAll(() => {
       realFetch = global.fetch
+      process.env.CATALOGUE_IMAGE_HOSTS = IMAGE_HOST
       global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         if (String(input).includes("ecb.europa.eu")) {
           return new Response(ECB_FEED, { status: 200 })
+        }
+        if (String(input).includes(IMAGE_HOST)) {
+          return new Response(new Uint8Array([0xff, 0xd8, 0xff]), {
+            status: 200,
+            headers: { "content-type": "image/jpeg" },
+          })
         }
         return realFetch(input, init)
       }) as typeof fetch
@@ -69,6 +81,7 @@ medusaIntegrationTestRunner({
 
     afterAll(() => {
       global.fetch = realFetch
+      delete process.env.CATALOGUE_IMAGE_HOSTS
     })
 
     beforeEach(async () => {
@@ -212,6 +225,107 @@ medusaIntegrationTestRunner({
           admin
         )
         expect(reworded.status).toBe(200)
+      })
+    })
+
+    describe("a piece's photography", () => {
+      beforeEach(async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+      })
+
+      const pieceImages = async (handle: string) => {
+        const { data } = await api.get("/admin/catalogue/pieces?collection=autumn-iv", admin)
+        return data.pieces.find((p: { handle: string }) => p.handle === handle).images as string[]
+      }
+
+      it("is untouched when images is left out, whichever action a caller sends", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { title: "Piece w1, reworded" }),
+          admin
+        )
+        expect(await pieceImages("w1")).toHaveLength(1)
+      })
+
+      it("adds to what the piece already carries, when asked", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [photo("two")], images_action: "add" },
+          admin
+        )
+        const images = await pieceImages("w1")
+        expect(images).toHaveLength(2)
+        expect(images.some((url) => url.includes("one"))).toBe(true)
+        expect(images.some((url) => url.includes("two"))).toBe(true)
+      })
+
+      it("replaces the whole set by default, unlike the MCP tool built on it", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post("/admin/catalogue/pieces", { handle: "w1", images: [photo("two")] }, admin)
+        expect(await pieceImages("w1")).toEqual([expect.stringContaining("two")])
+      })
+
+      it("replaces the whole set when asked, dropping what was not sent", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one"), photo("two")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [photo("three")], images_action: "replace" },
+          admin
+        )
+        const images = await pieceImages("w1")
+        expect(images).toHaveLength(1)
+        expect(images[0]).toContain("three")
+      })
+
+      it("removes a photograph by the url list_pieces reports back", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one"), photo("two")] }),
+          admin
+        )
+        const [first, second] = await pieceImages("w1")
+
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [{ url: first }], images_action: "remove" },
+          admin
+        )
+        expect(await pieceImages("w1")).toEqual([second])
+      })
+
+      it("is refused a remove of a url the piece does not carry", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        const refused = await api
+          .post(
+            "/admin/catalogue/pieces",
+            { handle: "w1", images: [photo("never-attached")], images_action: "remove" },
+            admin
+          )
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("no photograph")
       })
     })
 

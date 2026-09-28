@@ -27,7 +27,7 @@ type OpenInput = {
 type Restore = { id: string; metadata: SeasonMetadata }[]
 
 const openStep = createStep(
-  "open-season",
+  "open",
   async (input: OpenInput, { container }) => {
     const products: IProductModuleService = container.resolve(Modules.PRODUCT)
 

@@ -66,10 +66,16 @@ const schema = z.object({
   shot: z.string().trim().max(200).optional(),
   sleep: z.boolean().optional(),
   run_size: z.number().int().positive().max(10_000).optional(),
+  /* Omitted, photography is untouched — whatever `images_action` says. Present,
+     it is read against `images_action`: URLs to fetch and add or become the
+     whole set, or — for `remove` — the piece's own already-stored URLs
+     (as `list_pieces` reports them back) to take off it. */
   images: z
     .array(z.object({ url: z.string().url(), alt: z.string().trim().max(200).optional() }))
     .max(MAX_IMAGES)
-    .default([]),
+    .optional(),
+  /** What `images` does to what the piece already carries. */
+  images_action: z.enum(["replace", "add", "remove"]).default("replace"),
 })
 
 /** What a piece cannot be cut without. */
@@ -176,11 +182,13 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
       "collection.handle",
       "variants.prices.amount",
       "variants.prices.currency_code",
+      "images.url",
     ],
     ...(collection ? { filters: { collection: { handle: collection } } } : {}),
   })
 
   type Priced = { prices?: { amount: number; currency_code: string }[] | null }
+  type Imaged = { url: string }
 
   const pieces = products
     .filter((p) => {
@@ -205,6 +213,8 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         price_chf: francs ?? null,
         length_kinds: (meta.length_kinds as string[]) ?? [],
         photographed: Boolean(p.thumbnail),
+        /* What `images_action: 'remove'` takes URLs from. */
+        images: ((p.images ?? []) as unknown as Imaged[]).map((img) => img.url),
       }
     })
     .sort((a, b) => a.handle.localeCompare(b.handle, "en", { numeric: true }))
@@ -241,6 +251,8 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       "variants.id",
       "variants.prices.amount",
       "variants.prices.currency_code",
+      "images.id",
+      "images.url",
     ],
     filters: { handle: piece.handle },
   })
@@ -298,9 +310,45 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     }
   }
 
-  /* ---- Photography ---- */
+  /* ---- Photography ---- *
+     `images` absent leaves photography untouched, whichever action was sent —
+     a caller correcting a title has no reason to restate its photographs.
+     Present, `images_action` says what it does to what the piece already
+     carries: the new whole set (fetched), added to what is there (fetched,
+     then appended), or taken off it by URL (no fetch — these are already the
+     house's own, matched against what the piece carries and dropped). */
 
-  const urls = await storeImages(req.scope, piece.images)
+  type StoredImage = { id?: string; url: string }
+  const existingImages = (existing?.images ?? []) as unknown as StoredImage[]
+
+  let finalImages: StoredImage[] | undefined
+  if (piece.images !== undefined) {
+    if (piece.images_action === "remove") {
+      if (!piece.images.length) {
+        refuse("images_action 'remove' needs the photograph URLs to take off the piece.")
+      }
+      const toRemove = new Set(piece.images.map((i) => i.url))
+      const missing = [...toRemove].filter(
+        (url) => !existingImages.some((img) => img.url === url)
+      )
+      if (missing.length) {
+        refuse(`${piece.handle} carries no photograph at ${missing.join(", ")}.`)
+      }
+      finalImages = existingImages.filter((img) => !toRemove.has(img.url))
+    } else {
+      const uploaded = await storeImages(req.scope, piece.images)
+      finalImages =
+        piece.images_action === "add"
+          ? [...existingImages, ...uploaded.map((url) => ({ url }))]
+          : uploaded.map((url) => ({ url }))
+      if (finalImages.length > MAX_IMAGES) {
+        refuse(
+          `A piece carries ${MAX_IMAGES} photographs at most; ${piece.handle} would carry ` +
+            `${finalImages.length}.`
+        )
+      }
+    }
+  }
 
   /* Merged here rather than left to the framework: a product's metadata is
      written whole, so sending only the fields a caller changed would blank
@@ -326,8 +374,15 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
             ...(piece.material !== undefined ? { subtitle: piece.material } : {}),
             ...(piece.collection !== undefined ? { collection_id: collectionId } : {}),
             metadata,
-            ...(urls.length
-              ? { thumbnail: urls[0], images: urls.map((url) => ({ url })) }
+            ...(finalImages !== undefined
+              ? {
+                  thumbnail: finalImages[0]?.url ?? null,
+                  /* An id keeps a carried-forward image; without one, Medusa
+                     creates a new row even when the URL already exists. */
+                  images: finalImages.map((img) =>
+                    img.id ? { id: img.id, url: img.url } : { url: img.url }
+                  ),
+                }
               : {}),
           },
         ],
@@ -427,7 +482,9 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
           shipping_profile_id: shippingProfile.id,
           origin_country: "vn",
           metadata,
-          ...(urls.length ? { thumbnail: urls[0], images: urls.map((url) => ({ url })) } : {}),
+          ...(finalImages?.length
+            ? { thumbnail: finalImages[0].url, images: finalImages.map((img) => ({ url: img.url })) }
+            : {}),
           sales_channels: [{ id: store.default_sales_channel_id! }],
           options: [{ id: cutId }],
           variants: [
