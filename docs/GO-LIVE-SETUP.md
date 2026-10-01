@@ -207,6 +207,12 @@ move around; look under the service's **Settings** tab afterward if not):
   new version takes traffic, and never runs on a rollback the way a build-command migration
   would.
 
+  **No Pre-Deploy Command field on your plan?** It's gated the same way Shell access is (see step
+  11's note) — some instance types don't get either. Fold the migration into the Start Command
+  instead, permanently: `pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa start`.
+  Safe to leave in long-term — `db:migrate` is idempotent, so running it on every deploy costs
+  nothing when there's nothing new to migrate.
+
 **Note the URL Render assigns it** (shown at the top of the service page, normally
 `https://linsilk-medusa.onrender.com` unless that exact name was taken) — you need it in steps 8
 and 9.
@@ -379,6 +385,25 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
    the user it creates the **Super Admin** role, which grants everything. People you invite later
    get whatever roles you pick on the invite. **Settings → Roles** is where you make narrower
    ones, e.g. someone who answers commissions but can't touch prices.
+
+   **No Shell tab on your plan?** It's a paid-instance feature, same as Pre-Deploy Command (step
+   6). Use the Start Command field instead — it's available on every plan:
+
+   1. `linsilk-medusa` → Settings → Start Command. Change it from `pnpm --filter medusa start` to:
+
+      ```bash
+      pnpm --filter medusa exec medusa user -e you@linsilk.ch -p <a throwaway password> && pnpm --filter medusa start
+      ```
+
+      Use a throwaway password, not your real one — Render keeps this field in deploy-settings
+      history and likely echoes it into the deploy log, so it isn't private the way a Shell
+      session would be.
+   2. Save (redeploys). Watch **Logs** for the "user created" confirmation.
+   3. **Revert immediately** back to plain `pnpm --filter medusa start`. This matters more than
+      it would for Pre-Deploy Command: because of `&&`, if `medusa user` is ever left in and runs
+      again (e.g. you forget to revert), it fails since the user already exists, `medusa start`
+      never runs, and the service won't boot at all.
+   4. Log in (next step) with the throwaway password and change it immediately.
 
 2. Visit `https://linsilk-medusa.onrender.com/app` and sign in. **Settings → API Key
    Management → Publishable API Keys** — create one.
