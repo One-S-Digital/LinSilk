@@ -167,9 +167,23 @@ confirm with a person first.
 
 ### Its credential
 
-A **secret** API key made for the agent in the Medusa admin (Settings → API key management) —
+A **secret** API key made for the agent in the Medusa admin (Settings → Secret API Keys) —
 its own credential, not a person's, and revocable on its own. Medusa accepts secret keys over
 HTTP Basic only; sent as a Bearer token they are refused.
+
+The key reaches `/admin/catalogue/*` and nothing else (`BACKEND-RENDER.md` §8.6).
+`src/api/middlewares.ts` refuses a secret key on every other admin path before any route runs,
+so it can't read an order, a customer or a commission, or mint another key. It holds however
+well Medusa's own routes are guarded, and some in 2.20 aren't. A *person* calling the catalogue
+routes still needs `catalogue:read`, `catalogue:update` or `catalogue:open` from their role.
+`integration-tests/http/roles.spec.ts` walks every admin route Medusa ships with an agent key
+and fails if any of them lets it in.
+
+The key sits in plain text in the Claude config on the machine that runs the agent. Keep that
+file out of git, point `MEDUSA_URL` at an `https://` address (Basic auth sends the key readably
+over plain http), and leave `open_season` on "ask every time" in the client. That tool is the
+one that changes what the public can buy, and its "confirm with a person" is only advice in
+its description.
 
 ```json
 {

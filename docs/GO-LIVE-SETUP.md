@@ -15,9 +15,11 @@ Follow this top to bottom — later steps depend on earlier ones.
 [Cloudflare](https://dash.cloudflare.com), [Stripe](https://dashboard.stripe.com),
 [Resend](https://resend.com). All five have free tiers to start.
 
-**Five things you'll create on Render, in this order:** two data stores
-(`linsilk-postgres`, `linsilk-redis`), then two Medusa processes that share them
-(`linsilk-medusa`, `linsilk-worker`), then the storefront (`linsilk-storefront`).
+**Four things you'll create on Render, in this order:** two data stores
+(`linsilk-postgres`, `linsilk-redis`), the Medusa process (`linsilk-medusa`, running its API and
+its background jobs together), then the storefront (`linsilk-storefront`). A fifth,
+`linsilk-worker`, is **optional** — step 7 explains when you'd want it and how to add it later;
+skip it for now unless you already know you need it.
 
 ---
 
@@ -40,21 +42,21 @@ no remote configured.
 
 ---
 
-## 1. Generate the three secrets you'll type in twice
+## 1. Generate the three secrets you'll need
 
 Render's manual flow has no "generate and share a random value" button — that only exists for
-Blueprints. Three values need to exist before you create anything, because you'll paste the exact
-same string into more than one place later:
+Blueprints. Three values need to exist before you create anything:
 
 ```bash
 openssl rand -hex 32   # run three times, or once and copy — either way, three separate values
 ```
 
 Label them `JWT_SECRET`, `COOKIE_SECRET` and `PAYLOAD_SECRET`, and save all three somewhere safe
-(a password manager). **`JWT_SECRET` and `COOKIE_SECRET` must be byte-identical on both
-`linsilk-medusa` and `linsilk-worker`** — the two processes share an event bus, a workflow engine
-and a lock, and disagreeing about either secret breaks that silently rather than with a clear
-error. `PAYLOAD_SECRET` only goes on `linsilk-storefront`, once, in step 9.
+(a password manager). `JWT_SECRET` and `COOKIE_SECRET` go on `linsilk-medusa`; `PAYLOAD_SECRET`
+goes on `linsilk-storefront`, once, in step 9. **If you add `linsilk-worker` later (step 7),
+`JWT_SECRET` and `COOKIE_SECRET` must be byte-identical on both services** — they'd share an
+event bus, a workflow engine and a lock, and disagreeing about either secret breaks that silently
+rather than with a clear error. With no separate worker, this doesn't come up.
 
 ---
 
@@ -142,7 +144,7 @@ Seven values, ready to paste onto `linsilk-medusa` in step 6:
 |---|---|
 | `S3_BUCKET` | `linsilk` |
 | `S3_PRIVATE_BUCKET` | `linsilk-private` — must differ from `S3_BUCKET` |
-| `S3_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` (for an EU-jurisdiction bucket R2 shows `https://<account-id>.eu.r2.cloudflarestorage.com` — use the one shown on the bucket's Settings page) |
+| `S3_ENDPOINT` | `https://<account-id>.eu.r2.cloudflarestorage.com` — the account's address, shared by both buckets, with the `.eu` because they're EU-jurisdiction. R2's bucket Settings page shows it as "S3 API" with the bucket name on the end (`…/linsilk`); leave that part off. |
 | `S3_REGION` | `auto` |
 | `S3_ACCESS_KEY_ID` | the Access Key ID from step 5 |
 | `S3_SECRET_ACCESS_KEY` | the Secret Access Key from step 5 |
@@ -214,7 +216,7 @@ Now add every environment variable you already have, under the service's **Envir
 | Variable | Value |
 |---|---|
 | `NODE_ENV` | `production` |
-| `MEDUSA_WORKER_MODE` | `server` |
+| `MEDUSA_WORKER_MODE` | `shared` — runs the API and the background jobs (scheduled tasks, subscribers) in this one process. `medusa start` defaults to `shared` when this is unset, but setting it explicitly means anyone reading the dashboard later can see that's deliberate, not an oversight. Change it to `server` only if you also create `linsilk-worker` (step 7) |
 | `DATABASE_URL` | from step 2 |
 | `REDIS_URL` | from step 2 |
 | `JWT_SECRET` | from step 1 |
@@ -231,7 +233,20 @@ Don't trigger a deploy yet — it will fail without the CORS values, and that's 
 
 ---
 
-## 7. Create `linsilk-worker`
+## 7. `linsilk-worker` — optional, skip unless you need it
+
+`linsilk-medusa` in `shared` mode (step 6) already runs everything: the storefront's API calls
+and the background jobs — the hourly exchange-rate refresh, the password-reset email subscriber,
+any future long subscriber. One process, one Starter instance, no separate cost.
+
+The reason to split them apart later: `shared` mode means a slow background task and a checkout
+request are competing for the same process. At this stage that's very unlikely to matter. Split
+it out once it demonstrably does — a subscriber that's grown heavy (image transcoding, a bulk
+export), or checkout latency that traces back to something running in the background at the same
+moment. Render also has no free tier for a Background Worker either way, so this isn't a way to
+save money — it only exists to isolate load once there's enough of it to isolate.
+
+**If and when you do want it**, come back here:
 
 Render dashboard → **New** → **Background Worker**. Same repo, same branch.
 
@@ -248,11 +263,16 @@ Render dashboard → **New** → **Background Worker**. Same repo, same branch.
 No Health Check Path (it isn't a web service) and no Pre-Deploy Command (migrations run once,
 from `linsilk-medusa`, not twice).
 
-Environment variables — **everything from `linsilk-medusa`'s table above, with one change**:
+**Also go back to `linsilk-medusa` and change its `MEDUSA_WORKER_MODE` from `shared` to
+`server`** — with a dedicated worker running background jobs, `linsilk-medusa` should stop doing
+that work itself, or both processes end up doing it. This redeploys `linsilk-medusa`.
+
+Environment variables for `linsilk-worker` — **everything from `linsilk-medusa`'s table above,
+with one change**:
 
 | Variable | Value |
 |---|---|
-| `MEDUSA_WORKER_MODE` | `worker` (not `server`) |
+| `MEDUSA_WORKER_MODE` | `worker` |
 | `JWT_SECRET` | the **exact same value** you put on `linsilk-medusa` |
 | `COOKIE_SECRET` | the **exact same value** you put on `linsilk-medusa` |
 | everything else | copy from `linsilk-medusa`'s table — `DATABASE_URL`, `REDIS_URL`, `STRIPE_API_KEY`, the Resend and S3 vars, `CATALOGUE_IMAGE_HOSTS` |
@@ -273,8 +293,8 @@ from `medusa-config.ts`'s `id: 'stripe'` on the `@medusajs/medusa/payment-stripe
 (Medusa builds the webhook route as `<provider-class>_<id>`, both `stripe` here). Events: at
 minimum `payment_intent.succeeded` and `payment_intent.payment_failed`.
 
-Copy the **Signing secret** it gives you into `STRIPE_WEBHOOK_SECRET` on **both**
-`linsilk-medusa` and `linsilk-worker`.
+Copy the **Signing secret** it gives you into `STRIPE_WEBHOOK_SECRET` on `linsilk-medusa` (and on
+`linsilk-worker` too, if you created it in step 7).
 
 ---
 
@@ -331,7 +351,8 @@ signed into the Medusa admin, in step 11.
 
 ## 10. Go back and fill in the CORS and URL variables
 
-Both service URLs are known now. On `linsilk-medusa` **and** `linsilk-worker`:
+Both service URLs are known now. On `linsilk-medusa` (and on `linsilk-worker` too, if you created
+it in step 7 — it reads `medusa-config.ts`'s required-vars check same as `linsilk-medusa` does):
 
 | Variable | Value |
 |---|---|
@@ -354,10 +375,22 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
    medusa user -e you@linsilk.ch -p <a real password>
    ```
 
+   The admin checks roles on every request (`BACKEND-RENDER.md` §8.6), and this command gives
+   the user it creates the **Super Admin** role, which grants everything. People you invite later
+   get whatever roles you pick on the invite. **Settings → Roles** is where you make narrower
+   ones, e.g. someone who answers commissions but can't touch prices.
+
 2. Visit `https://linsilk-medusa.onrender.com/app` and sign in. **Settings → API Key
    Management → Publishable API Keys** — create one.
 3. Paste it into `linsilk-storefront`'s `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` and save — this
    redeploys the storefront, the last deploy that needed an env var it didn't have yet.
+4. **Only if you'll use the catalogue MCP server** (`CATALOGUE-INGESTION.md` §8): **Settings →
+   Secret API Keys** → create one named e.g. `Catalogue agent`, and put it in the Claude config
+   on the machine that runs the agent as `MEDUSA_ADMIN_API_KEY`, with `MEDUSA_URL` set to
+   `linsilk-medusa`'s **https** URL. The key can reach only `/admin/catalogue/*`: the backend
+   refuses it everywhere else, so it can't read an order, a customer or a commission, and it
+   can't create another key. Give it to one machine, and revoke it from the same screen if it
+   leaks.
 
 ---
 
@@ -406,6 +439,15 @@ For the reference-file check specifically, submit a test commission with an atta
    `private/`. R2 → `linsilk`: it is **not**.
 3. `linsilk-private` → Settings → Public access: still *Disabled*, no custom domain.
 
+If you made the catalogue agent's key (step 11), check that roles hold it back. From any
+terminal:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -u "<the sk_ key>:" https://linsilk-medusa.onrender.com/admin/orders
+```
+
+That should print `403`. The same call to `/admin/catalogue/seasons` should print `200`.
+
 ---
 
 ## Custom domains, and going from Stripe test → live mode
@@ -421,14 +463,20 @@ keys (which also means registering the webhook again, step 8, against the live-m
 - **Medusa won't boot**: check the deploy log for which env var it says is missing —
   `medusa-config.ts` refuses to start without `DATABASE_URL`, `REDIS_URL`, both secrets and the
   three CORS values, and names the missing one rather than failing silently.
-- **The worker behaves as if it's a different install** (jobs silently not running, sessions
-  from the web service not recognized): `JWT_SECRET` or `COOKIE_SECRET` don't match between
-  `linsilk-medusa` and `linsilk-worker` — go back to step 1's values and re-paste them onto both.
+- **After splitting out `linsilk-worker` (step 7), it behaves as if it's a different install**
+  (jobs silently not running, sessions from the web service not recognized): `JWT_SECRET` or
+  `COOKIE_SECRET` don't match between the two services — go back to step 1's values and re-paste
+  them onto both. Doesn't apply if you're still on `linsilk-medusa` alone in `shared` mode.
 - **Medusa won't boot, error names `S3_PRIVATE_BUCKET`**: it's missing, or it's the same bucket
-  as `S3_BUCKET`, on `linsilk-medusa` or `linsilk-worker` — set it to `linsilk-private` on both
-  (step 3).
+  as `S3_BUCKET`, on `linsilk-medusa` (and on `linsilk-worker` too, if you have one — set it to
+  `linsilk-private` on both) (step 3).
 - **Commission form fails when a file is attached** (catalogue uploads fine): the R2 token can't
   write to `linsilk-private` — edit the token in step 5 so it covers both buckets.
+- **Every admin page says "Forbidden" or "Insufficient permissions"**: the signed-in user has no
+  role. Sign in as a Super Admin, give them one under **Settings → Roles**, and have them sign
+  out and back in, since roles are read at sign-in. If *nobody* can get in, the role module
+  isn't loading: `medusa-config.ts` must list `@medusajs/medusa/rbac` in `modules` (see
+  `BACKEND-RENDER.md` §8.6).
 - **Images refused**: `CATALOGUE_IMAGE_HOSTS` is blank or doesn't include the host you're
   fetching from (step 6) — the refusal message names which host was rejected.
 - **Storefront 500s on `/admin`**: `DATABASE_URI` is wrong or `linsilk_payload` doesn't exist yet

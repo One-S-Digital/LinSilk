@@ -475,6 +475,64 @@ Two things to get right when the bucket is made:
 Roughly $0.015 per GB per month and no egress charge, against Render disk at $0.25 per GB and no
 durability guarantee across deploys.
 
+### 8.6 Roles — who may reach what in the admin
+
+Medusa's role-based access control is on (`featureFlags: { rbac: true }` in `medusa-config.ts`).
+Every admin route checks what the caller's role allows; being signed in is no longer enough.
+
+**People.** Roles are managed in the admin, **Settings → Roles**. The built-in **Super Admin**
+role grants everything. `medusa user` gives it to the user it creates, and an invite carries
+whatever roles are chosen when it is sent. Any narrower role (someone who answers commissions, say,
+but doesn't touch prices) is built from permissions. Medusa's own permissions cover its own screens;
+the house's own permissions are declared in `src/policies/linsilk.ts`:
+
+| Permission | Lets a person |
+|---|---|
+| `catalogue:read` / `catalogue:update` | see / draft pieces, photography and pending seasons through the catalogue API |
+| `catalogue:open` | open a season onto the site — the one catalogue act that changes what the public can buy |
+| `commission:read` / `commission:update` | see commissions (measurements, reference files) / quote and answer them |
+| `fabric_catalogue:read` / `create` / `update` / `delete` | manage the cloth catalogues |
+
+A role's permissions are read on every request, so a change to a role takes effect at once. The
+roles a *person holds* are written into their sign-in, so adding or removing one takes effect the
+next time they sign in.
+
+**The catalogue agent's key.** A secret API key reaches `/admin/catalogue/*` and nothing else.
+`src/api/middlewares.ts` refuses a key on every other admin path before any route runs. That
+check is its own wall rather than a consequence of roles. Medusa gives keys no roles, so every
+route that declares a permission would refuse one anyway, but 2.20 ships some admin routes that
+declare none, `/admin/search` among them. On the catalogue routes a person still needs the
+permission from their role. So a leaked agent key can draft pieces, and open a season that
+already has a published piece, but it cannot read an order, a customer or a commission,
+publish a piece, change a published price, or mint itself another key. Revoke it in
+**Settings → Secret API Keys**.
+
+**Medusa routes 2.20 leaves unguarded.** Walking every admin route as a signed-in person with *no*
+role found two that mattered, and both now need a permission (`src/api/middlewares.ts`):
+
+- `GET /admin/search` — the dashboard's search bar. With no check it returned customers',
+  orders' and admin users' names and emails, and promotion codes, to anyone signed in. It now
+  needs read access to orders, customers, users and promotions, so a narrow role won't get
+  the search bar.
+- `POST /admin/rbac/roles` — creating a role. It now needs `rbac_role:create`.
+
+What a role-less person can still reach is pinned exactly in `roles.spec.ts`, with a reason for
+each entry. It's their own account, permissions and dashboard layout, the dashboard's
+start-up data, and routes for features that are switched off. If a Medusa upgrade opens another
+route, or a feature flag switches one of those on, that test fails, and the route has to be
+looked at before the upgrade ships. The same test walks all ~400 admin routes with an agent key
+and expects every one to refuse it.
+
+Two things to know:
+
+- **The role module is named in `modules`, not left to the flag.** `defineConfig` builds its list
+  of default modules while `medusa-config.ts` is still being evaluated, before the file's own
+  `featureFlags` are registered. Left to the default, the module stays off while the routes still
+  check roles, and every admin request is refused.
+- **Users from before roles were on get Super Admin once, on `db:migrate`**
+  (`src/migration-scripts/give-existing-users-super-admin.ts`). Medusa's own script for this
+  skips itself for the reason above and is then recorded as done.
+
 ## 9. Post-deploy checklist
 
 - [ ] `/health` green on `linsilk-medusa`
@@ -491,6 +549,8 @@ durability guarantee across deploys.
       but nobody is told
 - [ ] `S3_*` set and a catalogue uploaded through the admin actually opens from the storefront
 - [ ] A commission reference is **not** reachable without a signed link
+- [ ] The first admin user holds **Super Admin** (Settings → Roles); the catalogue agent's secret
+      key gets `403` from `/admin/orders` and `200` from `/admin/catalogue/seasons` (§8.6)
 - [ ] Transactional email at every state change
 - [ ] Automated Postgres backups on, and a restore actually tested
 - [ ] `NEXT_PUBLIC_*` vars contain nothing secret

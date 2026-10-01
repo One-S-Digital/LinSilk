@@ -128,6 +128,12 @@ const paymentProviders = process.env.STRIPE_API_KEY
   : []
 
 module.exports = defineConfig({
+  /* Roles. Every admin route checks what the caller's role allows, rather than
+     any signed-in person or key being allowed everything. Set here rather
+     than in the environment so no deploy can come up without it. The house's
+     own routes declare their permissions in src/policies and
+     src/api/middlewares.ts; docs/BACKEND-RENDER.md §8.6 has the model. */
+  featureFlags: { rbac: true },
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     workerMode: (process.env.MEDUSA_WORKER_MODE as 'server' | 'worker' | 'shared') || 'shared',
@@ -140,6 +146,12 @@ module.exports = defineConfig({
     }
   },
   modules: [
+    /* The role module, named explicitly. defineConfig decides its default
+       modules while this file is still being evaluated — before the
+       `featureFlags` above are registered — so left to the default list it
+       stays disabled while the routes check roles anyway, and every admin
+       request is refused. */
+    { resolve: '@medusajs/medusa/rbac' },
     ...redisModules,
     { resolve: './src/modules/atelier' },
     { resolve: '@medusajs/medusa/file', options: { providers: fileProviders } },

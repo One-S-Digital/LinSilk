@@ -316,7 +316,7 @@ and a verified sender, and two R2 buckets (one public, one never). See `BACKEND-
 ## 11. Verified
 
 - Build clean on both apps
-- 38 Vitest tests on the storefront, 47 unit and 38 API tests on the backend
+- 38 Vitest tests on the storefront, 47 unit and 46 API tests on the backend
 - Reserve, check out and pay end to end, by hand in a browser: a seasonal piece in Swiss francs,
   the same cart re-priced in euro at a German address, and a commission accepted from its link
 - An account end to end, by hand: register, sign in, edit the profile, add and edit and remove a

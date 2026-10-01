@@ -1,5 +1,5 @@
 import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import {
   createDefaultsWorkflow,
   createRegionsWorkflow,
@@ -137,11 +137,20 @@ medusaIntegrationTestRunner({
         Buffer.from(claims, "base64").toString()
       ) as { auth_identity_id: string }
 
-      await createUserAccountWorkflow(container).run({
+      const { result: user } = await createUserAccountWorkflow(container).run({
         input: {
           authIdentityId: auth_identity_id,
           userData: { email: "agent@linsilk.test" },
         },
+      })
+
+      /* Roles are on, and this person also publishes through /admin/products,
+         so they hold Super Admin as `medusa user` would give them. Who else
+         may reach the catalogue is roles.spec.ts's business. Linked before
+         signing in, since the token carries the roles. */
+      await container.resolve(ContainerRegistrationKeys.LINK).create({
+        [Modules.USER]: { user_id: user.id },
+        [Modules.RBAC]: { rbac_role_id: "role_super_admin" },
       })
 
       const signedIn = await api.post("/auth/user/emailpass", {
