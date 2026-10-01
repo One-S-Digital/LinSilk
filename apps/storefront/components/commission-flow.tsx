@@ -55,14 +55,25 @@ export function CommissionFlow({
     values: initialMeasurements ?? {},
     unit: initialUnit ?? 'cm',
   });
+  /* The Measurements panel is keyed by step and sits behind AnimatePresence,
+     so leaving it and coming back genuinely unmounts and remounts
+     MeasurementSheet — it is not hidden, it is gone. Before it has echoed
+     back a sheet of its own at least once, the panel still seeds from the
+     original props: the signed-in profile, or nothing, which is what lets
+     an anonymous MeasurementSheet fall back to this device's own saved
+     sheet on that first mount. After that first echo, seeding from the
+     original props again on every later remount would discard whatever the
+     client just typed and show the signed-in profile (or a blank sheet)
+     in its place — so from then on the panel is handed the live sheet. */
+  const [sheetTouched, setSheetTouched] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
 
-  const onSheetChange = useCallback(
-    (values: Measurements, unit: Unit) => setSheet({ values, unit }),
-    [],
-  );
+  const onSheetChange = useCallback((values: Measurements, unit: Unit) => {
+    setSheetTouched(true);
+    setSheet({ values, unit });
+  }, []);
 
   const chosen = silhouettes.find((s) => s.key === silhouette);
 
@@ -374,8 +385,8 @@ export function CommissionFlow({
         garmentZones={garmentZones}
         onChange={onSheetChange}
         title="Measurements"
-        initialValues={initialMeasurements}
-        initialUnit={initialUnit}
+        initialValues={sheetTouched ? sheet.values : initialMeasurements}
+        initialUnit={sheetTouched ? sheet.unit : initialUnit}
       />
     </div>,
 
