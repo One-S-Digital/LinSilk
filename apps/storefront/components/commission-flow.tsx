@@ -30,9 +30,14 @@ const readableSize = (bytes: number) => `${(bytes / 1048576).toFixed(1)} MB`;
 export function CommissionFlow({
   silhouettes,
   catalogues,
+  initialMeasurements,
+  initialUnit,
 }: {
   silhouettes: ApiSilhouette[];
   catalogues: ApiFabricCatalogue[];
+  /** A signed-in client's saved profile (account › measurements), if any. */
+  initialMeasurements?: Measurements;
+  initialUnit?: Unit;
 }) {
   const still = useReducedMotion();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -47,8 +52,8 @@ export function CommissionFlow({
   const [fileError, setFileError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [sheet, setSheet] = useState<{ values: Measurements; unit: Unit }>({
-    values: {},
-    unit: 'cm',
+    values: initialMeasurements ?? {},
+    unit: initialUnit ?? 'cm',
   });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -105,13 +110,20 @@ export function CommissionFlow({
       ok.push(file);
     }
 
-    setFiles((current) => {
-      const room = MAX_FILES - current.length;
-      if (ok.length > room) {
-        problems.push(`Ten files at most, so ${ok.length - room} were not added.`);
-      }
-      return [...current, ...ok.slice(0, Math.max(0, room))];
-    });
+    /* Read off the render's own `files`, not an updater's `current` — the
+       "ten files at most" message was being decided inside the `setFiles`
+       updater, which can run after this function has already read
+       `problems.length` into `setFileError`, so the message could be
+       dropped silently. There being exactly one `acceptFiles` call per
+       drop or per picker use is what makes this safe to compute up front. */
+    const room = Math.max(0, MAX_FILES - files.length);
+    if (ok.length > room) {
+      problems.push(`Ten files at most, so ${ok.length - room} were not added.`);
+    }
+    const accepted = ok.slice(0, room);
+    if (accepted.length) {
+      setFiles((current) => [...current, ...accepted]);
+    }
     setFileError(problems.length ? problems.join(' ') : null);
   };
 
@@ -362,6 +374,8 @@ export function CommissionFlow({
         garmentZones={garmentZones}
         onChange={onSheetChange}
         title="Measurements"
+        initialValues={initialMeasurements}
+        initialUnit={initialUnit}
       />
     </div>,
 

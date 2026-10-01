@@ -66,29 +66,31 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     )
   }
 
-  /* The season on its way out keeps its wording and loses its closing date —
-     it has closed, so there is nothing left to say it is about to.
+  /* Every season on its way out keeps its wording and loses its closing date
+     — it has closed, so there is nothing left to say it is about to.
      Metadata is merged rather than replaced, so an empty string is what
      retires a key; dropping it from the object would leave the old value
-     standing. */
-  const outgoing = collections.find(
-    (c) => (c.metadata as Record<string, unknown> | null)?.status === "current"
-  )
-  const outgoingMeta = outgoing
-    ? { ...((outgoing.metadata ?? {}) as Record<string, unknown>), status: "past", closes: "" }
-    : undefined
+     standing. Ordinarily this is one collection — the route that opens a
+     season also closes the one before it — but it archives every `current`
+     collection it finds, not only the first: two opens racing each other
+     must not be able to leave a second one standing. */
+  const outgoing = collections
+    .filter((c) => (c.metadata as Record<string, unknown> | null)?.status === "current")
+    .map((c) => ({
+      id: c.id,
+      handle: c.handle,
+      metadata: { ...((c.metadata ?? {}) as Record<string, unknown>), status: "past", closes: "" },
+    }))
 
   await openSeasonWorkflow(req.scope).run({
     input: {
       opening: { id: season.id, metadata: { ...meta, status: "current" } },
-      ...(outgoing && outgoingMeta
-        ? { outgoing: { id: outgoing.id, metadata: outgoingMeta } }
-        : {}),
+      outgoing: outgoing.map(({ id, metadata }) => ({ id, metadata })),
     },
   })
 
   res.json({
     season: { handle, id: season.id, status: "current", pieces: published.length },
-    archived: outgoing ? { handle: outgoing.handle, status: "past" } : null,
+    archived: outgoing.map(({ handle, metadata }) => ({ handle, status: metadata.status })),
   })
 }

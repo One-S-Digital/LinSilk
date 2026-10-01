@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { PaymentPanel } from '@/components/checkout/payment-panel';
+import { PaymentPanel, stripeClient } from '@/components/checkout/payment-panel';
 import {
   chooseShipping,
   completeCart,
@@ -82,6 +82,9 @@ export function CheckoutFlow({
   const [working, setWorking] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
   const [shippable, setShippable] = useState<ShippableCountry[]>([]);
+  /** True only while a redirect-based payment method's return is being read
+      back; see the effect below. Never true on an ordinary page load. */
+  const [resuming, setResuming] = useState(false);
 
   useEffect(() => {
     if (!allowRegionChange) return;
@@ -216,6 +219,49 @@ export function CheckoutFlow({
     onOrdered?.();
     router.push(`/order/${result.order.id}`);
   }, [cartId, onOrdered, router]);
+
+  /* A card stays on this page to pay; TWINT, a bank or a wallet sends the
+     client away to confirm and back again — Stripe's `return_url` is this
+     same page. That is a fresh page load: this component remounts with no
+     memory of having been mid-payment, `open` starts at 0, and without this,
+     the client would simply see the address form again while the money sits
+     authorised and no order exists to show for it. The PaymentIntent Stripe
+     hands back in the URL is the only record that survived the trip, so it
+     is read back and the cart is completed from it before anything else
+     renders — `completeCart` is the same call the in-page flow makes, so a
+     client who gets here twice (a refresh, a second tab) is no worse off
+     than retrying any other step. */
+  useEffect(() => {
+    const clientSecret = new URLSearchParams(window.location.search).get(
+      'payment_intent_client_secret',
+    );
+    if (!clientSecret) return;
+
+    (async () => {
+      setResuming(true);
+      window.history.replaceState(null, '', window.location.pathname);
+      try {
+        const stripe = await stripeClient();
+        const retrieved = await stripe?.retrievePaymentIntent(clientSecret);
+        const status = retrieved?.paymentIntent?.status;
+        if (status === 'succeeded' || status === 'processing') {
+          await placeOrder();
+          return;
+        }
+        setProblem(
+          retrieved?.error?.message ?? 'The payment was not completed. Nothing has been charged.',
+        );
+      } catch (error) {
+        setProblem((error as Error).message);
+      } finally {
+        setResuming(false);
+      }
+    })();
+  }, [placeOrder]);
+
+  if (resuming) {
+    return <p className={styles.answer}>Confirming your payment…</p>;
+  }
 
   if (problem && !cart) {
     return <p className={styles.answer}>{problem}</p>;

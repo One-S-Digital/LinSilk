@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { CommissionFlow } from '@/components/commission-flow';
 import { getFabricCatalogues, getSilhouettes } from '@/lib/medusa';
+import { fromLineItemMetadata } from '@/lib/measurements';
+import { getCustomer } from '@/lib/session';
 import styles from './design.module.css';
 
 export const metadata: Metadata = {
@@ -14,10 +16,16 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function DesignPage() {
-  const [silhouettes, catalogues] = await Promise.all([
+  const [silhouettes, catalogues, customer] = await Promise.all([
     getSilhouettes(),
     getFabricCatalogues(),
+    getCustomer(),
   ]);
+  /* A signed-in client's own measurements, if they saved any — carried into
+     the sheet below so starting a commission on another device does not mean
+     typing all fifteen points over again. Anonymous, this stays undefined,
+     and the sheet falls back to whatever this browser has, as before. */
+  const profile = customer ? fromLineItemMetadata(customer.metadata) : null;
 
   if (!silhouettes?.length) {
     return (
@@ -32,5 +40,12 @@ export default async function DesignPage() {
     );
   }
 
-  return <CommissionFlow silhouettes={silhouettes} catalogues={catalogues ?? []} />;
+  return (
+    <CommissionFlow
+      silhouettes={silhouettes}
+      catalogues={catalogues ?? []}
+      initialMeasurements={profile?.values}
+      initialUnit={profile?.unit}
+    />
+  );
 }

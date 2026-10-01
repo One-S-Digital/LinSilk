@@ -3,12 +3,16 @@
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
-import { money } from '@/lib/catalog';
+import { formatMoney } from '@/lib/medusa';
 import { formatValue } from '@/lib/measurements';
 import styles from './cart.module.css';
 
 export default function CartPage() {
-  const { lines, ready, remove, subtotal } = useCart();
+  const { lines, ready, remove, subtotal, currency } = useCart();
+  /* The cart's own currency, not the catalogue's CHF: checkout can move this
+     cart to another region, and a client coming back here afterwards must
+     see the figures it is actually holding the pieces at. */
+  const money = (amount: number) => formatMoney(amount, currency);
 
   return (
     <div className={styles.page}>

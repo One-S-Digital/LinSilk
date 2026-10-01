@@ -5,10 +5,6 @@ This is the "just do it" version, done entirely by hand in Render's dashboard �
 environment variable is typed in directly on the service that needs it. `BACKEND-RENDER.md`
 explains *why* each piece exists; this is the order to click through it in.
 
-> `render.yaml` still exists at the repo root from an earlier draft of this deploy path. This
-> guide does not use it — nothing below reads it, and Render will not touch it unless you
-> deliberately create a Blueprint from it. Safe to ignore, or delete if it bothers you.
-
 Follow this top to bottom — later steps depend on earlier ones.
 
 **Accounts you need before starting:** GitHub, [Render](https://render.com),
@@ -406,7 +402,10 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
    4. Log in (next step) with the throwaway password and change it immediately.
 
 2. Visit `https://linsilk-medusa.onrender.com/app` and sign in. **Settings → API Key
-   Management → Publishable API Keys** — create one.
+   Management → Publishable API Keys** — create one. Open it and, under **Sales Channels**, add
+   the default channel. A publishable key with no sales channel on it is refused by every
+   `/store/*` route that needs one — `/store/products` included — so the storefront would build
+   and deploy clean and then show no catalogue at all.
 3. Paste it into `linsilk-storefront`'s `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` and save — this
    redeploys the storefront, the last deploy that needed an env var it didn't have yet.
 4. **Only if you'll use the catalogue MCP server** (`CATALOGUE-INGESTION.md` §8): **Settings →

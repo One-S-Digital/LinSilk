@@ -122,7 +122,10 @@ async function storeImages(
          answers with a 302 is otherwise a way to reach any address the
          backend can reach, the host's own network included, and the
          allowlist would have checked only the first hop. */
-      const response = await fetch(url, { redirect: "manual" }).catch(() => null)
+      const response = await fetch(url, {
+        redirect: "manual",
+        signal: AbortSignal.timeout(15_000),
+      }).catch(() => null)
       if (response && response.status >= 300 && response.status < 400) {
         refuse(`${host} redirected that photograph elsewhere; give the house the final URL: ${url}`)
       }
@@ -158,6 +161,35 @@ async function storeImages(
 
   const { result } = await uploadFilesWorkflow(scope).run({ input: { files } })
   return result.map((file) => file.url)
+}
+
+/* Nothing is restocked, so stock is the run and nothing more — but an
+   inventory item with no level yet (a first attempt that was cut off between
+   creating the product and stocking it, or an update that is retrying a
+   create that never got this far) gets one here, on any write, not only the
+   one that first makes the product. */
+async function stockRun(
+  scope: MedusaRequest["scope"],
+  sku: string,
+  locationId: string,
+  runSize: number
+) {
+  const query = scope.resolve(ContainerRegistrationKeys.QUERY)
+  const { data: unstocked } = await query.graph({
+    entity: "inventory_item",
+    fields: ["id", "location_levels.id"],
+    filters: { sku },
+  })
+  const levels = unstocked
+    .filter((item: { location_levels?: unknown[] | null }) => !item.location_levels?.length)
+    .map((item: { id: string }) => ({
+      location_id: locationId,
+      inventory_item_id: item.id,
+      stocked_quantity: runSize,
+    }))
+  if (levels.length) {
+    await createInventoryLevelsWorkflow(scope).run({ input: { inventory_levels: levels } })
+  }
 }
 
 /* The pieces, as the bench and an agent both need to see them: which season
@@ -248,6 +280,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       "status",
       "metadata",
       "collection.id",
+      "collection.handle",
       "variants.id",
       "variants.prices.amount",
       "variants.prices.currency_code",
@@ -273,6 +306,17 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     [COMMISSION_COLLECTION, SILHOUETTE_COLLECTION].includes(piece.collection)
   ) {
     refuse(`${piece.collection} holds commissions, not a season's pieces.`)
+  }
+  /* Belt and suspenders alongside the `commission-` handle guard above: that
+     guard holds only while commission and silhouette products keep that
+     prefix by convention. This checks what the product is actually filed
+     under, so a product that ever ends up in one of these collections by
+     some other path stays out of the agent's reach too. */
+  if (
+    existing?.collection?.handle &&
+    [COMMISSION_COLLECTION, SILHOUETTE_COLLECTION].includes(existing.collection.handle)
+  ) {
+    refuse(`${existing.collection.handle} holds commissions, not a season's pieces.`)
   }
 
   let collectionId: string = existing?.collection?.id ?? ""
@@ -307,6 +351,17 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
         `${piece.handle} is published at CHF ${francs}. The house owns a published ` +
           "piece's price; change it in the admin."
       )
+    }
+    /* Publishing is where ownership changes hands, not just where the price
+       locks. A collection move is a write like any other below, and this
+       route's own collection_id write is not the gate the storefront's cart
+       checks — opening a season (seasons/[handle]/open) is. Leaving a
+       published piece writable here would let an agent slide it into the
+       current season's collection without that gate ever running. So once a
+       person has published a piece, the whole piece is theirs; an agent
+       resending it, even unchanged, is refused and told where to go instead. */
+    if (published) {
+      refuse(`${piece.handle} is published. Edit it in the admin.`)
     }
   }
 
@@ -361,6 +416,15 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     ...(piece.sleep !== undefined ? { sleep: piece.sleep ? true : "" } : {}),
     ...(piece.length_kinds !== undefined ? { length_kinds: piece.length_kinds } : {}),
   }
+
+  /* A stock location is read here, ahead of the write, because both branches
+     below need it: a correction to an existing piece is retry-safe only if a
+     stock level that an earlier, interrupted attempt never created still
+     gets created now. */
+  const { data: [location] } = await query.graph({
+    entity: "stock_location",
+    fields: ["id"],
+  })
 
   /* ---- Write ---- */
 
@@ -419,6 +483,10 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       })
     }
 
+    if (location) {
+      await stockRun(req.scope, `LINSILK-${piece.handle.toUpperCase()}`, location.id, piece.run_size ?? RUN_CAP)
+    }
+
     res.json({ piece: { handle: piece.handle, id: existing.id, status: existing.status } })
     return
   }
@@ -437,10 +505,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   })
   const { data: [shippingProfile] } = await query.graph({
     entity: "shipping_profile",
-    fields: ["id"],
-  })
-  const { data: [location] } = await query.graph({
-    entity: "stock_location",
     fields: ["id"],
   })
   if (!store?.default_sales_channel_id || !shippingProfile || !location) {
@@ -505,24 +569,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     },
   })
 
-  /* ---- The capped run ---- *
-     Nothing is restocked, so stock is the run and nothing more. */
-
-  const { data: unstocked } = await query.graph({
-    entity: "inventory_item",
-    fields: ["id", "location_levels.id"],
-    filters: { sku: `LINSILK-${piece.handle.toUpperCase()}` },
-  })
-  const levels = unstocked
-    .filter((item: { location_levels?: unknown[] | null }) => !item.location_levels?.length)
-    .map((item: { id: string }) => ({
-      location_id: location.id,
-      inventory_item_id: item.id,
-      stocked_quantity: piece.run_size ?? RUN_CAP,
-    }))
-  if (levels.length) {
-    await createInventoryLevelsWorkflow(req.scope).run({ input: { inventory_levels: levels } })
-  }
+  await stockRun(req.scope, `LINSILK-${piece.handle.toUpperCase()}`, location.id, piece.run_size ?? RUN_CAP)
 
   res
     .status(201)

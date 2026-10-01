@@ -22,7 +22,9 @@ import styles from '@/app/checkout/checkout.module.css';
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
 
 let stripePromise: Promise<Stripe | null> | null = null;
-const stripeClient = () => {
+/** Shared with checkout-flow.tsx, which needs the same client to read back a
+    payment intent a redirect-based method sent the client away to confirm. */
+export const stripeClient = () => {
   if (!publishableKey) return null;
   stripePromise ??= loadStripe(publishableKey);
   return stripePromise;

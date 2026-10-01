@@ -25,6 +25,14 @@ type ApiCommission = {
   paid_at: string | null;
 };
 
+/* The only statuses a quote is still open to being paid at. Every other
+   status is refused, `quote_amount` notwithstanding, because a status can
+   outlive the figure that was set when it was reached — a declined
+   commission still carries whatever `quote_amount` it had before it was
+   declined. apps/medusa/src/workflows/atelier/commission-cart.ts carries the
+   same list, for the same reason, on the route this page calls into. */
+const PAYABLE_STATUSES = ['quoted', 'approved'];
+
 const COUNTRIES: { code: string; name: string }[] = [
   { code: 'ch', name: 'Switzerland' },
   { code: 'at', name: 'Austria' },
@@ -98,6 +106,16 @@ export function CommissionPayment({ token }: { token: string }) {
       <p className={styles.answer}>
         A tailor is still reading your brief. The figure comes by email, usually
         within two working days.
+      </p>
+    );
+  }
+
+  if (!PAYABLE_STATUSES.includes(commission.status)) {
+    return (
+      <p className={styles.answer}>
+        {commission.status === 'declined'
+          ? 'This commission was declined. Write to hello@linsilk.ch if you believe this is a mistake.'
+          : 'This commission is not ready to pay for yet. Write to hello@linsilk.ch if you expected otherwise.'}
       </p>
     );
   }

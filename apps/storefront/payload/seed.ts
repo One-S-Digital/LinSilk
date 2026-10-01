@@ -56,5 +56,14 @@ async function seed() {
   }
 }
 
-await seed();
-process.exit(0);
+/* `payload run`'s own quirk (see the top-level-await note above) makes a
+   plain unhandled rejection's exit code uncertain, so a failure is caught
+   and the non-zero exit forced explicitly — a deploy step that silently
+   "succeeds" at seeding nothing is worse than one that fails loudly. */
+try {
+  await seed();
+  process.exit(0);
+} catch (error) {
+  console.error(error);
+  process.exit(1);
+}

@@ -34,6 +34,21 @@ const readError = async (response: Response, fallback: string) => {
   return (body as { message?: string } | null)?.message ?? fallback;
 };
 
+/* A token's `actor_id` claim, read without verifying the signature — Medusa
+   already did that to issue it, so this is only ever used to decide between
+   two things this file is about to do with a token it just received, never
+   to authorize anything by itself. Empty means the auth identity behind this
+   token has no customer attached. */
+const actorIdOf = (token: string): string => {
+  try {
+    const payload = token.split('.')[1];
+    return (JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as { actor_id?: string })
+      .actor_id ?? '';
+  } catch {
+    return '';
+  }
+};
+
 export async function loginAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
   const email = String(form.get('email') ?? '').trim();
   const password = String(form.get('password') ?? '');
@@ -50,6 +65,27 @@ export async function loginAction(_prev: ActionResult, form: FormData): Promise<
   }
 
   const { token } = (await response.json()) as { token: string };
+
+  /* The password matches, but nothing is attached to it: a registration that
+     created the auth identity and stopped there, the store call right after
+     it failing. Finished here, so signing in is what recovers it rather than
+     a password that is correct and an account that still does not exist. */
+  if (!actorIdOf(token)) {
+    const created = await post('/store/customers', { email }, token);
+    if (!created.ok) {
+      return { error: await readError(created, 'Could not sign in. Try again in a moment.') };
+    }
+    // This token was issued before the customer existed; it reads as
+    // unauthorized now that one is attached, the same as a register token.
+    const relogin = await post('/auth/customer/emailpass', { email, password });
+    if (!relogin.ok) {
+      return { error: 'Could not sign in. Try again in a moment.' };
+    }
+    const { token: freshToken } = (await relogin.json()) as { token: string };
+    await setSession(freshToken);
+    redirect('/account');
+  }
+
   await setSession(token);
   redirect('/account');
 }

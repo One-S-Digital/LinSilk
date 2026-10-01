@@ -207,7 +207,7 @@ medusaIntegrationTestRunner({
         expect(refused.data.message).toContain("autumn-ix")
       })
 
-      it("keeps its price once a person has published it", async () => {
+      it("is the admin's alone once a person has published it", async () => {
         await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
 
         /* Still a draft: the route set the price, so it may correct it. */
@@ -226,14 +226,63 @@ medusaIntegrationTestRunner({
         expect(refused.status).toBe(400)
         expect(refused.data.message).toContain("published")
 
-        /* The same figure is not a change, so a retry still works — and the
-           wording is the agent's to correct either way. */
-        const reworded = await api.post(
-          "/admin/catalogue/pieces",
-          piece("w1", "autumn-iv", { price_chf: 1900, title: "Piece w1, unlined" }),
+        /* Publishing locks the whole piece, not only its price — even a
+           wording correction, or the very payload that created it, is
+           refused once a person has published it. */
+        const reworded = await api
+          .post(
+            "/admin/catalogue/pieces",
+            piece("w1", "autumn-iv", { price_chf: 1900, title: "Piece w1, unlined" }),
+            admin
+          )
+          .catch((e) => e.response)
+        expect(reworded.status).toBe(400)
+        expect(reworded.data.message).toContain("published")
+
+        const resent = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { price_chf: 1900 }), admin)
+          .catch((e) => e.response)
+        expect(resent.status).toBe(400)
+      })
+
+      it("refuses an edit to a product already filed as a commission, whatever its handle", async () => {
+        const { data: collection } = await api.post(
+          "/admin/collections",
+          { title: "Commissions", handle: "commissions" },
           admin
         )
-        expect(reworded.status).toBe(200)
+        const { data: [shippingProfile] } = await getContainer()
+          .resolve(ContainerRegistrationKeys.QUERY)
+          .graph({ entity: "shipping_profile", fields: ["id"] })
+        await api.post(
+          "/admin/products",
+          {
+            title: "A quoted commission",
+            handle: "not-commission-prefixed",
+            status: "draft",
+            collection_id: collection.collection.id,
+            shipping_profile_id: shippingProfile.id,
+            options: [{ title: "Cut", values: ["Made to measure"] }],
+            variants: [
+              {
+                title: "Made to measure",
+                options: { Cut: "Made to measure" },
+                prices: [{ currency_code: "chf", amount: 3200 }],
+              },
+            ],
+          },
+          admin
+        )
+
+        const refused = await api
+          .post(
+            "/admin/catalogue/pieces",
+            piece("not-commission-prefixed", "autumn-iv"),
+            admin
+          )
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("commissions")
       })
     })
 
@@ -374,7 +423,7 @@ medusaIntegrationTestRunner({
         const opened = await api.post("/admin/catalogue/seasons/winter-v/open", {}, admin)
 
         expect(opened.data.season.status).toBe("current")
-        expect(opened.data.archived).toEqual({ handle: "autumn-iv", status: "past" })
+        expect(opened.data.archived).toEqual([{ handle: "autumn-iv", status: "past" }])
 
         const byHandle = Object.fromEntries(
           (await seasons()).map((s: { handle: string }) => [s.handle, s])
@@ -385,6 +434,44 @@ medusaIntegrationTestRunner({
            retired, and the listing carries `closes` only when there is one. */
         expect(byHandle["autumn-iv"].closes).toBeUndefined()
         expect(byHandle["winter-v"].closes).toBe("June")
+      })
+
+      it("archives every season left current, not only the first found", async () => {
+        /* Stands in for what two opens racing each other would otherwise
+           leave behind: two collections both marked current, which the cart's
+           archive gate would otherwise treat as two shops open at once. */
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+        await api.post("/admin/catalogue/seasons", season("winter-v", 5), admin)
+        const container = getContainer()
+        const products = container.resolve(Modules.PRODUCT)
+        const query = container.resolve(ContainerRegistrationKeys.QUERY)
+        const { data: collections } = await query.graph({
+          entity: "product_collection",
+          fields: ["id", "handle"],
+          filters: { handle: ["autumn-iv", "winter-v"] },
+        })
+        const idOf = (handle: string) => collections.find((c) => c.handle === handle)!.id
+        await products.upsertProductCollections([
+          { id: idOf("autumn-iv"), metadata: { status: "current" } },
+          { id: idOf("winter-v"), metadata: { status: "current" } },
+        ])
+
+        await api.post("/admin/catalogue/seasons", season("spring-vi", 6), admin)
+        await api.post("/admin/catalogue/pieces", piece("p6", "spring-vi"), admin)
+        await publish("p6")
+        const opened = await api.post("/admin/catalogue/seasons/spring-vi/open", {}, admin)
+
+        expect(opened.data.archived).toEqual(
+          expect.arrayContaining([
+            { handle: "autumn-iv", status: "past" },
+            { handle: "winter-v", status: "past" },
+          ])
+        )
+        const after = (await seasons()).filter(
+          (s: { status: string }) => s.status === "current"
+        )
+        expect(after).toHaveLength(1)
+        expect(after[0].handle).toBe("spring-vi")
       })
 
       it("leaves exactly one season open, however many are rolled over", async () => {

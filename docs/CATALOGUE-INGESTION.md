@@ -75,11 +75,14 @@ The route supplies, so the agent cannot get them wrong: `status: draft`, the sin
 `origin_country: "vn"`, the sales channel and the shipping profile.
 
 It refuses, with the house's own wording: an unknown collection handle, a `length_kinds` value
-outside the chart, a handle beginning `commission-`, either commission collection as a target,
-a new piece with no price, and a `price_chf` that moves on a piece a human has already
-published. **Price is only ever set while the piece is a draft.** Once the house has published
-it, the price is the house's to change in the admin — but re-posting the same figure is still a
-no-op, so an agent can safely retry a payload it already sent. Photography is refused too:
+outside the chart, a handle beginning `commission-` (or a product already filed under either
+commission collection, whatever its handle), either commission collection as a target, a new
+piece with no price, and any write at all to a piece a human has already published. **A piece is
+the agent's to correct only while it is a draft.** Publishing is where ownership changes hands —
+not just of the price, of the whole piece — because the route's own `collection_id` write is not
+the gate that makes a piece orderable; opening a season is (§5). Once the house has published a
+piece, re-posting it, even unchanged, is refused and told to use the admin instead; it is no
+longer safe for an agent to retry a payload past that point. Photography is refused too:
 `images_action: 'remove'` with no URLs, or with one the piece does not actually carry; `add` or
 `replace` past the 8-image cap once fetched.
 

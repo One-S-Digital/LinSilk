@@ -5,7 +5,7 @@
    edit and remove them. Checkout still takes an address fresh; wiring these
    in as a picker there is a next step, not this one. */
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { addAddressAction, removeAddressAction, updateAddressAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import type { ApiAddress } from '@/lib/session';
@@ -44,6 +44,18 @@ const addressLines = (address: ApiAddress) =>
 function AddressForm({ address, onDone }: { address?: ApiAddress; onDone: () => void }) {
   const action = address ? updateAddressAction.bind(null, address.id) : addAddressAction;
   const [state, formAction, pending] = useActionState(action, {});
+
+  /* `state` is a fresh object every time the action resolves, success
+     included — this fires on that resolution, not on mount, and closes the
+     form once there is nothing left to fix. */
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    if (!state.error) onDone();
+  }, [state, onDone]);
 
   return (
     <form action={formAction} className={styles.form} style={{ maxWidth: 'none' }}>

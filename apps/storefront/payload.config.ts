@@ -34,6 +34,18 @@ if (!secret && process.env.NODE_ENV === 'production') {
   );
 }
 
+/* Unset, `pg`'s pool falls back to its own defaults (PGHOST, localhost) and
+   connects to whatever happens to be there instead of failing outright — the
+   same stance taken on PAYLOAD_SECRET above, for the same reason: a
+   misconfigured environment should fail here, not three steps later as an
+   unreadable error from getStoryPage. */
+if (!process.env.DATABASE_URI && process.env.NODE_ENV === 'production') {
+  throw new Error(
+    'DATABASE_URI is not set. In production it comes from the host’s environment ' +
+      '(on Render, the storefront service’s own variable), not from a file.',
+  );
+}
+
 export default buildConfig({
   admin: {
     user: Users.slug,

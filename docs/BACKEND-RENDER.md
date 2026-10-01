@@ -375,18 +375,23 @@ Still to do here:
 
 ## 8. Phase 7 — Deploy to Render
 
-### 8.1 `render.yaml` — committed
+### 8.1 Setup — by hand, not a blueprint
 
-The blueprint is `render.yaml` at the repo root; read it rather than this section. In outline:
+`docs/GO-LIVE-SETUP.md` is the deploy guide: every resource created by hand in Render's
+dashboard, every environment variable typed in on the service that needs it, no `render.yaml`.
+An earlier draft of this deploy path used a Render Blueprint; it is gone — `envVarGroups` in a
+blueprint silently drops any `sync: false` entry (Render's own blueprint spec says so), which
+left the two groups that draft relied on for shared secrets empty of anything a deploy could
+actually use. Fixing that meant either duplicating every secret on both `linsilk-medusa` and
+`linsilk-worker`, or asking for a manual dashboard step before the blueprint could even run — at
+which point a blueprint was not saving the manual work it exists for. The points worth carrying
+over from that draft:
 
-- `linsilk-medusa` (web), `linsilk-worker` (worker), `linsilk-storefront` (web), `linsilk-postgres`,
-  `linsilk-redis`, all in Frankfurt.
-- **Every secret comes from Render, never the repo.** `generateValue` mints `JWT_SECRET` and
-  `COOKIE_SECRET`; `sync: false` values are typed into the dashboard once; the database and key
-  value store hand out their own connection strings. Two environment groups — `linsilk-secrets` and
-  `linsilk-urls` — are shared by the server and the worker, which must agree about all of it.
-- Migrations run as `preDeployCommand`, so they happen before the new version takes traffic and
-  never on a rollback the way a build step would.
+- **Every secret comes from Render, never the repo.** `JWT_SECRET` and `COOKIE_SECRET` are
+  generated once and typed in on both `linsilk-medusa` and `linsilk-worker` if you run one
+  (`GO-LIVE-SETUP.md` step 1); every other secret is typed in once per service that needs it.
+- Migrations run as a **Pre-Deploy Command**, so they happen before the new version takes
+  traffic and never on a rollback the way a build step would.
 - `medusa-config.ts` refuses to boot in production without `DATABASE_URL`, `REDIS_URL`, both
   secrets and the three CORS values, naming what is missing rather than failing at the first
   request.

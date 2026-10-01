@@ -491,11 +491,15 @@ export default async function seed({ container }: { container: MedusaContainer }
   }
 
   /* ---- The capped run ----
-     Nothing is restocked, so stock is the season's cap and nothing more. */
+     Nothing is restocked, so stock is the season's cap and nothing more. Only
+     the SKUs this seed just created or refreshed are read here — an admin's
+     own piece, or one an agent cut through the ingestion route, is not this
+     script's to stock, however it was left. */
 
   const { data: inventoryItems } = await query.graph({
     entity: "inventory_item",
     fields: ["id", "location_levels.id"],
+    filters: { sku: wantedProducts.map((p) => `LINSILK-${p.handle.toUpperCase()}`) },
   })
   const unstocked = inventoryItems.filter((item) => !item.location_levels?.length)
   if (unstocked.length) {

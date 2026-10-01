@@ -284,6 +284,23 @@ medusaIntegrationTestRunner({
       expect(cart.cart.items[0].unit_price).toBe(3820)
     })
 
+    it("refuses a cart on a commission that was declined after being quoted", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+
+      await updateCommissionWorkflow(getContainer()).run({
+        input: { id: submitted.commission.id, status: "declined", notify: false },
+      })
+
+      /* The figure from before it was declined is still sitting on the
+         record — it is the status, not the figure, that has to refuse this. */
+      const refused = await api
+        .post(`/store/commissions/${quoted.access_token}/cart`, { country_code: "ch" }, headers)
+        .catch((e) => e.response)
+      expect(refused.status).toBe(400)
+      expect(refused.data.message).toContain("declined")
+    })
+
     it("refuses a link that does not answer to a commission", async () => {
       const response = await api
         .post("/store/commissions/not-a-real-token/cart", { country_code: "ch" }, headers)

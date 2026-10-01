@@ -68,11 +68,18 @@ const CommissionPage = () => {
   }, [load])
 
   const save = async (notify: boolean) => {
+    if (!commission) return
     const amount = Number(quote)
     if (notify && !(amount > 0)) {
       toast.error("Set a figure before telling the client.")
       return
     }
+    /* Sent only when it actually moves: `quote_amount` is what tells the
+       backend this is a re-quote, which throws on a paid commission and
+       drops any cart the client already has on an unpaid one. A save that
+       only touches the internal note, or a resend of a figure nobody
+       changed, must not trigger either. */
+    const requoting = amount > 0 && amount !== commission.quote_amount
 
     setSaving(true)
     try {
@@ -80,7 +87,7 @@ const CommissionPage = () => {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          ...(amount > 0 ? { quote_amount: amount } : {}),
+          ...(requoting ? { quote_amount: amount } : {}),
           internal_note: internalNote.trim() || null,
           notify,
         }),
