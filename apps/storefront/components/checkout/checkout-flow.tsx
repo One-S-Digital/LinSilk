@@ -11,6 +11,7 @@ import {
   getPaymentProviders,
   getShippableCountries,
   getShippingOptions,
+  PAYMENT_RETURN_PARAM,
   startPayment,
   updateCart,
   type ShippableCountry,
@@ -232,9 +233,7 @@ export function CheckoutFlow({
      client who gets here twice (a refresh, a second tab) is no worse off
      than retrying any other step. */
   useEffect(() => {
-    const clientSecret = new URLSearchParams(window.location.search).get(
-      'payment_intent_client_secret',
-    );
+    const clientSecret = new URLSearchParams(window.location.search).get(PAYMENT_RETURN_PARAM);
     if (!clientSecret) return;
 
     (async () => {

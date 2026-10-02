@@ -123,3 +123,14 @@ export async function getShippableCountries(): Promise<ShippableCountry[]> {
     )
     .sort((a, b) => a.display_name.localeCompare(b.display_name));
 }
+
+/* Stripe's `return_url` is the page the client left, and a redirect-based
+   method (TWINT, a bank, a wallet) comes back to it with the PaymentIntent
+   in the query string. */
+export const PAYMENT_RETURN_PARAM = 'payment_intent_client_secret';
+
+/** The cart a page should pick up again, which is the one already behind the
+    payment when the client has just come back from confirming it. Otherwise
+    none: a client opening the link afresh is asked where the piece is going. */
+export const cartToResume = (cartId: string | null, search: string) =>
+  cartId && new URLSearchParams(search).has(PAYMENT_RETURN_PARAM) ? cartId : null;

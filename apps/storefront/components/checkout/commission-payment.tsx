@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CheckoutFlow } from '@/components/checkout/checkout-flow';
 import { Button } from '@/components/ui/button';
+import { cartToResume } from '@/lib/checkout';
 import { medusaFetch, formatMoney } from '@/lib/medusa';
 import styles from '@/app/checkout/checkout.module.css';
 
@@ -29,8 +30,8 @@ type ApiCommission = {
    status is refused, `quote_amount` notwithstanding, because a status can
    outlive the figure that was set when it was reached — a declined
    commission still carries whatever `quote_amount` it had before it was
-   declined. apps/medusa/src/workflows/atelier/commission-cart.ts carries the
-   same list, for the same reason, on the route this page calls into. */
+   declined. apps/medusa/src/lib/archive.ts carries the same list, for the
+   same reason, on the route this page calls into. */
 const PAYABLE_STATUSES = ['quoted', 'approved'];
 
 const COUNTRIES: { code: string; name: string }[] = [
@@ -63,7 +64,13 @@ export function CommissionPayment({ token }: { token: string }) {
 
   useEffect(() => {
     medusaFetch<{ commission: ApiCommission }>(`/store/commissions/${token}`)
-      .then(({ commission: found }) => setCommission(found))
+      .then(({ commission: found }) => {
+        setCommission(found);
+        /* Back from confirming a payment elsewhere (TWINT, a bank): the cart
+           behind it is the one to finish, in the region it was made in.
+           Asking where the piece is going again would replace that cart. */
+        setCartId(cartToResume(found.cart_id, window.location.search));
+      })
       .catch((error) => setProblem((error as Error).message));
   }, [token]);
 
