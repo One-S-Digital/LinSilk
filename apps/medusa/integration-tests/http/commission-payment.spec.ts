@@ -10,6 +10,8 @@ import {
   createStockLocationsWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows"
+import { ATELIER_MODULE } from "../../src/modules/atelier"
+import type AtelierModuleService from "../../src/modules/atelier/service"
 import { updateCommissionWorkflow } from "../../src/workflows/atelier/commissions"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../../src/lib/commission-catalogue"
 import { BODY_ZONES, LENGTH_ZONES } from "../../src/lib/measurements"
@@ -282,6 +284,38 @@ medusaIntegrationTestRunner({
       const { data: cart } = await api.get(`/store/carts/${german.cart_id}`, headers)
       /* 3600 francs at 1/0.9432, rounded to the nearest ten. */
       expect(cart.cart.items[0].unit_price).toBe(3820)
+    })
+
+    const briefWithReference = (filename: string, type: string) => {
+      const form = new FormData()
+      form.set("name", "Alan Turing")
+      form.set("email", "alan@example.com")
+      form.set("silhouette", "jacket")
+      form.set("fabric", "Linen canvas, olive")
+      form.set("measurements", JSON.stringify(SHEET))
+      form.append("references", new Blob([new Uint8Array([1, 2, 3])], { type }), filename)
+      return api.post("/store/commissions", form, headers)
+    }
+
+    it("takes a .heic reference whatever type the browser declared for it", async () => {
+      /* Chrome and Firefox send a .heic with no type at all, which arrives as
+         application/octet-stream; the form invites HEIC, so the endpoint must
+         not refuse it after the client has filled in the whole brief. */
+      const { data } = await briefWithReference("front.heic", "application/octet-stream")
+
+      const atelier = getContainer().resolve(ATELIER_MODULE) as AtelierModuleService
+      const stored = await atelier.retrieveCommission(data.commission.id)
+      expect(stored.references).toEqual([
+        expect.objectContaining({ filename: "front.heic", mime_type: "image/heic" }),
+      ])
+    })
+
+    it("still refuses a reference that is neither an image nor a PDF", async () => {
+      const refused = await briefWithReference("notes.txt", "application/octet-stream").catch(
+        (e) => e.response
+      )
+      expect(refused.status).toBe(400)
+      expect(refused.data.message).toContain("notes.txt")
     })
 
     it("refuses a cart on a commission that was declined after being quoted", async () => {

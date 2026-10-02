@@ -18,6 +18,16 @@ const MAX_FILES = 10
 const MAX_BYTES = 20 * 1024 * 1024
 const ACCEPTED = /^(image\/|application\/pdf$)/
 
+/* The form offers HEIC, which is what an iPhone shoots, but only Safari
+   names the type: Chrome and Firefox send a .heic as an empty type, which
+   reaches here as application/octet-stream. So the filename settles it when
+   the declared type does not — and the type that is then uploaded and kept
+   is the true one, not the browser's shrug. */
+const mimeOf = (file: Express.Multer.File) =>
+  !ACCEPTED.test(file.mimetype) && /\.heic$/i.test(file.originalname)
+    ? "image/heic"
+    : file.mimetype
+
 /* `prices` is a link field: query resolves it, the entity types do not
    declare it. */
 type Priced = { prices?: { amount: number; currency_code: string }[] }
@@ -97,7 +107,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     throw new MedusaError(MedusaError.Types.INVALID_DATA, `Ten reference files at most.`)
   }
   for (const file of uploads) {
-    if (!ACCEPTED.test(file.mimetype)) {
+    if (!ACCEPTED.test(mimeOf(file))) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
         `${file.originalname} is not an image or a PDF.`
@@ -116,7 +126,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       input: {
         files: uploads.map((file) => ({
           filename: file.originalname,
-          mimeType: file.mimetype,
+          mimeType: mimeOf(file),
           content: file.buffer.toString("base64"),
           access: "private" as const,
         })),
@@ -125,7 +135,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     references = result.map((file, i) => ({
       id: file.id,
       filename: uploads[i].originalname,
-      mime_type: uploads[i].mimetype,
+      mime_type: mimeOf(uploads[i]),
     }))
   }
 
