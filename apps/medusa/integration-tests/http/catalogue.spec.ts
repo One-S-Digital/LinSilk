@@ -437,9 +437,9 @@ medusaIntegrationTestRunner({
       })
 
       it("archives every season left current, not only the first found", async () => {
-        /* Stands in for what two opens racing each other would otherwise
-           leave behind: two collections both marked current, which the cart's
-           archive gate would otherwise treat as two shops open at once. */
+        /* Two collections both marked current, which the cart's archive gate
+           would treat as two shops open at once: put right by the next open,
+           however the pair came to be. */
         await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
         await api.post("/admin/catalogue/seasons", season("winter-v", 5), admin)
         const container = getContainer()
@@ -487,6 +487,28 @@ medusaIntegrationTestRunner({
         )
         expect(open).toHaveLength(1)
         expect(open[0].handle).toBe("spring-vi")
+      })
+
+      it("leaves exactly one season open when two are opened at once", async () => {
+        for (const [handle, number] of [["autumn-iv", 4], ["winter-v", 5], ["spring-vi", 6]] as const) {
+          await api.post("/admin/catalogue/seasons", season(handle, number), admin)
+          await api.post("/admin/catalogue/pieces", piece(`p${number}`, handle), admin)
+          await publish(`p${number}`)
+        }
+        await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+
+        /* Neither request is the one before the other: both would read autumn
+           as the season to close, and each would then open its own. */
+        const [first, second] = await Promise.all([
+          api.post("/admin/catalogue/seasons/winter-v/open", {}, admin).catch((e) => e.response),
+          api.post("/admin/catalogue/seasons/spring-vi/open", {}, admin).catch((e) => e.response),
+        ])
+        expect([first.status, second.status]).toEqual([200, 200])
+
+        const open = (await seasons()).filter(
+          (s: { status: string }) => s.status === "current"
+        )
+        expect(open).toHaveLength(1)
       })
 
       it("is not opened twice, and not reopened once closed", async () => {

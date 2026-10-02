@@ -110,7 +110,9 @@ Promoting is a separate, explicit call — `POST /admin/catalogue/seasons/:handl
 demotes the outgoing `current` to `past` in the same breath. Both writes go in one
 `upsertProductCollections` call, which the product module settles in a single transaction, and
 the step restores exactly what it found if anything after it fails
-(`src/workflows/catalogue/seasons.ts`). It refuses to open a season with no *published* piece,
+(`src/workflows/catalogue/seasons.ts`). Two opens are serialised behind one lock, which covers
+the read of what is `current` as well as the write, so the second reads what the first left
+rather than both closing the same season and each opening its own. It refuses to open a season with no *published* piece,
 so a rollover cannot land on an empty page or a rail of drafts. Opening a season that is
 already open changes nothing and says so, so a caller that lost its answer can ask again.
 
