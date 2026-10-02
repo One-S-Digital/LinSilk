@@ -364,6 +364,66 @@ medusaIntegrationTestRunner({
       expect(refused.data.message).toContain("declined")
     })
 
+    it("refuses to complete a cart that was opened before the commission was declined", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+
+      /* Everything a client does up to the moment of paying. */
+      const { data: opened } = await api.post(
+        `/store/commissions/${quoted.access_token}/cart`,
+        { country_code: "ch" },
+        headers
+      )
+      const cartId = opened.cart_id
+      await api.post(
+        `/store/carts/${cartId}`,
+        {
+          shipping_address: {
+            first_name: "Alan",
+            last_name: "Turing",
+            address_1: "Bahnhofstrasse 1",
+            city: "Zürich",
+            postal_code: "8001",
+            country_code: "ch",
+          },
+        },
+        headers
+      )
+      const { data: options } = await api.get(`/store/shipping-options?cart_id=${cartId}`, headers)
+      await api.post(
+        `/store/carts/${cartId}/shipping-methods`,
+        { option_id: options.shipping_options[0].id },
+        headers
+      )
+      const { data: collection } = await api.post(
+        "/store/payment-collections",
+        { cart_id: cartId },
+        headers
+      )
+      await api.post(
+        `/store/payment-collections/${collection.payment_collection.id}/payment-sessions`,
+        { provider_id: "pp_system_default" },
+        headers
+      )
+
+      /* The tailor declines while the cart is open. A status change leaves the
+         cart, its line and the published variant exactly as they were. */
+      await updateCommissionWorkflow(getContainer()).run({
+        input: { id: submitted.commission.id, status: "declined", notify: false },
+      })
+
+      const refused = await api
+        .post(`/store/carts/${cartId}/complete`, {}, headers)
+        .catch((e) => e.response)
+      expect(refused.status).toBe(400)
+      expect(refused.data.message).toContain("declined")
+
+      const atelier = getContainer().resolve(ATELIER_MODULE) as AtelierModuleService
+      const stored = await atelier.retrieveCommission(submitted.commission.id)
+      expect(stored.status).toBe("declined")
+      expect(stored.order_id).toBeNull()
+    })
+
     it("refuses a link that does not answer to a commission", async () => {
       const response = await api
         .post("/store/commissions/not-a-real-token/cart", { country_code: "ch" }, headers)

@@ -92,6 +92,49 @@ describe("lineRefusals", () => {
     ])
   })
 
+  describe("a commission piece", () => {
+    const commissioned = piece(
+      "Commission — jacket, Alan Turing",
+      { title: "Commissions", metadata: { status: "commission" } },
+      "top"
+    )
+    const line = (commission?: { status: string; paid_at?: unknown } | null) => ({
+      quantity: 1,
+      metadata: sheet(),
+      variant: commissioned,
+      commission,
+    })
+
+    it("is accepted while its commission is quoted or approved", () => {
+      expect(lineRefusals(line({ status: "quoted", paid_at: null }))).toEqual([])
+      expect(lineRefusals(line({ status: "approved", paid_at: null }))).toEqual([])
+    })
+
+    it("is refused once its commission has been declined, whatever else is still standing", () => {
+      expect(lineRefusals(line({ status: "declined", paid_at: null }))).toEqual([
+        "This commission is declined; it is not one a payment can be made on.",
+      ])
+    })
+
+    it("is refused for a status the list does not know, and for one already paid", () => {
+      expect(lineRefusals(line({ status: "reviewed" }))).toHaveLength(1)
+      expect(lineRefusals(line({ status: "quoted", paid_at: new Date() }))).toEqual([
+        "This commission is already paid for.",
+      ])
+    })
+
+    it("is refused when no commission can be found for it", () => {
+      expect(lineRefusals(line(undefined))).toEqual(["No commission answers to this piece."])
+      expect(lineRefusals(line(null))).toEqual(["No commission answers to this piece."])
+    })
+
+    it("does not change what a seasonal piece is asked", () => {
+      expect(
+        lineRefusals({ quantity: 1, metadata: sheet(), variant: coat, commission: { status: "declined" } })
+      ).toEqual([])
+    })
+  })
+
   it("refuses a closed piece on that ground alone", () => {
     expect(lineRefusals({ quantity: 3, metadata: null, variant: shirtDress })).toEqual([
       "Shirt dress, flax closed with Summer — Collection III and is not made again.",

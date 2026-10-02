@@ -6,6 +6,7 @@ import {
 } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys, MedusaError, Modules } from "@medusajs/framework/utils"
 import { createCartWorkflow } from "@medusajs/medusa/core-flows"
+import { PAYABLE_STATUSES } from "../../lib/archive"
 import { ATELIER_MODULE } from "../../modules/atelier"
 import type AtelierModuleService from "../../modules/atelier/service"
 
@@ -23,18 +24,6 @@ import type AtelierModuleService from "../../modules/atelier/service"
  */
 
 type OpenInput = { token: string; country_code: string }
-
-/* The only statuses a quote is still open to being paid at: after a tailor
-   has set a figure, before the client has settled it. Every other status —
-   including one this list does not yet know about — is refused by default,
-   `quote_amount` and `paid_at` notwithstanding, because a status can outlive
-   the figure that was set when it was reached: a declined commission still
-   carries whatever `quote_amount` it had before it was declined.
-
-   apps/storefront/components/checkout/commission-payment.tsx carries the
-   same list, for the same reason, on the page that never reaches here if it
-   gets this right. */
-const PAYABLE_STATUSES = ["quoted", "approved"]
 
 const openCommissionCartStep = createStep(
   "open-commission-cart",

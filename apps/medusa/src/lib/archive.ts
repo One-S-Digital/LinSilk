@@ -24,6 +24,47 @@ const ORDERABLE = ["current", "commission"]
 export const isOrderable = (variant: GatedVariant) =>
   ORDERABLE.includes(String(variant.product?.collection?.metadata?.status))
 
+/* The only statuses a quote is still open to being paid at: after a tailor
+   has set a figure, before the client has settled it. Every other status —
+   including one this list does not yet know about — is refused by default,
+   `quote_amount` and `paid_at` notwithstanding, because a status can outlive
+   the figure that was set when it was reached: a declined commission still
+   carries whatever `quote_amount` it had before it was declined.
+
+   apps/storefront/components/checkout/commission-payment.tsx carries the
+   same list, for the same reason, on the page that never reaches the cart if
+   it gets this right. */
+export const PAYABLE_STATUSES = ["quoted", "approved"]
+
+export type GatedCommission = { status: string; paid_at?: unknown }
+
+export const isCommissionPiece = (variant: GatedVariant) =>
+  variant.product?.collection?.metadata?.status === "commission"
+
+/** The commission a commission piece was made for. It is read from the
+    product, which only the house writes, and not from the cart line, which
+    the client can send whatever it likes on. */
+export const commissionIdOf = (variant: GatedVariant) => {
+  const id = variant.product?.metadata?.commission_id
+  return typeof id === "string" ? id : undefined
+}
+
+/** Why a commission cannot be paid for, or null when it can. The collection
+    is `commission` for as long as the piece exists, so it says nothing of
+    what has happened to the commission since — that is read from the
+    commission itself. */
+export function commissionRefusal(commission: GatedCommission | null | undefined): string | null {
+  if (!commission) {
+    return "No commission answers to this piece."
+  }
+  if (commission.paid_at) {
+    return "This commission is already paid for."
+  }
+  return PAYABLE_STATUSES.includes(commission.status)
+    ? null
+    : `This commission is ${commission.status}; it is not one a payment can be made on.`
+}
+
 /** Why this piece cannot be ordered, or null when it can. */
 export function archiveRefusal(variant: GatedVariant): string | null {
   if (isOrderable(variant)) {

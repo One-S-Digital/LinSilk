@@ -6,12 +6,20 @@ import {
   createCartWorkflow,
   updateLineItemInCartWorkflow,
 } from "@medusajs/medusa/core-flows"
-import type { GatedVariant } from "../../lib/archive"
+import { commissionIdOf, isCommissionPiece, type GatedVariant } from "../../lib/archive"
 import { cartRefusal } from "../../lib/cart-rules"
+import { ATELIER_MODULE } from "../../modules/atelier"
+import type AtelierModuleService from "../../modules/atelier/service"
 
 /* The storefront only offers what the atelier can make — an open piece, one
    at a time, with a complete sheet — but the storefront is not a security
    boundary, so the cart enforces the same rules (lib/cart-rules.ts).
+
+   A commission piece stays in an orderable collection for as long as it
+   exists, whatever has since happened to the commission — a tailor can decline
+   one while its client has the cart open, and that leaves the cart, its line
+   and the published variant untouched. So the commission itself is read, and
+   must still be payable.
 
    Medusa allows one handler per hook, so every rule runs from here: when a
    cart is created with items, when a piece is added, when a line is changed,
@@ -56,12 +64,28 @@ async function refuseWhatCannotBeMade(lines: IncomingLine[], container: MedusaCo
   })
   const variants = new Map((data as GatedVariant[]).map((v) => [v.id, v]))
 
+  const commissionIds = [
+    ...new Set([...variants.values()].filter(isCommissionPiece).flatMap((v) => commissionIdOf(v) ?? [])),
+  ]
+  const atelier: AtelierModuleService = container.resolve(ATELIER_MODULE)
+  const commissions = new Map(
+    (commissionIds.length ? await atelier.listCommissions({ id: commissionIds }) : []).map((c) => [c.id, c])
+  )
+  const commissionOf = (variant?: GatedVariant) => {
+    const id = variant && commissionIdOf(variant)
+    return id ? commissions.get(id) : undefined
+  }
+
   const refusal = cartRefusal(
-    lines.map((line) => ({
-      quantity: toNumber(line.quantity),
-      metadata: line.metadata,
-      variant: line.variant_id ? variants.get(line.variant_id) : undefined,
-    }))
+    lines.map((line) => {
+      const variant = line.variant_id ? variants.get(line.variant_id) : undefined
+      return {
+        quantity: toNumber(line.quantity),
+        metadata: line.metadata,
+        variant,
+        commission: commissionOf(variant),
+      }
+    })
   )
   if (refusal) {
     throw new MedusaError(MedusaError.Types.NOT_ALLOWED, refusal)
