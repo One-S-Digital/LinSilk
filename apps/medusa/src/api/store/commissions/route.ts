@@ -21,10 +21,13 @@ const ACCEPTED = /^(image\/|application\/pdf$)/
 /* The form offers HEIC, which is what an iPhone shoots, but only Safari
    names the type: Chrome and Firefox send a .heic as an empty type, which
    reaches here as application/octet-stream. So the filename settles it when
-   the declared type does not — and the type that is then uploaded and kept
-   is the true one, not the browser's shrug. */
+   the browser declared nothing — and only then: a type it did declare, such
+   as text/plain on a file named .heic, is a contradiction to refuse, not a
+   label to overwrite. The type that is uploaded and kept is the true one,
+   not the browser's shrug. */
+const UNDECLARED = new Set(["", "application/octet-stream"])
 const mimeOf = (file: Express.Multer.File) =>
-  !ACCEPTED.test(file.mimetype) && /\.heic$/i.test(file.originalname)
+  UNDECLARED.has(file.mimetype) && /\.heic$/i.test(file.originalname)
     ? "image/heic"
     : file.mimetype
 

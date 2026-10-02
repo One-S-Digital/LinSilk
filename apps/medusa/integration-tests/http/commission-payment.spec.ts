@@ -297,7 +297,7 @@ medusaIntegrationTestRunner({
       return api.post("/store/commissions", form, headers)
     }
 
-    it("takes a .heic reference whatever type the browser declared for it", async () => {
+    it("takes a .heic reference the browser gave no type for", async () => {
       /* Chrome and Firefox send a .heic with no type at all, which arrives as
          application/octet-stream; the form invites HEIC, so the endpoint must
          not refuse it after the client has filled in the whole brief. */
@@ -308,6 +308,12 @@ medusaIntegrationTestRunner({
       expect(stored.references).toEqual([
         expect.objectContaining({ filename: "front.heic", mime_type: "image/heic" }),
       ])
+    })
+
+    it("does not relabel a .heic the browser declared as something else", async () => {
+      const refused = await briefWithReference("front.heic", "text/plain").catch((e) => e.response)
+      expect(refused.status).toBe(400)
+      expect(refused.data.message).toContain("front.heic")
     })
 
     it("still refuses a reference that is neither an image nor a PDF", async () => {
