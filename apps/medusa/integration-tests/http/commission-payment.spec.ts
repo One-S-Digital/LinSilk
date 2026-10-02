@@ -310,6 +310,29 @@ medusaIntegrationTestRunner({
       ])
     })
 
+    it("takes the uploaded references back out when the brief cannot be written", async () => {
+      const container = getContainer()
+      const atelier = container.resolve(ATELIER_MODULE) as AtelierModuleService
+      const files = container.resolve(Modules.FILE)
+      const deleted = jest.spyOn(files, "deleteFiles")
+      const failing = jest
+        .spyOn(atelier, "createCommissions")
+        .mockRejectedValueOnce(new Error("the database went away"))
+
+      try {
+        const failed = await briefWithReference("front.jpg", "image/jpeg").catch((e) => e.response)
+        expect(failed.status).toBe(500)
+
+        /* The file went up before the brief was attempted; with no brief to
+           point at it, it must not be left in the private bucket. */
+        expect(deleted).toHaveBeenCalledTimes(1)
+        expect(deleted).toHaveBeenCalledWith([expect.any(String)])
+      } finally {
+        failing.mockRestore()
+        deleted.mockRestore()
+      }
+    })
+
     it("does not relabel a .heic the browser declared as something else", async () => {
       const refused = await briefWithReference("front.heic", "text/plain").catch((e) => e.response)
       expect(refused.status).toBe(400)

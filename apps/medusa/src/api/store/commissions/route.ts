@@ -1,6 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
-import { uploadFilesWorkflow } from "@medusajs/medusa/core-flows"
+import { deleteFilesWorkflow, uploadFilesWorkflow } from "@medusajs/medusa/core-flows"
 import { z } from "@medusajs/framework/zod"
 import { SILHOUETTE_COLLECTION } from "../../../lib/commission-catalogue"
 import { missingMeasurements } from "../../../lib/measurements"
@@ -150,25 +150,40 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   }[]
   const estimate = prices.find((p) => p.currency_code === "chf")?.amount ?? null
 
-  const { result: commission } = await createCommissionWorkflow(req.scope).run({
-    input: {
-      name: brief.name,
-      email: brief.email,
-      silhouette: brief.silhouette,
-      silhouette_title: silhouette.title,
-      fabric: brief.fabric,
-      note: brief.note ?? null,
-      measurements: brief.measurements,
-      measurement_unit: brief.measurement_unit,
-      /* Medusa types a json column as an object; these two hold arrays, which
-         Postgres is perfectly happy with. Everything that reads them back
-         checks with Array.isArray. */
-      length_kinds: lengthKinds as unknown as Record<string, unknown>,
-      references: references as unknown as Record<string, unknown>,
-      estimate_amount: estimate,
-      currency_code: "chf",
-    },
-  })
+  /* The files are already in the bucket by now, and nothing but the brief
+     points at them. If the brief is not written, they are a client's private
+     photographs with no record anywhere to say they exist, so they are taken
+     back out — best effort, since the failure to report is the brief's. */
+  let commission
+  try {
+    const { result } = await createCommissionWorkflow(req.scope).run({
+      input: {
+        name: brief.name,
+        email: brief.email,
+        silhouette: brief.silhouette,
+        silhouette_title: silhouette.title,
+        fabric: brief.fabric,
+        note: brief.note ?? null,
+        measurements: brief.measurements,
+        measurement_unit: brief.measurement_unit,
+        /* Medusa types a json column as an object; these two hold arrays, which
+           Postgres is perfectly happy with. Everything that reads them back
+           checks with Array.isArray. */
+        length_kinds: lengthKinds as unknown as Record<string, unknown>,
+        references: references as unknown as Record<string, unknown>,
+        estimate_amount: estimate,
+        currency_code: "chf",
+      },
+    })
+    commission = result
+  } catch (error) {
+    if (references.length) {
+      await deleteFilesWorkflow(req.scope)
+        .run({ input: { ids: references.map((reference) => reference.id) } })
+        .catch(() => undefined)
+    }
+    throw error
+  }
 
   res.status(201).json({
     commission: { id: commission.id, status: commission.status },
