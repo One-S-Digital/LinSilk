@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ZONES, type Group, type Zone } from '@/lib/catalog';
 import {
   formatValue,
@@ -64,6 +64,8 @@ export function MeasurementSheet({
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  /** Counts edits, so a save can tell whether what it sent is still what is on screen. */
+  const edits = useRef(0);
   const hydrated = useHydrated();
   const [restored, setRestored] = useState(Boolean(initialValues));
 
@@ -100,12 +102,14 @@ export function MeasurementSheet({
           .map((z) => [z.key, formatValue(values[z.key] as number, next)]),
       ),
     );
+    edits.current += 1;
     setSaved(false);
     setSaveError(null);
   };
 
   const setField = (key: string, raw: string) => {
     setDrafts((d) => ({ ...d, [key]: raw }));
+    edits.current += 1;
     setSaved(false);
     setSaveError(null);
 
@@ -298,14 +302,21 @@ export function MeasurementSheet({
               return;
             }
             setSaving(true);
+            const sent = edits.current;
             try {
               const result = await onSave(values, unit);
+              /* Edited while it was on its way: what was saved is not what is
+                 on screen, so the outcome says nothing about it — claiming
+                 "Saved" would be claiming values the account does not hold. */
+              if (edits.current !== sent) return;
               if (result?.error) setSaveError(result.error);
               else setSaved(true);
             } catch {
               /* A server action that throws rather than returning an error —
                  the network went, or the server did. */
-              setSaveError('Could not save just now. Try again in a moment.');
+              if (edits.current === sent) {
+                setSaveError('Could not save just now. Try again in a moment.');
+              }
             } finally {
               setSaving(false);
             }
