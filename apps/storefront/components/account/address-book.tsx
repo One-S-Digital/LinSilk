@@ -46,16 +46,19 @@ function AddressForm({ address, onDone }: { address?: ApiAddress; onDone: () => 
   const [state, formAction, pending] = useActionState(action, {});
 
   /* `state` is a fresh object every time the action resolves, success
-     included — this fires on that resolution, not on mount, and closes the
-     form once there is nothing left to fix. */
-  const mounted = useRef(false);
+     included, so the form closes on that change and on nothing else. Not on
+     mount — React runs a mounting effect twice in development — and not when
+     the parent re-renders: it hands down a new `onDone` each time, and an
+     open form that closed because a different address was removed would take
+     what was being typed with it. */
+  const initial = useRef(state);
+  const done = useRef(onDone);
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-      return;
-    }
-    if (!state.error) onDone();
-  }, [state, onDone]);
+    done.current = onDone;
+  });
+  useEffect(() => {
+    if (state !== initial.current && !state.error) done.current();
+  }, [state]);
 
   return (
     <form action={formAction} className={styles.form} style={{ maxWidth: 'none' }}>
