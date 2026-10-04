@@ -26,6 +26,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { addWithRecovery } from './cart-recovery';
 import { medusaFetch } from './medusa';
 import type { Zone } from './catalog';
 import { toLineItemMetadata, type Measurements, type Unit } from './measurements';
@@ -193,10 +194,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [hydrated]);
 
-  const ensureCart = useCallback(async (): Promise<string> => {
-    const known = cart?.id ?? recall();
-    if (known) return known;
-
+  const startCart = useCallback(async (): Promise<string> => {
     /* The house prices in francs, so a cart opens in Switzerland; where the
        piece is going is settled at checkout. */
     const { regions } = await medusaFetch<{ regions: { id: string; name: string }[] }>(
@@ -213,14 +211,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     remember(created.id);
     setCart(created);
     return created.id;
-  }, [cart?.id]);
+  }, []);
+
+  const ensureCart = useCallback(
+    async (): Promise<string> => cart?.id ?? recall() ?? startCart(),
+    [cart?.id, startCart],
+  );
 
   const add = useCallback(
     async (reservation: Reservation) => {
-      const id = await ensureCart();
-      const { cart: updated } = await medusaFetch<{ cart: ApiCart }>(
-        `/store/carts/${id}/line-items?${CART_FIELDS}`,
-        {
+      const post = (id: string) =>
+        medusaFetch<{ cart: ApiCart }>(`/store/carts/${id}/line-items?${CART_FIELDS}`, {
           method: 'POST',
           json: {
             variant_id: reservation.variantId,
@@ -240,11 +241,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
               ),
             },
           },
+        });
+
+      const { cart: updated } = await addWithRecovery({
+        cartId: await ensureCart(),
+        post,
+        isCompleted: (id) =>
+          medusaFetch<{ cart: ApiCart }>(`/store/carts/${id}?fields=completed_at`).then(
+            ({ cart: found }) => Boolean(found.completed_at),
+            () => false,
+          ),
+        startCart: () => {
+          remember(null);
+          return startCart();
         },
-      );
+      });
       setCart(updated);
     },
-    [ensureCart],
+    [ensureCart, startCart],
   );
 
   const remove = useCallback(
