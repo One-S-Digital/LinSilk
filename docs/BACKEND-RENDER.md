@@ -185,8 +185,10 @@ name, a note or an opening figure in the admin rather than in code, and the exch
 keeps their euro and sterling figures derived from the franc. The collection's `metadata.status`
 is neither `current` nor `past`, so the cart refuses them.
 
-⚠ **Accepting a quote is still by reply.** The email asks the client to reply, and the house
-sends a payment link by hand. Wiring that link to Stripe automatically is the next step (§6).
+**Accepting a quote is the link in the email.** Setting a figure makes the commission payable by
+itself: it becomes a product of its own and the client is emailed an unguessable link to
+`app/commission/[token]`, where they say where the piece is going and pay on the house's own
+checkout. Paying moves the brief to `in_production` and retires the link. Nothing is sent by hand.
 
 ### 3.7 Cloth catalogues — built
 
