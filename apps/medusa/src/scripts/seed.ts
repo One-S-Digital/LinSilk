@@ -394,10 +394,13 @@ export default async function seed({ container }: { container: MedusaContainer }
      Medusa requires every product to carry an option. There are no sizes, so
      everything shares the one option the house actually offers. */
 
+  /* Only the shared option: every quoted commission carries a `Cut` of its
+     own, exclusive to that garment, and a re-run after commissions exist
+     must not bind a silhouette to one client's private one. */
   const { data: [existingCut] } = await query.graph({
     entity: "product_option",
     fields: ["id"],
-    filters: { title: "Cut" },
+    filters: { title: "Cut", is_exclusive: false },
   })
   const cutId =
     existingCut?.id ??
