@@ -249,7 +249,9 @@ export default async function HomePage() {
               <dd className={styles.statNum}>
                 <Count to={IN_SEASON.length} />
               </dd>
-              <dt className={styles.statLabel}>designs in {OPEN?.season}</dt>
+              <dt className={styles.statLabel}>
+                {OPEN ? `designs in ${OPEN.season}` : 'designs this season'}
+              </dt>
             </div>
             <div className={styles.stat}>
               <dd className={styles.statNum}>
