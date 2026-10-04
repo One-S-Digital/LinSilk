@@ -592,6 +592,49 @@ medusaIntegrationTestRunner({
       expect(second.order_id).toBe(first.order_id)
     })
 
+    it("keeps the client's cart when a re-quote fails before the figure has moved", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+
+      /* The catalogue refuses the new figure, so nothing has changed: the
+         client's cart, with whatever they have filled in on it, is still the
+         one that settles the figure they were quoted. */
+      const products = getContainer().resolve(Modules.PRODUCT)
+      const refusing = jest
+        .spyOn(products, "upsertProductVariants")
+        .mockRejectedValueOnce(new Error("the catalogue is not answering"))
+      try {
+        await expect(
+          updateCommissionWorkflow(getContainer()).run({
+            input: { id: submitted.commission.id, quote_amount: 4000, notify: false },
+          })
+        ).rejects.toBeTruthy()
+        expect(refusing).toHaveBeenCalledTimes(1)
+      } finally {
+        refusing.mockRestore()
+      }
+
+      const { data } = await api.get(`/store/carts/${cartId}`, headers)
+      expect(data.cart.id).toBe(cartId)
+      const stored = await storedCommission(submitted.commission.id)
+      expect(stored.cart_id).toBe(cartId)
+      expect(Number(stored.quote_amount)).toBe(3600)
+    })
+
+    it("still drops the cart once a re-quote has moved the figure", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+
+      await quote(submitted.commission.id, 4000)
+
+      /* A cart priced at the old figure must not be able to settle the new one. */
+      const gone = await api.get(`/store/carts/${cartId}`, headers).catch((e) => e.response)
+      expect(gone.status).toBe(404)
+      expect((await storedCommission(submitted.commission.id)).cart_id).toBeNull()
+    })
+
     it("refuses a link that does not answer to a commission", async () => {
       const response = await api
         .post("/store/commissions/not-a-real-token/cart", { country_code: "ch" }, headers)

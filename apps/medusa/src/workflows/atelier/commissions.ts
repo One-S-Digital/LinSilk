@@ -90,11 +90,6 @@ const prepareQuoteStep = createStep(
       )
     }
 
-    /* A cart standing against the old figure must not outlive it. */
-    if (commission.cart_id) {
-      await carts.deleteCarts([commission.cart_id as string]).catch(() => undefined)
-    }
-
     const rates = await chfRates(logger)
     const prices = CURRENCIES.map((currency_code) => ({
       currency_code,
@@ -199,6 +194,14 @@ const prepareQuoteStep = createStep(
        the link they were sent, and sees the new figure through it. */
     const access_token =
       (commission.access_token as string) ?? randomBytes(24).toString("base64url")
+
+    /* A cart standing against the old figure must not outlive it — but only
+       now, once the figure has moved. Dropped any earlier, a re-quote that
+       failed before getting this far would have cost the client a cart that
+       was still good. */
+    if (commission.cart_id) {
+      await carts.deleteCarts([commission.cart_id as string]).catch(() => undefined)
+    }
 
     return new StepResponse({ access_token, cart_id: null }, createdProductId)
   },
