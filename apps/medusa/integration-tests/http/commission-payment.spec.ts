@@ -12,6 +12,7 @@ import {
 } from "@medusajs/medusa/core-flows"
 import { ATELIER_MODULE } from "../../src/modules/atelier"
 import type AtelierModuleService from "../../src/modules/atelier/service"
+import commissionPaidHandler from "../../src/subscribers/commission-paid"
 import { updateCommissionWorkflow } from "../../src/workflows/atelier/commissions"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../../src/lib/commission-catalogue"
 import { BODY_ZONES, LENGTH_ZONES } from "../../src/lib/measurements"
@@ -203,6 +204,74 @@ medusaIntegrationTestRunner({
       return result as unknown as { access_token: string; status: string; cart_id: string | null }
     }
 
+    /* Everything a client does between filling a cart and paying for it. */
+    const readyToPay = async (cartId: string) => {
+      await api.post(
+        `/store/carts/${cartId}`,
+        {
+          shipping_address: {
+            first_name: "Alan",
+            last_name: "Turing",
+            address_1: "Bahnhofstrasse 1",
+            city: "Zürich",
+            postal_code: "8001",
+            country_code: "ch",
+          },
+        },
+        headers
+      )
+      const { data: options } = await api.get(`/store/shipping-options?cart_id=${cartId}`, headers)
+      await api.post(
+        `/store/carts/${cartId}/shipping-methods`,
+        { option_id: options.shipping_options[0].id },
+        headers
+      )
+      const { data: collection } = await api.post(
+        "/store/payment-collections",
+        { cart_id: cartId },
+        headers
+      )
+      await api.post(
+        `/store/payment-collections/${collection.payment_collection.id}/payment-sessions`,
+        { provider_id: "pp_system_default" },
+        headers
+      )
+    }
+
+    const placeOrder = async (cartId: string) => {
+      const { data } = await api.post(`/store/carts/${cartId}/complete`, {}, headers)
+      expect(data.type).toBe("order")
+      return data.order as { id: string }
+    }
+
+    /* A commission is recorded as paid by a subscriber to order.placed, which
+       runs on the event bus after the response has been sent. */
+    const untilPaid = async (id: string) => {
+      for (let attempt = 0; attempt < 100; attempt++) {
+        const commission = await storedCommission(id)
+        if (commission.paid_at) {
+          return commission
+        }
+        await new Promise((resolve) => setTimeout(resolve, 150))
+      }
+      throw new Error(`${id} was never recorded as paid.`)
+    }
+
+    /* The same subscriber, run by hand: for what it must not do, which
+       waiting for it cannot show, and for an event delivered a second time. */
+    const deliver = (orderId: string) =>
+      commissionPaidHandler({
+        event: { name: "order.placed", data: { id: orderId } },
+        container: getContainer(),
+      } as never)
+
+    const storedCommission = (id: string) =>
+      (getContainer().resolve(ATELIER_MODULE) as AtelierModuleService).retrieveCommission(id)
+
+    const openCart = async (token: string) =>
+      (await api.post(`/store/commissions/${token}/cart`, { country_code: "ch" }, headers)).data
+        .cart_id as string
+
     it("turns a quote into a payable link, and the payment into an order", async () => {
       const { data: submitted } = await submitBrief()
       const quoted = await quote(submitted.commission.id, 3600)
@@ -368,43 +437,8 @@ medusaIntegrationTestRunner({
       const { data: submitted } = await submitBrief()
       const quoted = await quote(submitted.commission.id, 3600)
 
-      /* Everything a client does up to the moment of paying. */
-      const { data: opened } = await api.post(
-        `/store/commissions/${quoted.access_token}/cart`,
-        { country_code: "ch" },
-        headers
-      )
-      const cartId = opened.cart_id
-      await api.post(
-        `/store/carts/${cartId}`,
-        {
-          shipping_address: {
-            first_name: "Alan",
-            last_name: "Turing",
-            address_1: "Bahnhofstrasse 1",
-            city: "Zürich",
-            postal_code: "8001",
-            country_code: "ch",
-          },
-        },
-        headers
-      )
-      const { data: options } = await api.get(`/store/shipping-options?cart_id=${cartId}`, headers)
-      await api.post(
-        `/store/carts/${cartId}/shipping-methods`,
-        { option_id: options.shipping_options[0].id },
-        headers
-      )
-      const { data: collection } = await api.post(
-        "/store/payment-collections",
-        { cart_id: cartId },
-        headers
-      )
-      await api.post(
-        `/store/payment-collections/${collection.payment_collection.id}/payment-sessions`,
-        { provider_id: "pp_system_default" },
-        headers
-      )
+      const cartId = await openCart(quoted.access_token)
+      await readyToPay(cartId)
 
       /* The tailor declines while the cart is open. A status change leaves the
          cart, its line and the published variant exactly as they were. */
@@ -422,6 +456,140 @@ medusaIntegrationTestRunner({
       const stored = await atelier.retrieveCommission(submitted.commission.id)
       expect(stored.status).toBe("declined")
       expect(stored.order_id).toBeNull()
+    })
+
+    it("does not mark a commission paid because an order line names it", async () => {
+      const container = getContainer()
+      const query = container.resolve(ContainerRegistrationKeys.QUERY)
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+
+      /* An ordinary seasonal piece, bought in the ordinary way, with someone
+         else's commission written on its line: a line's metadata is whatever
+         the client sent. */
+      const { result: [autumn] } = await createCollectionsWorkflow(container).run({
+        input: {
+          collections: [
+            { title: "Autumn — Collection IV", handle: "autumn-iv", metadata: { status: "current" } },
+          ],
+        },
+      })
+      const { data: [store] } = await query.graph({
+        entity: "store",
+        fields: ["default_sales_channel_id"],
+      })
+      const { data: [profile] } = await query.graph({ entity: "shipping_profile", fields: ["id"] })
+      const { data: [swiss] } = await query.graph({
+        entity: "region",
+        fields: ["id"],
+        filters: { name: "Switzerland" },
+      })
+      const { result: [coat] } = await createProductsWorkflow(container).run({
+        input: {
+          products: [
+            {
+              title: "Coat, Bảo Lộc silk",
+              handle: "w1",
+              status: ProductStatus.PUBLISHED,
+              collection_id: autumn.id,
+              shipping_profile_id: profile.id,
+              metadata: { length_kinds: ["top"] },
+              sales_channels: [{ id: store.default_sales_channel_id! }],
+              options: [{ title: "Cut", values: ["Made to measure"] }],
+              variants: [
+                {
+                  title: "Made to measure",
+                  options: { Cut: "Made to measure" },
+                  manage_inventory: false,
+                  prices: [{ currency_code: "chf", amount: 1980 }],
+                },
+              ],
+            },
+          ],
+        },
+      })
+      const { data: { cart } } = await api.post(
+        "/store/carts",
+        {
+          region_id: swiss.id,
+          email: "alan@example.com",
+          items: [
+            {
+              variant_id: coat.variants![0].id,
+              quantity: 1,
+              metadata: {
+                measurement_unit: "cm",
+                ...Object.fromEntries(BODY_ZONES.map((z, i) => [`measure_${z.key}_cm`, String(30 + i)])),
+                [`measure_${LENGTH_ZONES.top.key}_cm`]: "78",
+                commission_id: submitted.commission.id,
+              },
+            },
+          ],
+        },
+        headers
+      )
+      await readyToPay(cart.id)
+      const order = await placeOrder(cart.id)
+      await deliver(order.id)
+
+      const stored = await storedCommission(submitted.commission.id)
+      expect(stored.status).toBe("quoted")
+      expect(stored.paid_at).toBeNull()
+      expect(stored.order_id).toBeNull()
+      expect(stored.access_token).toBe(quoted.access_token)
+    })
+
+    it("records a commission as paid whatever the client did to the metadata on its line", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+
+      /* Take the commission's id off the line, as a client can. Metadata is
+         merged, so a blank value is how a key is removed. */
+      const { data: before } = await api.get(`/store/carts/${cartId}`, headers)
+      const line = before.cart.items[0]
+      await api.post(
+        `/store/carts/${cartId}/line-items/${line.id}`,
+        { quantity: 1, metadata: { ...line.metadata, commission_id: "" } },
+        headers
+      )
+      const { data: after } = await api.get(`/store/carts/${cartId}`, headers)
+      expect(after.cart.items[0].metadata.commission_id).not.toBe(submitted.commission.id)
+
+      await readyToPay(cartId)
+      const order = await placeOrder(cartId)
+
+      const stored = await untilPaid(submitted.commission.id)
+      expect(stored.status).toBe("in_production")
+      expect(stored.order_id).toBe(order.id)
+      expect(stored.paid_at).not.toBeNull()
+      expect(stored.access_token).toBeNull()
+    })
+
+    it("does not record the same payment twice", async () => {
+      const container = getContainer()
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+      await readyToPay(cartId)
+      const order = await placeOrder(cartId)
+
+      const first = await untilPaid(submitted.commission.id)
+      expect(first.order_id).toBe(order.id)
+
+      /* The event is delivered again. */
+      const notification = container.resolve(Modules.NOTIFICATION)
+      const sent = jest.spyOn(notification, "createNotifications")
+      try {
+        await deliver(order.id)
+        expect(sent).not.toHaveBeenCalled()
+      } finally {
+        sent.mockRestore()
+      }
+
+      const second = await storedCommission(submitted.commission.id)
+      expect(second.paid_at).toEqual(first.paid_at)
+      expect(second.order_id).toBe(first.order_id)
     })
 
     it("refuses a link that does not answer to a commission", async () => {
