@@ -9,6 +9,7 @@ import {
   Reveal,
   RuleDraw,
 } from '@/components/motion';
+import { HeroShutter } from '@/components/hero-shutter';
 import { DragRail } from '@/components/drag-rail';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
@@ -30,12 +31,9 @@ export default async function HomePage() {
       {/* ---- Hero ---- */}
       <section className={styles.hero}>
         <HeroMedia className={styles.heroMedia}>
-          <ShotFrame weave="dark" ratio="auto" style={{ height: '100%' }} />
+          <HeroShutter />
         </HeroMedia>
         <div className={styles.heroScrim} />
-        <span className={styles.heroNote}>
-          hero — macro of hand-woven silk, low warm light
-        </span>
 
         <div className={styles.heroInner}>
           <LineRise delay={0.15}>
@@ -124,7 +122,8 @@ export default async function HomePage() {
             <ShotFrame
               weave="forest"
               ratio="4 / 5"
-              note="commission — chalk marks on unfinished cloth"
+              src="/images/commission.webp"
+              alt="Ivory satin chalked with a pattern, with shears, pins and thread"
               onDark
             />
           </ClothWipe>
@@ -175,6 +174,8 @@ export default async function HomePage() {
               <ShotFrame
                 weave="bone"
                 ratio="auto"
+                src="/images/atelier-needle.webp"
+                alt="Hands stitching emerald floral satin by hand"
                 style={{ height: '130%', marginTop: '-15%' }}
               >
                 <ChalkMark
@@ -192,6 +193,8 @@ export default async function HomePage() {
               <ShotFrame
                 weave="sand"
                 ratio="auto"
+                src="/images/atelier-pin.webp"
+                alt="Hands pinning a satin top on a dress form"
                 style={{ height: '130%', marginTop: '-15%' }}
               />
             </Parallax>

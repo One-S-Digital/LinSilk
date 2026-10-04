@@ -1,0 +1,61 @@
+@property --p {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 120%;
+}
+
+.root,
+.slide,
+.reveal {
+  position: absolute;
+  inset: 0;
+}
+
+.reveal picture,
+.reveal img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.reveal img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* The sheet: a 24%-wide feathered edge travels across, and the banner settles
+   from a slight over-scale as it lands. */
+.reveal[data-on] {
+  animation-duration: 1900ms;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.25, 1);
+  animation-fill-mode: both;
+}
+
+.reveal[data-on][data-from='ltr'] {
+  animation-name: sheetLtr;
+  mask-image: linear-gradient(to right, #000 calc(var(--p) - 24%), transparent var(--p));
+}
+
+.reveal[data-on][data-from='rtl'] {
+  animation-name: sheetRtl;
+  mask-image: linear-gradient(to left, #000 calc(var(--p) - 24%), transparent var(--p));
+}
+
+.reveal[data-on] img {
+  animation: settle 2400ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes sheetLtr {
+  from { --p: 0%; }
+  to { --p: 124%; }
+}
+
+@keyframes sheetRtl {
+  from { --p: 0%; }
+  to { --p: 124%; }
+}
+
+@keyframes settle {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}

@@ -22,7 +22,7 @@
 .scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(42, 38, 32, 0.3), rgba(42, 38, 32, 0.66));
+  background: linear-gradient(180deg, rgba(42, 38, 32, 0.15), rgba(42, 38, 32, 0.5));
   transition: opacity var(--dur-slow) var(--ease);
 }
 

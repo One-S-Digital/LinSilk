@@ -50,7 +50,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
       <header className={styles.header}>
         <div className={styles.inner}>
           <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
-            <Image src="/brand/mark-gold.png" alt="LinSilk" width={40} height={40} priority />
+            <Image src="/brand/logo-horizontal-black.png" alt="LinSilk Genève" width={142} height={32} priority />
           </Link>
 
           <nav className={styles.nav} aria-label="Primary">
@@ -98,7 +98,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
           >
             <div className={styles.panelTop}>
               <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
-                <Image src="/brand/mark-gold.png" alt="LinSilk" width={44} height={44} />
+                <Image src="/brand/logo-horizontal-black.png" alt="LinSilk Genève" width={142} height={32} />
               </Link>
               <button type="button" onClick={() => setOpen(false)}>
                 Close

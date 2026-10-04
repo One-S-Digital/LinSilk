@@ -19,15 +19,17 @@ const DOORS = [
     href: '/collection/women',
     group: 'women' as const,
     title: 'Women',
-    note: 'women — full length, stone doorway',
     weave: 'dark' as const,
+    src: '/images/door-women.webp',
+    alt: 'A woman in a rust satin wrap dress on a sunlit loggia above the sea',
   },
   {
     href: '/collection/men',
     group: 'men' as const,
     title: 'Men',
-    note: 'men — walking, rain light',
     weave: 'forest' as const,
+    src: '/images/door-men.webp',
+    alt: 'A man in a black linen shirt and cream trousers seated on limestone steps above the sea',
   },
 ];
 
@@ -70,10 +72,9 @@ export default async function CollectionPage() {
           return (
             <Link key={door.href} href={door.href} className={styles.panel}>
               <HeroMedia className={styles.media}>
-                <ShotFrame weave={door.weave} ratio="auto" style={{ height: '100%' }} />
+                <ShotFrame weave={door.weave} ratio="auto" src={door.src} alt={door.alt} style={{ height: '100%' }} />
               </HeroMedia>
               <div className={styles.scrim} />
-              <span className={styles.note}>{door.note}</span>
               <div className={styles.body}>
                 <div className={styles.count}>{roman(count)} designs</div>
                 <div className={styles.title}>{door.title}</div>
