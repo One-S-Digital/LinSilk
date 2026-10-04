@@ -61,6 +61,11 @@ type UpdateInput = {
   notify: boolean
 }
 
+type PreviousPrices = {
+  variant_id: string
+  prices: { currency_code: string; amount: number }[]
+}
+
 /* Putting a price on a commission makes it payable, and what makes it
    payable is a product of its own: one variant, priced at the figure the
    tailor set, with a stock of exactly one. A commission is a capped run of
@@ -71,16 +76,16 @@ type UpdateInput = {
    decides the currency and the shipping, neither of which is known until the
    client says where the piece is going; that happens on the payment page.
 
-   Re-quoting moves the price on the product and throws away any cart the
-   client has not yet paid, so a figure that has moved cannot be settled at
-   the old one. */
+   Re-quoting moves the price on the product, and puts away any cart the
+   client has not yet paid (retireCommissionCartStep), so a figure that has moved cannot
+   be settled at the old one. Both can be undone: if the re-quote fails after
+   either, the old figure and the old cart come back. */
 const prepareQuoteStep = createStep(
   "prepare-quote",
   async ({ id, quote_amount }: { id: string; quote_amount: number }, { container }) => {
     const atelier: AtelierModuleService = container.resolve(ATELIER_MODULE)
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
-    const carts = container.resolve(Modules.CART)
     const commission = await atelier.retrieveCommission(id)
 
     if (commission.paid_at) {
@@ -99,16 +104,28 @@ const prepareQuoteStep = createStep(
     const handle = `commission-of-${id.replace(/^com_/, "").toLowerCase()}`
     const { data: [existing] } = await query.graph({
       entity: "product",
-      fields: ["id", "variants.id"],
+      fields: ["id", "variants.id", "variants.prices.amount", "variants.prices.currency_code"],
       filters: { handle },
     })
 
     let createdProductId: string | null = null
+    let previous: PreviousPrices | null = null
 
     if (existing) {
+      const variant = existing.variants![0] as unknown as {
+        id: string
+        prices: { amount: number; currency_code: string }[]
+      }
+      previous = {
+        variant_id: variant.id,
+        prices: variant.prices.map(({ currency_code, amount }) => ({
+          currency_code,
+          amount: Number(amount),
+        })),
+      }
       await updateProductVariantsWorkflow(container).run({
         input: {
-          product_variants: [{ id: existing.variants![0]!.id, prices }],
+          product_variants: [{ id: variant.id, prices }],
         },
       })
     } else {
@@ -195,19 +212,50 @@ const prepareQuoteStep = createStep(
     const access_token =
       (commission.access_token as string) ?? randomBytes(24).toString("base64url")
 
-    /* A cart standing against the old figure must not outlive it — but only
-       now, once the figure has moved. Dropped any earlier, a re-quote that
-       failed before getting this far would have cost the client a cart that
-       was still good. */
-    if (commission.cart_id) {
-      await carts.deleteCarts([commission.cart_id as string]).catch(() => undefined)
+    return new StepResponse({ access_token, cart_id: null }, { createdProductId, previous })
+  },
+  async (undo: { createdProductId: string | null; previous: PreviousPrices | null } | undefined, { container }) => {
+    if (!undo) return
+    if (undo.createdProductId) {
+      await deleteProductsWorkflow(container).run({ input: { ids: [undo.createdProductId] } })
+    }
+    if (undo.previous) {
+      await updateProductVariantsWorkflow(container).run({
+        input: {
+          product_variants: [{ id: undo.previous.variant_id, prices: undo.previous.prices }],
+        },
+      })
+    }
+  }
+)
+
+/* A cart standing against the old figure must not outlive it. It is put
+   aside, not deleted, so that if the re-quote fails further on the cart —
+   with whatever the client has filled in on it — comes back with the old
+   figure. A failure to put it aside fails the re-quote: a cart that survived
+   would still settle the figure that has moved. Only an open cart is touched;
+   a completed one belongs to an order. */
+const retireCommissionCartStep = createStep(
+  "retire-commission-cart",
+  async ({ id }: { id: string }, { container }) => {
+    const atelier: AtelierModuleService = container.resolve(ATELIER_MODULE)
+    const carts = container.resolve(Modules.CART)
+
+    const { cart_id } = await atelier.retrieveCommission(id)
+    if (!cart_id) {
+      return new StepResponse(null, null)
+    }
+    const [cart] = await carts.listCarts({ id: cart_id as string }, { select: ["id", "completed_at"] })
+    if (!cart || cart.completed_at) {
+      return new StepResponse(null, null)
     }
 
-    return new StepResponse({ access_token, cart_id: null }, createdProductId)
+    await carts.softDeleteCarts([cart.id])
+    return new StepResponse(cart.id, cart.id)
   },
-  async (createdProductId: string | null | undefined, { container }) => {
-    if (!createdProductId) return
-    await deleteProductsWorkflow(container).run({ input: { ids: [createdProductId] } })
+  async (cartId: string | null | undefined, { container }) => {
+    if (!cartId) return
+    await container.resolve(Modules.CART).restoreCarts([cartId])
   }
 )
 
@@ -251,14 +299,16 @@ export const updateCommissionWorkflow = createWorkflow(
   "update-commission",
   (input: UpdateInput) => {
     /* A figure has to be payable before it is recorded or sent. */
-    const payable = when({ input }, (data) => data.input.quote_amount !== undefined).then(() =>
-      prepareQuoteStep(
+    const payable = when("quote-sets-a-figure", { input }, (data) => data.input.quote_amount !== undefined).then(() => {
+      const prepared = prepareQuoteStep(
         transform({ input }, (data) => ({
           id: data.input.id,
           quote_amount: data.input.quote_amount!,
         }))
       )
-    )
+      retireCommissionCartStep(transform({ input }, (data) => ({ id: data.input.id })))
+      return prepared
+    })
 
     const commission = updateCommissionStep(
       transform({ input, payable }, (data) => ({

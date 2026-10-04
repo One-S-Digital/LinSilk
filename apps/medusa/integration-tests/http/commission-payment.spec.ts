@@ -268,6 +268,20 @@ medusaIntegrationTestRunner({
     const storedCommission = (id: string) =>
       (getContainer().resolve(ATELIER_MODULE) as AtelierModuleService).retrieveCommission(id)
 
+    /* The figure on a commission's own product, in francs. */
+    const figureOnProduct = async (commissionId: string) => {
+      const query = getContainer().resolve(ContainerRegistrationKeys.QUERY)
+      const { data: [product] } = await query.graph({
+        entity: "product",
+        fields: ["variants.prices.amount", "variants.prices.currency_code"],
+        filters: { handle: `commission-of-${commissionId.replace(/^com_/, "").toLowerCase()}` },
+      })
+      const { prices } = product.variants![0] as unknown as {
+        prices: { amount: number; currency_code: string }[]
+      }
+      return Number(prices.find((price) => price.currency_code === "chf")!.amount)
+    }
+
     const openCart = async (token: string) =>
       (await api.post(`/store/commissions/${token}/cart`, { country_code: "ch" }, headers)).data
         .cart_id as string
@@ -620,6 +634,85 @@ medusaIntegrationTestRunner({
       const stored = await storedCommission(submitted.commission.id)
       expect(stored.cart_id).toBe(cartId)
       expect(Number(stored.quote_amount)).toBe(3600)
+    })
+
+    it("puts the cart and the figure back when a re-quote cannot be recorded on the commission", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+
+      /* The new figure is on the product and the old cart is gone by the time
+         the commission itself fails to take it. */
+      const atelier = getContainer().resolve(ATELIER_MODULE) as AtelierModuleService
+      const failing = jest
+        .spyOn(atelier, "updateCommissions")
+        .mockRejectedValueOnce(new Error("the database went away"))
+      try {
+        await expect(
+          updateCommissionWorkflow(getContainer()).run({
+            input: { id: submitted.commission.id, quote_amount: 4000, notify: false },
+          })
+        ).rejects.toBeTruthy()
+        expect(failing).toHaveBeenCalledTimes(1)
+      } finally {
+        failing.mockRestore()
+      }
+
+      /* Nothing happened: the old quote stands, at the old figure, with the
+         client's cart still behind it. */
+      const { data } = await api.get(`/store/carts/${cartId}`, headers)
+      expect(data.cart.items).toHaveLength(1)
+      const stored = await storedCommission(submitted.commission.id)
+      expect(stored.cart_id).toBe(cartId)
+      expect(Number(stored.quote_amount)).toBe(3600)
+      expect(await figureOnProduct(submitted.commission.id)).toBe(3600)
+    })
+
+    it("refuses a re-quote when the old cart cannot be dropped", async () => {
+      const { data: submitted } = await submitBrief()
+      const quoted = await quote(submitted.commission.id, 3600)
+      const cartId = await openCart(quoted.access_token)
+
+      /* A cart that survived would still settle the figure that has moved, so
+         the re-quote must not go ahead as if it had been dropped. */
+      const carts = getContainer().resolve(Modules.CART)
+      const failing = jest
+        .spyOn(carts, "softDeleteCarts")
+        .mockRejectedValueOnce(new Error("the cart store is not answering"))
+      try {
+        await expect(
+          updateCommissionWorkflow(getContainer()).run({
+            input: { id: submitted.commission.id, quote_amount: 4000, notify: false },
+          })
+        ).rejects.toBeTruthy()
+        expect(failing).toHaveBeenCalledTimes(1)
+      } finally {
+        failing.mockRestore()
+      }
+
+      const { data } = await api.get(`/store/carts/${cartId}`, headers)
+      expect(data.cart.id).toBe(cartId)
+      const stored = await storedCommission(submitted.commission.id)
+      expect(stored.cart_id).toBe(cartId)
+      expect(Number(stored.quote_amount)).toBe(3600)
+      expect(await figureOnProduct(submitted.commission.id)).toBe(3600)
+    })
+
+    it("re-quotes a commission whose remembered cart no longer exists", async () => {
+      const { data: submitted } = await submitBrief()
+      await quote(submitted.commission.id, 3600)
+
+      /* A cart id left behind by a cart that has since been removed must not
+         stand in the way of putting a new figure on the brief. */
+      const atelier = getContainer().resolve(ATELIER_MODULE) as AtelierModuleService
+      await atelier.updateCommissions({ id: submitted.commission.id, cart_id: "cart_long_gone" } as never)
+
+      await quote(submitted.commission.id, 4000)
+
+      const stored = await storedCommission(submitted.commission.id)
+      expect(stored.cart_id).toBeNull()
+      expect(Number(stored.quote_amount)).toBe(4000)
+      expect(await figureOnProduct(submitted.commission.id)).toBe(4000)
     })
 
     it("still drops the cart once a re-quote has moved the figure", async () => {
