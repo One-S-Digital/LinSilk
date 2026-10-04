@@ -298,10 +298,17 @@ export function MeasurementSheet({
               return;
             }
             setSaving(true);
-            const result = await onSave(values, unit);
-            setSaving(false);
-            if (result?.error) setSaveError(result.error);
-            else setSaved(true);
+            try {
+              const result = await onSave(values, unit);
+              if (result?.error) setSaveError(result.error);
+              else setSaved(true);
+            } catch {
+              /* A server action that throws rather than returning an error —
+                 the network went, or the server did. */
+              setSaveError('Could not save just now. Try again in a moment.');
+            } finally {
+              setSaving(false);
+            }
           }}
           disabled={taken === 0 || saving}
           style={{ color: 'var(--ink-muted)' }}
