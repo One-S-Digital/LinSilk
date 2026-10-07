@@ -14,12 +14,18 @@ export const medusaHeaders = (): Record<string, string> =>
 
 /* A read that never takes the page down with it: if the backend is unreachable
    — during a build, or in a moment of bad luck — the caller renders what it
-   can and says plainly that the rest is missing. */
+   can and says plainly that the rest is missing. A backend that accepts the
+   connection and never answers is unreachable too, so the wait has a limit:
+   without one, every page waits on it and a build dies of Next's
+   60-second-per-page limit instead of rendering what it has. */
+const READ_TIMEOUT_MS = 8000;
+
 export async function medusaGet<T>(path: string, revalidate = 60): Promise<T | null> {
   try {
     const response = await fetch(`${MEDUSA_URL}${path}`, {
       headers: medusaHeaders(),
       next: { revalidate },
+      signal: AbortSignal.timeout(READ_TIMEOUT_MS),
     });
     if (!response.ok) return null;
     return (await response.json()) as T;
