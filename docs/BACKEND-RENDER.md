@@ -229,12 +229,14 @@ decoupling it from the login identity is a sharper edge than this pass reaches f
 
 ## 4. Phase 3 — Seed
 
-`apps/medusa/src/scripts/seed.ts` reads the catalogue written down beside it in
-`apps/medusa/src/scripts/catalogue-fixture.ts`: 4 collections, 53 pieces and 4 commission
-silhouettes.
+`apps/medusa/src/scripts/seed.ts` provisions the structure a piece needs to exist at all: the
+store, the sales channel and publishable key, the regions and their prices, the atelier's stock
+location and shipping, the single `Cut` option, the two collections that hold commissions rather
+than a season, and the 4 commission silhouettes written down in
+`apps/medusa/src/scripts/catalogue-fixture.ts`. It seeds no season and no piece.
 
-**It is safe to run again.** Anything missing is created; anything present has its wording,
-collection and metadata brought back in line with the catalogue. Prices are written once, at
+**It is safe to run again.** Anything missing is created; anything present is brought back in
+line. Prices are written once, at
 creation — after that the house owns them in the admin, and the exchange-rate job keeps the
 derived currencies current. It is excluded from the compiled build, so it runs from source,
 against whichever database `DATABASE_URL` points at.
@@ -243,13 +245,13 @@ against whichever database `DATABASE_URL` points at.
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
 ```
 
-⚠ Collections I–III (36 pieces) are **placeholder content**. Seed them for a working archive, but
-do not let them reach production without the client's real data.
+The house's pieces arrive through the admin or the ingestion route
+(`CATALOGUE-INGESTION.md`). Until a season with status `current` has published pieces, the
+storefront says no collection is open.
 
 Seeding provisions an empty database and then stays out of the way: the storefront reads its
 pieces and collections from the store API, so Medusa is the source of truth from the first run
-onwards. The fixture is the house's written-down copy, not a live mirror — a piece added through
-the admin or the ingestion route is not in it, and does not need to be.
+onwards.
 
 ---
 
@@ -286,6 +288,8 @@ pnpm --filter storefront exec payload run ./payload/seed.ts
 Safe to run again — a `pages` document that already exists is updated in place, brought back in
 line with `STORY`, rather than duplicated. Like the Medusa seed, it reads straight from the
 storefront's own source of truth; `STORY` is the seed's input only from here on.
+
+In production the tables have to exist first, and Payload creates them by itself only outside production. The schema is therefore carried as a migration in `apps/storefront/migrations/`, and the storefront's Build Command runs `pnpm --filter storefront exec payload migrate` before `next build` (`GO-LIVE-SETUP.md` step 9).
 
 ⚠ **`payload run` needs two workarounds under this exact toolchain** — Next 16.3, no
 `"type": "module"` in `apps/storefront/package.json`. First, every relative import inside
