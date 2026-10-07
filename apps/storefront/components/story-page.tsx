@@ -6,11 +6,6 @@ import { getStoryPage } from '@/lib/payload';
 import styles from './story-page.module.css';
 
 const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
-  atelier: [
-    { note: 'needle mid-stitch', weave: 'bone' },
-    { note: 'pinning a shoulder', weave: 'sand' },
-    { note: 'paper pattern, chalked', weave: 'bone' },
-  ],
   cloth: [
     { note: 'bolt end, mill ticket', weave: 'bone' },
     { note: 'silk, raking light', weave: 'sand' },
@@ -18,7 +13,7 @@ const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
   ],
   contact: [
     { note: 'the room, morning', weave: 'bone' },
-    { note: 'Zürich desk, order book', weave: 'sand' },
+    { note: 'Geneva desk, order book', weave: 'sand' },
     { note: 'finished ticket, signed', weave: 'bone' },
   ],
 };

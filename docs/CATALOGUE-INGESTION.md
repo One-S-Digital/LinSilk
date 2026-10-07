@@ -58,8 +58,9 @@ payload is a no-op update, which is what makes an agent safe to retry.
 | Field | Required | Goes to | Notes |
 |---|---|---|---|
 | `handle` | ✓ | `product.handle` | The catalogue's piece id (`w1`, `m3`). |
-| `title` | ✓ | `product.title` | |
+| `title` | ✓ | `product.title` | Never a colour, and never "satin": the house sells silk and linen and nothing is sold by colour. |
 | `material` | ✓ | `product.subtitle` | Shown under the name on every tile. |
+| `cloth` | ✓ on create | `metadata.cloth` | `silk` \| `linen`. It decides which swatches the client chooses their colour from on the piece page (`lib/swatches.ts`). A piece without it cannot be reserved; the page says so. |
 | `collection` | ✓ | `collection_id` | A collection handle that must already exist. |
 | `group` | ✓ | `metadata.group` | `women` \| `men`. |
 | `price_chf` | ✓ on create | variant price | Franc is authoritative; EUR/GBP derived (§6). |

@@ -123,7 +123,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             <div className={styles.panelFoot}>
               <Link href="/account">Account</Link>
               <Link href="/cart">Cart{cartCount}</Link>
-              <span>Atelier — Hội An · Office — Zürich</span>
+              <span>Geneva, Switzerland</span>
             </div>
           </motion.div>
         )}

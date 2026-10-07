@@ -21,7 +21,7 @@ const DOORS = [
     title: 'Women',
     weave: 'dark' as const,
     src: '/images/door-women.webp',
-    alt: 'A woman in a rust satin wrap dress on a sunlit loggia above the sea',
+    alt: 'A woman in a rust silk wrap dress on a sunlit loggia above the sea',
   },
   {
     href: '/collection/men',

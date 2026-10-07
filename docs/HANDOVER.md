@@ -1,6 +1,6 @@
 # LinSilk — Developer Handover
 
-**Client:** LinSilk — made-to-measure house. Atelier in Hội An, Việt Nam; office in Zürich.
+**Client:** LinSilk — made-to-measure house. Atelier in Hội An, Việt Nam; office in Geneva.
 **Agency:** one S Digital
 **Status as of 2026-09-13:** Storefront and backend both built. A client can reserve a piece or
 commission one, pay for either, and manage all of it from an account — or do any of it as a

@@ -1,4 +1,4 @@
-/* Payload, as Server Components see it. The Atelier / Cloth / house pages
+/* Payload, as Server Components see it. The Cloth / house pages
    used to read their copy straight from lib/catalog.ts's STORY constant;
    that copy now lives in Payload's `pages` collection (seeded by
    payload/seed.ts) and is read from here instead. */

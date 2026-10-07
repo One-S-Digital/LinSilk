@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     template: '%s — LinSilk',
   },
   description:
-    'Silk and linen garments cut to your measurements in a single atelier in Hội An. Four small collections a year, each made once and never restocked.',
+    'Made-to-measure silk and linen clothing from Geneva, Switzerland.',
   openGraph: {
     type: 'website',
     siteName: 'LinSilk',
@@ -58,7 +58,6 @@ async function buildNav() {
   return [
     { href: '/collection', label: 'Collection' },
     { href: '/design', label: 'Design Your Own' },
-    { href: '/atelier', label: 'The Atelier' },
     { href: '/cloth', label: 'The Cloth' },
     ...((await pastCollections()).length > 0
       ? [{ href: '/archive', label: 'Past Collections' }]

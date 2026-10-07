@@ -51,9 +51,7 @@ export default function MeasuringPage() {
       <DocSection title="If you would rather not">
         <DocP>
           Any tailor or alterations shop will take these fifteen in a few minutes, often
-          for nothing. Print this page, or show them the list on your phone. In Zürich
-          the house keeps appointments on Thursday afternoons — write to
-          hello@linsilk.ch and someone will take them for you and enter the sheet.
+          for nothing. Print this page, or show them the list on your phone.
         </DocP>
       </DocSection>
 

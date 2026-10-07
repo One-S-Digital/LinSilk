@@ -42,6 +42,7 @@ const piece = (handle: string, collection: string, extra: Record<string, unknown
   handle,
   title: `Piece ${handle}`,
   material: "19mm charmeuse, hand-rolled hem",
+  cloth: "silk",
   collection,
   group: "women",
   price_chf: 1980,
@@ -191,6 +192,29 @@ medusaIntegrationTestRunner({
           (p: { currency_code: string; amount: number }) => [p.currency_code, p.amount]
         )
         expect(Object.fromEntries(prices)).toEqual({ chf: 1980, eur: 2100, gbp: 1800 })
+      })
+
+      it("is cut in silk or linen, and is refused without one", async () => {
+        const { cloth: _omitted, ...untagged } = piece("w1", "autumn-iv")
+        const refused = await api
+          .post("/admin/catalogue/pieces", untagged, admin)
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("cloth")
+
+        const satin = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { cloth: "satin" }), admin)
+          .catch((e) => e.response)
+        expect(satin.status).toBe(400)
+
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { cloth: "linen" }), admin)
+        const { data } = await api.get("/admin/catalogue/pieces", admin)
+        expect(data.pieces[0].cloth).toBe("linen")
+
+        /* A correction that does not mention the cloth leaves it as it was. */
+        await api.post("/admin/catalogue/pieces", { handle: "w1", title: "Piece w1, unlined" }, admin)
+        const after = await api.get("/admin/catalogue/pieces", admin)
+        expect(after.data.pieces[0].cloth).toBe("linen")
       })
 
       it("can be sent again unchanged", async () => {

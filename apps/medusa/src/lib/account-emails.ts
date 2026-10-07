@@ -27,7 +27,7 @@ export function passwordResetEmail(email: string, token: string) {
         "unless the link above is opened.",
         "",
         "LinSilk",
-        "Zürich · Hội An",
+        "Geneva, Switzerland",
       ].join("\n"),
     },
   }

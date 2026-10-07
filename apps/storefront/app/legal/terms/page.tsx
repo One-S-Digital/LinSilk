@@ -12,7 +12,7 @@ export default function TermsPage() {
     <DocPage
       eyebrow="Legal"
       title="Terms of sale"
-      lead="LinSilk sells made-to-measure garments from Zürich, manufactured in Hội An, Việt Nam. These terms govern reservations, confirmation, payment, delivery and alterations."
+      lead="LinSilk sells made-to-measure garments from Geneva. These terms govern reservations, confirmation, payment, delivery and alterations."
     >
       <DocSection title="Awaiting legal review">
         <DocP>

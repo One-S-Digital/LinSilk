@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import {
-  ChalkMark,
   ClothWipe,
   Count,
   HeroMedia,
   LineRise,
-  Parallax,
   Reveal,
   RuleDraw,
 } from '@/components/motion';
@@ -123,7 +121,7 @@ export default async function HomePage() {
               weave="forest"
               ratio="4 / 5"
               src="/images/commission.webp"
-              alt="Ivory satin chalked with a pattern, with shears, pins and thread"
+              alt="Ivory silk chalked with a pattern, with shears, pins and thread"
               onDark
             />
           </ClothWipe>
@@ -147,66 +145,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---- The atelier ---- */}
-      <section className={styles.atelier} aria-labelledby="atelier-heading">
-        <div className={styles.atelierGrid}>
-          <Reveal>
-            <span className={styles.eyebrowDark}>The Atelier</span>
-            <h2 id="atelier-heading" className={`${styles.sectionHeading} u-balance`}>
-              Nine people, one bench, no machine that finishes a seam.
-            </h2>
-            <p className={styles.prose}>
-              The house works out of a single room in Hội An. Cloth is cut flat by
-              hand against a paper pattern drawn for one client. Seams are closed on a
-              machine; hems, facings, buttonholes and linings are finished by hand. A
-              silk dress takes between eleven and sixteen hours at the bench, and it is
-              checked twice against your measurement sheet before it leaves.
-            </p>
-            <div className={styles.commissionCta}>
-              <ButtonLink href="/atelier" variant="rule">
-                Inside the atelier
-              </ButtonLink>
-            </div>
-          </Reveal>
-
-          <div className={styles.atelierPair}>
-            <Parallax distance={34} style={{ aspectRatio: '3 / 4' }}>
-              <ShotFrame
-                weave="bone"
-                ratio="auto"
-                src="/images/atelier-needle.webp"
-                alt="Hands stitching emerald floral satin by hand"
-                style={{ height: '130%', marginTop: '-15%' }}
-              >
-                <ChalkMark
-                  label="shoulder · 41"
-                  style={{ position: 'absolute', right: -8, top: '38%' }}
-                />
-              </ShotFrame>
-            </Parallax>
-
-            <Parallax
-              distance={-34}
-              className={styles.atelierPairLower}
-              style={{ aspectRatio: '3 / 4' }}
-            >
-              <ShotFrame
-                weave="sand"
-                ratio="auto"
-                src="/images/atelier-pin.webp"
-                alt="Hands pinning a satin top on a dress form"
-                style={{ height: '130%', marginTop: '-15%' }}
-              />
-            </Parallax>
-          </div>
-        </div>
-
-        <div className={styles.directionRow}>
-          <span>needle mid-stitch</span>
-          <span>pinning a shoulder</span>
-        </div>
-      </section>
-
       {/* ---- The cloth ---- */}
       <section className={styles.cloth} aria-labelledby="cloth-heading">
         <div className={styles.clothInner}>
@@ -220,7 +158,7 @@ export default async function HomePage() {
           <div className={styles.clothColumns}>
             <Reveal delay={0.08}>
               <p className={styles.clothProse}>
-                Mulberry silk from Bảo Lộc and wet-spun linen from Kortrijk. No
+                Mulberry silk, and wet-spun linen from Kortrijk. No
                 polyester in the shell, the lining, the pocket bag or the thread.
                 Synthetic fibre is cheaper to sew and it holds a press longer, which is
                 precisely why most houses use it where you cannot see.

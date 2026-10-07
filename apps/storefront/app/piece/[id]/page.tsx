@@ -22,7 +22,7 @@ export async function generateMetadata(
   return {
     title: piece.name,
     description: isOrderable(piece)
-      ? `${piece.material}. Cut to your measurements in the Hội An atelier and made in a capped run for Collection ${roman(collection.number)}.`
+      ? `${piece.material}. Cut to your measurements and made in a capped run for Collection ${roman(collection.number)}.`
       : `${piece.material}. From ${collection.title}, now in the archive and not made again.`,
   };
 }

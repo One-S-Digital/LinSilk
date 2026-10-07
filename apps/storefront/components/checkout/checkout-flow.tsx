@@ -344,8 +344,8 @@ export function CheckoutFlow({
                 {field('phone', 'tel')}
               </div>
               <p className={styles.answer}>
-                A telephone number is required by the courier for customs clearance
-                out of Việt Nam. It is not used for anything else.
+                A telephone number is required by the courier for customs clearance.
+                It is not used for anything else.
               </p>
               <div className={styles.continue}>
                 <Button onClick={saveDetails} disabled={working}>

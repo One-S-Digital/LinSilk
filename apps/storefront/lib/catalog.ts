@@ -28,6 +28,8 @@
 import { medusaGet } from './medusa.ts';
 
 export type Group = 'women' | 'men';
+/** What a piece is cut from. The house makes in silk and in linen, nothing else. */
+export type Cloth = 'silk' | 'linen';
 export type CollectionStatus = 'current' | 'past';
 
 export type Collection = {
@@ -52,6 +54,9 @@ export type Piece = {
   name: string;
   /** Cloth and construction, shown under the name on every tile. */
   material: string;
+  /* Which colour library the client chooses from. Null for a piece the house
+     has not tagged, which cannot be reserved until it is. */
+  cloth: Cloth | null;
   /** Price in whole Swiss francs. */
   price: number;
   /** Art direction for the photograph that replaces the placeholder. */
@@ -135,6 +140,7 @@ const readPiece = (p: ApiProduct, collection: Collection): Piece => {
     group: meta.group === 'men' ? 'men' : 'women',
     name: p.title,
     material: p.subtitle ?? '',
+    cloth: meta.cloth === 'silk' || meta.cloth === 'linen' ? meta.cloth : null,
     price: p.variants?.[0]?.calculated_price?.calculated_amount ?? 0,
     shot: String(meta.shot ?? ''),
     ...(meta.sleep ? { sleep: true } : {}),
@@ -297,47 +303,6 @@ export const LENGTH_ZONE: Record<LengthKind, Zone> = {
 export const garmentZonesFor = (piece: Pick<Piece, 'lengthKinds'>): Zone[] =>
   (piece.lengthKinds ?? []).map((kind) => LENGTH_ZONE[kind]);
 
-/* ---- Cloth ---- */
-
-export type Fabric = {
-  key: string;
-  name: string;
-  origin: string;
-  /** Placeholder weave rendering until real swatch photography lands. */
-  css: string;
-  /** True for silks, which get the sheen sweep on hover. */
-  lustrous?: boolean;
-};
-
-export const FABRICS: Fabric[] = [
-  {
-    key: 'silk19',
-    name: 'Silk charmeuse, 19mm',
-    origin: 'Bảo Lộc, Việt Nam · 100% mulberry silk',
-    css: 'linear-gradient(118deg,#E8DCC6,#D8C6A6 60%,#E8DCC6)',
-    lustrous: true,
-  },
-  {
-    key: 'silk22',
-    name: 'Silk crepe, 22mm',
-    origin: 'Bảo Lộc, Việt Nam · 100% mulberry silk',
-    css: 'linear-gradient(118deg,#6E3B3B,#5A2E2E 60%,#7A4545)',
-    lustrous: true,
-  },
-  {
-    key: 'linenh',
-    name: 'Handkerchief linen',
-    origin: 'Kortrijk, Belgium · 100% wet-spun flax',
-    css: 'repeating-linear-gradient(90deg,#E4DAC6 0 3px,#DCD0B8 3px 6px)',
-  },
-  {
-    key: 'linend',
-    name: 'Linen drill, heavy',
-    origin: 'Kortrijk, Belgium · 100% wet-spun flax',
-    css: 'repeating-linear-gradient(90deg,#5C6B4C 0 3px,#4E5C40 3px 6px)',
-  },
-];
-
 /* ---- Commission ---- */
 
 export const COMMISSION_STEPS = [
@@ -355,23 +320,17 @@ export const COMMISSION_STEPS = [
  * final either way. */
 
 export const STORY = {
-  atelier: {
-    title: 'The Atelier',
-    lead: 'One room in Hội An, nine people, and a bench that has been in use since 2019. Everything the house sells is cut and finished here.',
-    a: 'Patterns are drawn on paper for one client and kept. Cloth is cut flat by hand against that paper — never stacked, never die-cut. Seams are closed on a single industrial machine; hems, facings, buttonholes, linings and bar tacks are worked by hand at the bench. Nothing is fused. A silk dress takes eleven to sixteen hours; a half-canvassed jacket takes closer to forty.',
-    b: 'Before a garment leaves, it is checked twice against the measurement sheet by someone who did not sew it. Anything more than half a centimetre out is opened and re-set. The names of the people who cut and finished your piece are written on the ticket that comes with it, because a claim about handwork that cannot be attributed to a person is not a claim at all.',
-  },
   cloth: {
     title: 'The Cloth',
-    lead: 'Mulberry silk from Bảo Lộc and wet-spun linen from Kortrijk. No synthetic fibre in the shell, the lining, the pocket bag or the thread.',
+    lead: 'Mulberry silk, and wet-spun linen from Kortrijk. No synthetic fibre in the shell, the lining, the pocket bag or the thread.',
     a: 'Silk is bought in 16, 19 and 22 momme weights, undyed where possible and finished in small lots. Linen is wet-spun rather than dry-spun, which produces a smoother yarn and a cloth that softens instead of pilling. Both are bought by the bolt, logged with mill and date, and used until the bolt is gone.',
     b: 'Natural fibre creases, moves and ages. A linen jacket after one summer does not look like the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew, which is why most houses put them where the customer cannot see. The house does not keep any in the room.',
   },
   contact: {
     title: 'The house',
     lead: 'LinSilk was set up to make one thing properly: clothing in pure natural fibre, cut for one body, made in small capped runs and never restocked.',
-    a: 'Orders and client care are handled from Zürich; everything is made in Hội An. Prices are in Swiss francs and include duty within Switzerland and the EU. A commission takes four to six weeks from the confirmed measurement sheet; a seasonal piece takes three to five.',
-    b: 'Alterations to a piece the house made are free for the first year — send it back and it is re-set at the bench. Write to hello@linsilk.ch for measurement help, a fabric cutting, or an appointment with a tailor in Zürich.',
+    a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A commission takes four to six weeks from the confirmed measurement sheet; a seasonal piece takes three to five.',
+    b: 'Alterations to a piece the house made are free for the first year — send it back and it is re-set at the bench. Write to hello@linsilk.ch for a fabric cutting or any question about your order.',
   },
 } as const;
 

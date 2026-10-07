@@ -1,4 +1,4 @@
-/* Seeds Payload's `pages` collection — Atelier, Cloth, The house — from the
+/* Seeds Payload's `pages` collection — Cloth, The house — from the
  * storefront's own lib/catalog.ts. STORY is the same constant the pages
  * rendered from directly before the CMS existed; from here on it is the
  * seed's input only (lib/payload.ts reads the copy back from Payload).

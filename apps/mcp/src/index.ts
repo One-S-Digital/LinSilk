@@ -111,13 +111,17 @@ server.registerTool(
     description:
       "Adds a piece to a season, or corrects one that is already there. Keyed on the " +
       "handle, so sending the same piece twice is safe. A new piece needs title, " +
-      "material, collection, group and price_chf; an existing one can be corrected a " +
+      "material, cloth, collection, group and price_chf; an existing one can be corrected a " +
       "field at a time. It arrives as a DRAFT and is invisible to the site until a " +
       "person publishes it in the admin. A published piece's price cannot be moved here.",
     inputSchema: {
       handle: z.string().describe("The piece's own id and URL, e.g. 'w4' or 'coat-sand'"),
-      title: z.string().optional(),
+      title: z.string().optional().describe("The piece's name. Never a colour, and never 'satin': the house sells silk and linen"),
       material: z.string().optional().describe("Cloth and construction, shown under the name"),
+      cloth: z
+        .enum(["silk", "linen"])
+        .optional()
+        .describe("Silk or linen: decides which colour swatches the client chooses from. Required for a new piece"),
       collection: z.string().optional().describe("The handle of a season that already exists"),
       group: z.enum(["women", "men"]).optional(),
       price_chf: z.number().int().optional().describe("Whole Swiss francs; euro and sterling are derived"),

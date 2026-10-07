@@ -20,7 +20,6 @@ const CARE = [
 
 const HOUSE = [
   { href: '/contact', label: 'About' },
-  { href: '/atelier', label: 'The Atelier' },
   { href: '/cloth', label: 'The Cloth' },
 ];
 
@@ -44,7 +43,7 @@ export async function SiteFooter() {
               each made once.
             </p>
             <p className={styles.where}>
-              Atelier — Hội An, Việt Nam · Office — Zürich
+              Geneva, Switzerland
             </p>
           </div>
 

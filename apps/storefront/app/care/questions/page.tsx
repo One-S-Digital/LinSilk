@@ -5,14 +5,14 @@ import { ButtonLink } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Questions',
   description:
-    'Cloth, sizing, commissions, cuttings and appointments — the questions the house is asked most.',
+    'Cloth, sizing, commissions and cuttings — the questions the house is asked most.',
 };
 
 export default function QuestionsPage() {
   return (
     <DocPage
       title="Questions"
-      lead="What the office in Zürich is asked most often. Anything not here, write to hello@linsilk.ch — a person answers, usually within a day."
+      lead="What the office in Geneva is asked most often. Anything not here, write to hello@linsilk.ch — a person answers, usually within a day."
       foot={
         <>
           <ButtonLink href="/care/measuring" variant="rule">Measurement guide</ButtonLink>
@@ -23,7 +23,7 @@ export default function QuestionsPage() {
       <DocSection title="Can I have a cutting of the cloth first?">
         <DocP>
           Yes, and for a commission one is posted to you before anything is cut. Ask
-          for any of the four weaves at any time and it is sent free, anywhere.
+          for any silk or linen colour at any time and it is sent free, anywhere.
         </DocP>
       </DocSection>
 
@@ -48,14 +48,6 @@ export default function QuestionsPage() {
         <DocP>
           No. A season is cut in a capped run and none has ever been restocked. When
           a season closes its designs go to the archive and stay there.
-        </DocP>
-      </DocSection>
-
-      <DocSection title="Can I see something in person?">
-        <DocP>
-          There are appointments in Zürich on Thursday afternoons — cloth to handle,
-          finished pieces to try, and a tailor who will take your measurements. Write to
-          arrange one.
         </DocP>
       </DocSection>
 

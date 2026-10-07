@@ -103,7 +103,7 @@ export function commissionReceivedEmail(commission: CommissionRecord) {
         "amend it before the tailor reads it.",
         "",
         "LinSilk",
-        "Zürich · Hội An",
+        "Geneva, Switzerland",
       ].join("\n"),
     },
   }
@@ -147,7 +147,7 @@ export function commissionQuotedEmail(commission: CommissionRecord & { access_to
         "before a pattern is drawn.",
         "",
         "LinSilk",
-        "Zürich · Hội An",
+        "Geneva, Switzerland",
       ].join("\n"),
     },
   }

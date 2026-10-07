@@ -54,6 +54,10 @@ const schema = z.object({
   title: z.string().trim().min(1).max(200).optional(),
   /** Cloth and construction, shown under the name on every tile. */
   material: z.string().trim().min(1).max(200).optional(),
+  /* What the piece is cut from, which decides the colours the client chooses
+     from: the silk swatches or the linen swatches. The house makes in nothing
+     else, and a piece is never named for a colour. */
+  cloth: z.enum(["silk", "linen"]).optional(),
   /** The handle of a season that already exists. */
   collection: z.string().trim().min(1).optional(),
   group: z.enum(["women", "men"]).optional(),
@@ -79,7 +83,7 @@ const schema = z.object({
 })
 
 /** What a piece cannot be cut without. */
-const REQUIRED_TO_CUT = ["title", "material", "collection", "group", "price_chf"] as const
+const REQUIRED_TO_CUT = ["title", "material", "cloth", "collection", "group", "price_chf"] as const
 
 function refuse(message: string): never {
   throw new MedusaError(MedusaError.Types.INVALID_DATA, message)
@@ -242,6 +246,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         collection: p.collection?.handle ?? null,
         status: p.status,
         group: (meta.group as string) ?? null,
+        cloth: (meta.cloth as string) ?? null,
         price_chf: francs ?? null,
         length_kinds: (meta.length_kinds as string[]) ?? [],
         photographed: Boolean(p.thumbnail),
@@ -412,6 +417,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const metadata: Record<string, unknown> = {
     ...((existing?.metadata ?? {}) as Record<string, unknown>),
     ...(piece.group !== undefined ? { group: piece.group } : {}),
+    ...(piece.cloth !== undefined ? { cloth: piece.cloth } : {}),
     ...(piece.shot !== undefined ? { shot: piece.shot } : {}),
     ...(piece.sleep !== undefined ? { sleep: piece.sleep ? true : "" } : {}),
     ...(piece.length_kinds !== undefined ? { length_kinds: piece.length_kinds } : {}),

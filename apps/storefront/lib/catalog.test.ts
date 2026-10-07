@@ -38,10 +38,10 @@ const BACKEND = {
     { handle: 'silhouettes', title: 'Commission silhouettes', metadata: { status: 'silhouettes' } },
   ],
   products: [
-    product('w10', 'autumn-iv'),
+    product('w10', 'autumn-iv', { cloth: 'silk' }),
     product('w2', 'autumn-iv', {}, { thumbnail: 'https://cdn/w2-a.jpg', images: [{ url: 'https://cdn/w2-a.jpg' }, { url: 'https://cdn/w2-b.jpg' }] }),
-    product('m1', 'autumn-iv', { group: 'men' }),
-    product('w8', 'autumn-iv', { sleep: true, length_kinds: ['top', 'trouser'] }),
+    product('m1', 'autumn-iv', { group: 'men', cloth: 'linen' }),
+    product('w8', 'autumn-iv', { sleep: true, length_kinds: ['top', 'trouser'], cloth: 'silk' }),
     product('i1', 'winter-i'),
     product('commission-shirt', 'silhouettes', { silhouette: 'shirt' }),
   ],
@@ -99,6 +99,21 @@ describe('the catalogue, read from the backend', () => {
     expect(set.lengthKinds).toEqual(['top', 'trouser']);
     expect(set.material).toBe('Sand silk twill');
     expect(set.price).toBe(1980);
+  });
+
+  it('reads whether a piece is silk or linen, and nothing else', async () => {
+    serve({
+      products: [
+        product('w1', 'autumn-iv', { cloth: 'silk' }),
+        product('m1', 'autumn-iv', { cloth: 'linen' }),
+        /* Satin is not a cloth the house sells, and an untagged piece has no
+           colours to offer; both read as untagged rather than guessed. */
+        product('w2', 'autumn-iv', { cloth: 'satin' }),
+        product('w3', 'autumn-iv'),
+      ],
+    });
+    const cloths = Object.fromEntries((await getPieces()).map((p) => [p.id, p.cloth]));
+    expect(cloths).toEqual({ w1: 'silk', m1: 'linen', w2: null, w3: null });
   });
 
   it('leads with the thumbnail and does not repeat it', async () => {
