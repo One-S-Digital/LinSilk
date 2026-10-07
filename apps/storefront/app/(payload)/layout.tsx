@@ -1,0 +1,40 @@
+/* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
+/* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
+import config from '@payload-config'
+import '@payloadcms/next/css'
+import type { ServerFunctionClient } from 'payload'
+import {
+  handleServerFunctions,
+  metadata,
+  RootLayout,
+} from '@payloadcms/next/layouts'
+import React from 'react'
+
+import { importMap } from './admin/importMap.js'
+import './custom.css'
+
+/* The installed @payloadcms/next (3.89.0) exports a plain `metadata` object
+   here rather than the generatePayloadViewport() the current upstream
+   template uses — re-export as-is rather than chase the newer API. */
+export { metadata }
+
+type Args = {
+  children: React.ReactNode
+}
+
+const serverFunction: ServerFunctionClient = async function (args) {
+  'use server'
+  return handleServerFunctions({
+    ...args,
+    config,
+    importMap,
+  })
+}
+
+const Layout = ({ children }: Args) => (
+  <RootLayout config={config} importMap={importMap} serverFunction={serverFunction}>
+    {children}
+  </RootLayout>
+)
+
+export default Layout

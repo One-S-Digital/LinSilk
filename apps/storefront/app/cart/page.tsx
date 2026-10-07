@@ -3,12 +3,16 @@
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
-import { findPiece, money } from '@/lib/catalog';
+import { formatMoney } from '@/lib/medusa';
 import { formatValue } from '@/lib/measurements';
 import styles from './cart.module.css';
 
 export default function CartPage() {
-  const { lines, ready, remove, subtotal, hasEstimate } = useCart();
+  const { lines, ready, remove, subtotal, currency } = useCart();
+  /* The cart's own currency, not the catalogue's CHF: checkout can move this
+     cart to another region, and a client coming back here afterwards must
+     see the figures it is actually holding the pieces at. */
+  const money = (amount: number) => formatMoney(amount, currency);
 
   return (
     <div className={styles.page}>
@@ -22,15 +26,13 @@ export default function CartPage() {
           state at someone who has three pieces reserved. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>
-            Nothing reserved yet. The season closes in February.
-          </p>
+          <p className={styles.emptyText}>Nothing reserved yet.</p>
           <div className={styles.emptyActions}>
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
             </ButtonLink>
-            <ButtonLink href="/design" variant="rule">
-              Begin a commission
+            <ButtonLink href="/design" variant="solid">
+              Design an outfit
             </ButtonLink>
           </div>
         </div>
@@ -38,13 +40,12 @@ export default function CartPage() {
         <>
           <div className={styles.lines}>
             {lines.map((line) => {
-              const piece = line.pieceId ? findPiece(line.pieceId) : undefined;
               const taken = Object.keys(line.measurements).length;
               return (
                 <article key={line.id} className={styles.line}>
                   <ShotFrame
-                    note={piece?.shot}
-                    weave={piece?.group === 'men' ? 'sand' : 'bone'}
+                    note={line.shot}
+                    weave={line.group === 'men' ? 'sand' : 'bone'}
                     ratio="3 / 4"
                   />
 
@@ -53,12 +54,6 @@ export default function CartPage() {
                     <p className={styles.lineMaterial}>{line.material}</p>
 
                     <div className={styles.brief}>
-                      {line.silhouette && (
-                        <div className={styles.briefRow}>
-                          <span className={styles.briefKey}>Silhouette</span>
-                          <span>{line.silhouette}</span>
-                        </div>
-                      )}
                       <div className={styles.briefRow}>
                         <span className={styles.briefKey}>Cloth</span>
                         <span>{line.fabricName}</span>
@@ -80,14 +75,10 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    {line.note && <p className={styles.note}>{line.note}</p>}
                   </div>
 
                   <div className={styles.lineAside}>
                     <span className={styles.linePrice}>{money(line.price)}</span>
-                    {line.estimate && (
-                      <span className={styles.estimateTag}>estimate</span>
-                    )}
                     <button
                       type="button"
                       className={styles.remove}
@@ -131,13 +122,10 @@ export default function CartPage() {
                 </ButtonLink>
               </div>
 
-              {hasEstimate && (
-                <p className={styles.estimateNotice}>
-                  One or more lines is an estimate. The tailor confirms the figure in
-                  writing after reading your note, and you are not charged the
-                  difference without agreeing to it first.
-                </p>
-              )}
+              <p className={styles.estimateNotice}>
+                Every figure here is the price of the piece. A commission is quoted
+                separately: a tailor reads the brief and writes to you with its price.
+              </p>
             </div>
           </div>
         </>

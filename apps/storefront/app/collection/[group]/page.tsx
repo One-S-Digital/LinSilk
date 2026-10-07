@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Reveal, RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
-import { byGroup, roman, type Group } from '@/lib/catalog';
+import { byGroup, currentCollection, roman, type Group } from '@/lib/catalog';
 import styles from './listing.module.css';
 
 const GROUPS: Group[] = ['women', 'men'];
@@ -21,9 +21,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { group } = await props.params;
   if (!isGroup(group)) return {};
+  const open = await currentCollection();
+  const season = open ? `${open.season} ${roman(open.number)}` : 'the open collection';
   return {
-    title: `${LABEL[group]} — Autumn IV`,
-    description: `The ${LABEL[group].toLowerCase()}’s pieces in Collection IV, each cut to your measurements and made in a capped run.`,
+    title: open ? `${LABEL[group]} — ${season}` : LABEL[group],
+    description: `The ${LABEL[group].toLowerCase()}’s pieces in ${season}, each cut to your measurements and made in a capped run.`,
   };
 }
 
@@ -33,8 +35,11 @@ export default async function CollectionGroupPage(
   const { group } = await props.params;
   if (!isGroup(group)) notFound();
 
-  const main = byGroup(group, false);
-  const sleep = byGroup(group, true);
+  const [open, main, sleep] = await Promise.all([
+    currentCollection(),
+    byGroup(group, false),
+    byGroup(group, true),
+  ]);
   const label = LABEL[group];
 
   return (
@@ -43,18 +48,25 @@ export default async function CollectionGroupPage(
         <Link href="/collection" style={{ color: 'var(--ink-muted)' }}>
           Collection
         </Link>{' '}
-        — {label}, Autumn IV
+        — {label}
+        {open && `, ${open.season} ${roman(open.number)}`}
       </p>
 
       <div className={styles.masthead}>
         <h1 className={styles.title}>{label}</h1>
-        <span className={styles.season}>Autumn — IV</span>
+        {open && (
+          <span className={styles.season}>
+            {open.season} — {roman(open.number)}
+          </span>
+        )}
       </div>
 
       <Reveal>
         <p className={styles.intro}>
-          Each is cut to your measurements and made in a capped run. When the season
-          closes in February these designs are archived and are not made again.
+          Each is cut to your measurements and made in a capped run.{' '}
+          {open?.closes
+            ? `When the season closes in ${open.closes} these designs are archived and are not made again.`
+            : 'When the season closes these designs are archived and are not made again.'}
         </p>
       </Reveal>
 
@@ -63,7 +75,9 @@ export default async function CollectionGroupPage(
       </div>
       <div className={styles.groupHead}>
         <h2 className={styles.groupTitle}>{label}</h2>
-        <span className={styles.groupCount}>{roman(main.length)} designs</span>
+        {main.length > 0 && (
+          <span className={styles.groupCount}>{roman(main.length)} designs</span>
+        )}
       </div>
 
       <Stagger className={styles.grid} step={0.07}>

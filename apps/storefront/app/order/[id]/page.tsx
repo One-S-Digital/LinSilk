@@ -1,0 +1,82 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { DocPage, DocSection, DocP } from '@/components/doc-page';
+import { ButtonLink } from '@/components/ui/button';
+import { medusaGet, formatMoney } from '@/lib/medusa';
+
+export const metadata: Metadata = {
+  title: 'Your order',
+  description: 'What the atelier has, and what happens next.',
+};
+
+type ApiOrder = {
+  id: string;
+  display_id?: number;
+  email?: string | null;
+  currency_code: string;
+  total: number;
+  items?: { id: string; title: string; subtitle?: string | null; total: number; metadata?: Record<string, unknown> | null }[];
+  shipping_address?: { city?: string | null; country_code?: string | null } | null;
+};
+
+/* An order is readable by its id alone: the client has just been given it, and
+   asking a guest to make an account to read their own receipt would be rude.
+   The id is unguessable, and nothing here is worth guessing for. */
+export default async function OrderPage(props: PageProps<'/order/[id]'>) {
+  const { id } = await props.params;
+  const body = await medusaGet<{ order: ApiOrder }>(
+    `/store/orders/${id}?fields=id,display_id,email,currency_code,total,*items,*shipping_address`,
+    0,
+  );
+  const order = body?.order;
+  if (!order) notFound();
+
+  const isCommission = (order.items ?? []).some((item) => item.metadata?.commission_id);
+
+  return (
+    <DocPage
+      eyebrow="The house"
+      title="Thank you — it is with the atelier"
+      lead={
+        isCommission
+          ? 'Your commission is paid for and the bench has it. A pattern is drawn to your sheet before anything is cut.'
+          : 'Your reservation is paid for. Nothing is cut until the atelier has read your sheet and written back to confirm it.'
+      }
+      foot={
+        <>
+          <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>
+          <ButtonLink href="/care/questions" variant="rule">Questions</ButtonLink>
+        </>
+      }
+    >
+      <DocSection title={`Order ${order.display_id ? `no. ${order.display_id}` : order.id}`}>
+        {(order.items ?? []).map((item) => (
+          <DocP key={item.id}>
+            {item.title} — {formatMoney(item.total, order.currency_code)}
+            {item.metadata?.fabric_name ? ` · ${String(item.metadata.fabric_name)}` : ''}
+          </DocP>
+        ))}
+        <DocP>
+          Paid in full: {formatMoney(order.total, order.currency_code)}. A written
+          confirmation is on its way to {order.email ?? 'your email'}.
+        </DocP>
+      </DocSection>
+
+      <DocSection title="What happens next">
+        <DocP>
+          {isCommission
+            ? 'Four to six weeks at the bench from today. The names of the people who cut and finished it are written on the ticket that comes with it.'
+            : 'The atelier writes within two days to confirm your measurement sheet. Cutting begins once you have agreed it, and takes three to five weeks.'}
+        </DocP>
+        <DocP>
+          Anything to change, or a question about the sheet — write to{' '}
+          <Link href="/contact" style={{ borderBottom: '1px solid var(--gold-60)' }}>
+            the house
+          </Link>{' '}
+          and quote this order.
+        </DocP>
+      </DocSection>
+    </DocPage>
+  );
+}

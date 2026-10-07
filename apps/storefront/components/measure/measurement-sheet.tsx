@@ -13,6 +13,7 @@ import {
   type Measurements,
   type Unit,
 } from '@/lib/measurements';
+import { useHydrated } from '@/lib/use-hydrated';
 import styles from './measurement-sheet.module.css';
 
 const GUIDES = {
@@ -26,6 +27,9 @@ export function MeasurementSheet({
   onChange,
   title = 'Your measurements',
   showIntro = true,
+  initialValues,
+  initialUnit,
+  onSave,
 }: {
   group: Group;
   /* Measurements that describe the garment rather than the body — a coat's
@@ -35,22 +39,42 @@ export function MeasurementSheet({
   onChange?: (values: Measurements, unit: Unit) => void;
   title?: string;
   showIntro?: boolean;
+  /* An account's saved profile, read once and shown instead of whatever is
+     on this device. When set, the local-storage restore below is skipped —
+     a signed-in profile is the sheet, not a fallback for it. */
+  initialValues?: Measurements;
+  initialUnit?: Unit;
+  /* Where "Save this profile" writes when someone is signed in. Absent, it
+     writes to this device instead, as it always has. */
+  onSave?: (values: Measurements, unit: Unit) => Promise<{ error?: string } | void>;
 }) {
   const uid = useId();
-  const [unit, setUnit] = useState<Unit>('cm');
-  const [values, setValues] = useState<Measurements>({});
+  const [unit, setUnit] = useState<Unit>(initialUnit ?? 'cm');
+  const [values, setValues] = useState<Measurements>(initialValues ?? {});
   /** What is literally in each input, in the current unit, so typing "17." works. */
-  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [drafts, setDrafts] = useState<Record<string, string>>(
+    Object.fromEntries(
+      Object.entries(initialValues ?? {})
+        .filter(([, cm]) => typeof cm === 'number')
+        .map(([k, cm]) => [k, formatValue(cm as number, initialUnit ?? 'cm')]),
+    ),
+  );
   const [active, setActive] = useState<string>(ZONES[0].key);
   const [guide, setGuide] = useState<Group>(group);
   const [saved, setSaved] = useState(false);
-  const hydrated = useRef(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  /** Counts edits, so a save can tell whether what it sent is still what is on screen. */
+  const edits = useRef(0);
+  const hydrated = useHydrated();
+  const [restored, setRestored] = useState(Boolean(initialValues));
 
   const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
 
   // Restore anything the client already typed on a previous visit.
-  useEffect(() => {
+  if (hydrated && !restored) {
     const stored = loadLocal();
+    setRestored(true);
     setUnit(stored.unit);
     setValues(stored.values);
     setDrafts(
@@ -60,12 +84,11 @@ export function MeasurementSheet({
           .map(([k, cm]) => [k, formatValue(cm as number, stored.unit)]),
       ),
     );
-    hydrated.current = true;
-  }, []);
+  }
 
   useEffect(() => {
-    if (hydrated.current) onChange?.(values, unit);
-  }, [values, unit, onChange]);
+    if (restored) onChange?.(values, unit);
+  }, [restored, values, unit, onChange]);
 
   /* Switching units rewrites what is on screen from the stored centimetres —
      the number the client sees changes, the measurement does not. */
@@ -79,12 +102,16 @@ export function MeasurementSheet({
           .map((z) => [z.key, formatValue(values[z.key] as number, next)]),
       ),
     );
+    edits.current += 1;
     setSaved(false);
+    setSaveError(null);
   };
 
   const setField = (key: string, raw: string) => {
     setDrafts((d) => ({ ...d, [key]: raw }));
+    edits.current += 1;
     setSaved(false);
+    setSaveError(null);
 
     const cleaned = raw.replace(',', '.').trim();
     if (cleaned === '') {
@@ -268,13 +295,47 @@ export function MeasurementSheet({
         </a>
         <button
           type="button"
-          onClick={() => setSaved(saveLocal(unit, values))}
-          disabled={taken === 0}
+          onClick={async () => {
+            setSaveError(null);
+            if (!onSave) {
+              setSaved(saveLocal(unit, values));
+              return;
+            }
+            setSaving(true);
+            const sent = edits.current;
+            try {
+              const result = await onSave(values, unit);
+              /* Edited while it was on its way: what was saved is not what is
+                 on screen, so the outcome says nothing about it — claiming
+                 "Saved" would be claiming values the account does not hold. */
+              if (edits.current !== sent) return;
+              if (result?.error) setSaveError(result.error);
+              else setSaved(true);
+            } catch {
+              /* A server action that throws rather than returning an error —
+                 the network went, or the server did. */
+              if (edits.current === sent) {
+                setSaveError('Could not save just now. Try again in a moment.');
+              }
+            } finally {
+              setSaving(false);
+            }
+          }}
+          disabled={taken === 0 || saving}
           style={{ color: 'var(--ink-muted)' }}
         >
-          Save this profile
+          {saving ? 'Saving…' : 'Save this profile'}
         </button>
-        {saved && <span className={styles.saved}>Saved to this device</span>}
+        {saved && (
+          <span className={styles.saved}>
+            {onSave ? 'Saved to your account' : 'Saved to this device'}
+          </span>
+        )}
+        {saveError && (
+          <span className={styles.error} role="status">
+            {saveError}
+          </span>
+        )}
       </div>
 
       {summary.length > 0 && (

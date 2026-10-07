@@ -46,7 +46,10 @@ export function DragRail({
      nothing here and falls back to native scroll chaining. */
   const lenis = useLenis();
   const lenisRef = useRef(lenis);
-  lenisRef.current = lenis;
+  // Synced in a layout effect so it is current before the next wheel event.
+  useLayoutEffect(() => {
+    lenisRef.current = lenis;
+  }, [lenis]);
 
   const measure = useCallback(() => {
     const el = rail.current;

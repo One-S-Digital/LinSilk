@@ -13,7 +13,7 @@ export default function ReturnsPage() {
     <DocPage
       title="Returns and alterations"
       lead="A garment cut to one person’s measurements cannot be resold, so the house does not offer a general right of return on made-to-measure work. What it offers instead is a bench that will keep working on the piece until it sits properly."
-      foot={<ButtonLink href="mailto:hello@maisonayla.ch" variant="outline">Write to the house</ButtonLink>}
+      foot={<ButtonLink href="mailto:hello@linsilk.ch" variant="outline">Write to the house</ButtonLink>}
     >
       <DocSection title="Alterations, free for a year">
         <DocP>

@@ -250,63 +250,6 @@
 }
 
 /* ------------------------------------------------------------------ *
- * The atelier
- * ------------------------------------------------------------------ */
-
-.atelier {
-  max-width: var(--page-max);
-  margin-inline: auto;
-  padding: var(--section-y-lg) var(--gutter);
-}
-
-.atelierGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: clamp(32px, 5vw, 72px);
-  align-items: end;
-}
-
-.sectionHeading {
-  font-family: var(--font-serif);
-  font-weight: 200;
-  font-size: var(--t-h2);
-  line-height: var(--lh-heading);
-  margin-top: 18px;
-}
-
-.prose {
-  max-width: 48ch;
-  font-size: var(--t-body);
-  line-height: var(--lh-body);
-  color: var(--ink-secondary);
-  margin-top: 26px;
-}
-
-.atelierPair {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(14px, 2vw, 26px);
-}
-
-/* The second frame drops to create a woven, offset rhythm rather than a
-   tidy pair. */
-.atelierPairLower {
-  margin-top: clamp(24px, 5vw, 72px);
-}
-
-.directionRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: center;
-  margin-top: 16px;
-  font-family: var(--font-mono);
-  font-size: var(--t-mono-sm);
-  letter-spacing: var(--ls-mono);
-  color: var(--gold);
-}
-
-/* ------------------------------------------------------------------ *
  * The cloth
  * ------------------------------------------------------------------ */
 

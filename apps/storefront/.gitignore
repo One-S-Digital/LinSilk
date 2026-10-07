@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# payload — generated types, rewritten by `pnpm generate:types`. importMap.js
+# is also generated but is loaded at runtime by the admin routes, so unlike
+# this it must stay committed.
+payload-types.ts

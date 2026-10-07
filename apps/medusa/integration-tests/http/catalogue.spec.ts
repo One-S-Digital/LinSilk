@@ -1,0 +1,577 @@
+import { medusaIntegrationTestRunner } from "@medusajs/test-utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import {
+  createDefaultsWorkflow,
+  createRegionsWorkflow,
+  createShippingProfilesWorkflow,
+  createStockLocationsWorkflow,
+  createUserAccountWorkflow,
+  linkSalesChannelsToStockLocationWorkflow,
+} from "@medusajs/medusa/core-flows"
+
+jest.setTimeout(180 * 1000)
+
+/* How the catalogue is added to, and the two rules that cost money if they
+   are wrong: nothing an agent writes is public until a person publishes it,
+   and a season's status moves one way.
+ *
+ * The archive gate is one field. `current` is the whole of it — the cart
+ * refuses a piece from anything else — so a rollover that left two seasons
+ * marked `current` would leave an archived season quietly orderable. That
+ * invariant is what most of this file is about.
+ */
+
+const ECB_FEED = `<?xml version="1.0" encoding="UTF-8"?>
+<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01">
+  <Cube><Cube time='2026-09-11'>
+    <Cube currency='GBP' rate='0.85915'/>
+    <Cube currency='CHF' rate='0.9432'/>
+  </Cube></Cube>
+</gesmes:Envelope>`
+
+const season = (handle: string, number: number, extra: Record<string, unknown> = {}) => ({
+  handle,
+  title: `Season — Collection ${number}`,
+  season: "Season",
+  number,
+  note: "Sand silk twill.",
+  ...extra,
+})
+
+const piece = (handle: string, collection: string, extra: Record<string, unknown> = {}) => ({
+  handle,
+  title: `Piece ${handle}`,
+  material: "19mm charmeuse, hand-rolled hem",
+  cloth: "silk",
+  collection,
+  group: "women",
+  price_chf: 1980,
+  length_kinds: ["dress"],
+  ...extra,
+})
+
+/* A fake, allowlisted host: a photograph is three bytes and a jpeg content
+   type, enough for the route's own checks without a real image anywhere. */
+const IMAGE_HOST = "img.linsilk.test"
+const photo = (name: string) => ({ url: `https://${IMAGE_HOST}/${name}.jpg` })
+
+medusaIntegrationTestRunner({
+  inApp: true,
+  env: {},
+  testSuite: ({ api, getContainer }) => {
+    let store: { headers: Record<string, string> }
+    let admin: { headers: Record<string, string> }
+    let realFetch: typeof fetch
+
+    beforeAll(() => {
+      realFetch = global.fetch
+      process.env.CATALOGUE_IMAGE_HOSTS = IMAGE_HOST
+      global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        if (String(input).includes("ecb.europa.eu")) {
+          return new Response(ECB_FEED, { status: 200 })
+        }
+        if (String(input).includes(IMAGE_HOST)) {
+          return new Response(new Uint8Array([0xff, 0xd8, 0xff]), {
+            status: 200,
+            headers: { "content-type": "image/jpeg" },
+          })
+        }
+        return realFetch(input, init)
+      }) as typeof fetch
+    })
+
+    afterAll(() => {
+      global.fetch = realFetch
+      delete process.env.CATALOGUE_IMAGE_HOSTS
+    })
+
+    beforeEach(async () => {
+      const container = getContainer()
+      const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+      await createDefaultsWorkflow(container).run()
+      const { data: [key] } = await query.graph({
+        entity: "api_key",
+        fields: ["token"],
+        filters: { type: "publishable" },
+      })
+      store = { headers: { "x-publishable-api-key": key.token } }
+
+      await createRegionsWorkflow(container).run({
+        input: {
+          regions: [
+            {
+              name: "Switzerland",
+              currency_code: "chf",
+              countries: ["ch"],
+              payment_providers: ["pp_system_default"],
+            },
+          ],
+        },
+      })
+      await createShippingProfilesWorkflow(container).run({
+        input: { data: [{ name: "Default", type: "default" }] },
+      })
+      const { data: [defaults] } = await query.graph({
+        entity: "store",
+        fields: ["default_sales_channel_id"],
+      })
+      const { result: locations } = await createStockLocationsWorkflow(container).run({
+        input: { locations: [{ name: "Atelier" }] },
+      })
+      await linkSalesChannelsToStockLocationWorkflow(container).run({
+        input: { id: locations[0].id, add: [defaults.default_sales_channel_id!] },
+      })
+
+      /* The agent signs in as a person would; the routes are behind the
+         admin's own auth and nothing here loosens that.
+
+         Registering gives an auth identity but no user, and `POST /admin/users`
+         needs an admin already — so the account is attached the same way the
+         `medusa user` command does it, through the workflow. */
+      const registered = await api.post("/auth/user/emailpass/register", {
+        email: "agent@linsilk.test",
+        password: "supersecret",
+      })
+      const [, claims] = registered.data.token.split(".")
+      const { auth_identity_id } = JSON.parse(
+        Buffer.from(claims, "base64").toString()
+      ) as { auth_identity_id: string }
+
+      const { result: user } = await createUserAccountWorkflow(container).run({
+        input: {
+          authIdentityId: auth_identity_id,
+          userData: { email: "agent@linsilk.test" },
+        },
+      })
+
+      /* Roles are on, and this person also publishes through /admin/products,
+         so they hold Super Admin as `medusa user` would give them. Who else
+         may reach the catalogue is roles.spec.ts's business. Linked before
+         signing in, since the token carries the roles. */
+      await container.resolve(ContainerRegistrationKeys.LINK).create({
+        [Modules.USER]: { user_id: user.id },
+        [Modules.RBAC]: { rbac_role_id: "role_super_admin" },
+      })
+
+      const signedIn = await api.post("/auth/user/emailpass", {
+        email: "agent@linsilk.test",
+        password: "supersecret",
+      })
+      admin = { headers: { authorization: `Bearer ${signedIn.data.token}` } }
+    })
+
+    const publish = async (handle: string) => {
+      const { data } = await api.get(`/admin/products?handle=${handle}`, admin)
+      return api.post(`/admin/products/${data.products[0].id}`, { status: "published" }, admin)
+    }
+
+    const seasons = async () => (await api.get("/admin/catalogue/seasons", admin)).data.seasons
+
+    describe("a piece", () => {
+      beforeEach(async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+      })
+
+      it("arrives as a draft, and the shop cannot see it", async () => {
+        const created = await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        expect(created.status).toBe(201)
+        expect(created.data.piece.status).toBe("draft")
+
+        const { data } = await api.get("/store/products?handle=w1", store)
+        expect(data.products).toHaveLength(0)
+      })
+
+      it("is priced in francs, with the other currencies derived", async () => {
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        const { data } = await api.get(
+          "/admin/products?handle=w1&fields=*variants.prices",
+          admin
+        )
+        const prices = data.products[0].variants[0].prices.map(
+          (p: { currency_code: string; amount: number }) => [p.currency_code, p.amount]
+        )
+        expect(Object.fromEntries(prices)).toEqual({ chf: 1980, eur: 2100, gbp: 1800 })
+      })
+
+      it("is cut in silk or linen, and is refused without one", async () => {
+        const { cloth: _omitted, ...untagged } = piece("w1", "autumn-iv")
+        const refused = await api
+          .post("/admin/catalogue/pieces", untagged, admin)
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("cloth")
+
+        const satin = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { cloth: "satin" }), admin)
+          .catch((e) => e.response)
+        expect(satin.status).toBe(400)
+
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { cloth: "linen" }), admin)
+        const { data } = await api.get("/admin/catalogue/pieces", admin)
+        expect(data.pieces[0].cloth).toBe("linen")
+
+        /* A correction that does not mention the cloth leaves it as it was. */
+        await api.post("/admin/catalogue/pieces", { handle: "w1", title: "Piece w1, unlined" }, admin)
+        const after = await api.get("/admin/catalogue/pieces", admin)
+        expect(after.data.pieces[0].cloth).toBe("linen")
+      })
+
+      it("can be sent again unchanged", async () => {
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        const again = await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        expect(again.status).toBe(200)
+      })
+
+      it("is refused a season that does not exist", async () => {
+        const refused = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-ix"), admin)
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("autumn-ix")
+      })
+
+      it("is the admin's alone once a person has published it", async () => {
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+
+        /* Still a draft: the route set the price, so it may correct it. */
+        const corrected = await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { price_chf: 1900 }),
+          admin
+        )
+        expect(corrected.status).toBe(200)
+
+        await publish("w1")
+
+        const refused = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { price_chf: 1500 }), admin)
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("published")
+
+        /* Publishing locks the whole piece, not only its price — even a
+           wording correction, or the very payload that created it, is
+           refused once a person has published it. */
+        const reworded = await api
+          .post(
+            "/admin/catalogue/pieces",
+            piece("w1", "autumn-iv", { price_chf: 1900, title: "Piece w1, unlined" }),
+            admin
+          )
+          .catch((e) => e.response)
+        expect(reworded.status).toBe(400)
+        expect(reworded.data.message).toContain("published")
+
+        const resent = await api
+          .post("/admin/catalogue/pieces", piece("w1", "autumn-iv", { price_chf: 1900 }), admin)
+          .catch((e) => e.response)
+        expect(resent.status).toBe(400)
+      })
+
+      it("refuses an edit to a product already filed as a commission, whatever its handle", async () => {
+        const { data: collection } = await api.post(
+          "/admin/collections",
+          { title: "Commissions", handle: "commissions" },
+          admin
+        )
+        const { data: [shippingProfile] } = await getContainer()
+          .resolve(ContainerRegistrationKeys.QUERY)
+          .graph({ entity: "shipping_profile", fields: ["id"] })
+        await api.post(
+          "/admin/products",
+          {
+            title: "A quoted commission",
+            handle: "not-commission-prefixed",
+            status: "draft",
+            collection_id: collection.collection.id,
+            shipping_profile_id: shippingProfile.id,
+            options: [{ title: "Cut", values: ["Made to measure"] }],
+            variants: [
+              {
+                title: "Made to measure",
+                options: { Cut: "Made to measure" },
+                prices: [{ currency_code: "chf", amount: 3200 }],
+              },
+            ],
+          },
+          admin
+        )
+
+        const refused = await api
+          .post(
+            "/admin/catalogue/pieces",
+            piece("not-commission-prefixed", "autumn-iv"),
+            admin
+          )
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("commissions")
+      })
+    })
+
+    describe("a piece's photography", () => {
+      beforeEach(async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+      })
+
+      const pieceImages = async (handle: string) => {
+        const { data } = await api.get("/admin/catalogue/pieces?collection=autumn-iv", admin)
+        return data.pieces.find((p: { handle: string }) => p.handle === handle).images as string[]
+      }
+
+      it("is untouched when images is left out, whichever action a caller sends", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { title: "Piece w1, reworded" }),
+          admin
+        )
+        expect(await pieceImages("w1")).toHaveLength(1)
+      })
+
+      it("adds to what the piece already carries, when asked", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [photo("two")], images_action: "add" },
+          admin
+        )
+        const images = await pieceImages("w1")
+        expect(images).toHaveLength(2)
+        expect(images.some((url) => url.includes("one"))).toBe(true)
+        expect(images.some((url) => url.includes("two"))).toBe(true)
+      })
+
+      it("replaces the whole set by default, unlike the MCP tool built on it", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        await api.post("/admin/catalogue/pieces", { handle: "w1", images: [photo("two")] }, admin)
+        expect(await pieceImages("w1")).toEqual([expect.stringContaining("two")])
+      })
+
+      it("replaces the whole set when asked, dropping what was not sent", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one"), photo("two")] }),
+          admin
+        )
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [photo("three")], images_action: "replace" },
+          admin
+        )
+        const images = await pieceImages("w1")
+        expect(images).toHaveLength(1)
+        expect(images[0]).toContain("three")
+      })
+
+      it("removes a photograph by the url list_pieces reports back", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one"), photo("two")] }),
+          admin
+        )
+        const [first, second] = await pieceImages("w1")
+
+        await api.post(
+          "/admin/catalogue/pieces",
+          { handle: "w1", images: [{ url: first }], images_action: "remove" },
+          admin
+        )
+        expect(await pieceImages("w1")).toEqual([second])
+      })
+
+      it("is refused a remove of a url the piece does not carry", async () => {
+        await api.post(
+          "/admin/catalogue/pieces",
+          piece("w1", "autumn-iv", { images: [photo("one")] }),
+          admin
+        )
+        const refused = await api
+          .post(
+            "/admin/catalogue/pieces",
+            { handle: "w1", images: [photo("never-attached")], images_action: "remove" },
+            admin
+          )
+          .catch((e) => e.response)
+        expect(refused.status).toBe(400)
+        expect(refused.data.message).toContain("no photograph")
+      })
+    })
+
+    describe("a season", () => {
+      it("is created pending, and the shop reads nothing into it", async () => {
+        const created = await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+        expect(created.status).toBe(201)
+        expect(created.data.season.status).toBe("pending")
+      })
+
+      it("is not opened empty, nor on drafts alone", async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+
+        const empty = await api
+          .post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+          .catch((e) => e.response)
+        expect(empty.status).toBe(400)
+        expect(empty.data.message).toContain("no pieces")
+
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        const drafts = await api
+          .post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+          .catch((e) => e.response)
+        expect(drafts.status).toBe(400)
+        expect(drafts.data.message).toContain("none of them published")
+      })
+
+      it("opens onto the shop, and closes the one before it", async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4, { closes: "February" }), admin)
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        await publish("w1")
+        await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+
+        await api.post("/admin/catalogue/seasons", season("winter-v", 5, { closes: "June" }), admin)
+        await api.post("/admin/catalogue/pieces", piece("i1", "winter-v"), admin)
+        await publish("i1")
+        const opened = await api.post("/admin/catalogue/seasons/winter-v/open", {}, admin)
+
+        expect(opened.data.season.status).toBe("current")
+        expect(opened.data.archived).toEqual([{ handle: "autumn-iv", status: "past" }])
+
+        const byHandle = Object.fromEntries(
+          (await seasons()).map((s: { handle: string }) => [s.handle, s])
+        )
+        expect(byHandle["winter-v"].status).toBe("current")
+        expect(byHandle["autumn-iv"].status).toBe("past")
+        /* A season that has closed is not about to close: the closing date is
+           retired, and the listing carries `closes` only when there is one. */
+        expect(byHandle["autumn-iv"].closes).toBeUndefined()
+        expect(byHandle["winter-v"].closes).toBe("June")
+      })
+
+      it("archives every season left current, not only the first found", async () => {
+        /* Two collections both marked current, which the cart's archive gate
+           would treat as two shops open at once: put right by the next open,
+           however the pair came to be. */
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+        await api.post("/admin/catalogue/seasons", season("winter-v", 5), admin)
+        const container = getContainer()
+        const products = container.resolve(Modules.PRODUCT)
+        const query = container.resolve(ContainerRegistrationKeys.QUERY)
+        const { data: collections } = await query.graph({
+          entity: "product_collection",
+          fields: ["id", "handle"],
+          filters: { handle: ["autumn-iv", "winter-v"] },
+        })
+        const idOf = (handle: string) => collections.find((c) => c.handle === handle)!.id
+        await products.upsertProductCollections([
+          { id: idOf("autumn-iv"), metadata: { status: "current" } },
+          { id: idOf("winter-v"), metadata: { status: "current" } },
+        ])
+
+        await api.post("/admin/catalogue/seasons", season("spring-vi", 6), admin)
+        await api.post("/admin/catalogue/pieces", piece("p6", "spring-vi"), admin)
+        await publish("p6")
+        const opened = await api.post("/admin/catalogue/seasons/spring-vi/open", {}, admin)
+
+        expect(opened.data.archived).toEqual(
+          expect.arrayContaining([
+            { handle: "autumn-iv", status: "past" },
+            { handle: "winter-v", status: "past" },
+          ])
+        )
+        const after = (await seasons()).filter(
+          (s: { status: string }) => s.status === "current"
+        )
+        expect(after).toHaveLength(1)
+        expect(after[0].handle).toBe("spring-vi")
+      })
+
+      it("leaves exactly one season open, however many are rolled over", async () => {
+        for (const [handle, number] of [["autumn-iv", 4], ["winter-v", 5], ["spring-vi", 6]] as const) {
+          await api.post("/admin/catalogue/seasons", season(handle, number), admin)
+          await api.post("/admin/catalogue/pieces", piece(`p${number}`, handle), admin)
+          await publish(`p${number}`)
+          await api.post(`/admin/catalogue/seasons/${handle}/open`, {}, admin)
+        }
+
+        const open = (await seasons()).filter(
+          (s: { status: string }) => s.status === "current"
+        )
+        expect(open).toHaveLength(1)
+        expect(open[0].handle).toBe("spring-vi")
+      })
+
+      it("leaves exactly one season open when two are opened at once", async () => {
+        for (const [handle, number] of [["autumn-iv", 4], ["winter-v", 5], ["spring-vi", 6]] as const) {
+          await api.post("/admin/catalogue/seasons", season(handle, number), admin)
+          await api.post("/admin/catalogue/pieces", piece(`p${number}`, handle), admin)
+          await publish(`p${number}`)
+        }
+        await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+
+        /* Neither request is the one before the other: both would read autumn
+           as the season to close, and each would then open its own. */
+        const [first, second] = await Promise.all([
+          api.post("/admin/catalogue/seasons/winter-v/open", {}, admin).catch((e) => e.response),
+          api.post("/admin/catalogue/seasons/spring-vi/open", {}, admin).catch((e) => e.response),
+        ])
+        expect([first.status, second.status]).toEqual([200, 200])
+
+        const open = (await seasons()).filter(
+          (s: { status: string }) => s.status === "current"
+        )
+        expect(open).toHaveLength(1)
+      })
+
+      it("is not opened twice, and not reopened once closed", async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        await publish("w1")
+        await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+
+        /* Asking again changes nothing, so a caller that lost its answer may
+           simply ask again. */
+        const again = await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+        expect(again.data.season.status).toBe("current")
+        expect(again.data.archived).toBeNull()
+
+        await api.post("/admin/catalogue/seasons", season("winter-v", 5), admin)
+        await api.post("/admin/catalogue/pieces", piece("i1", "winter-v"), admin)
+        await publish("i1")
+        await api.post("/admin/catalogue/seasons/winter-v/open", {}, admin)
+
+        const reopened = await api
+          .post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+          .catch((e) => e.response)
+        expect(reopened.status).toBe(400)
+        expect(reopened.data.message).toContain("archived")
+      })
+
+      it("can have its wording corrected without its status moving", async () => {
+        await api.post("/admin/catalogue/seasons", season("autumn-iv", 4), admin)
+        await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
+        await publish("w1")
+        await api.post("/admin/catalogue/seasons/autumn-iv/open", {}, admin)
+
+        const corrected = await api.post(
+          "/admin/catalogue/seasons",
+          season("autumn-iv", 4, { note: "Sand silk twill and unpressed linen." }),
+          admin
+        )
+        expect(corrected.data.season.status).toBe("current")
+      })
+    })
+  },
+})

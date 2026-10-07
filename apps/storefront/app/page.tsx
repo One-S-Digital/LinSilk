@@ -1,46 +1,42 @@
 import Link from 'next/link';
 import {
-  ChalkMark,
   ClothWipe,
   Count,
   HeroMedia,
   LineRise,
-  Parallax,
   Reveal,
   RuleDraw,
 } from '@/components/motion';
+import { HeroShutter } from '@/components/hero-shutter';
 import { DragRail } from '@/components/drag-rail';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { currentCollection, money, piecesIn } from '@/lib/catalog';
 import styles from './home.module.css';
 
-/* The season rail leads with the women's opening five, then the men's first
-   three — the order the lookbook is shot in. Always the open collection. */
-const OPEN = currentCollection();
-const IN_SEASON = piecesIn(OPEN.slug);
-const SEASON = [
-  ...IN_SEASON.filter((p) => p.group === 'women').slice(0, 5),
-  ...IN_SEASON.filter((p) => p.group === 'men').slice(0, 3),
-];
+export default async function HomePage() {
+  /* The season rail leads with the women's opening five, then the men's first
+     three — the order the lookbook is shot in. Always the open collection. */
+  const OPEN = await currentCollection();
+  const IN_SEASON = OPEN ? await piecesIn(OPEN.slug) : [];
+  const SEASON = [
+    ...IN_SEASON.filter((p) => p.group === 'women').slice(0, 5),
+    ...IN_SEASON.filter((p) => p.group === 'men').slice(0, 3),
+  ];
 
-export default function HomePage() {
   return (
     <>
       {/* ---- Hero ---- */}
       <section className={styles.hero}>
         <HeroMedia className={styles.heroMedia}>
-          <ShotFrame weave="dark" ratio="auto" style={{ height: '100%' }} />
+          <HeroShutter />
         </HeroMedia>
         <div className={styles.heroScrim} />
-        <span className={styles.heroNote}>
-          hero — macro of hand-woven silk, low warm light
-        </span>
 
         <div className={styles.heroInner}>
           <LineRise delay={0.15}>
             <span className={styles.kicker} style={{ display: 'block' }}>
-              {OPEN.title}
+              {OPEN?.title ?? ''}
             </span>
             <span className={styles.heroLine} style={{ display: 'block' }}>
               Cut from silk.
@@ -88,14 +84,19 @@ export default function HomePage() {
           <h2 id="season-heading" className={styles.sectionTitle}>
             This season
           </h2>
-          <span className={styles.sectionMeta}>{OPEN.season} 26</span>
+          <span className={styles.sectionMeta}>{OPEN?.season}</span>
         </div>
 
         <DragRail label="This season">
             {SEASON.map((piece) => (
               <article key={piece.id} className={styles.tile}>
                 <Link href={`/piece/${piece.id}`}>
-                  <ShotFrame note={piece.shot} weave={piece.group === 'men' ? 'sand' : 'bone'} />
+                  <ShotFrame
+                    src={piece.images[0]}
+                    alt={piece.name}
+                    note={piece.images.length ? undefined : piece.shot}
+                    weave={piece.group === 'men' ? 'sand' : 'bone'}
+                  />
                   <div className={styles.tileMeta}>
                     <span>{piece.name}</span>
                     <span className={styles.tilePrice}>{money(piece.price)}</span>
@@ -119,7 +120,8 @@ export default function HomePage() {
             <ShotFrame
               weave="forest"
               ratio="4 / 5"
-              note="commission — chalk marks on unfinished cloth"
+              src="/images/commission.webp"
+              alt="Ivory silk chalked with a pattern, with shears, pins and thread"
               onDark
             />
           </ClothWipe>
@@ -143,62 +145,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---- The atelier ---- */}
-      <section className={styles.atelier} aria-labelledby="atelier-heading">
-        <div className={styles.atelierGrid}>
-          <Reveal>
-            <span className={styles.eyebrowDark}>The Atelier</span>
-            <h2 id="atelier-heading" className={`${styles.sectionHeading} u-balance`}>
-              Nine people, one bench, no machine that finishes a seam.
-            </h2>
-            <p className={styles.prose}>
-              The house works out of a single room in Hội An. Cloth is cut flat by
-              hand against a paper pattern drawn for one client. Seams are closed on a
-              machine; hems, facings, buttonholes and linings are finished by hand. A
-              silk dress takes between eleven and sixteen hours at the bench, and it is
-              checked twice against your measurement sheet before it leaves.
-            </p>
-            <div className={styles.commissionCta}>
-              <ButtonLink href="/atelier" variant="rule">
-                Inside the atelier
-              </ButtonLink>
-            </div>
-          </Reveal>
-
-          <div className={styles.atelierPair}>
-            <Parallax distance={34} style={{ aspectRatio: '3 / 4' }}>
-              <ShotFrame
-                weave="bone"
-                ratio="auto"
-                style={{ height: '130%', marginTop: '-15%' }}
-              >
-                <ChalkMark
-                  label="shoulder · 41"
-                  style={{ position: 'absolute', right: -8, top: '38%' }}
-                />
-              </ShotFrame>
-            </Parallax>
-
-            <Parallax
-              distance={-34}
-              className={styles.atelierPairLower}
-              style={{ aspectRatio: '3 / 4' }}
-            >
-              <ShotFrame
-                weave="sand"
-                ratio="auto"
-                style={{ height: '130%', marginTop: '-15%' }}
-              />
-            </Parallax>
-          </div>
-        </div>
-
-        <div className={styles.directionRow}>
-          <span>needle mid-stitch</span>
-          <span>pinning a shoulder</span>
-        </div>
-      </section>
-
       {/* ---- The cloth ---- */}
       <section className={styles.cloth} aria-labelledby="cloth-heading">
         <div className={styles.clothInner}>
@@ -212,7 +158,7 @@ export default function HomePage() {
           <div className={styles.clothColumns}>
             <Reveal delay={0.08}>
               <p className={styles.clothProse}>
-                Mulberry silk from Bảo Lộc and wet-spun linen from Kortrijk. No
+                Mulberry silk, and wet-spun linen from Kortrijk. No
                 polyester in the shell, the lining, the pocket bag or the thread.
                 Synthetic fibre is cheaper to sew and it holds a press longer, which is
                 precisely why most houses use it where you cannot see.
@@ -241,7 +187,9 @@ export default function HomePage() {
               <dd className={styles.statNum}>
                 <Count to={IN_SEASON.length} />
               </dd>
-              <dt className={styles.statLabel}>designs in {OPEN.title.split('—')[1].trim()}</dt>
+              <dt className={styles.statLabel}>
+                {OPEN ? `designs in ${OPEN.season}` : 'designs this season'}
+              </dt>
             </div>
             <div className={styles.stat}>
               <dd className={styles.statNum}>

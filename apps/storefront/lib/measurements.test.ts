@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   CM_PER_INCH,
+  RANGES,
   formatValue,
+  fromLineItemMetadata,
   isComplete,
   takenCount,
   toCm,
@@ -9,7 +11,7 @@ import {
   toLineItemMetadata,
   validate,
 } from './measurements';
-import { LENGTH_ZONE, ZONES } from './catalog';
+import { LENGTH_ZONE, ZONES, garmentZonesFor, type LengthKind } from './catalog';
 
 /* The sheet is the order. A measurement that converts wrongly does not produce
  * a rendering bug, it produces a garment cut to the wrong body — so the
@@ -110,10 +112,21 @@ describe('the atelier chart', () => {
     expect(LENGTH_ZONE.dress.vi).toBe('Chiều dài đầm');
     expect(LENGTH_ZONE.trouser.vi).toBe('Dài quần');
     expect(LENGTH_ZONE.skirt.vi).toBe('Dài váy');
-    // All four write to the same field; only one is ever asked for at a time.
-    for (const zone of Object.values(LENGTH_ZONE)) {
-      expect(zone.key).toBe('length');
+    // Each length has its own field, so a set can carry a top length and a
+    // trouser length on one sheet, and each is range-checked.
+    const keys = Object.values(LENGTH_ZONE).map((zone) => zone.key);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const key of keys) {
+      expect(RANGES[key], key).toBeDefined();
     }
+  });
+
+  it('asks a set for both of its lengths', () => {
+    const set = { lengthKinds: ['top', 'trouser'] as LengthKind[] };
+    expect(garmentZonesFor(set).map((z) => z.label)).toEqual([
+      'Desired length',
+      'Trouser length',
+    ]);
   });
 });
 
@@ -126,7 +139,7 @@ describe('completeness', () => {
     expect(takenCount(full)).toBe(ZONES.length);
   });
 
-  it('is complete only with all eleven', () => {
+  it('is complete only with all fifteen', () => {
     expect(isComplete({ neck: 38 })).toBe(false);
     expect(isComplete(full)).toBe(true);
   });
@@ -145,5 +158,22 @@ describe('line item payload', () => {
     const payload = toLineItemMetadata({ neck: 38 }, 'cm');
     expect(payload).toHaveProperty('measure_neck_cm');
     expect(payload).not.toHaveProperty('measure_waist_cm');
+  });
+});
+
+describe('reading a sheet back out of metadata', () => {
+  it('round-trips through the line item payload', () => {
+    const values = { neck: 38, bust: 96 };
+    const payload = toLineItemMetadata(values, 'in');
+    expect(fromLineItemMetadata(payload)).toEqual({ unit: 'in', values });
+  });
+
+  it('ignores metadata that is not a measurement', () => {
+    const { values } = fromLineItemMetadata({ fabric_name: 'Oyster silk', piece_id: 'w1' });
+    expect(values).toEqual({});
+  });
+
+  it('defaults to centimetres, and to nothing at all, given nothing', () => {
+    expect(fromLineItemMetadata(null)).toEqual({ unit: 'cm', values: {} });
   });
 });

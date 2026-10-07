@@ -1,15 +1,11 @@
 import type { ReactNode } from 'react';
 import { Parallax, Reveal, RuleDraw } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
-import { STORY, type StoryKey } from '@/lib/catalog';
+import type { StoryKey } from '@/lib/catalog';
+import { getStoryPage } from '@/lib/payload';
 import styles from './story-page.module.css';
 
 const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
-  atelier: [
-    { note: 'needle mid-stitch', weave: 'bone' },
-    { note: 'pinning a shoulder', weave: 'sand' },
-    { note: 'paper pattern, chalked', weave: 'bone' },
-  ],
   cloth: [
     { note: 'bolt end, mill ticket', weave: 'bone' },
     { note: 'silk, raking light', weave: 'sand' },
@@ -17,19 +13,19 @@ const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
   ],
   contact: [
     { note: 'the room, morning', weave: 'bone' },
-    { note: 'Zürich desk, order book', weave: 'sand' },
+    { note: 'Geneva desk, order book', weave: 'sand' },
     { note: 'finished ticket, signed', weave: 'bone' },
   ],
 };
 
-export function StoryPage({
+export async function StoryPage({
   storyKey,
   children,
 }: {
   storyKey: StoryKey;
   children?: ReactNode;
 }) {
-  const story = STORY[storyKey];
+  const story = await getStoryPage(storyKey);
   const plates = PLATES[storyKey];
 
   return (

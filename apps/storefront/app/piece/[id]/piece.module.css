@@ -105,6 +105,73 @@
   color: var(--ink-muted);
 }
 
+/* ---- Ordering steps: colour, then measurements ---- */
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  margin: 38px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--ink-inactive);
+}
+
+.steps li[data-state='current'] {
+  color: var(--gold);
+}
+
+.steps li[data-state='done'] {
+  color: var(--ink-body);
+}
+
+.colourStart {
+  margin-top: 26px;
+}
+
+.colourStart .clothLabel {
+  margin-top: 0;
+}
+
+.colourStart .reserveNote {
+  margin-top: 10px;
+}
+
+.colourAction {
+  margin-top: 22px;
+}
+
+.chosen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 26px;
+  /* Scrolled into view clear of the fixed header. */
+  scroll-margin-top: calc(var(--header-h) + 28px);
+}
+
+.chosenTile {
+  width: 52px;
+  flex: none;
+}
+
+.chosenName {
+  font-family: var(--font-serif);
+  font-size: 18px;
+}
+
+.linkButton {
+  margin-top: 6px;
+  padding: 0 0 2px;
+  font-size: var(--t-xxs);
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--gold-60);
+  cursor: pointer;
+}
+
 .sheetWrap {
   margin-top: 46px;
   border-top: 1px solid var(--gold-35);

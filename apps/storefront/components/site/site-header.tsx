@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -22,7 +23,11 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
   const cartCount = ready ? ` (${count})` : '';
 
   // Close the panel on navigation.
-  useEffect(() => setOpen(false), [pathname]);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
 
   // Trap the page behind the panel and allow Escape to dismiss it.
   useEffect(() => {
@@ -44,8 +49,8 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
     <>
       <header className={styles.header}>
         <div className={styles.inner}>
-          <Link href="/" className={styles.wordmark}>
-            Maison Ayla
+          <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
+            <Image src="/brand/logo-horizontal-black.png" alt="LinSilk Genève" width={142} height={32} priority />
           </Link>
 
           <nav className={styles.nav} aria-label="Primary">
@@ -92,8 +97,8 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             transition={{ duration: 0.4, ease: EASE }}
           >
             <div className={styles.panelTop}>
-              <Link href="/" className={styles.wordmark}>
-                Maison Ayla
+              <Link href="/" className={styles.wordmark} aria-label="LinSilk — home">
+                <Image src="/brand/logo-horizontal-black.png" alt="LinSilk Genève" width={142} height={32} />
               </Link>
               <button type="button" onClick={() => setOpen(false)}>
                 Close
@@ -118,7 +123,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             <div className={styles.panelFoot}>
               <Link href="/account">Account</Link>
               <Link href="/cart">Cart{cartCount}</Link>
-              <span>Atelier — Hội An · Office — Zürich</span>
+              <span>Geneva, Switzerland</span>
             </div>
           </motion.div>
         )}

@@ -4,7 +4,7 @@ import { DragRail } from '@/components/drag-rail';
 import { Reveal } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
-import { COLLECTIONS, pastCollections, piecesIn, roman } from '@/lib/catalog';
+import { getCollections, piecesIn, roman } from '@/lib/catalog';
 import styles from './archive.module.css';
 
 export const metadata: Metadata = {
@@ -13,8 +13,17 @@ export const metadata: Metadata = {
     'An archive of closed seasons. These designs are not made again — the record of what the house has made is kept because it is part of what the house is.',
 };
 
-export default function ArchivePage() {
-  const past = pastCollections();
+export default async function ArchivePage() {
+  const collections = await getCollections();
+  const past = collections.filter((c) => c.status === 'past');
+
+  /* Every season's pieces, read once: the rail shows a count and four thumbs
+     for each, and asking per season would be a read apiece. */
+  const pieces = new Map(
+    await Promise.all(
+      collections.map(async (c) => [c.slug, await piecesIn(c.slug)] as const),
+    ),
+  );
 
   /* Until a season has actually closed there is no archive, and a rail of
      empty frames would be a worse answer than saying so. */
@@ -24,9 +33,8 @@ export default function ArchivePage() {
         <div className={styles.head}>
           <h1 className={styles.title}>Past collections</h1>
           <p className={styles.lede}>
-            No season has closed yet. When Collection IV is archived in February its
-            designs will be kept here — the record of what the house has made is part
-            of what it is.
+            No season has closed yet. When one is archived its designs will be kept
+            here — the record of what the house has made is part of what it is.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 34 }}>
             <ButtonLink href="/collection" variant="outline">
@@ -53,8 +61,8 @@ export default function ArchivePage() {
 
       <div className={styles.rail}>
         <DragRail label="Season archive">
-          {COLLECTIONS.map((collection) => {
-            const pieces = piecesIn(collection.slug);
+          {collections.map((collection) => {
+            const inSeason = pieces.get(collection.slug) ?? [];
             const open = collection.status === 'current';
             const href = open ? '/collection' : `/archive/${collection.slug}`;
 
@@ -76,11 +84,11 @@ export default function ArchivePage() {
                   </div>
 
                   <p className={styles.seasonNote}>
-                    {collection.note} {roman(pieces.length)} designs.
+                    {collection.note} {roman(inSeason.length)} designs.
                   </p>
 
                   <div className={styles.thumbs} aria-hidden="true">
-                    {pieces.slice(0, 4).map((piece) => (
+                    {inSeason.slice(0, 4).map((piece) => (
                       <ShotFrame
                         key={piece.id}
                         weave={piece.group === 'men' ? 'sand' : 'bone'}
@@ -90,7 +98,7 @@ export default function ArchivePage() {
                   </div>
 
                   <span className={styles.enter}>
-                    {open ? 'Enter the collection' : `See all ${pieces.length} designs`}
+                    {open ? 'Enter the collection' : `See all ${inSeason.length} designs`}
                   </span>
                 </Link>
               </article>

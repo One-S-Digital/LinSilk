@@ -1,4 +1,4 @@
-# Maison Ayla — Backend Build & Render Deployment
+# LinSilk — Backend Build & Render Deployment
 
 **Goal:** stand up Medusa v2 + Payload 3, wire the existing storefront to it, and host the whole
 thing on Render.
@@ -16,11 +16,11 @@ was written for this handover — the backend should conform to it, not the reve
 
 | Render service | Type | What it is |
 |---|---|---|
-| `ayla-medusa` | Web Service (Node) | Medusa server — Store API, Admin API, Admin UI |
-| `ayla-worker` | Background Worker | Medusa in worker mode — events, subscribers, scheduled jobs |
-| `ayla-postgres` | Postgres | Two databases: `ayla_medusa`, `ayla_payload` |
-| `ayla-redis` | Key Value | Event bus + workflow engine |
-| `ayla-storefront` | Web Service (Node) | The Next.js app, with Payload mounted at `/admin` |
+| `linsilk-medusa` | Web Service (Node) | Medusa server — Store API, Admin API, Admin UI |
+| `linsilk-worker` | Background Worker | Medusa in worker mode — events, subscribers, scheduled jobs |
+| `linsilk-postgres` | Postgres | Two databases: `linsilk_medusa`, `linsilk_payload` |
+| `linsilk-redis` | Key Value | Event bus + workflow engine |
+| `linsilk-storefront` | Web Service (Node) | The Next.js app, with Payload mounted at `/admin` |
 
 **Why a separate worker.** Medusa runs `server` and `worker` as distinct modes. Running both in
 one process means a long subscriber (an atelier notification, a file transcode) blocks HTTP
@@ -49,12 +49,12 @@ Bring the local services up:
 pnpm services        # docker-compose.yml already defines Postgres 16 + Redis 7
 ```
 
-`docker/init-db.sql` already creates `ayla_payload` alongside `ayla_medusa`.
+`docker/init-db.sql` already creates `linsilk_payload` alongside `linsilk_medusa`.
 
 Local `apps/medusa/.env`:
 
 ```bash
-DATABASE_URL=postgres://ayla:ayla@localhost:5432/ayla_medusa
+DATABASE_URL=postgres://linsilk:linsilk@localhost:5432/linsilk_medusa
 REDIS_URL=redis://localhost:6379
 JWT_SECRET=<openssl rand -base64 32>
 COOKIE_SECRET=<openssl rand -base64 32>
@@ -118,11 +118,13 @@ business, and modelling one is how you end up fighting the platform later.
 | `shot` | `metadata.shot` — art direction, shown as the frame's caption |
 | `group` | `metadata.group` — `women` \| `men` |
 | `sleep` | `metadata.sleep` |
-| `lengthKind` | `metadata.length_kind` — `dress` \| `skirt` \| `trouser` \| `top`, absent if none |
+| `lengthKinds` | `metadata.length_kinds` — a list of `dress` \| `skirt` \| `trouser` \| `top`, absent if none |
 | `collection` | collection relation |
 
-`metadata.length_kind` decides which garment length the measurement sheet asks for. Get it wrong
-and the atelier receives a dress with no length.
+`metadata.length_kinds` decides which garment lengths the sheet asks for. Get it wrong and the
+atelier receives a dress with no length. It is a **list**, because a set is two garments on one
+ticket: a sleep set asks for a top length and a trouser length, and each has its own field
+(`measure_lengthTop_cm`, `measure_lengthTrouser_cm`).
 
 ### 3.4 Inventory — the capped run
 
@@ -140,6 +142,11 @@ toLineItemMetadata(values, unit, zones)
 // → { measurement_unit: 'cm' | 'in', measure_bust_cm: '96.52', … }
 ```
 
+The backend keeps its own copy of the zones in `apps/medusa/src/lib/measurements.ts`, with the
+Vietnamese terms the bench reads. `apps/storefront/lib/backend-parity.test.ts` pins the two
+together and runs the storefront's real payload through the backend's check, so they cannot
+drift.
+
 `measurement_unit` records what the client *saw*; every figure is metric regardless. Keep it that
 way — it is the whole point of the conversion fix.
 
@@ -148,51 +155,89 @@ to a shared package or duplicate it with a test that pins the two copies togethe
 missing a required zone must be rejected — the storefront blocks it, but the storefront is not a
 security boundary.
 
-### 3.6 Commissions ⚠
+### 3.6 Commissions — built
 
-**This is the one piece that does not map onto a normal Medusa order, and the design decision
-that matters most.**
+**A commission is a request for a quote, not a purchase.** Its price is not known until a tailor
+has read the brief, so it never enters the cart and nothing is charged on the page. Design Your
+Own collects the brief; the house is emailed; a tailor sets a figure and sends it; the client
+agrees before anything is cut.
 
-A commission's price is an *estimate* until a person has read the brief. So a commission cannot
-go through checkout with a seasonal piece.
-
-**Recommended: a custom `commission` module** with its own lifecycle:
+The `atelier` module holds the record (`apps/medusa/src/modules/atelier`), with this lifecycle:
 
 ```
 submitted → reviewed → quoted → approved → in_production → shipped
 ```
 
-carrying: silhouette, cloth, the client's note, uploaded references, the measurement sheet, the
-estimate, and the confirmed price once set.
+carrying the client's name and email, the silhouette, the cloth **in the client's own words**,
+their note, the reference files, the measurement sheet, the opening figure they were shown, and
+the figure the tailor set.
 
-**At checkout, a mixed cart splits:**
-- Seasonal pieces → a normal Medusa order, paid immediately
-- Commissions → `commission` records in `submitted`, invoiced separately once quoted
+| Route | What it does |
+|---|---|
+| `POST /store/commissions` | Takes the brief as multipart. Refuses an unknown silhouette or a partial sheet; stores references privately. |
+| `GET /store/silhouettes` | The shapes and their opening figures. |
+| `GET /store/fabric-catalogues` | The published cloth catalogues. |
+| `GET/POST /admin/commissions[/:id]` | The queue, and one brief: set a figure, and send it when ready. |
+| `GET/POST/DELETE /admin/fabric-catalogues[/:id]` | Publish, hide and delete a catalogue. |
 
-The storefront already models this: `CartLine.estimate` flags it, `hasEstimate` drives the notice
-on both `/cart` and `/checkout`, and the copy already promises the client is not charged the
-difference without agreeing first. **Honour that promise in the backend.**
+**The silhouettes are products** in a `commission-silhouettes` collection, so the house edits a
+name, a note or an opening figure in the admin rather than in code, and the exchange-rate job
+keeps their euro and sterling figures derived from the franc. The collection's `metadata.status`
+is neither `current` nor `past`, so the cart refuses them.
 
-Approval should produce a Stripe payment link against the confirmed figure — not a silent charge.
+**Accepting a quote is the link in the email.** Setting a figure makes the commission payable by
+itself: it becomes a product of its own and the client is emailed an unguessable link to
+`app/commission/[token]`, where they say where the piece is going and pay on the house's own
+checkout. Paying moves the brief to `in_production` and retires the link. Nothing is sent by hand.
 
-### 3.7 The atelier console
+### 3.7 Cloth catalogues — built
+
+The client does not pick cloth from a swatch list: the house publishes catalogues (PDFs or
+plates) in the admin, the client reads them, and then **writes down the cloth they chose**. A
+shelf is larger than any dropdown, and a client may want the fourth silk on page two.
+
+### 3.8 The atelier console
 
 The bench needs somewhere to read a confirmed sheet and move a piece through production. Medusa
 Admin is extensible; add a widget or a route rather than building a second app. Minimum viable:
 
-- Queue of commissions awaiting a quote
-- The full measurement sheet, **displayed in both English and Vietnamese** (the terms are in
-  `lib/catalog.ts` — they are what is written on the ticket in Hội An)
-- Set confirmed price → notify client
-- Production status per order
+- Queue of commissions awaiting a quote — **built**
+- The full measurement sheet, displayed in both English and Vietnamese — **built** (the terms
+  live in `apps/medusa/src/lib/measurements.ts`, pinned to `lib/catalog.ts` by a storefront test)
+- Set confirmed price → notify client — **built**
+- Production status per order — not built; the status field exists, the screens do not
+
+### 3.9 Accounts — built
+
+Medusa's own customer and auth modules do almost all of it — register, sign in, order history
+and profile storage are stock Store API routes, confirmed against a running server rather than
+assumed. Two custom routes cover what Medusa doesn't:
+
+| Route | What it does |
+|---|---|
+| `POST /store/customers/me/password` | Changes the password for a signed-in customer. The emailed reset link's own endpoint only accepts a token minted for that purpose, not an ordinary session, so this checks the current password and calls the same provider method the reset route does, wrapped in `changePasswordWorkflow` — a direct service mutation in the route handler fails the project's `@medusajs/no-service-mutations-in-api-route` lint rule. |
+| `POST /store/customers/me/account` | Closes the account. Runs `removeCustomerAccountWorkflow` — the same workflow the admin's own delete-customer route runs — which detaches the auth identity and leaves past orders exactly as reachable as a guest's already are. A password confirms it first. |
+
+The `auth.password_reset` event, fired by Medusa's own reset-token workflow, is handled by
+`src/subscribers/password-reset-requested.ts`, which emails the link through the same Resend
+setup the commission emails use.
+
+⚠ **Email is not editable from the account.** `StoreUpdateCustomer` doesn't accept it, and
+decoupling it from the login identity is a sharper edge than this pass reaches for.
 
 ---
 
 ## 4. Phase 3 — Seed
 
-Write `apps/medusa/src/scripts/seed.ts` reading directly from
-`apps/storefront/lib/catalog.ts`. It is already typed for this: 4 collections, 53 pieces, 4
-fabrics, 4 silhouettes with estimates.
+`apps/medusa/src/scripts/seed.ts` reads the catalogue written down beside it in
+`apps/medusa/src/scripts/catalogue-fixture.ts`: 4 collections, 53 pieces and 4 commission
+silhouettes.
+
+**It is safe to run again.** Anything missing is created; anything present has its wording,
+collection and metadata brought back in line with the catalogue. Prices are written once, at
+creation — after that the house owns them in the admin, and the exchange-rate job keeps the
+derived currencies current. It is excluded from the compiled build, so it runs from source,
+against whichever database `DATABASE_URL` points at.
 
 ```bash
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
@@ -201,50 +246,95 @@ pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
 ⚠ Collections I–III (36 pieces) are **placeholder content**. Seed them for a working archive, but
 do not let them reach production without the client's real data.
 
-Once seeding works, `lib/catalog.ts` stops being the storefront's data source and becomes the
-seed script's input only.
+Seeding provisions an empty database and then stays out of the way: the storefront reads its
+pieces and collections from the store API, so Medusa is the source of truth from the first run
+onwards. The fixture is the house's written-down copy, not a live mirror — a piece added through
+the admin or the ingestion route is not in it, and does not need to be.
 
 ---
 
-## 5. Phase 4 — Payload CMS
+## 5. Phase 4 — Payload CMS — `pages` built, the rest is schema only
 
-Payload 3 installs **into the Next.js app**, so there is no fifth service.
+Payload 3 installs **into the Next.js app**, so there is no fifth service. It was added by hand
+rather than with `create-payload-app` — that generator defaults to Mongo and a `src/` layout this
+storefront doesn't have. What's there instead: `payload`, `@payloadcms/next`,
+`@payloadcms/db-postgres`, `graphql` and `sharp` as dependencies of `apps/storefront`;
+`payload.config.ts` at its root; and the `app/(payload)/` route group copied from Payload's own
+blank template. Those route files are generated and are not meant to be hand-edited — regenerate
+`app/(payload)/admin/importMap.js` with `pnpm --filter storefront generate:importmap` if the
+admin's own registered components ever change, and `payload-types.ts` (gitignored, like
+`next-env.d.ts`) with `pnpm --filter storefront generate:types`.
+
+Points at `linsilk_payload` via `DATABASE_URI` — `docker/init-db.sql` already creates that database
+locally, alongside Medusa's. `PAYLOAD_SECRET` is Payload's own encryption/signing secret and must
+never be the same value as Medusa's `JWT_SECRET` or `COOKIE_SECRET`.
+
+All five collections from the original plan exist, but only one is wired to a page yet:
+
+| Collection | Content | Status |
+|---|---|---|
+| `pages` | The Atelier, The Cloth, The house | **Built.** Seeded from `lib/catalog.ts`'s `STORY` constant by `payload/seed.ts`; read live by the three routes that used to read `STORY` directly (`lib/payload.ts`'s `getStoryPage`) |
+| `care` | Shipping, Measurement guide, Returns and alterations, Questions | Schema only (`key`, `title`, `lead`). The four `/care` pages still render their own hand-built sections, lists and comparison rows (`components/doc-page.tsx`) — moving that into Payload needs a content model for sections/lists/rows, which is separate work from standing the CMS up |
+| `legal` | Terms, Privacy ⚠ **awaiting a lawyer — do not draft these** | Schema only, same reasoning as `care` — and there is nothing real to put in it yet regardless |
+| `seasons` | Editorial per collection, keyed to the Medusa collection handle | Schema only. Nothing renders this yet: the archive pages carry only the one-line `collection.note` already in Medusa metadata |
+| `media` | Photography, once it exists | Schema only — upload-enabled, one `alt` text field. Empty: everything today is a placeholder woven gradient (`HANDOVER.md` §8) |
 
 ```bash
-cd apps/storefront
-pnpm dlx create-payload-app@latest --db postgres
+pnpm --filter storefront exec payload run ./payload/seed.ts
 ```
 
-Point it at `ayla_payload`. Collections to model — copy is final, it is all in `lib/catalog.ts`
-under `STORY`:
+Safe to run again — a `pages` document that already exists is updated in place, brought back in
+line with `STORY`, rather than duplicated. Like the Medusa seed, it reads straight from the
+storefront's own source of truth; `STORY` is the seed's input only from here on.
 
-| Collection | Content |
-|---|---|
-| `pages` | The Atelier, The Cloth, The house |
-| `care` | Shipping, Measurement guide, Returns and alterations, Questions |
-| `legal` | Terms, Privacy ⚠ **awaiting a lawyer — do not draft these** |
-| `seasons` | Editorial per collection, keyed to the Medusa collection handle |
-| `media` | Photography, once it exists |
+⚠ **`payload run` needs two workarounds under this exact toolchain** — Next 16.3, no
+`"type": "module"` in `apps/storefront/package.json`. First, every relative import inside
+`payload.config.ts`, and inside any script run via `payload run`, needs an explicit `.ts`
+extension (`allowImportingTsExtensions` in `tsconfig.json` permits the syntax) — an open issue
+against Payload under Next 16 (github.com/payloadcms/payload/issues/16684). Second, a standalone
+script needs genuine top-level `await`, not a `.then()/.catch()` chain, or the CLI exits 0 the
+instant `getPayload()` is called, before the connection settles — which is why `payload/` is its
+own ESM package (`payload/package.json`) and `payload/seed.ts` loads `.env.local` itself with
+`process.loadEnvFile()`, wrapped in a `try`/`catch`, before dynamically importing anything that
+reads `process.env`. The `catch` matters in production: `.env.local` is dev-only and never
+deployed, and Node throws on an explicit path that does not exist, unlike its no-argument form —
+without it, running the seed on Render (`GO-LIVE-SETUP.md` §8) would exit before `getPayload()`
+is even called, on an environment that is already correctly set by the platform. Neither
+workaround touches the normal path: Next loads `.env.local` and this config the ordinary way (via
+`@payload-config` from `app/(payload)/layout.tsx`) for `dev`, `build` and `start` alike.
 
 Payload's admin lands at `/admin`; Medusa's is on its own service. Two admins is the cost of not
 being on Shopify — worth stating to the client plainly.
 
 ---
 
-## 6. Phase 5 — Stripe
+## 6. Phase 5 — Stripe — built
 
-```bash
-pnpm --filter medusa add @medusajs/payment-stripe
-```
+`@medusajs/payment-stripe` ships with Medusa; `medusa-config.ts` registers it **only when
+`STRIPE_API_KEY` is set**, and falls back to Medusa's system provider, which authorises without
+charging. That is how checkout was built and tested before any keys existed.
 
-- Register the provider per region. **TWINT matters in Switzerland** — it is a large share of
-  Swiss checkout and its absence will be noticed.
-- Webhook → `POST /hooks/payment/stripe`
-- The storefront already has the Elements mount point marked at
-  `#stripe-payment-element` in `app/checkout/page.tsx`.
+The seed puts whatever providers exist onto every region, and prefers a real one: the moment
+Stripe is configured, the system provider is dropped from every region, so a live store can never
+offer "pay without paying".
 
-> **Card fields stay inside Stripe's iframe.** They were deliberately not built. Do not add a card
-> number input to this codebase — it drags the whole application into PCI scope for no benefit.
+**Which methods appear is the Stripe account's business, not the code's.** The provider runs with
+`automatic_payment_methods`, so Stripe offers whatever that account has enabled for the currency
+and the amount — card, **TWINT** (which matters in Switzerland and will be noticed if absent),
+Apple and Google Pay, Klarna. Adding one later needs no deploy.
+
+To switch it on:
+
+1. Set `STRIPE_API_KEY` and `STRIPE_WEBHOOK_SECRET` on the host, and
+   `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` on the storefront.
+2. Point the Stripe webhook at `POST /hooks/payment/stripe_stripe`.
+3. Re-run the seed so the regions pick Stripe up.
+4. Enable TWINT, Klarna and the wallets in the Stripe dashboard. Wallets need domain
+   verification.
+
+> **Card fields stay inside Stripe's iframe.** The storefront mounts Stripe Elements at
+> `#stripe-payment-element`; no card number touches this origin. Do not add a card input to this
+> codebase — it drags the whole application into PCI scope for no benefit.
 
 **Tax.** Medusa's tax module handles rates but not EU VAT/OSS filing. Budget for Stripe Tax
 (calculation) plus something like Quaderno or Lovat (filing). This is the most commonly
@@ -252,99 +342,64 @@ underestimated cost of leaving Shopify — flag it to the client in writing.
 
 ---
 
-## 7. Phase 6 — Wire the storefront
+## 7. Phase 6 — Wire the storefront — built
 
-**One file changes: `apps/storefront/lib/cart.tsx`.** It was written as the swap point. Replace
-its internals with Store API calls against a real cart id; every consumer stays untouched.
+The cart is a Medusa cart; only its id is kept in the browser. Reserving a piece adds a real line,
+so the house's rules (§3.2, §3.5) stand between a client and a garment, and a refusal is shown in
+the words it was written in.
 
-Then:
-- Replace `lib/catalog.ts` reads with Store API queries (products, collections, regions)
-- Add a publishable API key to the storefront env
-- Currency switcher backed by Medusa regions — CHF/EUR/GBP, no UI yet
-- Persist commission reference uploads (S3 or Render disk) — the flow already validates type,
-  size and count but does not store anything
-- Accounts: register, login, password reset, order history, and the saved measurement profile
-  that `/account` currently only describes
+| Piece | Where |
+|---|---|
+| Cart, on the Store API | `lib/cart.tsx` |
+| Calls and totals | `lib/checkout.ts`, `lib/medusa.ts` |
+| Address, shipping, payment | `components/checkout/checkout-flow.tsx` |
+| Stripe Elements, and the no-charge fallback | `components/checkout/payment-panel.tsx` |
+| Accepting a quote | `app/commission/[token]`, `components/checkout/commission-payment.tsx` |
+| Confirmation, readable by a guest holding the id | `app/order/[id]` |
+
+Two things worth knowing before changing any of it:
+
+- **A line carries the zones its own garment asked for.** Serialising a sheet with the fifteen
+  body zones silently drops a garment length, and the backend then refuses the line as
+  incomplete. A set asks for two lengths.
+- **A seasonal cart may follow the client to another region** — its lines are rebuilt from their
+  variants, keeping their metadata and taking that region's prices, so a Swiss cart becomes a
+  euro one when the address is German. **A commission cart may not:** its line is a run of one,
+  and Medusa drops what it cannot rebuild. Hence `allowRegionChange`.
+
+Still to do here:
+- A currency switcher for browsing (regions and prices exist; only checkout switches today)
+- `lib/catalog.ts` now reads its pieces and collections from the store API; what stays written
+  down there is the measurement chart, the cloth, and the formatting
+- Saved addresses (§3.9) are not yet offered as a picker here; checkout still asks fresh
 
 ---
 
 ## 8. Phase 7 — Deploy to Render
 
-### 8.1 `render.yaml`
+### 8.1 Setup — by hand, not a blueprint
 
-Commit this at the repo root.
+`docs/GO-LIVE-SETUP.md` is the deploy guide: every resource created by hand in Render's
+dashboard, every environment variable typed in on the service that needs it, no `render.yaml`.
+An earlier draft of this deploy path used a Render Blueprint; it is gone — `envVarGroups` in a
+blueprint silently drops any `sync: false` entry (Render's own blueprint spec says so), which
+left the two groups that draft relied on for shared secrets empty of anything a deploy could
+actually use. Fixing that meant either duplicating every secret on both `linsilk-medusa` and
+`linsilk-worker`, or asking for a manual dashboard step before the blueprint could even run — at
+which point a blueprint was not saving the manual work it exists for. The points worth carrying
+over from that draft:
 
-```yaml
-services:
-  - type: web
-    name: ayla-medusa
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter medusa build
-    startCommand: pnpm --filter medusa start
-    healthCheckPath: /health
-    envVars:
-      - key: MEDUSA_WORKER_MODE
-        value: server
-      - key: DATABASE_URL
-        fromDatabase: { name: ayla-postgres, property: connectionString }
-      - key: REDIS_URL
-        fromService: { name: ayla-redis, type: keyvalue, property: connectionString }
-      - key: JWT_SECRET
-        generateValue: true
-      - key: COOKIE_SECRET
-        generateValue: true
-      - key: STORE_CORS
-        sync: false
-      - key: ADMIN_CORS
-        sync: false
-      - key: AUTH_CORS
-        sync: false
-      - key: STRIPE_API_KEY
-        sync: false
-      - key: STRIPE_WEBHOOK_SECRET
-        sync: false
-
-  - type: worker
-    name: ayla-worker
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter medusa build
-    startCommand: pnpm --filter medusa start
-    envVars:
-      - key: MEDUSA_WORKER_MODE
-        value: worker
-      - key: DATABASE_URL
-        fromDatabase: { name: ayla-postgres, property: connectionString }
-      - key: REDIS_URL
-        fromService: { name: ayla-redis, type: keyvalue, property: connectionString }
-
-  - type: web
-    name: ayla-storefront
-    runtime: node
-    plan: starter
-    buildCommand: pnpm install --frozen-lockfile && pnpm --filter storefront build
-    startCommand: pnpm --filter storefront start
-    envVars:
-      - key: NEXT_PUBLIC_MEDUSA_BACKEND_URL
-        fromService: { name: ayla-medusa, type: web, property: host }
-      - key: NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-        sync: false
-      - key: PAYLOAD_SECRET
-        generateValue: true
-      - key: DATABASE_URI
-        sync: false          # ayla_payload on the same server
-
-  - type: keyvalue
-    name: ayla-redis
-    plan: starter
-    ipAllowList: []          # private network only
-
-databases:
-  - name: ayla-postgres
-    plan: basic-256mb
-    databaseName: ayla_medusa
-```
+- **Every secret comes from Render, never the repo.** `JWT_SECRET` and `COOKIE_SECRET` are
+  generated once and typed in on both `linsilk-medusa` and `linsilk-worker` if you run one
+  (`GO-LIVE-SETUP.md` step 1); every other secret is typed in once per service that needs it.
+- Migrations run as a **Pre-Deploy Command**, so they happen before the new version takes
+  traffic and never on a rollback the way a build step would.
+- `medusa-config.ts` refuses to boot in production without `DATABASE_URL`, `REDIS_URL`, both
+  secrets and the three CORS values, naming what is missing rather than failing at the first
+  request.
+- **Redis is not optional with a worker.** Server and worker share an event bus, a workflow
+  engine, a cache and a lock; in memory each process would keep its own, and a job would run
+  twice or not at all.
 
 ### 8.2 Migrations
 
@@ -357,35 +412,137 @@ pnpm --filter medusa exec medusa db:migrate
 
 ### 8.3 Second database
 
-Render provisions one database per instance. Create `ayla_payload` manually on first deploy:
+Render provisions one database per instance. Create `linsilk_payload` manually on first deploy,
+connected via the PSQL command Render's dashboard gives you for `linsilk-postgres`:
 
 ```sql
-CREATE DATABASE ayla_payload OWNER ayla;
+CREATE DATABASE linsilk_payload;
 ```
 
-Then set `DATABASE_URI` for the storefront to that connection string. (Locally,
-`docker/init-db.sql` already does this.)
+No explicit `OWNER` — leaving it out makes the new database owned by whichever user the PSQL
+command connected as, which is exactly Render's own generated user for that instance. That
+user is not named `linsilk`; that name is only real for the local Docker setup, where
+`docker/init-db.sql` runs the same statement with an explicit owner because the local role
+genuinely is called that.
+
+Then set `DATABASE_URI` for the storefront to that same connection string with the database name
+swapped from `linsilk_medusa` to `linsilk_payload`.
 
 ### 8.4 CORS
 
 Set after the first deploy, once hostnames exist:
 
 ```
-STORE_CORS = https://maisonayla.ch,https://ayla-storefront.onrender.com
-ADMIN_CORS = https://ayla-medusa.onrender.com
+STORE_CORS = https://linsilk.ch,https://linsilk-storefront.onrender.com
+ADMIN_CORS = https://linsilk-medusa.onrender.com
 AUTH_CORS  = <both of the above>
 ```
 
-### 8.5 File storage
+### 8.5 File storage — Cloudflare R2
 
-Render's disks do not persist across deploys on all plans, and commission references are client
-property. **Use S3 or Cloudflare R2**, not a local disk.
+Three kinds of file: **cloth catalogues**, which are public; **commission references**, which are
+the client's property and are stored privately, read back through short-lived signed links; and
+**photography**, which is public and arrives with a piece through the ingestion route
+(`CATALOGUE-INGESTION.md`). That route fetches images by URL, so the hosts it may fetch from are
+named in `CATALOGUE_IMAGE_HOSTS` — unset, every image is refused.
 
----
+Render's disks do not survive a deploy and are not shared between the web service and the
+worker, so object storage is not optional in production. **Cloudflare R2** is the default: it
+speaks the S3 API, so Medusa's stock `file-s3` provider drives it unchanged, and it charges
+nothing for egress — the difference that matters for a house serving photography and PDFs.
+Nothing about the choice is one-way: any S3-compatible bucket works by changing four variables.
+
+Development needs none of this. Without `S3_BUCKET` the file module writes to `apps/medusa/static`.
+
+```bash
+S3_BUCKET=linsilk
+S3_PRIVATE_BUCKET=linsilk-private      # commission references; never given a public address
+S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+S3_REGION=auto
+S3_ACCESS_KEY_ID=<R2 API token>
+S3_SECRET_ACCESS_KEY=<R2 API token secret>
+S3_FILE_URL=https://files.linsilk.ch   # a custom domain on the bucket, or the r2.dev URL
+S3_PREFIX=
+```
+
+Two things to get right when the bucket is made:
+
+- **Create it in the EU jurisdiction.** Measurement sheets and reference photographs are personal
+  data about a named person; keeping the files in the EU is one less thing to explain in the
+  privacy notice, which already has a Việt Nam transfer to account for (`HANDOVER.md` §8).
+- **Two buckets, and only one of them ever public.** R2 has no per-object ACL: once a bucket has
+  a public address (`r2.dev` or a custom domain), every object in it is readable by anyone with
+  its key, whatever the upload asked for. So catalogues and photography go to `S3_BUCKET`, which
+  may be given a public address (`S3_FILE_URL`), and references go to `S3_PRIVATE_BUCKET`, which
+  never is — they are fetched only with signed links the admin mints per view. The routing is
+  `src/modules/split-s3`, a thin wrapper around the stock S3 provider (Medusa's file module takes
+  exactly one provider); it refuses to boot without a separate private bucket. Both buckets share
+  one endpoint and one API token, so create them in the same jurisdiction.
+
+Roughly $0.015 per GB per month and no egress charge, against Render disk at $0.25 per GB and no
+durability guarantee across deploys.
+
+### 8.6 Roles — who may reach what in the admin
+
+Medusa's role-based access control is on (`featureFlags: { rbac: true }` in `medusa-config.ts`).
+Every admin route checks what the caller's role allows; being signed in is no longer enough.
+
+**People.** Roles are managed in the admin, **Settings → Roles**. The built-in **Super Admin**
+role grants everything. `medusa user` gives it to the user it creates, and an invite carries
+whatever roles are chosen when it is sent. Any narrower role (someone who answers commissions, say,
+but doesn't touch prices) is built from permissions. Medusa's own permissions cover its own screens;
+the house's own permissions are declared in `src/policies/linsilk.ts`:
+
+| Permission | Lets a person |
+|---|---|
+| `catalogue:read` / `catalogue:update` | see / draft pieces, photography and pending seasons through the catalogue API |
+| `catalogue:open` | open a season onto the site — the one catalogue act that changes what the public can buy |
+| `commission:read` / `commission:update` | see commissions (measurements, reference files) / quote and answer them |
+| `fabric_catalogue:read` / `create` / `update` / `delete` | manage the cloth catalogues |
+
+A role's permissions are read on every request, so a change to a role takes effect at once. The
+roles a *person holds* are written into their sign-in, so adding or removing one takes effect the
+next time they sign in.
+
+**The catalogue agent's key.** A secret API key reaches `/admin/catalogue/*` and nothing else.
+`src/api/middlewares.ts` refuses a key on every other admin path before any route runs. That
+check is its own wall rather than a consequence of roles. Medusa gives keys no roles, so every
+route that declares a permission would refuse one anyway, but 2.20 ships some admin routes that
+declare none, `/admin/search` among them. On the catalogue routes a person still needs the
+permission from their role. So a leaked agent key can draft pieces, and open a season that
+already has a published piece, but it cannot read an order, a customer or a commission,
+publish a piece, change a published price, or mint itself another key. Revoke it in
+**Settings → Secret API Keys**.
+
+**Medusa routes 2.20 leaves unguarded.** Walking every admin route as a signed-in person with *no*
+role found two that mattered, and both now need a permission (`src/api/middlewares.ts`):
+
+- `GET /admin/search` — the dashboard's search bar. With no check it returned customers',
+  orders' and admin users' names and emails, and promotion codes, to anyone signed in. It now
+  needs read access to orders, customers, users and promotions, so a narrow role won't get
+  the search bar.
+- `POST /admin/rbac/roles` — creating a role. It now needs `rbac_role:create`.
+
+What a role-less person can still reach is pinned exactly in `roles.spec.ts`, with a reason for
+each entry. It's their own account, permissions and dashboard layout, the dashboard's
+start-up data, and routes for features that are switched off. If a Medusa upgrade opens another
+route, or a feature flag switches one of those on, that test fails, and the route has to be
+looked at before the upgrade ships. The same test walks all ~400 admin routes with an agent key
+and expects every one to refuse it.
+
+Two things to know:
+
+- **The role module is named in `modules`, not left to the flag.** `defineConfig` builds its list
+  of default modules while `medusa-config.ts` is still being evaluated, before the file's own
+  `featureFlags` are registered. Left to the default, the module stays off while the routes still
+  check roles, and every admin request is refused.
+- **Users from before roles were on get Super Admin once, on `db:migrate`**
+  (`src/migration-scripts/give-existing-users-super-admin.ts`). Medusa's own script for this
+  skips itself for the reason above and is then recorded as done.
 
 ## 9. Post-deploy checklist
 
-- [ ] `/health` green on `ayla-medusa`
+- [ ] `/health` green on `linsilk-medusa`
 - [ ] Admin reachable, admin user created
 - [ ] Worker log shows it started in `worker` mode, not `server`
 - [ ] Seed run; 4 collections and 53 products present
@@ -394,10 +551,20 @@ property. **Use S3 or Cloudflare R2**, not a local disk.
 - [ ] **A cart line missing a required measurement is rejected server-side**
 - [ ] `metadata.length_kind` present on every piece that needs a length
 - [ ] Stripe test payment end to end; webhook received
-- [ ] Commission submits, appears in the atelier queue, can be quoted and approved
+- [ ] Commission submits, appears in the atelier queue, can be quoted and sent
+- [ ] `RESEND_API_KEY`, `RESEND_FROM` and `ATELIER_EMAIL` set — without them briefs are saved
+      but nobody is told
+- [ ] `S3_*` set and a catalogue uploaded through the admin actually opens from the storefront
+- [ ] A commission reference is **not** reachable without a signed link
+- [ ] The first admin user holds **Super Admin** (Settings → Roles); the catalogue agent's secret
+      key gets `403` from `/admin/orders` and `200` from `/admin/catalogue/seasons` (§8.6)
 - [ ] Transactional email at every state change
 - [ ] Automated Postgres backups on, and a restore actually tested
 - [ ] `NEXT_PUBLIC_*` vars contain nothing secret
+- [ ] `linsilk_payload` database created manually (§8.3); `DATABASE_URI` and `PAYLOAD_SECRET` set on
+      `linsilk-storefront`
+- [ ] Payload admin reachable at `/admin`, first user created, seed run
+      (`pnpm --filter storefront exec payload run ./payload/seed.ts`)
 - [ ] Storefront still passes `pnpm --filter storefront test`
 
 ---
@@ -428,15 +595,21 @@ permanently.
 
 ## 11. Suggested order of work
 
-1. Scaffold Medusa, migrate, admin user — **prove it runs**
-2. Regions and currencies
-3. Collections + pieces + seed — **prove the archive gate works**
-4. Wire `lib/cart.tsx` to the Store API — **the storefront goes live against real data**
-5. Stripe, seasonal checkout end to end
-6. Accounts + saved measurement profiles
-7. Commission module + atelier console
-8. Payload for editorial
-9. Deploy to Render
-10. Email, then the go-live checklist
+1. ~~Scaffold Medusa, migrate, admin user~~ — done
+2. ~~Regions and currencies~~ — done, with euro and sterling derived from the franc hourly
+3. ~~Collections + pieces + seed~~ — done; the archive gate is enforced in the cart and tested
+4. ~~Commission module + cloth catalogues + atelier console~~ — done (§3.6–3.8)
+5. ~~Wire the storefront to the Store API~~ — done (§7)
+6. ~~Stripe, seasonal checkout end to end, and a payment link when a quote is accepted~~ — done;
+   dormant until keys exist (§6)
+7. ~~Accounts + saved measurement profiles~~ — done, with settings besides (§3.9)
+8. ~~Payload, with its `pages` collection~~ — done (§5); `care`, `legal`, `seasons` and `media`
+   still need a content model — and, for `legal`, a lawyer — before there is anything to wire them
+   to
+9. Deploy to Render, with R2 and Resend configured
+10. The go-live checklist
 
-Steps 1–5 are a working store. Everything after is what makes it Maison Ayla's store.
+The remaining editorial work aside (`care`/`legal`/`seasons`/`media`, §5) — none of it the commerce
+path — what stands between this and go-live is configuration rather than code: Stripe keys, a
+Resend key and a verified sender, an R2 bucket, and the client's own content (§8.5, and
+`HANDOVER.md` §8).

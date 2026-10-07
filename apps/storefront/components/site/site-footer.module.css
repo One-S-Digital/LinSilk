@@ -18,9 +18,9 @@
 }
 
 .brand {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  font-size: 22px;
+  display: block;
+  width: 100px;
+  height: auto;
 }
 
 .blurb {

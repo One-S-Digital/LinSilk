@@ -5,14 +5,14 @@ import { ButtonLink } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Shipping',
   description:
-    'Everything is made in Hội An and dispatched from Zürich. Times, duty and tracking.',
+    'Everything is made to order and dispatched from Geneva. Times, duty and tracking.',
 };
 
 export default function ShippingPage() {
   return (
     <DocPage
       title="Shipping"
-      lead="Every garment is cut and finished in Hội An, checked against your sheet, then sent to Zürich and dispatched from there. Nothing ships directly from the atelier, because everything is inspected twice before it leaves the house."
+      lead="Every garment is cut and finished to your measurement sheet, inspected twice, then dispatched from Geneva."
       foot={
         <>
           <ButtonLink href="/care/returns" variant="rule">Returns and alterations</ButtonLink>
@@ -50,7 +50,7 @@ export default function ShippingPage() {
         <DocP>
           You are written to when the pattern is cut, when the piece passes its second
           check, and when it is dispatched with a tracking number. If a parcel stalls
-          in customs, write to hello@maisonayla.ch and the office in Zürich will chase
+          in customs, write to hello@linsilk.ch and the office in Geneva will chase
           it rather than asking you to.
         </DocP>
       </DocSection>
