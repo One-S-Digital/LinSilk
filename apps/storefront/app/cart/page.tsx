@@ -95,9 +95,7 @@ export default function CartPage() {
           <div className={styles.summary}>
             <p className={styles.terms}>
               Prices are in Swiss francs and include duty within Switzerland and the
-              EU. A seasonal piece takes three to five weeks from the confirmed sheet;
-              a commission takes four to six. Alterations to anything the house made
-              are free for the first year.
+              EU. A piece takes two to four weeks from the confirmed sheet.
             </p>
 
             <div className={styles.totals}>

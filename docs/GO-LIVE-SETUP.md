@@ -122,7 +122,7 @@ and refuses to boot if `S3_PRIVATE_BUCKET` is missing or is the same as `S3_BUCK
    now, not later, not "just to test". Its Settings → Public access should read *Disabled*
    forever.
 4. **Give `linsilk` (and only `linsilk`) a public address.** R2 → `linsilk` → Settings →
-   **Custom Domains** → connect e.g. `files.linsilk.ch`, on a domain you control in Cloudflare
+   **Custom Domains** → connect e.g. `files.bylinsilk.com`, on a domain you control in Cloudflare
    DNS. That becomes `S3_FILE_URL`. No domain yet? Either enable `linsilk`'s **Public Development
    URL** (`https://pub-<hash>.r2.dev`) and use that — safe now, because nothing private is in this
    bucket — or put the domain you *will* use in `S3_FILE_URL` ahead of time: uploads work either
@@ -145,7 +145,7 @@ Seven values, ready to paste onto `linsilk-medusa` in step 6:
 | `S3_REGION` | `auto` |
 | `S3_ACCESS_KEY_ID` | the Access Key ID from step 5 |
 | `S3_SECRET_ACCESS_KEY` | the Secret Access Key from step 5 |
-| `S3_FILE_URL` | `linsilk`'s public address from step 4, e.g. `https://files.linsilk.ch` — no trailing slash |
+| `S3_FILE_URL` | `linsilk`'s public address from step 4, e.g. `https://files.bylinsilk.com` — no trailing slash |
 
 ---
 
@@ -153,16 +153,16 @@ Seven values, ready to paste onto `linsilk-medusa` in step 6:
 
 Order confirmations, commission quotes, password resets — all of it goes through Resend.
 
-1. [resend.com](https://resend.com) → sign up → **Add Domain**, e.g. `linsilk.ch`. Add the DNS
+1. [resend.com](https://resend.com) → sign up → **Add Domain**, e.g. `bylinsilk.com`. Add the DNS
    records it gives you wherever that domain's DNS is hosted.
 2. Once the domain shows **Verified**, create an API key: **API Keys** → **Create API Key**, full
    access is fine for a single-service setup. Copy it — shown once.
-3. Pick a from-address on the verified domain, e.g. `hello@linsilk.ch`.
+3. Pick a from-address on the verified domain, e.g. `hello@bylinsilk.com`.
 
 | Variable | Value |
 |---|---|
 | `RESEND_API_KEY` | the key from step 2 |
-| `RESEND_FROM` | `LinSilk <hello@linsilk.ch>` |
+| `RESEND_FROM` | `LinSilk <hello@bylinsilk.com>` |
 
 ---
 
@@ -237,7 +237,7 @@ Now add every environment variable you already have, under the service's **Envir
 | `STRIPE_API_KEY` | from step 5 |
 | `RESEND_API_KEY`, `RESEND_FROM` | from step 4 |
 | `S3_BUCKET`, `S3_PRIVATE_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_FILE_URL` | from step 3 |
-| `CATALOGUE_IMAGE_HOSTS` | the hostname(s) photographs are ever fetched from, comma-separated — at minimum your R2 domain from step 3 (e.g. `files.linsilk.ch`); add a photographer's delivery host too if reference shots come from one. Leave blank and the ingestion route refuses every image until you set it. |
+| `CATALOGUE_IMAGE_HOSTS` | the hostname(s) photographs are ever fetched from, comma-separated — at minimum your R2 domain from step 3 (e.g. `files.bylinsilk.com`); add a photographer's delivery host too if reference shots come from one. Leave blank and the ingestion route refuses every image until you set it. |
 
 **Leave these blank for now** — they come back in steps 8 and 10: `STORE_CORS`, `ADMIN_CORS`,
 `AUTH_CORS`, `STOREFRONT_URL`, `ATELIER_EMAIL`, `STRIPE_WEBHOOK_SECRET`.
@@ -385,7 +385,7 @@ it in step 7 — it reads `medusa-config.ts`'s required-vars check same as `lins
 | `ADMIN_CORS` | `https://linsilk-medusa.onrender.com` |
 | `AUTH_CORS` | both of the above, comma-separated |
 | `STOREFRONT_URL` | `https://linsilk-storefront.onrender.com` |
-| `ATELIER_EMAIL` | the inbox that should hear about new commissions, e.g. `atelier@linsilk.ch` |
+| `ATELIER_EMAIL` | the inbox that should hear about new commissions, e.g. `hello@bylinsilk.com` |
 
 Saving triggers a deploy on each. **This is the first deploy that should actually succeed** —
 watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:migrate` cleanly.
@@ -397,7 +397,7 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
 1. Once `linsilk-medusa` is live: dashboard → `linsilk-medusa` → **Shell**:
 
    ```bash
-   medusa user -e you@linsilk.ch -p <a real password>
+   medusa user -e you@bylinsilk.com -p <a real password>
    ```
 
    The admin checks roles on every request (`BACKEND-RENDER.md` §8.6), and this command gives
@@ -412,14 +412,14 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
       `start`:
 
       ```bash
-      pnpm --filter medusa exec medusa user -e you@linsilk.ch -p <a throwaway password> && pnpm --filter medusa start
+      pnpm --filter medusa exec medusa user -e you@bylinsilk.com -p <a throwaway password> && pnpm --filter medusa start
       ```
 
       If you folded the migration into the Start Command in step 6, keep it at the front, so the
       tables exist before the user is created (`medusa user` fails on an empty database):
 
       ```bash
-      pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa user -e you@linsilk.ch -p <a throwaway password> && pnpm --filter medusa start
+      pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa user -e you@bylinsilk.com -p <a throwaway password> && pnpm --filter medusa start
       ```
 
       Use a throwaway password, not your real one — Render keeps this field in deploy-settings
@@ -519,7 +519,7 @@ That should print `403`. The same call to `/admin/catalogue/seasons` should prin
 ## Custom domains, and going from Stripe test → live mode
 
 Not covered here since they're one-time clicks with no ordering dependencies: point
-`linsilk.ch` at the storefront and `api.linsilk.ch` (or similar) at `linsilk-medusa` in each
+`bylinsilk.com` at the storefront and `api.bylinsilk.com` (or similar) at `linsilk-medusa` in each
 service's **Settings → Custom Domains**, update `NEXT_PUBLIC_MEDUSA_BACKEND_URL` and the CORS
 values (step 10) to match, then switch Stripe out of test mode and repeat step 5 with the live
 keys (which also means registering the webhook again, step 8, against the live-mode account).

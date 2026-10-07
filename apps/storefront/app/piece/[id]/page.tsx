@@ -126,19 +126,15 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
 
             <p className={styles.description}>
               Cut flat by hand from a pattern drawn to your sheet, then closed on the
-              machine and finished at the bench — hem, facings and lining by hand. The
-              cloth is logged with its mill and its date, and that record is sewn into
-              the seam allowance. Made in a capped run for Collection {numeral} and not
+              machine and finished at the bench — hem, facings and lining by hand. Made in
+              a capped run for Collection {numeral} and not
               made again.
             </p>
 
             <div className={styles.run}>
               <span>capped run · Collection {numeral}</span>
               {orderable ? (
-                <>
-                  <span>three to five weeks</span>
-                  <span>alterations free for one year</span>
-                </>
+                <span>two to four weeks</span>
               ) : (
                 <span>closed · not made again</span>
               )}

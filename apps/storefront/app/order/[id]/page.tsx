@@ -66,8 +66,8 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
       <DocSection title="What happens next">
         <DocP>
           {isCommission
-            ? 'Four to six weeks at the bench from today. The names of the people who cut and finished it are written on the ticket that comes with it.'
-            : 'The atelier writes within two days to confirm your measurement sheet. Cutting begins once you have agreed it, and takes three to five weeks.'}
+            ? 'Two to four weeks at the bench from today.'
+            : 'The atelier writes within two days to confirm your measurement sheet. Cutting begins once you have agreed it, and takes two to four weeks.'}
         </DocP>
         <DocP>
           Anything to change, or a question about the sheet — write to{' '}

@@ -276,7 +276,7 @@ All five collections from the original plan exist, but only one is wired to a pa
 | Collection | Content | Status |
 |---|---|---|
 | `pages` | The Atelier, The Cloth, The house | **Built.** Seeded from `lib/catalog.ts`'s `STORY` constant by `payload/seed.ts`; read live by the three routes that used to read `STORY` directly (`lib/payload.ts`'s `getStoryPage`) |
-| `care` | Shipping, Measurement guide, Returns and alterations, Questions | Schema only (`key`, `title`, `lead`). The four `/care` pages still render their own hand-built sections, lists and comparison rows (`components/doc-page.tsx`) — moving that into Payload needs a content model for sections/lists/rows, which is separate work from standing the CMS up |
+| `care` | Shipping, Measurement guide, Returns, Questions | Schema only (`key`, `title`, `lead`). The four `/care` pages still render their own hand-built sections, lists and comparison rows (`components/doc-page.tsx`) — moving that into Payload needs a content model for sections/lists/rows, which is separate work from standing the CMS up |
 | `legal` | Terms, Privacy ⚠ **awaiting a lawyer — do not draft these** | Schema only, same reasoning as `care` — and there is nothing real to put in it yet regardless |
 | `seasons` | Editorial per collection, keyed to the Medusa collection handle | Schema only. Nothing renders this yet: the archive pages carry only the one-line `collection.note` already in Medusa metadata |
 | `media` | Photography, once it exists | Schema only — upload-enabled, one `alt` text field. Empty: everything today is a placeholder woven gradient (`HANDOVER.md` §8) |
@@ -437,7 +437,7 @@ swapped from `linsilk_medusa` to `linsilk_payload`.
 Set after the first deploy, once hostnames exist:
 
 ```
-STORE_CORS = https://linsilk.ch,https://linsilk-storefront.onrender.com
+STORE_CORS = https://bylinsilk.com,https://linsilk-storefront.onrender.com
 ADMIN_CORS = https://linsilk-medusa.onrender.com
 AUTH_CORS  = <both of the above>
 ```
@@ -465,7 +465,7 @@ S3_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
 S3_REGION=auto
 S3_ACCESS_KEY_ID=<R2 API token>
 S3_SECRET_ACCESS_KEY=<R2 API token secret>
-S3_FILE_URL=https://files.linsilk.ch   # a custom domain on the bucket, or the r2.dev URL
+S3_FILE_URL=https://files.bylinsilk.com   # a custom domain on the bucket, or the r2.dev URL
 S3_PREFIX=
 ```
 

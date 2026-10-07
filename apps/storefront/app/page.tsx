@@ -158,7 +158,7 @@ export default async function HomePage() {
           <div className={styles.clothColumns}>
             <Reveal delay={0.08}>
               <p className={styles.clothProse}>
-                Mulberry silk, and wet-spun linen from Kortrijk. No
+                Premium silk and premium linen, and nothing else. No
                 polyester in the shell, the lining, the pocket bag or the thread.
                 Synthetic fibre is cheaper to sew and it holds a press longer, which is
                 precisely why most houses use it where you cannot see.
@@ -168,8 +168,8 @@ export default async function HomePage() {
               <p className={styles.clothProse}>
                 Natural fibre moves, creases and ages. A linen jacket worn through one
                 summer will not look the way it looked in the photograph, and that is
-                the point of it. Every bolt is logged with its mill and its date, and
-                that record travels with the garment.
+                the point of it. Silk and linen breathe and rest lightly on the skin, which
+                is why comfort comes first.
               </p>
             </Reveal>
           </div>

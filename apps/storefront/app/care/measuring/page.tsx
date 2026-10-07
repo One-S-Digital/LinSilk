@@ -17,7 +17,7 @@ export default function MeasuringPage() {
       foot={
         <>
           <ButtonLink href="/collection" variant="outline">Enter the collection</ButtonLink>
-          <ButtonLink href="mailto:hello@linsilk.ch" variant="rule">Ask for help</ButtonLink>
+          <ButtonLink href="mailto:hello@bylinsilk.com" variant="rule">Ask for help</ButtonLink>
         </>
       }
     >

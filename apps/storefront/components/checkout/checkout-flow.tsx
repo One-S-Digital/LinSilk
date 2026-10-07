@@ -404,7 +404,7 @@ export function CheckoutFlow({
                 {options.length === 0 && (
                   <p className={styles.answer}>
                     The house does not ship to that address yet. Write to
-                    hello@linsilk.ch and the atelier will arrange it.
+                    hello@bylinsilk.com and the atelier will arrange it.
                   </p>
                 )}
               </div>
@@ -491,7 +491,7 @@ export function CheckoutFlow({
 
         <p className={styles.reassure}>
           Nothing is cut until the atelier has confirmed your measurement sheet in
-          writing. Alterations to a piece the house made are free for the first year.
+          writing.
         </p>
       </aside>
     </div>

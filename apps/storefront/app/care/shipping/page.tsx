@@ -15,7 +15,7 @@ export default function ShippingPage() {
       lead="Every garment is cut and finished to your measurement sheet, inspected twice, then dispatched from Geneva."
       foot={
         <>
-          <ButtonLink href="/care/returns" variant="rule">Returns and alterations</ButtonLink>
+          <ButtonLink href="/care/returns" variant="rule">Returns</ButtonLink>
           <ButtonLink href="/care/questions" variant="rule">Questions</ButtonLink>
         </>
       }
@@ -23,8 +23,8 @@ export default function ShippingPage() {
       <DocSection title="How long it takes">
         <DocP>
           The clock starts when your measurement sheet is confirmed in writing, not
-          when you reserve. A seasonal piece takes three to five weeks at the bench. A
-          commission takes four to six, because the pattern is drawn from nothing.
+          when you reserve. A piece takes two to four weeks at the bench, whether it
+          comes from a collection or from a commission.
         </DocP>
         <DocRows
           rows={[
@@ -50,7 +50,7 @@ export default function ShippingPage() {
         <DocP>
           You are written to when the pattern is cut, when the piece passes its second
           check, and when it is dispatched with a tracking number. If a parcel stalls
-          in customs, write to hello@linsilk.ch and the office in Geneva will chase
+          in customs, write to hello@bylinsilk.com and the office in Geneva will chase
           it rather than asking you to.
         </DocP>
       </DocSection>

@@ -12,7 +12,7 @@ export default function TermsPage() {
     <DocPage
       eyebrow="Legal"
       title="Terms of sale"
-      lead="LinSilk sells made-to-measure garments from Geneva. These terms govern reservations, confirmation, payment, delivery and alterations."
+      lead="LinSilk sells made-to-measure garments from Geneva. These terms govern reservations, confirmation, payment and delivery."
     >
       <DocSection title="Awaiting legal review">
         <DocP>
@@ -31,7 +31,6 @@ export default function TermsPage() {
             'Payment terms, and how a commission’s confirmed price replaces its estimate.',
             'The statutory right of withdrawal, and the made-to-measure exemption under EU and Swiss law.',
             'Delivery times as estimates, and what happens when they are missed.',
-            'The alterations and remake commitments the house makes publicly.',
             'Warranty, liability limits, governing law and the competent court.',
           ]}
         />

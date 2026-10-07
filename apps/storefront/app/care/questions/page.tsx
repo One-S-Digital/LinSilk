@@ -5,14 +5,14 @@ import { ButtonLink } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Questions',
   description:
-    'Cloth, sizing, commissions and cuttings — the questions the house is asked most.',
+    'Cloth, sizing and commissions — the questions the house is asked most.',
 };
 
 export default function QuestionsPage() {
   return (
     <DocPage
       title="Questions"
-      lead="What the office in Geneva is asked most often. Anything not here, write to hello@linsilk.ch — a person answers, usually within a day."
+      lead="What the office in Geneva is asked most often. Anything not here, write to hello@bylinsilk.com — a person answers, usually within a day."
       foot={
         <>
           <ButtonLink href="/care/measuring" variant="rule">Measurement guide</ButtonLink>
@@ -20,13 +20,6 @@ export default function QuestionsPage() {
         </>
       }
     >
-      <DocSection title="Can I have a cutting of the cloth first?">
-        <DocP>
-          Yes, and for a commission one is posted to you before anything is cut. Ask
-          for any silk or linen colour at any time and it is sent free, anywhere.
-        </DocP>
-      </DocSection>
-
       <DocSection title="Why is there no size chart?">
         <DocP>
           Because nothing is made to a size. A pattern is drawn to your fifteen
@@ -54,8 +47,7 @@ export default function QuestionsPage() {
       <DocSection title="How should I wash it?">
         <DocP>
           Silk and linen both prefer cool hand-washing and drying flat out of direct
-          sun; neither wants a tumble dryer. A ticket with instructions for your
-          specific cloth comes with the garment, written for that bolt.
+          sun; neither wants a tumble dryer.
         </DocP>
       </DocSection>
     </DocPage>

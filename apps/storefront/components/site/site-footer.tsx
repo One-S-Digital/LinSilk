@@ -14,7 +14,7 @@ const shopLinks = async () => [
 const CARE = [
   { href: '/care/shipping', label: 'Shipping' },
   { href: '/care/measuring', label: 'Measurement guide' },
-  { href: '/care/returns', label: 'Returns and alterations' },
+  { href: '/care/returns', label: 'Returns' },
   { href: '/care/questions', label: 'Questions' },
 ];
 
@@ -87,8 +87,8 @@ export async function SiteFooter() {
             <Link href="/season-letter" className={styles.link}>
               Season letter
             </Link>
-            <a href="mailto:hello@linsilk.ch" className={styles.link}>
-              hello@linsilk.ch
+            <a href="mailto:hello@bylinsilk.com" className={styles.link}>
+              hello@bylinsilk.com
             </a>
           </div>
         </div>
