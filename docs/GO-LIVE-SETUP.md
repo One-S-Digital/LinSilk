@@ -86,6 +86,7 @@ Render dashboard → **New** → **Key Value**.
 | Region | Frankfurt — same region as everything else; cross-region traffic is slower and sometimes billed |
 | Instance Type | Starter |
 | IP Allow List | leave **empty** — that restricts it to Render's private network only, which is what you want. Nothing about Redis should ever be reachable from the public internet. |
+| Maxmemory Policy | `noeviction`. Render's default, `allkeys-lru`, lets Redis throw away queued jobs, workflow state and locks when it runs short of memory, and Medusa logs `Eviction policy is allkeys-lru. It should be "noeviction"` at every start until it is changed. |
 
 Create it, then copy its **Internal Connection String** — that's your `REDIS_URL`.
 
@@ -191,7 +192,7 @@ step 0.
 | Region | Frankfurt |
 | Root Directory | leave **blank** (repo root) — the build command below uses pnpm's workspace filter, which needs to run from the root where `pnpm-workspace.yaml` lives, not from `apps/medusa` |
 | Runtime | Node |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter medusa build` |
+| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter medusa build && cp -r apps/medusa/.medusa/server/public apps/medusa/public` |
 | Start Command | `pnpm --filter medusa start` |
 | Instance Type | Starter |
 
@@ -208,6 +209,16 @@ move around; look under the service's **Settings** tab afterward if not):
   instead, permanently: `pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa start`.
   Safe to leave in long-term — `db:migrate` is idempotent, so running it on every deploy costs
   nothing when there's nothing new to migrate.
+
+**Why the Build Command ends in `cp -r …`:** `medusa build` writes the admin UI to
+`apps/medusa/.medusa/server/public/admin`, but `medusa start` run from `apps/medusa` looks for it
+at `apps/medusa/public/admin`. Without the copy the service crashes on boot with `Could not find
+index.html in the admin build directory` and never opens a port.
+
+**Node version:** the repo's `.node-version` pins Node 22. Leave it. Render resolves an unbounded
+`engines` range such as `>=20` to the newest Node release, and on Node 26 `corepack enable` fails
+with `EROFS: read-only file system` and the build never starts. `NODE_VERSION=22` as an
+environment variable does the same thing and wins over the file.
 
 **Note the URL Render assigns it** (shown at the top of the service page, normally
 `https://linsilk-medusa.onrender.com` unless that exact name was taken) — you need it in steps 8
@@ -258,7 +269,7 @@ Render dashboard → **New** → **Background Worker**. Same repo, same branch.
 | Region | Frankfurt |
 | Root Directory | blank, same reasoning as step 6 |
 | Runtime | Node |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter medusa build` |
+| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter medusa build && cp -r apps/medusa/.medusa/server/public apps/medusa/public` |
 | Start Command | `pnpm --filter medusa start` — identical to `linsilk-medusa`; `MEDUSA_WORKER_MODE` is what makes it behave differently |
 | Instance Type | Starter |
 
@@ -385,17 +396,27 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
    **No Shell tab on your plan?** It's a paid-instance feature, same as Pre-Deploy Command (step
    6). Use the Start Command field instead — it's available on every plan:
 
-   1. `linsilk-medusa` → Settings → Start Command. Change it from `pnpm --filter medusa start` to:
+   1. `linsilk-medusa` → Settings → Start Command. Put the user step in front of the final
+      `start`:
 
       ```bash
       pnpm --filter medusa exec medusa user -e you@linsilk.ch -p <a throwaway password> && pnpm --filter medusa start
+      ```
+
+      If you folded the migration into the Start Command in step 6, keep it at the front, so the
+      tables exist before the user is created (`medusa user` fails on an empty database):
+
+      ```bash
+      pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa user -e you@linsilk.ch -p <a throwaway password> && pnpm --filter medusa start
       ```
 
       Use a throwaway password, not your real one — Render keeps this field in deploy-settings
       history and likely echoes it into the deploy log, so it isn't private the way a Shell
       session would be.
    2. Save (redeploys). Watch **Logs** for the "user created" confirmation.
-   3. **Revert immediately** back to plain `pnpm --filter medusa start`. This matters more than
+   3. **Revert immediately** to what the field held before: plain `pnpm --filter medusa start`,
+      or the `db:migrate && … start` form from step 6 (do not drop the migration when you
+      revert). This matters more than
       it would for Pre-Deploy Command: because of `&&`, if `medusa user` is ever left in and runs
       again (e.g. you forget to revert), it fails since the user already exists, `medusa start`
       never runs, and the service won't boot at all.
@@ -484,6 +505,15 @@ keys (which also means registering the webhook again, step 8, against the live-m
 
 ## If something won't connect
 
+- **Medusa exits at start with `relation "…" does not exist`** (`region_country`, `tax_provider`,
+  `rbac_role`…): the migrations never ran against this database. Put `db:migrate` in the Pre-Deploy
+  Command or the Start Command (step 6).
+- **Medusa exits at start with `Could not find index.html in the admin build directory`**: the
+  Build Command is missing the `cp -r …` on the end (step 6).
+- **Storefront build fails with `Failed to build /… because it took more than 60 seconds`**: the
+  storefront could not get an answer from `linsilk-medusa`, which is usually down, not slow.
+  Each read now gives up after 8 seconds, so the build renders what it has instead; fix Medusa
+  first (check its log) and redeploy.
 - **Medusa won't boot**: check the deploy log for which env var it says is missing —
   `medusa-config.ts` refuses to start without `DATABASE_URL`, `REDIS_URL`, both secrets and the
   three CORS values, and names the missing one rather than failing silently.
