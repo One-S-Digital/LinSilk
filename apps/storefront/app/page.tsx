@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import {
+  ChalkMark,
   ClothWipe,
   Count,
   HeroMedia,
   LineRise,
+  Parallax,
   Reveal,
   RuleDraw,
 } from '@/components/motion';
@@ -63,13 +65,34 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---- Statement ---- */}
-      <section className={styles.statement}>
-        <Reveal>
-          <p className={`${styles.statementText} u-balance`}>
-            Each season, a small number of pieces. Made once, then never again.
-          </p>
-        </Reveal>
+      {/* ---- The house in three lines ---- */}
+      <section className={styles.pillars}>
+        <div className={styles.pillarGrid}>
+          <Reveal className={styles.pillar}>
+            <h2 className={styles.pillarTitle}>Luxury, premium-quality material</h2>
+            <p className={styles.pillarBody}>
+              Silk and linen of the finest grade, chosen for how they feel against the
+              skin before how they look on a hanger. Nothing synthetic enters the
+              shell, the lining or the thread.
+            </p>
+          </Reveal>
+          <Reveal className={styles.pillar} delay={0.1}>
+            <h2 className={styles.pillarTitle}>Made to your fit and measurements</h2>
+            <p className={styles.pillarBody}>
+              No size chart, no nearest size. Each piece is cut after you send your
+              measurements, so it sits, falls and moves with your body and no one
+              else’s.
+            </p>
+          </Reveal>
+          <Reveal className={styles.pillar} delay={0.2}>
+            <h2 className={styles.pillarTitle}>High-frequency fabric that raises you</h2>
+            <p className={styles.pillarBody}>
+              Natural cloth from living fibre, light on the body and calm to wear. We
+              make it to do more than feel good: to lift how you feel and how you
+              carry yourself.
+            </p>
+          </Reveal>
+        </div>
       </section>
 
       {/* ---- This season ----
@@ -142,6 +165,111 @@ export default async function HomePage() {
               </ButtonLink>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ---- The atelier ---- */}
+      <section className={styles.atelier} aria-labelledby="atelier-heading">
+        <div className={styles.atelierGrid}>
+          <Reveal>
+            <span className={styles.eyebrowDark}>The Atelier</span>
+            <h2 id="atelier-heading" className={`${styles.sectionHeading} u-balance`}>
+              Clothes made the way they were always meant to be had.
+            </h2>
+            <p className={styles.prose}>
+              LinSilk does not make mass-produced, low-grade, synthetic clothing. Each
+              piece is made to your own measurements, so the garment follows your body
+              instead of asking your body to follow it. That fit is what lets smooth,
+              breathable silk and linen do what they do best: rest lightly on the
+              skin, move with you, and stay comfortable from the first hour to the
+              last.
+            </p>
+          </Reveal>
+
+          <div className={styles.atelierPair}>
+            <Parallax distance={34} style={{ aspectRatio: '3 / 4' }}>
+              <ShotFrame
+                weave="bone"
+                ratio="auto"
+                src="/images/atelier-needle.webp"
+                alt="Hands stitching emerald floral silk by hand"
+                style={{ height: '130%', marginTop: '-15%' }}
+              >
+                <ChalkMark
+                  label="shoulder · 41"
+                  style={{ position: 'absolute', right: -8, top: '38%' }}
+                />
+              </ShotFrame>
+            </Parallax>
+
+            <Parallax
+              distance={-34}
+              className={styles.atelierPairLower}
+              style={{ aspectRatio: '3 / 4' }}
+            >
+              <ShotFrame
+                weave="sand"
+                ratio="auto"
+                src="/images/atelier-pin.webp"
+                alt="Hands pinning a silk top on a dress form"
+                style={{ height: '130%', marginTop: '-15%' }}
+              />
+            </Parallax>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- High frequency ---- */}
+      <section className={styles.frequency} aria-labelledby="frequency-heading">
+        <div className={styles.frequencyGrid}>
+          <Reveal className={styles.frequencyHead}>
+            <span className={styles.eyebrowDark}>High Frequency</span>
+            <h2 id="frequency-heading" className={`${styles.sectionHeading} u-balance`}>
+              What we mean by high frequency.
+            </h2>
+          </Reveal>
+
+          <div className={styles.frequencyList}>
+            <Reveal className={styles.frequencyItem}>
+              <span className={styles.frequencyNum}>01</span>
+              <h3 className={styles.frequencyTitle}>Everything is energy</h3>
+              <p className={styles.frequencyBody}>
+                Physics has said it for a century. Einstein’s E = mc² shows that mass is
+                energy held in a very dense form. Look closely at anything you can
+                touch, a stone, a hand, a length of silk, and you find atoms that are
+                almost entirely empty space, made of particles that are best described
+                as vibrations in underlying fields. What feels solid is energy,
+                condensed.
+              </p>
+            </Reveal>
+
+            <Reveal className={styles.frequencyItem}>
+              <span className={styles.frequencyNum}>02</span>
+              <h3 className={styles.frequencyTitle}>All energy has a frequency</h3>
+              <p className={styles.frequencyBody}>
+                Energy vibrates, and each kind vibrates differently: light, sound, heat,
+                and the activity of your own body. Cloth lies against you all day, so we
+                believe it belongs in that picture. We want our clothes not only to feel
+                comfortable but to raise your natural frequency. Silk and linen come from
+                living things, the silkworm and the flax plant, and we hold that they
+                carry that life into the garment.
+              </p>
+            </Reveal>
+
+            <Reveal className={styles.frequencyItem}>
+              <span className={styles.frequencyNum}>03</span>
+              <h3 className={styles.frequencyTitle}>What synthetics take away</h3>
+              <p className={styles.frequencyBody}>
+                PU, polyester, nylon and other plastic-based fabrics are made from
+                petrochemicals. They trap heat and moisture against the skin, shed
+                microplastic fibres as they are worn and washed, and often carry finishing
+                chemicals that sit on your skin for hours a day. Over years, that can mean
+                irritation and discomfort, and the effect of long plastic exposure on the
+                body is still being studied. In our view a cloth with no life in it dulls
+                your energy rather than lifting it, which is why we use none.
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
 
