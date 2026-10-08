@@ -322,15 +322,15 @@ export const COMMISSION_STEPS = [
 export const STORY = {
   cloth: {
     title: 'The Cloth',
-    lead: 'Mulberry silk, and wet-spun linen from Kortrijk. No synthetic fibre in the shell, the lining, the pocket bag or the thread.',
-    a: 'Silk is bought in 16, 19 and 22 momme weights, undyed where possible and finished in small lots. Linen is wet-spun rather than dry-spun, which produces a smoother yarn and a cloth that softens instead of pilling. Both are bought by the bolt, logged with mill and date, and used until the bolt is gone.',
+    lead: 'Premium silk and premium linen, and nothing else. No synthetic fibre in the shell, the lining, the pocket bag or the thread.',
+    a: 'Silk is smooth and light, and keeps you comfortable when the temperature drops as well as when it rises. Linen is crisp, airy and cooling, and softens with every wear. Both breathe, move with the body and rest lightly on the skin.',
     b: 'Natural fibre creases, moves and ages. A linen jacket after one summer does not look like the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew, which is why most houses put them where the customer cannot see. The house does not keep any in the room.',
   },
   contact: {
     title: 'The house',
     lead: 'LinSilk was set up to make one thing properly: clothing in pure natural fibre, cut for one body, made in small capped runs and never restocked.',
-    a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A commission takes four to six weeks from the confirmed measurement sheet; a seasonal piece takes three to five.',
-    b: 'Alterations to a piece the house made are free for the first year — send it back and it is re-set at the bench. Write to hello@linsilk.ch for a fabric cutting or any question about your order.',
+    a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A piece takes two to four weeks from the confirmed measurement sheet.',
+    b: 'Write to hello@bylinsilk.com with any question about a piece or your order.',
   },
 } as const;
 

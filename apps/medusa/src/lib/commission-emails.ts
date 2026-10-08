@@ -142,7 +142,7 @@ export function commissionQuotedEmail(commission: CommissionRecord & { access_to
             ]
           : ["Reply to this email to accept."]),
         "",
-        "Cutting begins once the payment has cleared; the piece takes four to six",
+        "Cutting begins once the payment has cleared; the piece takes two to four",
         "weeks from that point. If anything here is wrong, reply and it is amended",
         "before a pattern is drawn.",
         "",

@@ -203,8 +203,9 @@ the modules to collide with.
 
 > **A note on the palette.** Warm cream + serif display + tan accent is currently the single most
 > generic "AI-designed" look there is. What keeps this off that pile is subject specificity —
-> the chalk marks, the mono art-direction notes, momme weights, Roman numerals, the Vietnamese
-> terms, mill-and-date logging. **Do not sand those off.** They are the design.
+> the chalk marks, the mono art-direction notes, Roman numerals, the Vietnamese terms.
+> **Do not sand those off.** They are the design. (Momme weights, mill-and-date logging, the
+> Kortrijk linen and the "ticket" were removed on 2026-10-07: the user said they are not real.)
 
 ---
 

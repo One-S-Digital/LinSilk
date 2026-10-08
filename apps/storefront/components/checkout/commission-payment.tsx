@@ -93,7 +93,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (problem && !commission) {
     return (
       <p className={styles.answer}>
-        {problem} If you believe this is a mistake, write to hello@linsilk.ch.
+        {problem} If you believe this is a mistake, write to hello@bylinsilk.com.
       </p>
     );
   }
@@ -102,8 +102,8 @@ export function CommissionPayment({ token }: { token: string }) {
   if (commission.paid_at) {
     return (
       <p className={styles.answer}>
-        This commission is paid for and is with the bench. Four to six weeks from the
-        day it was settled. Write to hello@linsilk.ch if anything needs changing.
+        This commission is paid for and is with the bench. Two to four weeks from the day
+        it was settled. Write to hello@bylinsilk.com if anything needs changing.
       </p>
     );
   }
@@ -121,8 +121,8 @@ export function CommissionPayment({ token }: { token: string }) {
     return (
       <p className={styles.answer}>
         {commission.status === 'declined'
-          ? 'This commission was declined. Write to hello@linsilk.ch if you believe this is a mistake.'
-          : 'This commission is not ready to pay for yet. Write to hello@linsilk.ch if you expected otherwise.'}
+          ? 'This commission was declined. Write to hello@bylinsilk.com if you believe this is a mistake.'
+          : 'This commission is not ready to pay for yet. Write to hello@bylinsilk.com if you expected otherwise.'}
       </p>
     );
   }

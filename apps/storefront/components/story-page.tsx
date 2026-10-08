@@ -7,14 +7,14 @@ import styles from './story-page.module.css';
 
 const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
   cloth: [
-    { note: 'bolt end, mill ticket', weave: 'bone' },
+    { note: 'cloth, folded', weave: 'bone' },
     { note: 'silk, raking light', weave: 'sand' },
-    { note: 'wet-spun flax, close', weave: 'bone' },
+    { note: 'linen, close', weave: 'bone' },
   ],
   contact: [
     { note: 'the room, morning', weave: 'bone' },
     { note: 'Geneva desk, order book', weave: 'sand' },
-    { note: 'finished ticket, signed', weave: 'bone' },
+    { note: 'finished piece, folded', weave: 'bone' },
   ],
 };
 

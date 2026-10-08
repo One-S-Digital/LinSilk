@@ -205,6 +205,8 @@ export function ClothWipe({
   from = 'left',
 }: Common & { duration?: number; from?: 'left' | 'right' | 'bottom' }) {
   const still = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const seen = useInView(ref, { once: true, amount: 0.25 });
 
   const closed =
     from === 'left'
@@ -221,26 +223,29 @@ export function ClothWipe({
     );
   }
 
+  /* The in-view test runs on this plain outer element. A fully clipped element
+     reports zero visible area to IntersectionObserver, so observing the
+     clipped one itself could never reach the threshold and the picture would
+     stay hidden for good. */
   return (
-    <motion.div
-      data-reveal
-      className={className}
-      style={{ overflow: 'hidden', ...style }}
-      initial={{ clipPath: closed }}
-      whileInView={{ clipPath: 'inset(0 0 0 0)' }}
-      viewport={{ once: true, amount: 0.25 }}
-      transition={base(duration, delay)}
-    >
+    <div ref={ref} className={className} style={style}>
       <motion.div
-        style={{ width: '100%', height: '100%' }}
-        initial={{ scale: 1.08 }}
-        whileInView={{ scale: 1 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={base(duration + 0.35, delay)}
+        data-reveal
+        style={{ overflow: 'hidden', width: '100%', height: '100%' }}
+        initial={{ clipPath: closed }}
+        animate={{ clipPath: seen ? 'inset(0 0 0 0)' : closed }}
+        transition={base(duration, delay)}
       >
-        {children}
+        <motion.div
+          style={{ width: '100%', height: '100%' }}
+          initial={{ scale: 1.08 }}
+          animate={{ scale: seen ? 1 : 1.08 }}
+          transition={base(duration + 0.35, delay)}
+        >
+          {children}
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 

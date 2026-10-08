@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload';
 
-/** Shipping, Measurement guide, Returns and alterations, Questions.
+/** Shipping, Measurement guide, Returns, Questions.
  *
  * Schema only for now. The four /care pages still render their own hand-built
  * sections, lists and comparison rows (components/doc-page.tsx) — moving that

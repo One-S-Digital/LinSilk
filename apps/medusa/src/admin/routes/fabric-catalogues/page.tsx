@@ -121,7 +121,7 @@ const FabricCataloguesPage = () => {
           onChange={(e) => setTitle(e.target.value)}
         />
         <Textarea
-          placeholder="A line about what is in it — Mulberry silk, 16 to 22 momme."
+          placeholder="A line about what is in it — for example, silk in plain, jacquard and brocade weaves."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

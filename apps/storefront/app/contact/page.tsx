@@ -11,8 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function ContactPage() {
   return (
     <StoryPage storyKey="contact">
-      <ButtonLink href="mailto:hello@linsilk.ch" variant="outline">
-        hello@linsilk.ch
+      <ButtonLink href="mailto:hello@bylinsilk.com" variant="outline">
+        hello@bylinsilk.com
       </ButtonLink>
       <ButtonLink href="/care/measuring" variant="rule">
         Measurement help

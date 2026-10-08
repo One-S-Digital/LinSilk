@@ -71,7 +71,7 @@ export function PaymentPanel({
     return (
       <p className={styles.answer}>
         Payment is not configured on this storefront yet. Write to
-        hello@linsilk.ch and the atelier will take it from here.
+        hello@bylinsilk.com and the atelier will take it from here.
       </p>
     );
   }

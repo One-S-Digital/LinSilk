@@ -143,7 +143,7 @@ export function PieceOrderPanel({
       <div className={styles.sheetWrap}>
         <p className={styles.blocked}>
           The cloth for this piece has not been confirmed yet, so it cannot be reserved
-          just now. Write to hello@linsilk.ch and the atelier will tell you what it is
+          just now. Write to hello@bylinsilk.com and the atelier will tell you what it is
           cut in.
         </p>
       </div>
@@ -231,7 +231,7 @@ export function PieceOrderPanel({
             {!variantId && (
               <p className={styles.blocked}>
                 The house cannot be reached just now, so nothing can be held. Write to
-                hello@linsilk.ch and the atelier will hold it by hand.
+                hello@bylinsilk.com and the atelier will hold it by hand.
               </p>
             )}
 

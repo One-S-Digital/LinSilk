@@ -166,7 +166,7 @@ export function CommissionFlow({
       setSent(true);
     } catch (error) {
       setSendError(
-        `${(error as Error).message} Nothing was lost — try again, or write to hello@linsilk.ch.`,
+        `${(error as Error).message} Nothing was lost — try again, or write to hello@bylinsilk.com.`,
       );
     } finally {
       setSending(false);

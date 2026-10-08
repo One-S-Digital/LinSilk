@@ -34,7 +34,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://linsilk.ch'),
+  metadataBase: new URL('https://bylinsilk.com'),
   title: {
     default: 'LinSilk — made to measure in pure natural fibre',
     template: '%s — LinSilk',
