@@ -38,6 +38,7 @@ export const LENGTH_ZONES: Record<string, Zone> = {
   skirt: { key: "lengthSkirt", label: "Skirt length", vi: "Dài váy" },
   trouser: { key: "lengthTrouser", label: "Trouser length", vi: "Dài quần" },
   top: { key: "lengthTop", label: "Desired length", vi: "Dài áo" },
+  robe: { key: "lengthRobe", label: "Robe length", vi: "Dài áo choàng" },
 }
 
 /** The length kinds a piece declares, from its product metadata. */

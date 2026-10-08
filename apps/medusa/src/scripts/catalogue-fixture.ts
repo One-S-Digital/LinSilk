@@ -9,7 +9,7 @@
  * the storefront reads them back out of the store API.
  */
 
-export type LengthKind = "dress" | "skirt" | "trouser" | "top"
+export type LengthKind = "dress" | "skirt" | "trouser" | "top" | "robe"
 
 export type Silhouette = {
   key: string

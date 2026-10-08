@@ -119,7 +119,7 @@ const readCollection = (c: ApiCollection): Collection | null => {
   };
 };
 
-const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top'];
+const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top', 'robe'];
 
 const readPiece = (p: ApiProduct, collection: Collection): Piece => {
   const meta = p.metadata ?? {};
@@ -269,7 +269,7 @@ export const ZONES: Zone[] = [
  * separate length for each kind of garment, taken from a different place on
  * each, so the sheet asks for the one that applies. */
 
-export type LengthKind = 'dress' | 'skirt' | 'trouser' | 'top';
+export type LengthKind = 'dress' | 'skirt' | 'trouser' | 'top' | 'robe';
 
 /* Each length has its own key, so a sleep set can carry a top length and a
    trouser length on the same sheet without one overwriting the other. */
@@ -297,6 +297,12 @@ export const LENGTH_ZONE: Record<LengthKind, Zone> = {
     label: 'Desired length',
     vi: 'Dài áo',
     hint: 'From the top of the shoulder seam straight down to where you want the hem to fall. Measure against a garment you already own and like.',
+  },
+  robe: {
+    key: 'lengthRobe',
+    label: 'Robe length',
+    vi: 'Dài áo choàng',
+    hint: 'From the top of the shoulder seam straight down to where you want the robe to fall. Measure against a robe you already own and like.',
   },
 };
 

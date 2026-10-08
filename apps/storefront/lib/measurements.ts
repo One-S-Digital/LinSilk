@@ -52,6 +52,7 @@ export const RANGES: Record<string, [number, number]> = {
   lengthSkirt: [30, 180],
   lengthTrouser: [30, 180],
   lengthTop: [30, 180],
+  lengthRobe: [30, 180],
 };
 
 export function validate(key: string, cm: number, unit: Unit): string | null {

@@ -30,7 +30,7 @@ import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../../../../lib/co
  * and a price moved on a piece the house has already published.
  */
 
-const LENGTH_KINDS = ["dress", "skirt", "trouser", "top"] as const
+const LENGTH_KINDS = ["dress", "skirt", "trouser", "top", "robe"] as const
 
 /* Per-piece size of the season's capped run, when a caller does not say. */
 const RUN_CAP = 10
