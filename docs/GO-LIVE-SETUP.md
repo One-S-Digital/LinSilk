@@ -341,9 +341,21 @@ Render dashboard → **New** → **Web Service**. Same repo, same branch.
 | Region | Frankfurt |
 | Root Directory | blank |
 | Runtime | Node |
-| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter storefront build` |
+| Build Command | `corepack enable && pnpm install --frozen-lockfile && pnpm --filter storefront exec payload migrate && pnpm --filter storefront build` |
 | Start Command | `pnpm --filter storefront start` |
 | Instance Type | Starter |
+
+**Why the Build Command runs `payload migrate`:** the storefront reads its Cloth and Contact copy from Payload while it builds, so the tables have to exist before `next build`. Payload only creates tables by itself outside production, so the repo carries a migration (`apps/storefront/migrations/`) and every build applies it. Applying it again is a no-op.
+
+**First deploy only: seed the copy in the same build.** The build also needs those two pages to exist, and not every plan has a Render shell. Use this Build Command for the first deploy:
+
+```bash
+corepack enable && pnpm install --frozen-lockfile && pnpm --filter storefront exec payload migrate && pnpm --filter storefront exec payload run ./payload/seed.ts && pnpm --filter storefront build
+```
+
+Once it deploys clean, put the Build Command back to the form in the table. The seed resets those pages to the copy in the repo every time it runs, so leaving it in would undo anything edited in Payload's admin on the next deploy.
+
+If the build log shows the database host timing out or not resolving, the build cannot reach the Internal Database URL. Use the External Database URL in `DATABASE_URI` instead.
 
 **Note its URL** (e.g. `https://linsilk-storefront.onrender.com`) — you need it in step 10.
 
@@ -443,16 +455,21 @@ watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:mig
 
 1. Once `linsilk-storefront` deploys clean, visit
    `https://linsilk-storefront.onrender.com/admin` — it asks you to create the first user.
-2. Seed the `pages` collection (Atelier, Cloth, The house copy) from `linsilk-storefront`'s
-   Render shell:
+2. The `pages` copy (Cloth, The house) was seeded by the first build in step 9. To reset it by
+   hand from `linsilk-storefront`'s Render shell, run the same seed (it overwrites edits made in
+   Payload's admin):
 
    ```bash
    pnpm --filter storefront exec payload run ./payload/seed.ts
    ```
 
+When the Payload schema changes later, create a migration with `pnpm --filter storefront exec payload migrate:create <name>`, then change the first line of the new file in `apps/storefront/migrations/` to `import { type MigrateUpArgs, type MigrateDownArgs, sql } from '@payloadcms/db-postgres'` (Payload's CLI loads the file with plain Node, which fails on the generated type-only imports) and commit it. The next build applies it.
+
 ---
 
 ## 13. Seed the Medusa catalogue
+
+The seed provisions structure, not pieces: the store, the regions and their prices, shipping and the stock location, the commission silhouettes, and the link between the default publishable API key and the sales channel.
 
 From `linsilk-medusa`'s Render shell:
 
@@ -460,12 +477,16 @@ From `linsilk-medusa`'s Render shell:
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
 ```
 
+**No Shell tab?** Run it from the Start Command for one deploy, as with the admin user in step 11, then put the Start Command back to what it was:
+
+```bash
+pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts && pnpm --filter medusa start
+```
+
 Safe to run again later — it only creates what's missing and corrects wording on what already
 exists, never touches a price once set.
 
-**⚠ Collections I–III (36 pieces) in the fixture are placeholder content**, not the client's real
-catalogue (`docs/BACKEND-RENDER.md` §4). Seeding them gives you a working archive to test with,
-but confirm with the client before this data is what a real visitor sees.
+**The seed adds no pieces.** A season and its pieces arrive through the Medusa admin or the ingestion route (`docs/CATALOGUE-INGESTION.md`). Until a collection with status `current` has published pieces, the storefront says "No collection is open".
 
 ---
 
@@ -514,6 +535,8 @@ keys (which also means registering the webhook again, step 8, against the live-m
   storefront could not get an answer from `linsilk-medusa`, which is usually down, not slow.
   Each read now gives up after 8 seconds, so the build renders what it has instead; fix Medusa
   first (check its log) and redeploy.
+- **Storefront build fails with `Payload could not be read for "cloth"` or `relation "pages" does not exist`**: the Payload tables were never created. The Build Command is missing `payload migrate` (step 9).
+- **Storefront build fails with `Payload has no "pages" document`**: the tables exist but the copy was never seeded. Use the first-deploy Build Command with the seed (step 9).
 - **Medusa won't boot**: check the deploy log for which env var it says is missing —
   `medusa-config.ts` refuses to start without `DATABASE_URL`, `REDIS_URL`, both secrets and the
   three CORS values, and names the missing one rather than failing silently.
