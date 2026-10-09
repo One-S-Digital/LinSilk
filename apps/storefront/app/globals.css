@@ -1,6 +1,5 @@
 /* LinSilk — design tokens.
-   Values are lifted verbatim from the Claude Design prototype
-   (`Maison Ayla prototype with Framer Motion/Maison Ayla.dc.html`).
+   Values are lifted verbatim from the original Claude Design prototype.
    The house palette is a single committed light scheme; there is no dark mode. */
 
 :root {

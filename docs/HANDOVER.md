@@ -25,9 +25,8 @@ Two ways to buy:
 | **Seasonal piece** | A design the house drew, cut to your measurements. Reserve → atelier confirms the sheet in writing → cut. |
 | **Commission** | A garment that exists because the client described it. Silhouette + cloth + written note + reference images + measurements. **A request for a quote**: it never enters the cart, nothing is charged on the page, and a tailor writes back with the price. |
 
-The design came from a Claude Design prototype, kept for reference at
-`Maison Ayla prototype with Framer Motion/`. It is a **visual reference, not a spec** — treat it
-as art direction. `support.js` in that folder is the Claude Design runtime and was never ported.
+The design came from a Claude Design prototype, since removed from the repo (it is in the git
+history). It was a **visual reference, not a spec** — treat the live site as the source of truth.
 
 ---
 
@@ -65,8 +64,7 @@ Maison Ayla/                (repo folder name on disk — unchanged; brand is Li
 │  └─ public/measure/        Measurement guide plates  ⚠ see §8
 ├─ docs/                     This file, and BACKEND-RENDER.md
 ├─ docker/init-db.sql        Creates the Payload database alongside Medusa's
-├─ docker-compose.yml        Postgres 16 + Redis 7 for local dev
-└─ Maison Ayla prototype…/   Original Claude Design output · reference only
+└─ docker-compose.yml        Postgres 16 + Redis 7 for local dev
 ```
 
 **76 source files, ~7,540 lines, 30 route files, 84 prerendered pages.**
