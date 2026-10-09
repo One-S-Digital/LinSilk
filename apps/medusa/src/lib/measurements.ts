@@ -11,34 +11,34 @@
    range is not: the storefront warns about it and lets the client proceed,
    and the atelier confirms every sheet in writing before cutting. */
 
-/** A measurement as the bench knows it: our word, and the tailor's own. */
-export type Zone = { key: string; label: string; vi: string }
+/** A measurement as the bench knows it. */
+export type Zone = { key: string; label: string }
 
 export const BODY_ZONES: Zone[] = [
-  { key: "neck", label: "Neck", vi: "Cổ" },
-  { key: "shoulder", label: "Shoulder", vi: "Vai" },
-  { key: "bust", label: "Bust / chest", vi: "Ngực" },
-  { key: "bustPoint", label: "Bust point", vi: "Hạ đỉnh ngực" },
-  { key: "frontWaist", label: "Front waist length", vi: "Hạ eo trước" },
-  { key: "backWaist", label: "Back waist length", vi: "Hạ eo sau" },
-  { key: "waist", label: "Waist", vi: "Eo" },
-  { key: "hip", label: "Hip", vi: "Mông" },
-  { key: "hipDepth", label: "Hip depth", vi: "Hạ đỉnh mông" },
-  { key: "thigh", label: "Thigh", vi: "Đùi" },
-  { key: "knee", label: "Knee", vi: "Gối" },
-  { key: "sleeve", label: "Sleeve length", vi: "Dài tay" },
-  { key: "bicep", label: "Upper arm", vi: "Bắp tay" },
-  { key: "wrist", label: "Wrist", vi: "Cổ tay" },
-  { key: "rise", label: "Rise", vi: "Đáy quần" },
+  { key: "neck", label: "Neck" },
+  { key: "shoulder", label: "Shoulder" },
+  { key: "bust", label: "Bust / chest" },
+  { key: "bustPoint", label: "Bust point" },
+  { key: "frontWaist", label: "Front waist length" },
+  { key: "backWaist", label: "Back waist length" },
+  { key: "waist", label: "Waist" },
+  { key: "hip", label: "Hip" },
+  { key: "hipDepth", label: "Hip depth" },
+  { key: "thigh", label: "Thigh" },
+  { key: "knee", label: "Knee" },
+  { key: "sleeve", label: "Sleeve length" },
+  { key: "bicep", label: "Upper arm" },
+  { key: "wrist", label: "Wrist" },
+  { key: "rise", label: "Rise" },
 ]
 
 /** Keyed by the kinds in a piece's `metadata.length_kinds`. */
 export const LENGTH_ZONES: Record<string, Zone> = {
-  dress: { key: "lengthDress", label: "Dress length", vi: "Chiều dài đầm" },
-  skirt: { key: "lengthSkirt", label: "Skirt length", vi: "Dài váy" },
-  trouser: { key: "lengthTrouser", label: "Trouser length", vi: "Dài quần" },
-  top: { key: "lengthTop", label: "Desired length", vi: "Dài áo" },
-  robe: { key: "lengthRobe", label: "Robe length", vi: "Dài áo choàng" },
+  dress: { key: "lengthDress", label: "Dress length" },
+  skirt: { key: "lengthSkirt", label: "Skirt length" },
+  trouser: { key: "lengthTrouser", label: "Trouser length" },
+  top: { key: "lengthTop", label: "Desired length" },
+  robe: { key: "lengthRobe", label: "Robe length" },
 }
 
 /** The length kinds a piece declares, from its product metadata. */
@@ -61,7 +61,7 @@ export function missingMeasurements(
     ...BODY_ZONES,
     ...lengthKinds.map(
       (kind) =>
-        LENGTH_ZONES[kind] ?? { key: `length_${kind}`, label: "Garment length", vi: "" }
+        LENGTH_ZONES[kind] ?? { key: `length_${kind}`, label: "Garment length" }
     ),
   ]
   return zones

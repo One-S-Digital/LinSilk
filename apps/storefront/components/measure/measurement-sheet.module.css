@@ -151,15 +151,6 @@
   transition: color var(--dur) var(--ease);
 }
 
-/* The atelier works in Vietnamese, and this is the word it uses. Set in the
-   annotation voice, beside the English rather than instead of it. */
-.vi {
-  font-family: var(--font-mono);
-  font-size: var(--t-mono-sm);
-  letter-spacing: var(--ls-mono);
-  color: var(--gold);
-}
-
 .row[data-active='true'] .label {
   color: var(--ink);
 }

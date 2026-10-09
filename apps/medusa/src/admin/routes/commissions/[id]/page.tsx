@@ -4,9 +4,7 @@ import { useParams } from "react-router-dom"
 import { BODY_ZONES, LENGTH_ZONES } from "../../../../lib/measurements"
 
 /* One brief, as the bench reads it: the shape, the cloth in the client's own
-   words, the note, the references, and the measurement sheet in both
-   languages — the Vietnamese terms are what is written on the ticket in
-   Hội An.
+   words, the note, the references and the measurement sheet.
 
    Setting a figure and telling the client are two acts: quote first, then
    send, so a tailor can write by hand instead if the brief needs it. */
@@ -191,12 +189,7 @@ const CommissionPage = () => {
         <div className="grid grid-cols-2 gap-x-8 px-6 py-4">
           {zones.map((zone) => (
             <div key={zone.key} className="flex justify-between border-b py-1.5">
-              <Text size="small">
-                {zone.label}{" "}
-                <span className="text-ui-fg-muted" lang="vi">
-                  {zone.vi}
-                </span>
-              </Text>
+              <Text size="small">{zone.label}</Text>
               <Text size="small" weight="plus">
                 {commission.measurements?.[zone.key] ?? "—"} cm
               </Text>

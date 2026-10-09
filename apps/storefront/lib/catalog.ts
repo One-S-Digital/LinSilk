@@ -227,12 +227,9 @@ export const byGroup = async (group: Group, sleep = false, slug?: string) => {
 
 /* ---- The measurement sheet ---- *
  *
- * Translated from the atelier's own chart, which is worked in Vietnamese. The
- * Vietnamese term travels with each zone because that is what is written on
- * the ticket in Hội An, and a sheet that reaches the bench in the bench's own
- * vocabulary is one fewer thing to mistranslate.
+ * Taken from the atelier's own chart.
  *
- * Note the four "hạ" measurements — bust point, front waist, back waist and
+ * Note the four drop measurements — bust point, front waist, back waist and
  * hip depth. They are drops from a fixed point rather than girths, and they
  * are what let a flat pattern sit on a specific body. No amount of chest and
  * waist circumference substitutes for them.
@@ -241,27 +238,25 @@ export const byGroup = async (group: Group, sleep = false, slug?: string) => {
 export type Zone = {
   key: string;
   label: string;
-  /** The tailor's own term, as written on the chart. */
-  vi: string;
   hint: string;
 };
 
 export const ZONES: Zone[] = [
-  { key: 'neck', label: 'Neck', vi: 'Cổ', hint: 'Around the base of the neck, one finger of ease.' },
-  { key: 'shoulder', label: 'Shoulder', vi: 'Vai', hint: 'Across the back, shoulder bone to shoulder bone.' },
-  { key: 'bust', label: 'Bust / chest', vi: 'Ngực', hint: 'Fullest point, tape level all the way round.' },
-  { key: 'bustPoint', label: 'Bust point', vi: 'Hạ đỉnh ngực', hint: 'From the top of the shoulder straight down to the fullest point of the bust.' },
-  { key: 'frontWaist', label: 'Front waist length', vi: 'Hạ eo trước', hint: 'From the top of the shoulder, down over the bust, to the natural waist.' },
-  { key: 'backWaist', label: 'Back waist length', vi: 'Hạ eo sau', hint: 'From the bone at the base of the neck, straight down the back, to the natural waist.' },
-  { key: 'waist', label: 'Waist', vi: 'Eo', hint: 'Narrowest point, usually just above the navel.' },
-  { key: 'hip', label: 'Hip', vi: 'Mông', hint: 'Fullest point of the seat, feet together.' },
-  { key: 'hipDepth', label: 'Hip depth', vi: 'Hạ đỉnh mông', hint: 'From the natural waist straight down to the fullest point of the seat.' },
-  { key: 'thigh', label: 'Thigh', vi: 'Đùi', hint: 'Around the fullest part, standing.' },
-  { key: 'knee', label: 'Knee', vi: 'Gối', hint: 'Around the knee, leg straight.' },
-  { key: 'sleeve', label: 'Sleeve length', vi: 'Dài tay', hint: 'From the shoulder bone to the wrist bone, arm slightly bent.' },
-  { key: 'bicep', label: 'Upper arm', vi: 'Bắp tay', hint: 'Around the widest part, arm relaxed.' },
-  { key: 'wrist', label: 'Wrist', vi: 'Cổ tay', hint: 'Over the wrist bone.' },
-  { key: 'rise', label: 'Rise', vi: 'Đáy quần', hint: 'Sitting on a hard chair: from the natural waist at the front, between the legs, to the natural waist at the back.' },
+  { key: 'neck', label: 'Neck', hint: 'Around the base of the neck, one finger of ease.' },
+  { key: 'shoulder', label: 'Shoulder', hint: 'Across the back, shoulder bone to shoulder bone.' },
+  { key: 'bust', label: 'Bust / chest', hint: 'Fullest point, tape level all the way round.' },
+  { key: 'bustPoint', label: 'Bust point', hint: 'From the top of the shoulder straight down to the fullest point of the bust.' },
+  { key: 'frontWaist', label: 'Front waist length', hint: 'From the top of the shoulder, down over the bust, to the natural waist.' },
+  { key: 'backWaist', label: 'Back waist length', hint: 'From the bone at the base of the neck, straight down the back, to the natural waist.' },
+  { key: 'waist', label: 'Waist', hint: 'Narrowest point, usually just above the navel.' },
+  { key: 'hip', label: 'Hip', hint: 'Fullest point of the seat, feet together.' },
+  { key: 'hipDepth', label: 'Hip depth', hint: 'From the natural waist straight down to the fullest point of the seat.' },
+  { key: 'thigh', label: 'Thigh', hint: 'Around the fullest part, standing.' },
+  { key: 'knee', label: 'Knee', hint: 'Around the knee, leg straight.' },
+  { key: 'sleeve', label: 'Sleeve length', hint: 'From the shoulder bone to the wrist bone, arm slightly bent.' },
+  { key: 'bicep', label: 'Upper arm', hint: 'Around the widest part, arm relaxed.' },
+  { key: 'wrist', label: 'Wrist', hint: 'Over the wrist bone.' },
+  { key: 'rise', label: 'Rise', hint: 'Sitting on a hard chair: from the natural waist at the front, between the legs, to the natural waist at the back.' },
 ];
 
 /* ---- Garment lengths ---- *
@@ -277,31 +272,26 @@ export const LENGTH_ZONE: Record<LengthKind, Zone> = {
   dress: {
     key: 'lengthDress',
     label: 'Dress length',
-    vi: 'Chiều dài đầm',
     hint: 'From the top of the shoulder, over the bust, straight down to where you want the hem to fall. Measure against a dress you already own and like.',
   },
   skirt: {
     key: 'lengthSkirt',
     label: 'Skirt length',
-    vi: 'Dài váy',
     hint: 'From the natural waist straight down to where you want the hem to fall.',
   },
   trouser: {
     key: 'lengthTrouser',
     label: 'Trouser length',
-    vi: 'Dài quần',
     hint: 'From the natural waist down the outside of the leg to where you want the hem to fall, without shoes.',
   },
   top: {
     key: 'lengthTop',
     label: 'Desired length',
-    vi: 'Dài áo',
     hint: 'From the top of the shoulder seam straight down to where you want the hem to fall. Measure against a garment you already own and like.',
   },
   robe: {
     key: 'lengthRobe',
     label: 'Robe length',
-    vi: 'Dài áo choàng',
     hint: 'From the top of the shoulder seam straight down to where you want the robe to fall. Measure against a robe you already own and like.',
   },
 };
