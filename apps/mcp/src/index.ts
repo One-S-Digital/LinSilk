@@ -126,7 +126,7 @@ server.registerTool(
       group: z.enum(["women", "men"]).optional(),
       price_chf: z.number().int().optional().describe("Whole Swiss francs; euro and sterling are derived"),
       length_kinds: z
-        .array(z.enum(["dress", "skirt", "trouser", "top"]))
+        .array(z.enum(["dress", "skirt", "trouser", "top", "robe"]))
         .optional()
         .describe("Which finished lengths the measurement sheet asks for. A scarf asks for none"),
       shot: z.string().optional().describe("Art direction, drawn as a placeholder until photographed"),
