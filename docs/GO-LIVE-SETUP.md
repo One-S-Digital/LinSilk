@@ -486,6 +486,14 @@ pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa 
 Safe to run again later — it only creates what's missing and corrects wording on what already
 exists, never touches a price once set.
 
+**Already seeded before the house stopped naming a place of origin?** Run the one-off `scrub-origin.ts` once. It clears the country of origin from existing products, and renames the stock location and its shipping set to "Atelier" with a Geneva address. Same Start Command trick if there is no Shell:
+
+```bash
+pnpm --filter medusa exec medusa db:migrate && pnpm --filter medusa exec medusa exec ./src/scripts/scrub-origin.ts && pnpm --filter medusa start
+```
+
+Safe to run again. A fresh database needs nothing: the seed already creates it this way.
+
 **The seed adds no pieces.** A season and its pieces arrive through the Medusa admin or the ingestion route (`docs/CATALOGUE-INGESTION.md`). Until a collection with status `current` has published pieces, the storefront says "No collection is open".
 
 ---
