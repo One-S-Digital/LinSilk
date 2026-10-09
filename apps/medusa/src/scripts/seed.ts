@@ -51,6 +51,12 @@ import {
   updateStoresWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { SILHOUETTES } from "./catalogue-fixture"
+import {
+  ATELIER_ADDRESS,
+  ATELIER_LOCATION,
+  ATELIER_SHIPPING,
+  settleAtelierLocation,
+} from "../lib/atelier-location"
 import { fetchChfRates } from "../lib/exchange-rates"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../lib/commission-catalogue"
 import { CURRENCIES, fromChf, type Currency } from "../lib/pricing"
@@ -218,19 +224,24 @@ export default async function seed({ container }: { container: MedusaContainer }
     },
   })
 
-  /* ---- Where it is made, and how it travels ----
-     Everything is cut in Hội An and ships from there; the courier clears
-     customs out of Việt Nam. */
+  /* ---- How it travels ----
+     Everything ships from the atelier's one stock location. A database
+     seeded under its earlier name is brought into line first, so it is
+     renamed rather than found missing and created a second time. */
 
   /* Each of these is asked for separately rather than behind one "have we
      ever run?" flag. A seed that fails halfway — and the first one on a fresh
      database used to — would otherwise be skipped wholesale on the next run
      and report success over a house with no way to ship anything. */
 
+  for (const change of await settleAtelierLocation(container)) {
+    logger.info(`The atelier: ${change}.`)
+  }
+
   const { data: [existingLocation] } = await query.graph({
     entity: "stock_location",
     fields: ["id"],
-    filters: { name: "Atelier, Hội An" },
+    filters: { name: ATELIER_LOCATION },
   })
   let atelierId = existingLocation?.id
 
@@ -239,17 +250,14 @@ export default async function seed({ container }: { container: MedusaContainer }
     const { result: [atelier] } = await createStockLocationsWorkflow(container).run({
       input: {
         locations: [
-          {
-            name: "Atelier, Hội An",
-            address: { city: "Hội An", country_code: "VN", address_1: "" },
-          },
+          { name: ATELIER_LOCATION, address: ATELIER_ADDRESS },
         ],
       },
     })
     atelierId = atelier.id
   }
 
-  const FULFILLMENT_SET = "Atelier, Hội An — shipping"
+  const FULFILLMENT_SET = ATELIER_SHIPPING
 
   const [existingSet] = await fulfillment.listFulfillmentSets(
     { name: FULFILLMENT_SET },
@@ -448,7 +456,6 @@ export default async function seed({ container }: { container: MedusaContainer }
           status: ProductStatus.PUBLISHED,
           collection_id: collectionId(p.collection),
           shipping_profile_id: shippingProfile.id,
-          origin_country: "vn",
           metadata: p.metadata,
           sales_channels: [{ id: salesChannelId }],
           options: [{ id: cutId }],

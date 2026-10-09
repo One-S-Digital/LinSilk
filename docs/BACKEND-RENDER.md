@@ -86,7 +86,7 @@ Three regions. This is the thing Shopify would have charged a plan tier for.
 | International | GBP + others | gb, us, sg, jp, au | Duty payable on arrival |
 
 ⚠ **The duty claim needs an accountant before go-live.** Switzerland is outside the EU customs
-union and the goods originate in Việt Nam. See `HANDOVER.md` §8.
+union and the goods are made outside both. See `HANDOVER.md` §8.
 
 ### 3.2 Collections
 
@@ -142,8 +142,8 @@ toLineItemMetadata(values, unit, zones)
 // → { measurement_unit: 'cm' | 'in', measure_bust_cm: '96.52', … }
 ```
 
-The backend keeps its own copy of the zones in `apps/medusa/src/lib/measurements.ts`, with the
-Vietnamese terms the bench reads. `apps/storefront/lib/backend-parity.test.ts` pins the two
+The backend keeps its own copy of the zones in `apps/medusa/src/lib/measurements.ts`.
+`apps/storefront/lib/backend-parity.test.ts` pins the two
 together and runs the storefront's real payload through the backend's check, so they cannot
 drift.
 
@@ -202,8 +202,8 @@ The bench needs somewhere to read a confirmed sheet and move a piece through pro
 Admin is extensible; add a widget or a route rather than building a second app. Minimum viable:
 
 - Queue of commissions awaiting a quote — **built**
-- The full measurement sheet, displayed in both English and Vietnamese — **built** (the terms
-  live in `apps/medusa/src/lib/measurements.ts`, pinned to `lib/catalog.ts` by a storefront test)
+- The full measurement sheet — **built** (the zones live in
+  `apps/medusa/src/lib/measurements.ts`, pinned to `lib/catalog.ts` by a storefront test)
 - Set confirmed price → notify client — **built**
 - Production status per order — not built; the status field exists, the screens do not
 
@@ -473,7 +473,7 @@ Two things to get right when the bucket is made:
 
 - **Create it in the EU jurisdiction.** Measurement sheets and reference photographs are personal
   data about a named person; keeping the files in the EU is one less thing to explain in the
-  privacy notice, which already has a Việt Nam transfer to account for (`HANDOVER.md` §8).
+  privacy notice, which already has an international transfer to account for (`HANDOVER.md` §8).
 - **Two buckets, and only one of them ever public.** R2 has no per-object ACL: once a bucket has
   a public address (`r2.dev` or a custom domain), every object in it is readable by anyone with
   its key, whatever the upload asked for. So catalogues and photography go to `S3_BUCKET`, which

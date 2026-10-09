@@ -14,6 +14,7 @@ import { ATELIER_MODULE } from "../../src/modules/atelier"
 import type AtelierModuleService from "../../src/modules/atelier/service"
 import commissionPaidHandler from "../../src/subscribers/commission-paid"
 import { updateCommissionWorkflow } from "../../src/workflows/atelier/commissions"
+import { ATELIER_ADDRESS, ATELIER_LOCATION } from "../../src/lib/atelier-location"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../../src/lib/commission-catalogue"
 import { BODY_ZONES, LENGTH_ZONES } from "../../src/lib/measurements"
 
@@ -135,7 +136,7 @@ medusaIntegrationTestRunner({
 
       /* Somewhere to make it, and a way to send it. */
       const { result: [location] } = await createStockLocationsWorkflow(container).run({
-        input: { locations: [{ name: "Atelier, Hội An", address: { city: "Hội An", country_code: "VN", address_1: "" } }] },
+        input: { locations: [{ name: ATELIER_LOCATION, address: ATELIER_ADDRESS }] },
       })
       const link = container.resolve(ContainerRegistrationKeys.LINK)
       await link.create({
@@ -502,7 +503,7 @@ medusaIntegrationTestRunner({
         input: {
           products: [
             {
-              title: "Coat, Bảo Lộc silk",
+              title: "Coat, autumn silk",
               handle: "w1",
               status: ProductStatus.PUBLISHED,
               collection_id: autumn.id,

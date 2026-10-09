@@ -116,7 +116,7 @@ const FabricCataloguesPage = () => {
 
       <div className="flex flex-col gap-3 px-6 py-4">
         <Input
-          placeholder="Title — Autumn silks, Bảo Lộc"
+          placeholder="Title — Autumn silks"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />

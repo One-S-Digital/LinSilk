@@ -1,6 +1,6 @@
 # LinSilk — Developer Handover
 
-**Client:** LinSilk — made-to-measure house. Atelier in Hội An, Việt Nam; office in Geneva.
+**Client:** LinSilk — made-to-measure house. Office in Geneva.
 **Agency:** one S Digital
 **Status as of 2026-09-13:** Storefront and backend both built. A client can reserve a piece or
 commission one, pay for either, and manage all of it from an account — or do any of it as a
@@ -127,26 +127,25 @@ record rather than a form that could never be submitted.
 not a detail: the prototype swapped the `cm`/`in` label without converting the number, which
 would have sent the atelier a 38-inch chest recorded as 38 cm.
 
-Fifteen body measurements, translated from the atelier's own Vietnamese chart. Each carries the
-tailor's own term, because that is what is written on the ticket in Hội An:
+Fifteen body measurements, taken from the atelier's own chart:
 
-| | English | Vietnamese |
-|---|---|---|
-| 01 | Neck | Cổ ◇ |
-| 02 | Shoulder | Vai |
-| 03 | Bust / chest | Ngực |
-| 04 | **Bust point** | **Hạ đỉnh ngực** |
-| 05 | **Front waist length** | **Hạ eo trước** |
-| 06 | **Back waist length** | **Hạ eo sau** |
-| 07 | Waist | Eo |
-| 08 | Hip | Mông |
-| 09 | **Hip depth** | **Hạ đỉnh mông** |
-| 10 | Thigh | Đùi |
-| 11 | Knee | Gối |
-| 12 | Sleeve length | Dài tay |
-| 13 | Upper arm | Bắp tay |
-| 14 | Wrist | Cổ tay ◇ |
-| 15 | Rise | Đáy quần |
+| | Measurement |
+|---|---|
+| 01 | Neck ◇ |
+| 02 | Shoulder |
+| 03 | Bust / chest |
+| 04 | **Bust point** |
+| 05 | **Front waist length** |
+| 06 | **Back waist length** |
+| 07 | Waist |
+| 08 | Hip |
+| 09 | **Hip depth** |
+| 10 | Thigh |
+| 11 | Knee |
+| 12 | Sleeve length |
+| 13 | Upper arm |
+| 14 | Wrist ◇ |
+| 15 | Rise |
 
 ◇ Not on the client's chart. Retained because a collared shirt needs both. Client has confirmed
 these calls are correct.
@@ -159,14 +158,15 @@ Plus the **garment lengths**, which vary by garment and are a decision rather th
 A piece names its own in `lengthKinds`, and a set names two — a sleep set is a top and a trouser
 on one ticket:
 
-| Kind | Label | Vietnamese |
-|---|---|---|
-| `dress` | Dress length | Chiều dài đầm |
-| `skirt` | Skirt length | Dài váy |
-| `trouser` | Trouser length | Dài quần |
-| `top` | Desired length | Dài áo |
+| Kind | Label |
+|---|---|
+| `dress` | Dress length |
+| `skirt` | Skirt length |
+| `trouser` | Trouser length |
+| `top` | Desired length |
+| `robe` | Robe length |
 
-Each writes to its own field (`lengthDress`, `lengthSkirt`, `lengthTrouser`, `lengthTop`), so a
+Each writes to its own field (`lengthDress`, `lengthSkirt`, `lengthTrouser`, `lengthTop`, `lengthRobe`), so a
 set can carry two lengths without one overwriting the other. A piece declares `lengthKinds`; the
 scarf declares none and is complete at 15.
 
@@ -203,7 +203,7 @@ the modules to collide with.
 
 > **A note on the palette.** Warm cream + serif display + tan accent is currently the single most
 > generic "AI-designed" look there is. What keeps this off that pile is subject specificity —
-> the chalk marks, the mono art-direction notes, Roman numerals, the Vietnamese terms.
+> the chalk marks, the mono art-direction notes, Roman numerals.
 > **Do not sand those off.** They are the design. (Momme weights, mill-and-date logging, the
 > Kortrijk linen and the "ticket" were removed on 2026-10-07: the user said they are not real.)
 
@@ -236,10 +236,10 @@ under reduced motion, where hijacking scroll would be hostile.
 | Item | Status |
 |---|---|
 | **Photography** | All placeholder. Every frame renders a woven gradient carrying the art direction for the shot that belongs there — brief a photographer straight from those notes. |
-| **Measurement guide plates** | ⚠ `public/measure/{women,men}.png` are the **prototype's old plates and now contradict the list beneath them** — they show no drops and no rise. A new guide must be drawn from the client's Vietnamese chart, labelled in both languages. **Highest-priority content blocker.** |
+| **Measurement guide plates** | ⚠ `public/measure/{women,men}.png` are the **prototype's old plates and now contradict the list beneath them** — they show no drops and no rise. A new guide must be drawn from the client's chart. **Highest-priority content blocker.** |
 | **Archive contents** | Collections I–III (36 pieces) are invented, written to match each season's stated cloth. The client must supply the real archive. Collection IV is real. |
-| **Legal** | `/legal/terms` and `/legal/privacy` are structured placeholders listing what must be covered. **Not drafted, deliberately.** Privacy matters here: body measurements are personal data transferred to Việt Nam, which needs a stated GDPR transfer safeguard. |
-| **Duty & VAT position** | The footer claims duty is included in Switzerland *and* the EU. Switzerland is outside the EU customs union and the goods originate in Việt Nam — a three-way customs problem. Needs an answer from the client's accountant before go-live. |
+| **Legal** | `/legal/terms` and `/legal/privacy` are structured placeholders listing what must be covered. **Not drafted, deliberately.** Privacy matters here: body measurements are personal data transferred to the atelier abroad, which needs a stated GDPR transfer safeguard. |
+| **Duty & VAT position** | The footer claims duty is included in Switzerland *and* the EU. Switzerland is outside the EU customs union and the goods are made outside both — a three-way customs problem. Needs an answer from the client's accountant before go-live. |
 | **Instagram handle** | `@linsilk` is assumed in the footer. |
 
 ---

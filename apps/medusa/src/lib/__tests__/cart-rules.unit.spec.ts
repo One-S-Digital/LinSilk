@@ -21,7 +21,7 @@ const sheet = (kinds: string[] = ["top"], overrides: Record<string, unknown> = {
   ...overrides,
 })
 
-const coat = piece("Coat, Bảo Lộc silk", autumn, "top")
+const coat = piece("Coat, autumn silk", autumn, "top")
 const scarf = piece("Scarf, burgundy", autumn)
 const sleepSet = piece("Sleep set, cream silk", autumn, "top", "trouser")
 const shirtDress = piece("Shirt dress, flax", summer, "dress")
@@ -143,13 +143,13 @@ describe("lineRefusals", () => {
 
   it("refuses more than one of a piece", () => {
     expect(lineRefusals({ quantity: 2, metadata: sheet(), variant: coat })).toEqual([
-      "Each piece is cut for one person, so Coat, Bảo Lộc silk is ordered one at a time.",
+      "Each piece is cut for one person, so Coat, autumn silk is ordered one at a time.",
     ])
   })
 
   it("refuses a partial sheet, naming what is missing", () => {
     expect(lineRefusals({ quantity: 1, metadata: sheet([]), variant: coat })).toEqual([
-      "The atelier cannot cut Coat, Bảo Lộc silk from a partial sheet: Desired length is missing.",
+      "The atelier cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
     ])
     const twoMissing = sheet(["top"], { measure_hip_cm: undefined, measure_rise_cm: undefined })
     expect(lineRefusals({ quantity: 1, metadata: twoMissing, variant: coat })[0]).toContain(

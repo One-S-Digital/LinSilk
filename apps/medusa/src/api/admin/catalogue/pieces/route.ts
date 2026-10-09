@@ -550,7 +550,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
           status: ProductStatus.DRAFT,
           collection_id: collectionId,
           shipping_profile_id: shippingProfile.id,
-          origin_country: "vn",
           metadata,
           ...(finalImages?.length
             ? { thumbnail: finalImages[0].url, images: finalImages.map((img) => ({ url: img.url })) }

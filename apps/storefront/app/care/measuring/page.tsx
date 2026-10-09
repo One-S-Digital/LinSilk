@@ -38,11 +38,7 @@ export default function MeasuringPage() {
         <DocList
           items={ZONES.map((z) => (
             <>
-              <strong style={{ fontWeight: 400 }}>{z.label}</strong>{' '}
-              <span lang="vi" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--t-mono-sm)', letterSpacing: 'var(--ls-mono)', color: 'var(--gold)' }}>
-                {z.vi}
-              </span>{' '}
-              — {z.hint}
+              <strong style={{ fontWeight: 400 }}>{z.label}</strong> — {z.hint}
             </>
           ))}
         />

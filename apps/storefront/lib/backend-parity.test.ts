@@ -14,7 +14,7 @@ import { LENGTH_ZONE, ZONES, garmentZonesFor, type LengthKind } from './catalog'
 
 describe('backend measurement sheet', () => {
   it('asks for the same fifteen body measurements, in the same words', () => {
-    expect(BODY_ZONES).toEqual(ZONES.map(({ key, label, vi }) => ({ key, label, vi })));
+    expect(BODY_ZONES).toEqual(ZONES.map(({ key, label }) => ({ key, label })));
   });
 
   it('asks for the same garment lengths, under the same keys', () => {
@@ -22,7 +22,7 @@ describe('backend measurement sheet', () => {
       Object.fromEntries(
         Object.entries(LENGTH_ZONE).map(([kind, zone]) => [
           kind,
-          { key: zone.key, label: zone.label, vi: zone.vi },
+          { key: zone.key, label: zone.label },
         ]),
       ),
     );

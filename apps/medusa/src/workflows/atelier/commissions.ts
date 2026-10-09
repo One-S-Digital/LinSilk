@@ -18,6 +18,7 @@ import {
 import { ATELIER_MODULE } from "../../modules/atelier"
 import type AtelierModuleService from "../../modules/atelier/service"
 import { commissionQuotedEmail, type CommissionRecord } from "../../lib/commission-emails"
+import { ATELIER_NAME_FILTER } from "../../lib/atelier-location"
 import { COMMISSION_COLLECTION } from "../../lib/commission-catalogue"
 import { chfRates } from "../../lib/exchange-rates"
 import { CURRENCIES, fromChf } from "../../lib/pricing"
@@ -152,7 +153,6 @@ const prepareQuoteStep = createStep(
               status: ProductStatus.PUBLISHED,
               collection_id: collection?.id,
               shipping_profile_id: shippingProfile?.id,
-              origin_country: "vn",
               metadata: {
                 commission_id: id,
                 length_kinds: commission.length_kinds ?? [],
@@ -193,7 +193,7 @@ const prepareQuoteStep = createStep(
       const { data: [location] } = await query.graph({
         entity: "stock_location",
         fields: ["id"],
-        filters: { name: "Atelier, Hội An" },
+        filters: { name: ATELIER_NAME_FILTER },
       })
       if (item && location) {
         await createInventoryLevelsWorkflow(container).run({

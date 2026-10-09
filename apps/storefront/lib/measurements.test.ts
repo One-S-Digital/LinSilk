@@ -83,21 +83,21 @@ describe('validation', () => {
 });
 
 describe('the atelier chart', () => {
-  it('carries every measurement from the Vietnamese chart', () => {
+  it('carries every measurement on the chart', () => {
     const expected = [
-      'Vai', 'Ngực', 'Hạ đỉnh ngực', 'Hạ eo trước', 'Hạ eo sau', 'Eo',
-      'Mông', 'Hạ đỉnh mông', 'Đùi', 'Gối', 'Dài tay', 'Bắp tay', 'Đáy quần',
+      'neck', 'shoulder', 'bust', 'bustPoint', 'frontWaist', 'backWaist', 'waist',
+      'hip', 'hipDepth', 'thigh', 'knee', 'sleeve', 'bicep', 'wrist', 'rise',
     ];
-    const present = ZONES.map((z) => z.vi);
-    for (const term of expected) {
-      expect(present, `chart term "${term}" is missing`).toContain(term);
+    const present = ZONES.map((z) => z.key);
+    for (const key of expected) {
+      expect(present, `chart measurement "${key}" is missing`).toContain(key);
     }
+    expect(present).toHaveLength(expected.length);
   });
 
-  it('gives every zone an English label, a Vietnamese term and a hint', () => {
+  it('gives every zone a label and a hint', () => {
     for (const zone of [...ZONES, ...Object.values(LENGTH_ZONE)]) {
       expect(zone.label.length, zone.key).toBeGreaterThan(0);
-      expect(zone.vi.length, zone.key).toBeGreaterThan(0);
       expect(zone.hint.length, zone.key).toBeGreaterThan(10);
     }
   });
@@ -109,9 +109,10 @@ describe('the atelier chart', () => {
   });
 
   it('takes a different garment length for each kind of garment', () => {
-    expect(LENGTH_ZONE.dress.vi).toBe('Chiều dài đầm');
-    expect(LENGTH_ZONE.trouser.vi).toBe('Dài quần');
-    expect(LENGTH_ZONE.skirt.vi).toBe('Dài váy');
+    expect(LENGTH_ZONE.dress.label).toBe('Dress length');
+    expect(LENGTH_ZONE.trouser.label).toBe('Trouser length');
+    expect(LENGTH_ZONE.skirt.label).toBe('Skirt length');
+    expect(LENGTH_ZONE.robe.label).toBe('Robe length');
     // Each length has its own field, so a set can carry a top length and a
     // trouser length on one sheet, and each is range-checked.
     const keys = Object.values(LENGTH_ZONE).map((zone) => zone.key);

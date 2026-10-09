@@ -73,7 +73,7 @@ payload is a no-op update, which is what makes an agent safe to retry.
 
 The route supplies, so the agent cannot get them wrong: `status: draft`, the single
 `Cut / Made to measure` option, the `LINSILK-<HANDLE>` SKU, `manage_inventory: true`,
-`origin_country: "vn"`, the sales channel and the shipping profile.
+the sales channel and the shipping profile. No country of origin is set.
 
 It refuses, with the house's own wording: an unknown collection handle, a `length_kinds` value
 outside the chart, a handle beginning `commission-` (or a product already filed under either
@@ -231,7 +231,7 @@ Each step has a check that proves it before the next begins.
    each refused in the house's own wording; a price move on a published piece is refused while
    a wording correction on the same piece is allowed. Prices are written in francs with euro
    and sterling derived (CHF 1'980 → EUR 2'110 / GBP 1'810), the SKU, the `Cut` option, the
-   capped run and `origin_country` are all supplied by the route. End to end: two photographs
+   and capped run are all supplied by the route. End to end: two photographs
    posted by URL were stored, the piece published by hand, and the storefront rendered it with
    the photograph while an unphotographed piece beside it kept the placeholder weave.
 5. **Seasons + rollover.** ✅ **Done.** Verified against a live backend: a season is created

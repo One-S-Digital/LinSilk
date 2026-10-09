@@ -90,7 +90,7 @@ medusaIntegrationTestRunner({
       const { result: products } = await createProductsWorkflow(container).run({
         input: {
           products: [
-            piece("Coat, Bảo Lộc silk", "w1", "autumn-iv", "top"),
+            piece("Coat, autumn silk", "w1", "autumn-iv", "top"),
             piece("Shirt dress, flax", "s1", "summer-iii", "dress"),
           ],
         },
@@ -162,7 +162,7 @@ medusaIntegrationTestRunner({
         })
         expect(refusal(await checkout(cart.id))).toEqual({
           status: 400,
-          message: "Coat, Bảo Lộc silk closed with Autumn — Collection IV and is not made again.",
+          message: "Coat, autumn silk closed with Autumn — Collection IV and is not made again.",
         })
       })
     })
@@ -173,7 +173,7 @@ medusaIntegrationTestRunner({
         const response = await add(cart.id, { variant_id: openVariantId, quantity: 1 })
         expect(refusal(response).status).toBe(400)
         expect(refusal(response).message).toMatch(
-          /^The atelier cannot cut Coat, Bảo Lộc silk from a partial sheet: Neck, Shoulder, .* and Desired length are missing\.$/
+          /^The atelier cannot cut Coat, autumn silk from a partial sheet: Neck, Shoulder, .* and Desired length are missing\.$/
         )
       })
 
@@ -183,7 +183,7 @@ medusaIntegrationTestRunner({
         const response = await add(cart.id, { variant_id: openVariantId, quantity: 1, metadata: noLength })
         expect(refusal(response)).toEqual({
           status: 400,
-          message: "The atelier cannot cut Coat, Bảo Lộc silk from a partial sheet: Desired length is missing.",
+          message: "The atelier cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
         })
       })
 
@@ -212,7 +212,7 @@ medusaIntegrationTestRunner({
     })
 
     describe("one at a time", () => {
-      const ONE_AT_A_TIME = "Each piece is cut for one person, so Coat, Bảo Lộc silk is ordered one at a time."
+      const ONE_AT_A_TIME = "Each piece is cut for one person, so Coat, autumn silk is ordered one at a time."
 
       it("refuses more than one of a piece", async () => {
         const { data: { cart } } = await newCart()

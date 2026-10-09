@@ -170,9 +170,6 @@ export function MeasurementSheet({
         <div>
           <label className={styles.label} htmlFor={id}>
             {zone.label}
-            <span className={styles.vi} lang="vi">
-              {zone.vi}
-            </span>
           </label>
           <p className={styles.hint} id={`${id}-hint`}>
             {zone.hint}
