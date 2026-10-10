@@ -59,7 +59,7 @@ const BulkProductsPage = () => {
         fields: "id,title,status,collection.id,collection.title",
       })
       if (query) params.set("q", query)
-      if (statusFilter !== "all") params.set("status", statusFilter)
+      if (statusFilter !== "all") params.append("status[]", statusFilter)
       const data = await api(`/admin/products?${params}`)
       setProducts(data.products)
       setCount(data.count)
