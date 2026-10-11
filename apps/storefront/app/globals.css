@@ -56,15 +56,15 @@
   --t-h4: clamp(20px, 2.4vw, 30px);
   --t-stat: clamp(38px, 5vw, 64px);
 
-  --t-body: 14.5px;
-  --t-body-lg: 15.5px;
-  --t-sm: 13.5px;
-  --t-sm-tight: 13px;
-  --t-xs: 12.5px;
-  --t-xxs: 12px;
-  --t-micro: 11.5px;
-  --t-mono: 10px;
-  --t-mono-sm: 9.5px;
+  --t-body: 17px;
+  --t-body-lg: 18px;
+  --t-sm: 15.5px;
+  --t-sm-tight: 15px;
+  --t-xs: 14.5px;
+  --t-xxs: 14px;
+  --t-micro: 13px;
+  --t-mono: 12px;
+  --t-mono-sm: 11.5px;
 
   --lh-display: 1.04;
   --lh-hero: 1.02;
