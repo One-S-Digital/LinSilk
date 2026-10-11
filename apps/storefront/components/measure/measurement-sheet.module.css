@@ -136,7 +136,7 @@
 
 .num {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 12.5px;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
@@ -146,7 +146,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 10px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--ink-secondary);
   transition: color var(--dur) var(--ease);
 }
@@ -188,7 +188,7 @@
   border: none;
   border-bottom: 1px solid rgba(42, 38, 32, 0.25);
   background: transparent;
-  font-size: 15px;
+  font-size: 17px;
   padding: 0 0 6px;
   text-align: right;
   font-family: var(--font-serif);

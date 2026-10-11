@@ -87,3 +87,28 @@
   font-size: var(--t-micro);
   color: var(--on-dark-40);
 }
+
+/* Right-hand end of the legal row, set apart by a hairline. Gold here is the
+   lighter brass of the footer logo: --gold is too dim for small text on ink. */
+.credit {
+  margin-left: auto;
+  padding-left: 20px;
+  border-left: 1px solid var(--on-dark-40);
+}
+
+.creditLink {
+  color: #c9a35a;
+}
+
+.creditLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .credit {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+    flex-basis: 100%;
+  }
+}

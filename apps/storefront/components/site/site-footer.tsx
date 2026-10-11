@@ -102,6 +102,17 @@ export async function SiteFooter() {
           <Link href="/legal/privacy" className={styles.link}>
             Privacy
           </Link>
+          <span className={styles.credit}>
+            Powered by:{' '}
+            <a
+              href="https://onesdigital.online"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.creditLink}
+            >
+              One S Digital
+            </a>
+          </span>
         </div>
       </div>
     </footer>

@@ -1,0 +1,99 @@
+/* Horizontal rail.
+ *
+ * A native scroll container rather than an animated transform: the browser's
+ * own scrolling carries trackpad momentum and touch inertia that a spring
+ * chasing a wheel event cannot match, and it keeps the whole rail reachable by
+ * keyboard and screen reader without extra work.
+ */
+
+.rail {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Overscroll behaviour is set in globals.css against [data-rail], where it
+     can outrank Lenis's own both-axis containment rule.
+     The gutters live on the track, so scrollWidth includes the trailing space
+     and the last card is never flush against the viewport edge. */
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;
+  align-items: flex-end;
+  padding-inline: var(--gutter);
+  width: max-content;
+}
+
+.rail[data-dragging='true'] {
+  cursor: grabbing;
+  scroll-behavior: auto;
+}
+
+.rail[data-grabbable='true'] {
+  cursor: grab;
+}
+
+/* A drag that has moved must not fire the link underneath it. */
+.rail[data-dragged='true'] a {
+  pointer-events: none;
+}
+
+.arrows {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-45);
+  background: rgba(237, 230, 217, 0.92);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.arrow[data-on='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.arrow:hover {
+  background: var(--bone);
+}
+
+.arrowLeft {
+  left: 10px;
+}
+
+.arrowRight {
+  right: 10px;
+}
+
+/* Fine pointers get the arrows; touch devices already have the gesture and the
+   buttons only cover the cloth. */
+@media (hover: none) {
+  .arrow {
+    display: none;
+  }
+}
