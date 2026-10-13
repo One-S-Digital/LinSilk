@@ -193,10 +193,14 @@ export function CheckoutFlow({
     setProblem(null);
     try {
       /* Stripe when the house has it; the system provider only while it does
-         not, and never alongside. */
+         not, and never alongside. The Stripe plugin also registers
+         single-method providers (Bancontact, iDEAL...) that accept euros
+         only, so it is the main one, by id, and never "any with stripe in
+         the name": a franc cart sent to Bancontact fails at Stripe. */
       const providers = await getPaymentProviders(cart.region!.id);
       const preferred =
-        providers.find((p) => p.id.includes('stripe'))?.id ?? providers[0]?.id;
+        providers.find((p) => p.id === 'pp_stripe_stripe')?.id ??
+        providers.find((p) => !p.id.includes('stripe'))?.id;
       if (!preferred) {
         throw new Error('The house cannot take payment on this region yet.');
       }
