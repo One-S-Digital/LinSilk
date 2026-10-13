@@ -3,8 +3,11 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { commissionIdOf, type GatedVariant } from "../lib/archive"
 import { orderConfirmationEmail, orderPlacedEmail, type OrderRecord } from "../lib/order-emails"
 
-/* An order has been paid for: the client is told it is, and the atelier is
-   given what it needs to read the sheet and write back.
+/* An order has been placed: the client is told so, and the atelier is given
+   what it needs to read the sheet and write back. `order.placed` is not proof
+   the money was taken — an order can be placed with the payment only
+   authorised — so both emails say "paid" only when Medusa reports the payment
+   captured, and otherwise say what state it is in.
 
    Which lines are commissions is read from the product, as commission-paid.ts
    does, never from the line's own metadata, which a client can write to. A
@@ -27,7 +30,10 @@ export default async function orderPlacedHandler({
       "email",
       "currency_code",
       "item_total",
+      "original_item_total",
+      "item_discount_total",
       "discount_total",
+      "payment_status",
       "shipping_total",
       "total",
       "items.title",

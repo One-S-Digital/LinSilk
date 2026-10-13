@@ -61,6 +61,18 @@ medusaIntegrationTestRunner({
       expect((await signIn(original)).ok).toBe(true)
     })
 
+    it("pauses the account after five wrong passwords, even for the right one", async () => {
+      for (let i = 0; i < 5; i++) {
+        await change({ current_password: "wrong-wrong-wrong", new_password: "a-different-long-password" })
+      }
+      const paused = await change({
+        current_password: original,
+        new_password: "a-different-long-password",
+      })
+      expect(paused.status).toBe(429)
+      expect((await signIn(original)).ok).toBe(true)
+    })
+
     it("needs someone signed in", async () => {
       const anonymous = await api
         .post("/admin/account/password", { current_password: original, new_password: "x".repeat(14) })

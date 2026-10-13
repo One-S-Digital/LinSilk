@@ -20,7 +20,13 @@ export type OrderRecord = {
   email?: string | null
   currency_code: string
   item_total?: number | string | null
+  /** The pieces before any discount. */
+  original_item_total?: number | string | null
+  /** What the promotion took off the pieces; `discount_total` also counts shipping. */
+  item_discount_total?: number | string | null
   discount_total?: number | string | null
+  /** Medusa's own word: "captured" once the money has been taken. */
+  payment_status?: string | null
   shipping_total?: number | string | null
   total: number | string
   items: OrderLine[]
@@ -82,12 +88,15 @@ const addressText = (order: OrderRecord) => {
 
 const figures = (order: OrderRecord) => {
   const currency = order.currency_code
-  const discount = Number(order.discount_total ?? 0)
+  /* The discount on the pieces only: `discount_total` also counts a discount
+     on shipping, which the shipping line already shows. */
+  const discount = Number(order.item_discount_total ?? order.discount_total ?? 0)
   const shipping = order.shipping_methods?.[0]?.name
+  const pieces =
+    order.original_item_total ??
+    (order.item_total != null ? Number(order.item_total) + discount : null)
   return [
-    order.item_total != null
-      ? `  Pieces      ${money(Number(order.item_total) + discount, currency)}`
-      : null,
+    pieces != null ? `  Pieces      ${money(pieces, currency)}` : null,
     discount > 0 ? `  Discount    −${money(discount, currency)}` : null,
     order.shipping_total != null
       ? `  Shipping    ${
@@ -102,6 +111,7 @@ const figures = (order: OrderRecord) => {
 
 /** To the client: it is paid, and what happens next. */
 export function orderConfirmationEmail(order: OrderRecord) {
+  const paid = order.payment_status === "captured"
   const seasonal = order.items.some((line) => !line.commission)
   const who = nameOf(order)
 
@@ -114,7 +124,9 @@ export function orderConfirmationEmail(order: OrderRecord) {
       text: [
         who ? `Dear ${who},` : "Hello,",
         "",
-        "Thank you. Your order is paid for.",
+        paid
+          ? "Thank you. Your order is paid for."
+          : "Thank you. We have your order, and will write again once your payment is confirmed.",
         "",
         ...(seasonal
           ? [
@@ -147,6 +159,8 @@ export function orderConfirmationEmail(order: OrderRecord) {
 /** To the house: a seasonal order has been paid, and here is what to cut. */
 export function orderPlacedEmail(order: OrderRecord, to: string) {
   const lines = order.items.filter((line) => !line.commission)
+  const paid = order.payment_status === "captured"
+  const mixed = lines.length < order.items.length
 
   return {
     to,
@@ -156,7 +170,16 @@ export function orderPlacedEmail(order: OrderRecord, to: string) {
     content: {
       subject: `Order ${numberOf(order)} — ${lines.map((l) => l.title).join(", ")}`,
       text: [
-        `${nameOf(order) || "A client"}${order.email ? ` <${order.email}>` : ""} has paid for an order.`,
+        `${nameOf(order) || "A client"}${order.email ? ` <${order.email}>` : ""} ${
+          paid ? "has paid for an order." : "has placed an order."
+        }`,
+        ...(paid
+          ? []
+          : [
+              "",
+              `Payment is not yet confirmed as taken (status: ${order.payment_status ?? "unknown"}).`,
+              "Check it in the admin before starting.",
+            ]),
         "",
         "To read the sheet and write back to confirm it, within two working days.",
         "",
@@ -164,6 +187,7 @@ export function orderPlacedEmail(order: OrderRecord, to: string) {
         ...lines.map((line) => lineText(line, order.currency_code)),
         "",
         figures(order),
+        ...(mixed ? ["  (These figures are for the whole order, which also includes a commission.)"] : []),
         "",
         "Sent to",
         addressText(order),

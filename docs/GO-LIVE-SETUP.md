@@ -240,7 +240,7 @@ Now add every environment variable you already have, under the service's **Envir
 | `CATALOGUE_IMAGE_HOSTS` | the hostname(s) photographs are ever fetched from, comma-separated — at minimum your R2 domain from step 3 (e.g. `files.bylinsilk.com`); add a photographer's delivery host too if reference shots come from one. Leave blank and the ingestion route refuses every image until you set it. |
 
 **Leave these blank for now** — they come back in steps 8 and 10: `STORE_CORS`, `ADMIN_CORS`,
-`AUTH_CORS`, `STOREFRONT_URL`, `ATELIER_EMAIL`, `STRIPE_WEBHOOK_SECRET`.
+`AUTH_CORS`, `STOREFRONT_URL`, `ADMIN_URL`, `ATELIER_EMAIL`, `STRIPE_WEBHOOK_SECRET`.
 
 Don't trigger a deploy yet — it will fail without the CORS values, and that's expected. Keep going.
 
@@ -385,7 +385,8 @@ it in step 7 — it reads `medusa-config.ts`'s required-vars check same as `lins
 | `ADMIN_CORS` | `https://linsilk-medusa.onrender.com` |
 | `AUTH_CORS` | both of the above, comma-separated |
 | `STOREFRONT_URL` | `https://linsilk-storefront.onrender.com` |
-| `ATELIER_EMAIL` | the inbox that should hear about new commissions, e.g. `hello@bylinsilk.com` |
+| `ADMIN_URL` | where the admin dashboard is reached, for staff password-reset links, e.g. `https://api.bylinsilk.com/app` |
+| `ATELIER_EMAIL` | the inbox that hears about new commissions and every paid seasonal order, e.g. `hello@bylinsilk.com` |
 
 Saving triggers a deploy on each. **This is the first deploy that should actually succeed** —
 watch `linsilk-medusa`'s log for the `Pre-Deploy Command` running `medusa db:migrate` cleanly.

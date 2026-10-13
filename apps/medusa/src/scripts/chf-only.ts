@@ -20,7 +20,8 @@
  * quantity bound) keeps them. What cannot be carried across safely stops the
  * run before anything is changed: a shipping option with no plain franc price
  * to go by, a regional price that has conditions of its own, a variant with
- * no franc base price. Dry run reports them too.
+ * no franc base price, a price-list (sale) price with no franc price beside
+ * it. Dry run reports them too.
  *
  * Orders already placed keep the currency they were paid in. A cart opened
  * before this ran keeps its old currency too, and is better started again.
@@ -137,11 +138,14 @@ export default async function chfOnly({
           .filter((p) => p.currency_code === "chf" || regionOf(p))
           .map(({ id, currency_code, amount, ...rest }) => {
             const region_id = regionOf({ id, currency_code, amount, ...rest })
-            /* A regional price follows its region's currency, which is francs
-               from here on, so it takes the franc figure. */
             const price = { id, currency_code, amount, ...rest }
+            /* A regional price in a region that is moving to francs takes the
+               franc figure, its old one being in another currency. One that is
+               already in francs, in a region that already is, keeps what it
+               has. */
+            const converting = currency_code !== "chf" || foreignIds.has(region_id ?? "")
             return region_id
-              ? { id, region_id, amount: francs, ...carried(price) }
+              ? { id, region_id, amount: converting ? francs : amount, ...carried(price) }
               : { id, currency_code, amount, ...carried(price) }
           }),
       },
@@ -154,6 +158,22 @@ export default async function chfOnly({
     fields: ["id", "prices.id", "prices.currency_code", "prices.amount", "prices.price_list_id"],
   })
   const variantUpdates = (variants as unknown as Priced[]).flatMap((variant) => {
+    /* Sale prices are left alone, but one with no franc figure beside it would
+       stop applying once the region is in francs, so it is not left behind. */
+    const listed = new Map<string, Set<string>>()
+    for (const p of variant.prices ?? []) {
+      if (p.price_list_id) {
+        listed.set(p.price_list_id, (listed.get(p.price_list_id) ?? new Set()).add(p.currency_code))
+      }
+    }
+    for (const [list, currencies] of listed) {
+      if (currencies.size && !currencies.has("chf")) {
+        problems.push(
+          `Variant ${variant.id} has a price in price list ${list} but none in francs, so the sale would stop applying.`
+        )
+      }
+    }
+
     const base = (variant.prices ?? []).filter((p) => !p.price_list_id)
     if (!base.some((p) => p.currency_code !== "chf")) {
       return []

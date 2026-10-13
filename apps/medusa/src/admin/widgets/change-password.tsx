@@ -69,7 +69,10 @@ const ChangePassword = () => {
             type="password"
             autoComplete="current-password"
             value={current}
-            onChange={(e) => setCurrent(e.target.value)}
+            onChange={(e) => {
+              setCurrent(e.target.value)
+              setProblem(null)
+            }}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -79,7 +82,10 @@ const ChangePassword = () => {
             type="password"
             autoComplete="new-password"
             value={next}
-            onChange={(e) => setNext(e.target.value)}
+            onChange={(e) => {
+              setNext(e.target.value)
+              setProblem(null)
+            }}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -89,7 +95,10 @@ const ChangePassword = () => {
             type="password"
             autoComplete="new-password"
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={(e) => {
+              setConfirm(e.target.value)
+              setProblem(null)
+            }}
           />
         </div>
 

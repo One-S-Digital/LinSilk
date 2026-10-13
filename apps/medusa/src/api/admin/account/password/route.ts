@@ -1,6 +1,7 @@
 import type { AuthenticatedMedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { MedusaError, Modules } from "@medusajs/framework/utils"
 import { z } from "@medusajs/framework/zod"
+import { createAttemptLimit } from "../../../../lib/attempt-limit"
 import { changePasswordWorkflow } from "../../../../workflows/account/change-password"
 
 /* Change your own password.
@@ -16,6 +17,11 @@ import { changePasswordWorkflow } from "../../../../workflows/account/change-pas
    keeps no session list to end them from here. */
 
 export const MIN_PASSWORD_LENGTH = 12
+
+/* The current password is the thing being guessed here, and a signed-in
+   session is not proof of who is at the keyboard, so wrong guesses are
+   counted per account and the account is paused after five. */
+const attempts = createAttemptLimit()
 
 const schema = z.object({
   current_password: z.string().min(1, "Enter your current password"),
@@ -54,9 +60,26 @@ export const POST = async (req: AuthenticatedMedusaRequest, res: MedusaResponse)
 
   /* The same workflow the storefront's account page uses: it checks the
      current password and sets the new one. */
-  await changePasswordWorkflow(req.scope).run({
-    input: { email, currentPassword: current_password, password: new_password },
-  })
+  const wait = attempts.waitSeconds(auth.auth_identity_id)
+  if (wait > 0) {
+    res.status(429).json({
+      type: "not_allowed",
+      message: `Too many wrong passwords. Try again in ${Math.ceil(wait / 60)} minute(s).`,
+    })
+    return
+  }
+
+  try {
+    await changePasswordWorkflow(req.scope).run({
+      input: { email, currentPassword: current_password, password: new_password },
+    })
+  } catch (error) {
+    if ((error as { type?: string }).type === MedusaError.Types.UNAUTHORIZED) {
+      attempts.fail(auth.auth_identity_id)
+    }
+    throw error
+  }
+  attempts.clear(auth.auth_identity_id)
 
   res.json({ success: true })
 }

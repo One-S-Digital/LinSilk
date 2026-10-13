@@ -4,24 +4,33 @@
 
 const storefrontUrl = () => (process.env.STOREFRONT_URL || "http://localhost:3000").replace(/\/$/, "")
 
-/** Where the link in the email leads: the client sets a new password there.
-    The token is only good for fifteen minutes — see generateResetPasswordTokenWorkflow. */
-export const passwordResetUrl = (email: string, token: string) =>
-  `${storefrontUrl()}/account/reset-password?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
+/* Where the admin dashboard lives, for staff reset links. It is served by the
+   backend itself, under /app. */
+const adminUrl = () => (process.env.ADMIN_URL || "http://localhost:9000/app").replace(/\/$/, "")
 
-/** To the client: someone asked to reset this account's password. */
-export function passwordResetEmail(email: string, token: string) {
+/** Who asked: a client of the house, or a member of staff. */
+export type ResetActor = "customer" | "user"
+
+/** Where the link in the email leads: the client, or the staff member, sets a
+    new password there. The token is only good for fifteen minutes — see
+    generateResetPasswordTokenWorkflow. */
+export const passwordResetUrl = (email: string, token: string, actor: ResetActor = "customer") =>
+  `${actor === "user" ? `${adminUrl()}/reset-password` : `${storefrontUrl()}/account/reset-password`}` +
+  `?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
+
+/** To the client or the staff member: someone asked to reset this account's password. */
+export function passwordResetEmail(email: string, token: string, actor: ResetActor = "customer") {
   return {
     to: email,
     channel: "email",
-    template: "password-reset",
+    template: actor === "user" ? "admin-password-reset" : "password-reset",
     content: {
-      subject: "Reset your password — LinSilk",
+      subject: actor === "user" ? "Reset your admin password — LinSilk" : "Reset your password — LinSilk",
       text: [
         "A password reset was requested for this account.",
         "",
         "To choose a new one, open this link within fifteen minutes:",
-        passwordResetUrl(email, token),
+        passwordResetUrl(email, token, actor),
         "",
         "If you did not ask for this, ignore this email — nothing changes",
         "unless the link above is opened.",
