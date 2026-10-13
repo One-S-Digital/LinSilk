@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "linsilk": {
+      "command": "node",
+      "args": ["--experimental-strip-types", "apps/mcp/src/index.ts"],
+      "env": {
+        "MEDUSA_URL": "${MEDUSA_URL:-https://linsilk-medusa.onrender.com}",
+        "MEDUSA_ADMIN_API_KEY": "${MEDUSA_ADMIN_API_KEY}"
+      }
+    }
+  }
+}
