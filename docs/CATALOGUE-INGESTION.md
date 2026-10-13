@@ -227,8 +227,8 @@ Each step has a check that proves it before the next begins.
    created as a draft and is absent from `/store/products`; re-posting the same payload is a
    no-op; an unknown season, either commission collection, a `commission-` handle, a new piece
    with no price, a length outside the chart, an unlisted image host and an unfetchable URL are
-   each refused in the house's own wording; a price move on a published piece is refused while
-   a wording correction on the same piece is allowed. Prices are written in francs alone
+   each refused in the house's own wording; any write to a published piece, a price move or a
+   wording correction alike, is refused and told to edit it in the admin. Prices are written in francs alone
    (CHF 1'980), the SKU, the `Cut` option, the
    and capped run are all supplied by the route. End to end: two photographs
    posted by URL were stored, the piece published by hand, and the storefront rendered it with

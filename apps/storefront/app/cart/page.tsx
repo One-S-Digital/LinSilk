@@ -26,7 +26,7 @@ export default function CartPage() {
           state at someone who has three pieces ordered. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>Nothing ordered yet.</p>
+          <p className={styles.emptyText}>Your cart is empty.</p>
           <div className={styles.emptyActions}>
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
@@ -64,13 +64,10 @@ export default function CartPage() {
                         <span className={styles.briefKey}>Sheet</span>
                         <span>
                           {taken} of {line.zoneCount} taken
-                          {taken > 0 && (
+                          {/* A trouser or a skirt is not asked for a chest. */}
+                          {typeof line.measurements.bust === 'number' && (
                             <>
-                              {' · '}
-                              chest{' '}
-                              {typeof line.measurements.bust === 'number'
-                                ? `${formatValue(line.measurements.bust, line.unit)} ${line.unit}`
-                                : '—'}
+                              {' · '}chest {formatValue(line.measurements.bust, line.unit)} {line.unit}
                             </>
                           )}
                         </span>

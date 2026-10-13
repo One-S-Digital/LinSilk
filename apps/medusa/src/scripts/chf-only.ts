@@ -16,6 +16,12 @@
  *      option. Sale prices (price lists) are not touched.
  *   4. The store supports francs and nothing else.
  *
+ * A price that carries conditions (a rule such as "free above CHF 500", or a
+ * quantity bound) keeps them. What cannot be carried across safely stops the
+ * run before anything is changed: a shipping option with no plain franc price
+ * to go by, a regional price that has conditions of its own, a variant with
+ * no franc base price. Dry run reports them too.
+ *
  * Orders already placed keep the currency they were paid in. A cart opened
  * before this ran keeps its old currency too, and is better started again.
  *
@@ -36,12 +42,33 @@ type Price = {
   currency_code: string
   amount: number
   price_list_id?: string | null
-  price_rules?: { attribute: string; value: string }[] | null
+  min_quantity?: number | string | null
+  max_quantity?: number | string | null
+  price_rules?: { attribute: string; operator?: string | null; value: string }[] | null
 }
 type Priced = { id: string; name?: string; prices?: Price[] | null }
 
 const regionOf = (price: Price) =>
   price.price_rules?.find((rule) => rule.attribute === "region_id")?.value
+
+/* The conditions a price carries besides its region: the region is rebuilt by
+   the shipping workflow from `region_id`, everything else must be handed back
+   or the workflow rebuilds the price without it. */
+const conditionsOf = (price: Price) =>
+  (price.price_rules ?? []).filter((rule) => rule.attribute !== "region_id")
+
+const carried = (price: Price) => {
+  const rules = conditionsOf(price).map(({ attribute, operator, value }) => ({
+    attribute,
+    operator: operator ?? "eq",
+    value,
+  }))
+  return {
+    ...(price.min_quantity != null ? { min_quantity: Number(price.min_quantity) } : {}),
+    ...(price.max_quantity != null ? { max_quantity: Number(price.max_quantity) } : {}),
+    ...(rules.length ? { rules } : {}),
+  }
+}
 
 export default async function chfOnly({
   container,
@@ -54,6 +81,7 @@ export default async function chfOnly({
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const apply = args?.includes("apply") ?? false
   const say = (message: string) => logger.info(`${apply ? "" : "[dry run] "}${message}`)
+  const problems: string[] = []
 
   /* ---- 1. Regions ---- */
   const { data: regions } = await query.graph({
@@ -72,13 +100,18 @@ export default async function chfOnly({
       "prices.id",
       "prices.currency_code",
       "prices.amount",
+      "prices.min_quantity",
+      "prices.max_quantity",
       "prices.price_rules.attribute",
+      "prices.price_rules.operator",
       "prices.price_rules.value",
     ],
   })
   const optionUpdates = (options as unknown as Priced[]).flatMap((option) => {
     const prices = (option.prices ?? []).map((p) => ({ ...p, amount: Number(p.amount) }))
-    const francs = prices.find((p) => p.currency_code === "chf" && !regionOf(p))?.amount
+    const francs = prices.find(
+      (p) => p.currency_code === "chf" && !regionOf(p) && conditionsOf(p).length === 0
+    )?.amount
     const stale = prices.some(
       (p) => p.currency_code !== "chf" || foreignIds.has(regionOf(p) ?? "")
     )
@@ -86,7 +119,14 @@ export default async function chfOnly({
       return []
     }
     if (francs === undefined) {
-      logger.warn(`Shipping option "${option.name}" has no franc price to go by; left as it is.`)
+      problems.push(`Shipping option "${option.name}" has no plain franc price to go by.`)
+      return []
+    }
+    const conditionalRegional = prices.some((p) => regionOf(p) && conditionsOf(p).length > 0)
+    if (conditionalRegional) {
+      problems.push(
+        `Shipping option "${option.name}" has a regional price with conditions of its own; its franc figure cannot be worked out here.`
+      )
       return []
     }
     say(`Shipping "${option.name}": CHF ${francs}, other currencies dropped.`)
@@ -99,9 +139,10 @@ export default async function chfOnly({
             const region_id = regionOf({ id, currency_code, amount, ...rest })
             /* A regional price follows its region's currency, which is francs
                from here on, so it takes the franc figure. */
+            const price = { id, currency_code, amount, ...rest }
             return region_id
-              ? { id, region_id, amount: francs }
-              : { id, currency_code, amount }
+              ? { id, region_id, amount: francs, ...carried(price) }
+              : { id, currency_code, amount, ...carried(price) }
           }),
       },
     ]
@@ -115,6 +156,10 @@ export default async function chfOnly({
   const variantUpdates = (variants as unknown as Priced[]).flatMap((variant) => {
     const base = (variant.prices ?? []).filter((p) => !p.price_list_id)
     if (!base.some((p) => p.currency_code !== "chf")) {
+      return []
+    }
+    if (!base.some((p) => p.currency_code === "chf")) {
+      problems.push(`Variant ${variant.id} has no franc base price, so it would be left unpriced.`)
       return []
     }
     return [
@@ -132,6 +177,13 @@ export default async function chfOnly({
       (foreign.length ? ` (${foreign.map((r) => `${r.name}: ${r.currency_code}`).join(", ")})` : "") +
       `, ${optionUpdates.length} shipping option(s), ${variantUpdates.length} variant(s).`
   )
+
+  if (problems.length) {
+    for (const problem of problems) {
+      logger.error(problem)
+    }
+    throw new Error(`${problems.length} price(s) cannot be moved to francs safely. Nothing was changed.`)
+  }
 
   if (!apply) {
     say("Nothing changed. Run again with `apply` to do it.")
