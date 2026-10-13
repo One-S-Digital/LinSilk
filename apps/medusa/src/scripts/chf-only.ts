@@ -29,7 +29,7 @@
  * Without `apply` it changes nothing. */
 
 import { MedusaContainer } from "@medusajs/framework"
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, MedusaError } from "@medusajs/framework/utils"
 import {
   updateProductVariantsWorkflow,
   updateRegionsWorkflow,
@@ -182,7 +182,10 @@ export default async function chfOnly({
     for (const problem of problems) {
       logger.error(problem)
     }
-    throw new Error(`${problems.length} price(s) cannot be moved to francs safely. Nothing was changed.`)
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      `${problems.length} price(s) cannot be moved to francs safely. Nothing was changed.`
+    )
   }
 
   if (!apply) {
