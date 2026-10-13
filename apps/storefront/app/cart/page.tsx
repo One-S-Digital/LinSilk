@@ -16,17 +16,17 @@ export default function CartPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Your reservations</h1>
+      <h1 className={styles.title}>Your order</h1>
       <p className={styles.lede}>
-        Nothing is cut until the atelier has read your sheet and written back. A
-        reservation holds the design against the season’s capped run in the meantime.
+        Nothing is cut until the atelier has read your sheet and written back. An
+        order holds the design against the season’s capped run in the meantime.
       </p>
 
       {/* Held until the stored cart is read, so the page never flashes an empty
-          state at someone who has three pieces reserved. */}
+          state at someone who has three pieces ordered. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>Nothing reserved yet.</p>
+          <p className={styles.emptyText}>Nothing ordered yet.</p>
           <div className={styles.emptyActions}>
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
@@ -44,7 +44,9 @@ export default function CartPage() {
               return (
                 <article key={line.id} className={styles.line}>
                   <ShotFrame
-                    note={line.shot}
+                    src={line.thumbnail}
+                    alt={line.name}
+                    note={line.thumbnail ? undefined : line.shot}
                     weave={line.group === 'men' ? 'sand' : 'bone'}
                     ratio="3 / 4"
                   />
@@ -84,7 +86,7 @@ export default function CartPage() {
                       className={styles.remove}
                       onClick={() => remove(line.id)}
                     >
-                      Release
+                      Remove
                     </button>
                   </div>
                 </article>

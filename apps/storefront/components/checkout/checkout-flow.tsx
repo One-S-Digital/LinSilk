@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ShotFrame } from '@/components/shot';
 import { Button } from '@/components/ui/button';
 import { PaymentPanel, stripeClient } from '@/components/checkout/payment-panel';
 import {
+  applyPromoCode,
   chooseShipping,
   completeCart,
   getCart,
@@ -12,6 +14,7 @@ import {
   getShippableCountries,
   getShippingOptions,
   PAYMENT_RETURN_PARAM,
+  removePromoCode,
   startPayment,
   updateCart,
   type ShippableCountry,
@@ -23,7 +26,7 @@ import { formatMoney } from '@/lib/medusa';
 import styles from '@/app/checkout/checkout.module.css';
 
 /* Checkout, in three sections: where it goes, how it travels, and paying for
-   it. The same flow serves a season's reservations and a commission a tailor
+   it. The same flow serves a season's orders and a commission a tailor
    has already priced — the difference is only what is in the cart.
 
    Every figure comes from the backend. Nothing here adds a total up itself. */
@@ -82,6 +85,8 @@ export function CheckoutFlow({
   const [touched, setTouched] = useState(false);
   const [working, setWorking] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
+  const [promoInput, setPromoInput] = useState('');
+  const [promoProblem, setPromoProblem] = useState<string | null>(null);
   const [shippable, setShippable] = useState<ShippableCountry[]>([]);
   /** True only while a redirect-based payment method's return is being read
       back; see the effect below. Never true on an ordinary page load. */
@@ -169,6 +174,42 @@ export function CheckoutFlow({
       setOpen(1);
     } catch (error) {
       setProblem((error as Error).message);
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  /* A code changes the total, so it is settled before payment starts: once a
+     payment session exists its amount is fixed, and going back to an earlier
+     section and forward again is what refreshes it. */
+  const applyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code || !cart) return;
+    setWorking(true);
+    setPromoProblem(null);
+    try {
+      const updated = await applyPromoCode(cart.id, code);
+      if (updated.promotions?.some((p) => p.code?.toLowerCase() === code.toLowerCase())) {
+        setCart(updated);
+        setPromoInput('');
+      } else {
+        setPromoProblem('That code is not valid for this order.');
+      }
+    } catch (error) {
+      setPromoProblem((error as Error).message);
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  const dropPromo = async (code: string) => {
+    if (!cart) return;
+    setWorking(true);
+    setPromoProblem(null);
+    try {
+      setCart(await removePromoCode(cart.id, code));
+    } catch (error) {
+      setPromoProblem((error as Error).message);
     } finally {
       setWorking(false);
     }
@@ -272,6 +313,8 @@ export function CheckoutFlow({
   if (!cart) return null;
 
   const chosenShipping = cart.shipping_methods?.[0];
+  const promoCodes = (cart.promotions ?? []).flatMap((p) => (p.code ? [p.code] : []));
+  const discount = cart.discount_total ?? 0;
 
   const field = (key: keyof Details, type = 'text', full = false) => (
     <div className={`${styles.field}${full ? ` ${styles.full}` : ''}`}>
@@ -458,6 +501,11 @@ export function CheckoutFlow({
         <div className={styles.asideLines}>
           {(cart.items ?? []).map((item) => (
             <div key={item.id} className={styles.asideLine}>
+              <ShotFrame
+                src={item.thumbnail ?? item.variant?.product?.thumbnail ?? undefined}
+                alt={item.title}
+                ratio="3 / 4"
+              />
               <div>
                 <div className={styles.asideName}>{item.title}</div>
                 <div className={styles.asideMeta}>
@@ -476,11 +524,70 @@ export function CheckoutFlow({
           ))}
         </div>
 
+        <div className={styles.promo}>
+          {promoCodes.map((code) => (
+            <div key={code} className={styles.promoApplied}>
+              <span>Code {code}</span>
+              {open !== 2 && (
+                <button
+                  type="button"
+                  className={styles.edit}
+                  onClick={() => dropPromo(code)}
+                  disabled={working}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          ))}
+          {promoCodes.length === 0 && open !== 2 && (
+            <form
+              className={styles.promoForm}
+              onSubmit={(e) => {
+                e.preventDefault();
+                void applyPromo();
+              }}
+            >
+              <label className={styles.label} htmlFor="co-promo">
+                Promo code
+              </label>
+              <div className={styles.promoRow}>
+                <input
+                  id="co-promo"
+                  className={styles.input}
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  aria-invalid={Boolean(promoProblem)}
+                />
+                <button
+                  type="submit"
+                  className={styles.edit}
+                  disabled={working || !promoInput.trim()}
+                >
+                  Apply
+                </button>
+              </div>
+            </form>
+          )}
+          {promoProblem && <span className={styles.fieldError}>{promoProblem}</span>}
+        </div>
+
         <div className={styles.totals}>
           <div className={styles.totalRow}>
             <span>Subtotal</span>
-            <span className={styles.totalValue}>{money(cart.item_total)}</span>
+            <span className={styles.totalValue}>
+              {money(cart.item_subtotal ?? cart.item_total)}
+            </span>
           </div>
+          {discount > 0 && (
+            <div className={styles.totalRow}>
+              <span>Discount</span>
+              <span className={styles.totalValue}>−{money(discount)}</span>
+            </div>
+          )}
           <div className={styles.totalRow}>
             <span>Shipping{chosenShipping ? ` — ${chosenShipping.name}` : ''}</span>
             <span className={styles.totalValue}>

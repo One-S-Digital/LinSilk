@@ -55,7 +55,7 @@ export type Piece = {
   /** Cloth and construction, shown under the name on every tile. */
   material: string;
   /* Which colour library the client chooses from. Null for a piece the house
-     has not tagged, which cannot be reserved until it is. */
+     has not tagged, which cannot be ordered until it is. */
   cloth: Cloth | null;
   /** Price in whole Swiss francs. */
   price: number;
@@ -213,7 +213,7 @@ export const piecesIn = async (slug: string) =>
 export const findPiece = async (id: string) =>
   (await getPieces()).find((p) => p.id === id);
 
-/** True when the piece's collection is still open, so it can be reserved. */
+/** True when the piece's collection is still open, so it can be ordered. */
 export const isOrderable = (piece: Piece) => piece.orderable;
 
 /** Pieces in a collection, split the way the collection pages present them. */
@@ -258,6 +258,28 @@ export const ZONES: Zone[] = [
   { key: 'wrist', label: 'Wrist', hint: 'Over the wrist bone.' },
   { key: 'rise', label: 'Rise', hint: 'Sitting on a hard chair: from the natural waist at the front, between the legs, to the natural waist at the back.' },
 ];
+
+/* A shirt needs nothing from the leg, a trouser nothing from the upper body,
+   and a skirt nothing from either, so each sheet leaves those out. Any other kind, and a set (two
+   garments on one ticket), takes every zone. The backend keeps the same rule
+   (apps/medusa/src/lib/measurements.ts), pinned by backend-parity.test.ts. */
+const LEG_KEYS = ['thigh', 'knee', 'rise'];
+const UPPER_KEYS = [
+  'neck', 'shoulder', 'bust', 'bustPoint', 'frontWaist', 'backWaist', 'sleeve', 'bicep', 'wrist',
+];
+
+export const bodyZonesFor = (piece: Pick<Piece, 'lengthKinds'>): Zone[] => {
+  const kinds = piece.lengthKinds ?? [];
+  const skip =
+    kinds.length === 1 && kinds[0] === 'top'
+      ? LEG_KEYS
+      : kinds.length === 1 && kinds[0] === 'trouser'
+        ? UPPER_KEYS
+        : kinds.length === 1 && kinds[0] === 'skirt'
+          ? [...UPPER_KEYS, ...LEG_KEYS]
+          : [];
+  return ZONES.filter((z) => !skip.includes(z.key));
+};
 
 /* ---- Garment lengths ---- *
  * A body does not tell the bench how long to make a thing. The chart carries a

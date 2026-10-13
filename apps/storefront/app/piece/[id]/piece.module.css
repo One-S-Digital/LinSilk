@@ -200,17 +200,3 @@
   line-height: 1.7;
 }
 
-.done {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 20px;
-  margin-top: 18px;
-  font-size: var(--t-sm-tight);
-}
-
-.doneMark {
-  font-family: var(--font-hand);
-  font-size: 20px;
-  color: var(--gold);
-}

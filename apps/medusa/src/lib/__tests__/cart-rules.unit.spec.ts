@@ -36,6 +36,41 @@ describe("isOrderable", () => {
   })
 })
 
+describe("missingMeasurements by garment", () => {
+  const without = (keys: string[]) =>
+    Object.fromEntries(keys.map((k) => [`measure_${k}_cm`, undefined]))
+
+  it("asks a shirt for nothing from the leg", () => {
+    const shirt = sheet(["top"], without(["thigh", "knee", "rise"]))
+    expect(missingMeasurements(shirt, ["top"])).toEqual([])
+  })
+
+  it("asks a trouser for nothing from the upper body", () => {
+    const trouser = sheet(
+      ["trouser"],
+      without(["neck", "shoulder", "bust", "bustPoint", "frontWaist", "backWaist", "sleeve", "bicep", "wrist"])
+    )
+    expect(missingMeasurements(trouser, ["trouser"])).toEqual([])
+  })
+
+  it("asks a skirt for nothing from the upper body or the leg", () => {
+    const skirt = sheet(
+      ["skirt"],
+      without(["neck", "shoulder", "bust", "bustPoint", "frontWaist", "backWaist", "sleeve", "bicep", "wrist", "thigh", "knee", "rise"])
+    )
+    expect(missingMeasurements(skirt, ["skirt"])).toEqual([])
+  })
+
+  it("still asks a trouser for the leg and a shirt for the upper body", () => {
+    expect(missingMeasurements(sheet(["trouser"], without(["rise"])), ["trouser"])).toEqual(["Rise"])
+    expect(missingMeasurements(sheet(["top"], without(["neck"])), ["top"])).toEqual(["Neck"])
+  })
+
+  it("asks a set for the whole sheet", () => {
+    expect(missingMeasurements(sheet(["top", "trouser"], without(["rise"])), ["top", "trouser"])).toEqual(["Rise"])
+  })
+})
+
 describe("missingMeasurements", () => {
   it("accepts a complete sheet", () => {
     expect(missingMeasurements(sheet(), ["top"])).toEqual([])
@@ -151,9 +186,9 @@ describe("lineRefusals", () => {
     expect(lineRefusals({ quantity: 1, metadata: sheet([]), variant: coat })).toEqual([
       "The atelier cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
     ])
-    const twoMissing = sheet(["top"], { measure_hip_cm: undefined, measure_rise_cm: undefined })
+    const twoMissing = sheet(["top"], { measure_hip_cm: undefined, measure_bust_cm: undefined })
     expect(lineRefusals({ quantity: 1, metadata: twoMissing, variant: coat })[0]).toContain(
-      "Hip and Rise are missing."
+      "Bust / chest and Hip are missing."
     )
   })
 

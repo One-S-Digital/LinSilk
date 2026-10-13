@@ -32,6 +32,27 @@ export const BODY_ZONES: Zone[] = [
   { key: "rise", label: "Rise" },
 ]
 
+/* A shirt needs nothing from the leg, a trouser nothing from the upper body,
+   and a skirt nothing from either, so each is not asked for them. Every other kind, and a set (which is
+   both garments on one ticket), takes the whole sheet. Mirrors bodyZonesFor in
+   the storefront's lib/catalog.ts. */
+const LEG_KEYS = ["thigh", "knee", "rise"]
+const UPPER_KEYS = [
+  "neck", "shoulder", "bust", "bustPoint", "frontWaist", "backWaist", "sleeve", "bicep", "wrist",
+]
+
+export function bodyZonesFor(lengthKinds: string[] = []): Zone[] {
+  const skip =
+    lengthKinds.length === 1 && lengthKinds[0] === "top"
+      ? LEG_KEYS
+      : lengthKinds.length === 1 && lengthKinds[0] === "trouser"
+        ? UPPER_KEYS
+        : lengthKinds.length === 1 && lengthKinds[0] === "skirt"
+          ? [...UPPER_KEYS, ...LEG_KEYS]
+          : []
+  return BODY_ZONES.filter((zone) => !skip.includes(zone.key))
+}
+
 /** Keyed by the kinds in a piece's `metadata.length_kinds`. */
 export const LENGTH_ZONES: Record<string, Zone> = {
   dress: { key: "lengthDress", label: "Dress length" },
@@ -58,7 +79,7 @@ export function missingMeasurements(
   lengthKinds: string[] = []
 ): string[] {
   const zones = [
-    ...BODY_ZONES,
+    ...bodyZonesFor(lengthKinds),
     ...lengthKinds.map(
       (kind) =>
         LENGTH_ZONES[kind] ?? { key: `length_${kind}`, label: "Garment length" }

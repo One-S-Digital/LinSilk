@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { MeasurementSheet } from '@/components/measure/measurement-sheet';
 import { SwatchDialog } from '@/components/swatch-dialog';
 import { SwatchTile } from '@/components/swatch-picker';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
-import { ZONES, garmentZonesFor, isOrderable, money, type Piece } from '@/lib/catalog';
+import { bodyZonesFor, garmentZonesFor, isOrderable, type Piece } from '@/lib/catalog';
 import { isComplete, takenCount, type Measurements, type Unit } from '@/lib/measurements';
 import { CLOTH_NAME, findSwatch, swatchLabel } from '@/lib/swatches';
 import styles from '@/app/piece/[id]/piece.module.css';
@@ -24,9 +25,10 @@ export function PieceOrderPanel({
 }: {
   piece: Piece;
   /* The backend's own id for this piece. Absent only if the house is
-     unreachable, in which case there is nothing to reserve against. */
+     unreachable, in which case there is nothing to order against. */
   variantId: string | null;
 }) {
+  const router = useRouter();
   const { add } = useCart();
   const [step, setStep] = useState<Step>('start');
   const [swatchKey, setSwatchKey] = useState<string | null>(null);
@@ -39,7 +41,6 @@ export function PieceOrderPanel({
     values: {},
     unit: 'cm',
   });
-  const [reserved, setReserved] = useState(false);
   const [holding, setHolding] = useState(false);
   const [refusal, setRefusal] = useState<string | null>(null);
 
@@ -49,7 +50,8 @@ export function PieceOrderPanel({
   );
 
   const garmentZones = useMemo(() => garmentZonesFor(piece), [piece]);
-  const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
+  const bodyZones = useMemo(() => bodyZonesFor(piece), [piece]);
+  const allZones = useMemo(() => [...bodyZones, ...garmentZones], [bodyZones, garmentZones]);
 
   const orderable = isOrderable(piece);
   const complete = isComplete(sheet.values, allZones);
@@ -128,10 +130,11 @@ export function PieceOrderPanel({
         unit: sheet.unit,
         zones: allZones,
       });
-      setReserved(true);
+      /* Straight to checkout: the piece is in the cart, and `holding` stays
+         set so the button cannot be pressed twice while the page changes. */
+      router.push('/checkout');
     } catch (error) {
       setRefusal((error as Error).message);
-    } finally {
       setHolding(false);
     }
   };
@@ -142,7 +145,7 @@ export function PieceOrderPanel({
     return (
       <div className={styles.sheetWrap}>
         <p className={styles.blocked}>
-          The cloth for this piece has not been confirmed yet, so it cannot be reserved
+          The cloth for this piece has not been confirmed yet, so it cannot be ordered
           just now. Write to hello@bylinsilk.com and the atelier will tell you what it is
           cut in.
         </p>
@@ -190,15 +193,13 @@ export function PieceOrderPanel({
           </div>
           <div>
             <div className={styles.chosenName}>{swatchLabel(swatch)}</div>
-            {!reserved && (
-              <button
-                type="button"
-                className={styles.linkButton}
-                onClick={(e) => openColours(e.currentTarget)}
-              >
-                Change colour
-              </button>
-            )}
+            <button
+              type="button"
+              className={styles.linkButton}
+              onClick={(e) => openColours(e.currentTarget)}
+            >
+              Change colour
+            </button>
           </div>
         </div>
       )}
@@ -217,20 +218,21 @@ export function PieceOrderPanel({
         <div className={styles.sheetWrap}>
           <MeasurementSheet
             group={piece.group}
+            bodyZones={bodyZones}
             garmentZones={garmentZones}
             onChange={onSheetChange}
           />
 
           <div className={styles.reserve}>
-            <Button onClick={reserve} disabled={!complete || reserved || holding || !variantId || !swatch}>
-              {reserved ? 'Reserved' : holding ? 'Holding…' : 'Reserve this piece'}
+            <Button onClick={reserve} disabled={!complete || holding || !variantId || !swatch}>
+              {holding ? 'One moment…' : 'Continue to checkout'}
             </Button>
 
             {refusal && <p className={styles.blocked}>{refusal}</p>}
 
             {!variantId && (
               <p className={styles.blocked}>
-                The house cannot be reached just now, so nothing can be held. Write to
+                The house cannot be reached just now, so nothing can be ordered. Write to
                 hello@bylinsilk.com and the atelier will hold it by hand.
               </p>
             )}
@@ -238,30 +240,15 @@ export function PieceOrderPanel({
             {!complete && (
               <p className={styles.blocked}>
                 {taken === 0
-                  ? `The sheet decides the garment, so all ${allZones.length} measurements are needed before a piece can be reserved.`
+                  ? `The sheet decides the garment, so all ${allZones.length} measurements are needed before a piece can be ordered.`
                   : `${allZones.length - taken} more to take. The atelier cannot cut from a partial sheet.`}
               </p>
             )}
 
-            {reserved && swatch ? (
-              <div className={styles.done}>
-                <span className={styles.doneMark}>held</span>
-                <span>
-                  {piece.name} in {swatchLabel(swatch)} — {money(piece.price)}
-                </span>
-                <Link
-                  href="/cart"
-                  style={{ borderBottom: '1px solid var(--gold-60)', paddingBottom: 2 }}
-                >
-                  Review your reservation
-                </Link>
-              </div>
-            ) : (
-              <p className={styles.reserveNote}>
-                Reserving holds the design against the season’s capped run. The atelier
-                writes to you within two days to confirm the sheet before cutting begins.
-              </p>
-            )}
+            <p className={styles.reserveNote}>
+              Ordering holds the design against the season’s capped run. The atelier
+              writes to you within two days to confirm the sheet before cutting begins.
+            </p>
           </div>
         </div>
       )}

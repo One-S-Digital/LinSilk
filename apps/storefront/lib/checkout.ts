@@ -34,14 +34,19 @@ export type ApiCheckoutCart = {
     id: string;
     title: string;
     subtitle?: string | null;
+    thumbnail?: string | null;
     unit_price: number;
     total: number;
-    variant?: { product?: { subtitle?: string | null } | null } | null;
+    variant?: { product?: { subtitle?: string | null; thumbnail?: string | null } | null } | null;
     metadata?: Record<string, unknown> | null;
   }[];
   shipping_address?: ApiAddress | null;
   shipping_methods?: { id: string; name: string; amount: number }[];
   item_total: number;
+  /** Before any promotion; `item_total` is after it. */
+  item_subtotal?: number;
+  discount_total?: number;
+  promotions?: { code?: string | null }[] | null;
   shipping_total: number;
   total: number;
   completed_at?: string | null;
@@ -49,7 +54,8 @@ export type ApiCheckoutCart = {
 };
 
 const FIELDS = [
-  'id', 'email', 'currency_code', 'item_total', 'shipping_total', 'total', 'completed_at',
+  'id', 'email', 'currency_code', 'item_total', 'item_subtotal', 'discount_total',
+  'shipping_total', 'total', 'completed_at', '*promotions',
   '*items', '*items.variant.product', '*shipping_address', '*shipping_methods',
   '*region', '*region.countries',
   '*payment_collection', '*payment_collection.payment_sessions',
@@ -68,6 +74,20 @@ export const getShippingOptions = async (cartId: string) =>
   (await medusaFetch<{ shipping_options: ApiShippingOption[] }>(
     `/store/shipping-options?cart_id=${cartId}`,
   )).shipping_options;
+
+/* Medusa answers a code it does not accept with the cart unchanged, so the
+   caller checks `promotions` rather than trusting a 200. */
+export const applyPromoCode = async (cartId: string, code: string) =>
+  (await medusaFetch<{ cart: ApiCheckoutCart }>(
+    `/store/carts/${cartId}/promotions?fields=${FIELDS}`,
+    { method: 'POST', json: { promo_codes: [code] } },
+  )).cart;
+
+export const removePromoCode = async (cartId: string, code: string) =>
+  (await medusaFetch<{ cart: ApiCheckoutCart }>(
+    `/store/carts/${cartId}/promotions?fields=${FIELDS}`,
+    { method: 'DELETE', json: { promo_codes: [code] } },
+  )).cart;
 
 export const chooseShipping = async (cartId: string, optionId: string) =>
   (await medusaFetch<{ cart: ApiCheckoutCart }>(

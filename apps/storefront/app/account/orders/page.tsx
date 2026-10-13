@@ -8,7 +8,7 @@ import styles from '../account.module.css';
 
 export const metadata: Metadata = {
   title: 'Your orders',
-  description: 'Every reservation and commission, and where it stands.',
+  description: 'Every order and commission, and where it stands.',
 };
 
 type ApiOrder = {
@@ -31,8 +31,8 @@ export default async function OrdersPage() {
       title="Your orders"
       lead={
         body.orders.length
-          ? 'Every reservation and commission you have paid for, oldest last.'
-          : 'Nothing yet — a reservation or an accepted commission will appear here.'
+          ? 'Every order and commission you have paid for, oldest last.'
+          : 'Nothing yet — an order or an accepted commission will appear here.'
       }
     >
       <div className={styles.orders}>
