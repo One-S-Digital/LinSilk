@@ -20,7 +20,7 @@ export type CommissionRecord = {
   currency_code?: string | null
 }
 
-const money = (amount: number | string, currency = "chf") =>
+export const money = (amount: number | string, currency = "chf") =>
   `${currency.toUpperCase()} ${Number(amount).toLocaleString("de-CH")}`
 
 const sheetLines = (commission: CommissionRecord) => {
