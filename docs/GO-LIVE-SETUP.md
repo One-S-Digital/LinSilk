@@ -249,7 +249,7 @@ Don't trigger a deploy yet — it will fail without the CORS values, and that's 
 ## 7. `linsilk-worker` — optional, skip unless you need it
 
 `linsilk-medusa` in `shared` mode (step 6) already runs everything: the storefront's API calls
-and the background jobs — the hourly exchange-rate refresh, the password-reset email subscriber,
+and the background jobs — the password-reset email subscriber,
 any future long subscriber. One process, one Starter instance, no separate cost.
 
 The reason to split them apart later: `shared` mode means a slow background task and a checkout

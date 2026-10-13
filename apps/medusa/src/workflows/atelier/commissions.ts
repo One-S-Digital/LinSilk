@@ -20,8 +20,6 @@ import type AtelierModuleService from "../../modules/atelier/service"
 import { commissionQuotedEmail, type CommissionRecord } from "../../lib/commission-emails"
 import { ATELIER_NAME_FILTER } from "../../lib/atelier-location"
 import { COMMISSION_COLLECTION } from "../../lib/commission-catalogue"
-import { chfRates } from "../../lib/exchange-rates"
-import { CURRENCIES, fromChf } from "../../lib/pricing"
 
 /* Writing a commission down, and later putting a price on it. Both are
    workflows rather than a service call in a route, so a half-finished
@@ -86,7 +84,6 @@ const prepareQuoteStep = createStep(
   async ({ id, quote_amount }: { id: string; quote_amount: number }, { container }) => {
     const atelier: AtelierModuleService = container.resolve(ATELIER_MODULE)
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
-    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     const commission = await atelier.retrieveCommission(id)
 
     if (commission.paid_at) {
@@ -96,11 +93,7 @@ const prepareQuoteStep = createStep(
       )
     }
 
-    const rates = await chfRates(logger)
-    const prices = CURRENCIES.map((currency_code) => ({
-      currency_code,
-      amount: fromChf(quote_amount, currency_code, rates),
-    }))
+    const prices = [{ currency_code: "chf", amount: quote_amount }]
 
     const handle = `commission-of-${id.replace(/^com_/, "").toLowerCase()}`
     const { data: [existing] } = await query.graph({

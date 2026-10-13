@@ -82,8 +82,8 @@ Three regions. This is the thing Shopify would have charged a plan tier for.
 | Region | Currency | Countries | Notes |
 |---|---|---|---|
 | Switzerland | CHF | ch | Base. Duty included. |
-| Europe | EUR | at, be, de, dk, es, fr, ie, it, lu, nl, pt, se | Duty included per house copy ⚠ |
-| International | GBP + others | gb, us, sg, jp, au | Duty payable on arrival |
+| Europe | CHF | at, be, de, dk, es, fr, ie, it, lu, nl, pt, se | Duty included per house copy ⚠ |
+| International | CHF | gb, us, sg, jp, au | Duty payable on arrival |
 
 ⚠ **The duty claim needs an accountant before go-live.** Switzerland is outside the EU customs
 union and the goods are made outside both. See `HANDOVER.md` §8.
@@ -181,8 +181,7 @@ the figure the tailor set.
 | `GET/POST/DELETE /admin/fabric-catalogues[/:id]` | Publish, hide and delete a catalogue. |
 
 **The silhouettes are products** in a `commission-silhouettes` collection, so the house edits a
-name, a note or an opening figure in the admin rather than in code, and the exchange-rate job
-keeps their euro and sterling figures derived from the franc. The collection's `metadata.status`
+name, a note or an opening figure in the admin rather than in code. The collection's `metadata.status`
 is neither `current` nor `past`, so the cart refuses them.
 
 **Accepting a quote is the link in the email.** Setting a figure makes the commission payable by
@@ -237,8 +236,7 @@ than a season, and the 4 commission silhouettes written down in
 
 **It is safe to run again.** Anything missing is created; anything present is brought back in
 line. Prices are written once, at
-creation — after that the house owns them in the admin, and the exchange-rate job keeps the
-derived currencies current. It is excluded from the compiled build, so it runs from source,
+creation, in francs — after that the house owns them in the admin. It is excluded from the compiled build, so it runs from source,
 against whichever database `DATABASE_URL` points at.
 
 ```bash
@@ -367,8 +365,8 @@ Two things worth knowing before changing any of it:
   body zones silently drops a garment length, and the backend then refuses the line as
   incomplete. A set asks for two lengths.
 - **A seasonal cart may follow the client to another region** — its lines are rebuilt from their
-  variants, keeping their metadata and taking that region's prices, so a Swiss cart becomes a
-  euro one when the address is German. **A commission cart may not:** its line is a run of one,
+  variants, keeping their metadata and taking that region's prices, so a Swiss cart takes
+  the German region's shipping when the address is German, still in francs. **A commission cart may not:** its line is a run of one,
   and Medusa drops what it cannot rebuild. Hence `allowRegionChange`.
 
 Still to do here:
@@ -550,7 +548,7 @@ Two things to know:
 - [ ] Admin reachable, admin user created
 - [ ] Worker log shows it started in `worker` mode, not `server`
 - [ ] Seed run; 4 collections and 53 products present
-- [ ] Regions return correct prices in CHF / EUR / GBP
+- [ ] Every region returns prices in CHF
 - [ ] **A `past` collection product is rejected by the cart API**, not just hidden by the UI
 - [ ] **A cart line missing a required measurement is rejected server-side**
 - [ ] `metadata.length_kind` present on every piece that needs a length
@@ -600,7 +598,7 @@ permanently.
 ## 11. Suggested order of work
 
 1. ~~Scaffold Medusa, migrate, admin user~~ — done
-2. ~~Regions and currencies~~ — done, with euro and sterling derived from the franc hourly
+2. ~~Regions and currencies~~ — done; every region is priced in francs alone
 3. ~~Collections + pieces + seed~~ — done; the archive gate is enforced in the cart and tested
 4. ~~Commission module + cloth catalogues + atelier console~~ — done (§3.6–3.8)
 5. ~~Wire the storefront to the Store API~~ — done (§7)

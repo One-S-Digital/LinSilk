@@ -20,16 +20,6 @@ import { BODY_ZONES, LENGTH_ZONES } from "../../src/lib/measurements"
 
 jest.setTimeout(180 * 1000)
 
-/* The ECB's feed, frozen: a test should not depend on the bank being up, and
-   a known rate makes the converted figures checkable. */
-const ECB_FEED = `<?xml version="1.0" encoding="UTF-8"?>
-<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01">
-  <Cube><Cube time='2026-09-11'>
-    <Cube currency='GBP' rate='0.85915'/>
-    <Cube currency='CHF' rate='0.9432'/>
-  </Cube></Cube>
-</gesmes:Envelope>`
-
 const SHEET = Object.fromEntries([
   ...BODY_ZONES.map((z, i) => [z.key, 30 + i]),
   [LENGTH_ZONES.top.key, 78],
@@ -40,21 +30,6 @@ medusaIntegrationTestRunner({
   env: {},
   testSuite: ({ api, getContainer }) => {
     let headers: { headers: Record<string, string> }
-    let realFetch: typeof fetch
-
-    beforeAll(() => {
-      realFetch = global.fetch
-      global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-        if (String(input).includes("ecb.europa.eu")) {
-          return new Response(ECB_FEED, { status: 200 })
-        }
-        return realFetch(input, init)
-      }) as typeof fetch
-    })
-
-    afterAll(() => {
-      global.fetch = realFetch
-    })
 
     beforeEach(async () => {
       const container = getContainer()
@@ -83,7 +58,7 @@ medusaIntegrationTestRunner({
             },
             {
               name: "Europe",
-              currency_code: "eur",
+              currency_code: "chf",
               countries: ["de"],
               payment_providers: ["pp_system_default"],
             },
@@ -344,7 +319,7 @@ medusaIntegrationTestRunner({
       })
     })
 
-    it("prices the same quote in the currency of the country it is going to", async () => {
+    it("prices the same quote in francs wherever it is going", async () => {
       const { data: submitted } = await submitBrief()
       const quoted = await quote(submitted.commission.id, 3600)
 
@@ -360,14 +335,13 @@ medusaIntegrationTestRunner({
       )
 
       expect(swiss.currency_code).toBe("chf")
-      expect(german.currency_code).toBe("eur")
+      expect(german.currency_code).toBe("chf")
       /* A new cart, because moving one between regions drops a line whose
          product is a run of one. */
       expect(german.cart_id).not.toBe(swiss.cart_id)
 
       const { data: cart } = await api.get(`/store/carts/${german.cart_id}`, headers)
-      /* 3600 francs at 1/0.9432, rounded to the nearest ten. */
-      expect(cart.cart.items[0].unit_price).toBe(3820)
+      expect(cart.cart.items[0].unit_price).toBe(3600)
     })
 
     const briefWithReference = (filename: string, type: string) => {

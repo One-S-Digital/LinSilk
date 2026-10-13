@@ -12,8 +12,6 @@ import {
   uploadFilesWorkflow,
 } from "@medusajs/medusa/core-flows"
 import { z } from "@medusajs/framework/zod"
-import { chfRates } from "../../../../lib/exchange-rates"
-import { CURRENCIES, fromChf } from "../../../../lib/pricing"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../../../../lib/commission-catalogue"
 
 /* How a piece enters the catalogue.
@@ -261,7 +259,6 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
-  const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER)
 
   const parsed = schema.safeParse(req.body)
   if (!parsed.success) {
@@ -468,7 +465,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
             "delete it and send the piece again."
         )
       }
-      const rates = await chfRates(logger)
       await updateProductsWorkflow(req.scope).run({
         input: {
           products: [
@@ -477,10 +473,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
               variants: [
                 {
                   id: variants[0].id,
-                  prices: CURRENCIES.map((currency_code) => ({
-                    currency_code,
-                    amount: fromChf(piece.price_chf!, currency_code, rates),
-                  })),
+                  prices: [{ currency_code: "chf", amount: piece.price_chf! }],
                 },
               ],
             },
@@ -538,7 +531,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       })
     ).result[0].id
 
-  const rates = await chfRates(logger)
   const { result: created } = await createProductsWorkflow(req.scope).run({
     input: {
       products: [
@@ -563,10 +555,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
               options: { Cut: "Made to measure" },
               manage_inventory: true,
               allow_backorder: false,
-              prices: CURRENCIES.map((currency_code) => ({
-                currency_code,
-                amount: fromChf(piece.price_chf!, currency_code, rates),
-              })),
+              prices: [{ currency_code: "chf", amount: piece.price_chf! }],
             },
           ],
         },
