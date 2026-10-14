@@ -43,8 +43,8 @@ export type ApiCheckoutCart = {
   shipping_address?: ApiAddress | null;
   shipping_methods?: { id: string; name: string; amount: number }[];
   item_total: number;
-  /** Before any promotion; `item_total` is after it. */
-  item_subtotal?: number;
+  /** The pieces before any promotion, tax included; `item_total` is after it. */
+  original_item_total?: number;
   discount_total?: number;
   promotions?: { code?: string | null }[] | null;
   shipping_total: number;
@@ -54,7 +54,7 @@ export type ApiCheckoutCart = {
 };
 
 const FIELDS = [
-  'id', 'email', 'currency_code', 'item_total', 'item_subtotal', 'discount_total',
+  'id', 'email', 'currency_code', 'item_total', 'original_item_total', 'discount_total',
   'shipping_total', 'total', 'completed_at', '*promotions',
   '*items', '*items.variant.product', '*shipping_address', '*shipping_methods',
   '*region', '*region.countries',

@@ -16,6 +16,17 @@ import { z } from "zod"
  */
 
 const MEDUSA_URL = process.env.MEDUSA_URL ?? "http://localhost:9000"
+
+/* The key travels with every request, so it only goes over https — plain http
+   is for a backend on this machine. */
+{
+  const { protocol, hostname } = new URL(MEDUSA_URL)
+  const local = ["localhost", "127.0.0.1", "[::1]"].includes(hostname)
+  if (protocol !== "https:" && !local) {
+    console.error(`MEDUSA_URL must be https, or localhost for development (got ${MEDUSA_URL}).`)
+    process.exit(1)
+  }
+}
 const API_KEY = process.env.MEDUSA_ADMIN_API_KEY
 
 if (!API_KEY) {
@@ -34,6 +45,8 @@ const authorization = `Basic ${Buffer.from(`${API_KEY}:`).toString("base64")}`
 async function house(path: string, init: { method?: string; body?: unknown } = {}) {
   const response = await fetch(`${MEDUSA_URL}${path}`, {
     method: init.method ?? "GET",
+    /* A redirect would carry the key to wherever it points. */
+    redirect: "error",
     headers: {
       authorization,
       ...(init.body ? { "content-type": "application/json" } : {}),

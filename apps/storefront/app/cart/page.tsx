@@ -16,7 +16,7 @@ export default function CartPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Your order</h1>
+      <h1 className={styles.title}>Your cart</h1>
       <p className={styles.lede}>
         Nothing is cut until the atelier has read your sheet and written back. An
         order holds the design against the season’s capped run in the meantime.

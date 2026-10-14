@@ -103,7 +103,7 @@ export default async function orderPlacedHandler({
       await notification.createNotifications(email)
     } catch (error) {
       logger.error(
-        `Order ${order.id} placed, but "${email.template}" to ${email.to} failed: ${
+        `Order ${order.id} placed, but its "${email.template}" email failed: ${
           (error as Error).message
         }`
       )

@@ -314,7 +314,12 @@ export function CheckoutFlow({
 
   const chosenShipping = cart.shipping_methods?.[0];
   const promoCodes = (cart.promotions ?? []).flatMap((p) => (p.code ? [p.code] : []));
-  const discount = cart.discount_total ?? 0;
+  /* The promotion's cut of the pieces alone: `discount_total` also counts a
+     discount on shipping, which `shipping_total` already shows. */
+  const discount =
+    cart.original_item_total != null
+      ? Math.max(cart.original_item_total - cart.item_total, 0)
+      : (cart.discount_total ?? 0);
 
   const field = (key: keyof Details, type = 'text', full = false) => (
     <div className={`${styles.field}${full ? ` ${styles.full}` : ''}`}>
@@ -579,7 +584,7 @@ export function CheckoutFlow({
           <div className={styles.totalRow}>
             <span>Subtotal</span>
             <span className={styles.totalValue}>
-              {money(cart.item_subtotal ?? cart.item_total)}
+              {money(cart.original_item_total ?? cart.item_total)}
             </span>
           </div>
           {discount > 0 && (

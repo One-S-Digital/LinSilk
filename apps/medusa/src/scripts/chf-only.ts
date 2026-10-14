@@ -58,16 +58,46 @@ const regionOf = (price: Price) =>
 const conditionsOf = (price: Price) =>
   (price.price_rules ?? []).filter((rule) => rule.attribute !== "region_id")
 
+const isNumeric = (value: string) => value.trim() !== "" && Number.isFinite(Number(value))
+
+/* The shipping workflow takes every condition besides the region as an
+   operator and a number, and Medusa's pricing refuses anything else. A
+   condition stored as text that is not a number cannot be handed back, so it
+   is reported rather than sent. */
+const unsendable = (price: Price) => conditionsOf(price).some((rule) => !isNumeric(rule.value))
+
 const carried = (price: Price) => {
   const rules = conditionsOf(price).map(({ attribute, operator, value }) => ({
     attribute,
     operator: operator ?? "eq",
-    value,
+    value: Number(value),
   }))
   return {
     ...(price.min_quantity != null ? { min_quantity: Number(price.min_quantity) } : {}),
     ...(price.max_quantity != null ? { max_quantity: Number(price.max_quantity) } : {}),
     ...(rules.length ? { rules } : {}),
+  }
+}
+
+/* A base price is told apart by its currency, its quantity bounds and its
+   rules, and Medusa drops any price the update leaves out. So each franc price
+   goes back with all three, or two franc prices that differ only in a rule
+   would be sent as one. An equality rule is a plain value; any other operator
+   takes a number. */
+const variantConditions = (price: Price) => {
+  const rules: Record<string, string | { operator: string; value: number }[]> = {}
+  for (const { attribute, operator, value } of price.price_rules ?? []) {
+    if (!operator || operator === "eq") {
+      rules[attribute] = value
+    } else {
+      const list = Array.isArray(rules[attribute]) ? (rules[attribute] as { operator: string; value: number }[]) : []
+      rules[attribute] = [...list, { operator, value: Number(value) }]
+    }
+  }
+  return {
+    ...(price.min_quantity != null ? { min_quantity: Number(price.min_quantity) } : {}),
+    ...(price.max_quantity != null ? { max_quantity: Number(price.max_quantity) } : {}),
+    ...(Object.keys(rules).length ? { rules } : {}),
   }
 }
 
@@ -111,7 +141,12 @@ export default async function chfOnly({
   const optionUpdates = (options as unknown as Priced[]).flatMap((option) => {
     const prices = (option.prices ?? []).map((p) => ({ ...p, amount: Number(p.amount) }))
     const francs = prices.find(
-      (p) => p.currency_code === "chf" && !regionOf(p) && conditionsOf(p).length === 0
+      (p) =>
+        p.currency_code === "chf" &&
+        !regionOf(p) &&
+        conditionsOf(p).length === 0 &&
+        p.min_quantity == null &&
+        p.max_quantity == null
     )?.amount
     const stale = prices.some(
       (p) => p.currency_code !== "chf" || foreignIds.has(regionOf(p) ?? "")
@@ -121,6 +156,13 @@ export default async function chfOnly({
     }
     if (francs === undefined) {
       problems.push(`Shipping option "${option.name}" has no plain franc price to go by.`)
+      return []
+    }
+    const kept = prices.filter((p) => p.currency_code === "chf" || regionOf(p))
+    if (kept.some(unsendable)) {
+      problems.push(
+        `Shipping option "${option.name}" has a price condition that is not a number, which cannot be carried across.`
+      )
       return []
     }
     const conditionalRegional = prices.some((p) => regionOf(p) && conditionsOf(p).length > 0)
@@ -134,8 +176,7 @@ export default async function chfOnly({
     return [
       {
         id: option.id,
-        prices: prices
-          .filter((p) => p.currency_code === "chf" || regionOf(p))
+        prices: kept
           .map(({ id, currency_code, amount, ...rest }) => {
             const region_id = regionOf({ id, currency_code, amount, ...rest })
             const price = { id, currency_code, amount, ...rest }
@@ -155,25 +196,20 @@ export default async function chfOnly({
   /* ---- 3. Variants ---- */
   const { data: variants } = await query.graph({
     entity: "variant",
-    fields: ["id", "prices.id", "prices.currency_code", "prices.amount", "prices.price_list_id"],
+    fields: [
+      "id",
+      "prices.id",
+      "prices.currency_code",
+      "prices.amount",
+      "prices.price_list_id",
+      "prices.min_quantity",
+      "prices.max_quantity",
+      "prices.price_rules.attribute",
+      "prices.price_rules.operator",
+      "prices.price_rules.value",
+    ],
   })
   const variantUpdates = (variants as unknown as Priced[]).flatMap((variant) => {
-    /* Sale prices are left alone, but one with no franc figure beside it would
-       stop applying once the region is in francs, so it is not left behind. */
-    const listed = new Map<string, Set<string>>()
-    for (const p of variant.prices ?? []) {
-      if (p.price_list_id) {
-        listed.set(p.price_list_id, (listed.get(p.price_list_id) ?? new Set()).add(p.currency_code))
-      }
-    }
-    for (const [list, currencies] of listed) {
-      if (currencies.size && !currencies.has("chf")) {
-        problems.push(
-          `Variant ${variant.id} has a price in price list ${list} but none in francs, so the sale would stop applying.`
-        )
-      }
-    }
-
     const base = (variant.prices ?? []).filter((p) => !p.price_list_id)
     if (!base.some((p) => p.currency_code !== "chf")) {
       return []
@@ -187,10 +223,40 @@ export default async function chfOnly({
         id: variant.id,
         prices: base
           .filter((p) => p.currency_code === "chf")
-          .map(({ id, currency_code, amount }) => ({ id, currency_code, amount: Number(amount) })),
+          .map((p) => ({
+            id: p.id,
+            currency_code: p.currency_code,
+            amount: Number(p.amount),
+            ...variantConditions(p),
+          })),
       },
     ]
   })
+
+  /* ---- Sale prices ---- *
+     A variant's `prices` leaves price-list prices out, so they are read from the
+     price sets themselves. A sale with no franc price beside it stops applying
+     once the region is in francs. Sale prices are not touched, so this only
+     reports them. */
+  const { data: priceSets } = await query.graph({
+    entity: "price_set",
+    fields: ["id", "prices.id", "prices.currency_code", "prices.price_list_id"],
+  })
+  for (const set of priceSets as unknown as { id: string; prices?: Price[] | null }[]) {
+    const listed = new Map<string, Set<string>>()
+    for (const p of set.prices ?? []) {
+      if (p.price_list_id) {
+        listed.set(p.price_list_id, (listed.get(p.price_list_id) ?? new Set()).add(p.currency_code))
+      }
+    }
+    for (const [list, currencies] of listed) {
+      if (!currencies.has("chf")) {
+        problems.push(
+          `Price list ${list} has a price in price set ${set.id} but none in francs, so the sale would stop applying.`
+        )
+      }
+    }
+  }
 
   say(
     `${foreign.length} region(s) to reprice in francs` +

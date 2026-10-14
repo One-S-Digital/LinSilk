@@ -243,6 +243,19 @@ against whichever database `DATABASE_URL` points at.
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts
 ```
 
+**A database seeded before the house priced in francs alone** (it still has a euro or sterling
+region) is not fixed by re-running the seed: the seed leaves existing regions and shipping
+options as they are, though it does set the store's currency to francs. Bring it across first,
+with the dry run and then `apply`:
+
+```bash
+pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts          # says what it would do
+pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts apply    # does it
+```
+
+The dry run stops with a list if any price cannot be moved safely (a shipping option or variant
+with no franc price, a sale price with none beside it); nothing is changed until it is clean.
+
 The house's pieces arrive through the admin or the ingestion route
 (`CATALOGUE-INGESTION.md`). Until a season with status `current` has published pieces, the
 storefront says no collection is open.
@@ -548,7 +561,8 @@ Two things to know:
 - [ ] Admin reachable, admin user created
 - [ ] Worker log shows it started in `worker` mode, not `server`
 - [ ] Seed run; 4 collections and 53 products present
-- [ ] Every region returns prices in CHF
+- [ ] Every region returns prices in CHF (on a database that predates franc-only pricing:
+      `chf-only.ts` dry run clean, then `apply` — see §4)
 - [ ] **A `past` collection product is rejected by the cart API**, not just hidden by the UI
 - [ ] **A cart line missing a required measurement is rejected server-side**
 - [ ] `metadata.length_kind` present on every piece that needs a length
