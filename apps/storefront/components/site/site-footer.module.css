@@ -88,6 +88,25 @@
   color: var(--on-dark-40);
 }
 
+.currency {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.currency select {
+  background: transparent;
+  color: inherit;
+  border: none;
+  border-bottom: 1px solid var(--on-dark-40);
+  font: inherit;
+  padding: 0 2px;
+}
+
+.currency option {
+  color: var(--ink);
+}
+
 /* Right-hand end of the legal row, set apart by a hairline. Gold here is the
    lighter brass of the footer logo: --gold is too dim for small text on ink. */
 .credit {

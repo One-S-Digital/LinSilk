@@ -2,6 +2,7 @@
 
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
+import { Approx, ApproxNote } from '@/lib/currency';
 import { useCart } from '@/lib/cart';
 import { formatMoney } from '@/lib/medusa';
 import { formatValue } from '@/lib/measurements';
@@ -78,6 +79,7 @@ export default function CartPage() {
 
                   <div className={styles.lineAside}>
                     <span className={styles.linePrice}>{money(line.price)}</span>
+                    <Approx chf={line.price} currency={currency} className={styles.approx} />
                     <button
                       type="button"
                       className={styles.remove}
@@ -112,6 +114,8 @@ export default function CartPage() {
                 <span>Total</span>
                 <span className={styles.totalValue}>{money(subtotal)}</span>
               </div>
+              <Approx chf={subtotal} currency={currency} className={styles.approxTotal} />
+              <ApproxNote className={styles.approxNote} />
 
               <div className={styles.checkout}>
                 <ButtonLink href="/checkout" block>

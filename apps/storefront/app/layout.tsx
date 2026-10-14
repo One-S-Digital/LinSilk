@@ -4,6 +4,7 @@ import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { CartProvider } from '@/lib/cart';
+import { CurrencyProvider } from '@/lib/currency';
 import { pastCollections } from '@/lib/catalog';
 import './globals.css';
 
@@ -87,6 +88,7 @@ export default async function RootLayout({
       </head>
       <body>
         <CartProvider>
+         <CurrencyProvider>
           <SmoothScroll>
             <a href="#main" className="sr-only">
               Skip to content
@@ -95,6 +97,7 @@ export default async function RootLayout({
             <main id="main">{children}</main>
             <SiteFooter />
           </SmoothScroll>
+         </CurrencyProvider>
         </CartProvider>
       </body>
     </html>

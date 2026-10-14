@@ -361,3 +361,12 @@
   padding-top: 34px;
   border-top: 1px solid var(--gold-35);
 }
+
+/* An approximate figure in another currency under the total: a guide, never
+   the charge. */
+.approxTotal {
+  display: block;
+  text-align: right;
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}

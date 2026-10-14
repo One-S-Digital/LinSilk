@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { pastCollections } from '@/lib/catalog';
+import { CurrencyPicker } from './currency-picker';
 import styles from './site-footer.module.css';
 
 const shopLinks = async () => [
@@ -96,6 +97,7 @@ export async function SiteFooter() {
         <div className={styles.legal}>
           <span>© {new Date().getFullYear()} LinSilk</span>
           <span>Prices in CHF</span>
+          <CurrencyPicker />
           <Link href="/legal/terms" className={styles.link}>
             Terms
           </Link>

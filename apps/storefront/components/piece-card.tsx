@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShotFrame } from '@/components/shot';
 import { isOrderable, money, type Piece } from '@/lib/catalog';
+import { Approx } from '@/lib/currency';
 import styles from './piece-card.module.css';
 
 export function PieceCard({
@@ -34,7 +35,12 @@ export function PieceCard({
       <div className={styles.meta}>
         <span className={styles.name}>{piece.name}</span>
         {/* An archived piece is not for sale, so it carries no price. */}
-        {isOrderable(piece) && <span className={styles.price}>{money(piece.price)}</span>}
+        {isOrderable(piece) && (
+          <span className={styles.price}>
+            {money(piece.price)}
+            <Approx chf={piece.price} className={styles.approx} />
+          </span>
+        )}
       </div>
       <div className={styles.material}>{piece.material}</div>
       {showView && <span className={styles.view}>View</span>}

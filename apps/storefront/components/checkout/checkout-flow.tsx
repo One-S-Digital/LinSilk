@@ -22,6 +22,7 @@ import {
   type ApiPaymentSession,
   type ApiShippingOption,
 } from '@/lib/checkout';
+import { Approx, ApproxNote } from '@/lib/currency';
 import { formatMoney } from '@/lib/medusa';
 import styles from '@/app/checkout/checkout.module.css';
 
@@ -603,7 +604,13 @@ export function CheckoutFlow({
             <span>Total</span>
             <span className={styles.totalValue}>{money(cart.total)}</span>
           </div>
+          <Approx
+            chf={cart.total}
+            currency={cart.currency_code}
+            className={styles.approxTotal}
+          />
         </div>
+        <ApproxNote className={styles.reassure} />
 
         <p className={styles.reassure}>
           Nothing is cut until the atelier has confirmed your measurement sheet in
