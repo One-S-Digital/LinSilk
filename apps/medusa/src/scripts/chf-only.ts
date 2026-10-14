@@ -3,6 +3,11 @@
  *   pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts          # says what it would do
  *   pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts apply    # does it
  *
+ * Where there is no shell (Render's start command is all there is), the
+ * `start:render` script runs the dry run on every start and the server starts
+ * either way. Setting CHF_ONLY=apply in the environment makes that run apply
+ * instead; unset it once the log says the database is in francs.
+ *
  * The seed now makes every region priced in francs. A database seeded before
  * that still has a euro region and a sterling one, with euro and sterling
  * prices on every piece and on the shipping options. This moves it across:
@@ -110,7 +115,7 @@ export default async function chfOnly({
 }) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
-  const apply = args?.includes("apply") ?? false
+  const apply = (args?.includes("apply") ?? false) || process.env.CHF_ONLY === "apply"
   const say = (message: string) => logger.info(`${apply ? "" : "[dry run] "}${message}`)
   const problems: string[] = []
 
