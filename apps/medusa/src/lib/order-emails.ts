@@ -1,4 +1,5 @@
 import { money } from "./commission-emails"
+import { renderHtml, type Block } from "./email-layout"
 import { BODY_ZONES, LENGTH_ZONES } from "./measurements"
 
 /* What the house sends when an order is placed: a confirmation to the client,
@@ -47,21 +48,24 @@ const ZONE_LABELS: Record<string, string> = Object.fromEntries(
   [...BODY_ZONES, ...Object.values(LENGTH_ZONES)].map((zone) => [zone.key, zone.label])
 )
 
-const numberOf = (order: OrderRecord) =>
+export const numberOf = (order: Pick<OrderRecord, "id" | "display_id">) =>
   order.display_id ? `no. ${order.display_id}` : order.id
 
-const nameOf = (order: OrderRecord) =>
+export const nameOf = (order: Pick<OrderRecord, "shipping_address">) =>
   [order.shipping_address?.first_name, order.shipping_address?.last_name]
     .filter(Boolean)
     .join(" ")
 
 /** The sheet as it travelled on the line: `measure_<zone>_cm`, always in cm. */
+const sheetRows = (line: OrderLine): [string, string][] =>
+  Object.entries(line.metadata ?? {}).flatMap(([key, value]) => {
+    const zone = key.match(/^measure_(.+)_cm$/)?.[1]
+    return zone ? [[ZONE_LABELS[zone] ?? zone, `${value} cm`] as [string, string]] : []
+  })
+
 const sheetOf = (line: OrderLine) =>
-  Object.entries(line.metadata ?? {})
-    .flatMap(([key, value]) => {
-      const zone = key.match(/^measure_(.+)_cm$/)?.[1]
-      return zone ? [`    ${(ZONE_LABELS[zone] ?? zone).padEnd(20)} ${value} cm`] : []
-    })
+  sheetRows(line)
+    .map(([label, value]) => `    ${label.padEnd(20)} ${value}`)
     .join("\n")
 
 const lineText = (line: OrderLine, currency: string) => {
@@ -71,22 +75,12 @@ const lineText = (line: OrderLine, currency: string) => {
   return sheet ? `${head}\n${sheet}` : head
 }
 
-const addressText = (order: OrderRecord) => {
-  const a = order.shipping_address
-  if (!a) return "  not given"
-  return [
-    nameOf(order),
-    [a.address_1, a.address_2].filter(Boolean).join(", "),
-    [a.postal_code, a.city].filter(Boolean).join(" "),
-    a.country_code?.toUpperCase(),
-    a.phone,
-  ]
-    .filter(Boolean)
+const addressText = (order: OrderRecord) =>
+  addressLines(order)
     .map((part) => `  ${part}`)
     .join("\n")
-}
 
-const figures = (order: OrderRecord) => {
+const figureRows = (order: OrderRecord): [string, string][] => {
   const currency = order.currency_code
   /* The discount on the pieces only: `discount_total` also counts a discount
      on shipping, which the shipping line already shows. */
@@ -95,19 +89,68 @@ const figures = (order: OrderRecord) => {
   const pieces =
     order.original_item_total ??
     (order.item_total != null ? Number(order.item_total) + discount : null)
-  return [
-    pieces != null ? `  Pieces      ${money(pieces, currency)}` : null,
-    discount > 0 ? `  Discount    −${money(discount, currency)}` : null,
+  const rows: ([string, string] | null)[] = [
+    pieces != null ? ["Pieces", money(pieces, currency)] : null,
+    discount > 0 ? ["Discount", `−${money(discount, currency)}`] : null,
     order.shipping_total != null
-      ? `  Shipping    ${
-          Number(order.shipping_total) === 0 ? "included" : money(order.shipping_total, currency)
-        }${shipping ? ` (${shipping})` : ""}`
+      ? [
+          "Shipping",
+          `${Number(order.shipping_total) === 0 ? "included" : money(order.shipping_total, currency)}${
+            shipping ? ` (${shipping})` : ""
+          }`,
+        ]
       : null,
-    `  Total       ${money(order.total, currency)}`,
+    ["Total", money(order.total, currency)],
   ]
-    .filter(Boolean)
-    .join("\n")
+  return rows.filter((row): row is [string, string] => row !== null)
 }
+
+const figures = (order: OrderRecord) =>
+  figureRows(order)
+    .map(([label, value]) => `  ${label.padEnd(12)}${value}`)
+    .join("\n")
+
+const addressLines = (order: OrderRecord) => {
+  const a = order.shipping_address
+  if (!a) return ["not given"]
+  return [
+    nameOf(order),
+    [a.address_1, a.address_2].filter(Boolean).join(", "),
+    [a.postal_code, a.city].filter(Boolean).join(" "),
+    a.country_code?.toUpperCase(),
+    a.phone,
+  ].filter((part): part is string => Boolean(part))
+}
+
+/** The same message as the plain text below, laid out for the HTML version. */
+const confirmationBlocks = (order: OrderRecord, paid: boolean, seasonal: boolean): Block[] => [
+  {
+    kind: "p",
+    text: paid
+      ? "Thank you. Your order is paid for."
+      : "Thank you. We have your order, and will write again once your payment is confirmed.",
+  },
+  {
+    kind: "p",
+    text: seasonal
+      ? "Nothing is cut until the atelier has read your measurement sheet and written back to confirm it — usually within two working days. If anything on the sheet is wrong, reply to this email and it is amended before a pattern is drawn. A piece takes two to four weeks from the confirmed sheet."
+      : "The bench has your commission. A pattern is drawn to your sheet before anything is cut, and a piece takes two to four weeks from that point.",
+  },
+  {
+    kind: "rows",
+    title: `Order ${numberOf(order)}`,
+    rows: order.items.map((line): [string, string] => [
+      `${line.title}${line.metadata?.fabric_name ? ` · ${String(line.metadata.fabric_name)}` : ""}`,
+      money(line.total, order.currency_code),
+    ]),
+  },
+  ...order.items.flatMap((line): Block[] => {
+    const rows = line.commission ? [] : sheetRows(line)
+    return rows.length ? [{ kind: "rows", title: `Measurements — ${line.title}`, rows }] : []
+  }),
+  { kind: "rows", rows: figureRows(order) },
+  { kind: "lines", title: "Sent to", lines: addressLines(order) },
+]
 
 /** To the client: it is paid, and what happens next. */
 export function orderConfirmationEmail(order: OrderRecord) {
@@ -119,8 +162,16 @@ export function orderConfirmationEmail(order: OrderRecord) {
     to: order.email ?? "",
     channel: "email",
     template: "order-confirmation",
+    /* Remembered so that the separate "payment received" mail is not sent to a
+       client who has already been told, here, that the order is paid for. */
+    data: { paid },
     content: {
       subject: `Your order ${numberOf(order)} — LinSilk`,
+      html: renderHtml({
+        heading: "Your order",
+        greeting: who ? `Dear ${who},` : "Hello,",
+        blocks: confirmationBlocks(order, paid, seasonal),
+      }),
       text: [
         who ? `Dear ${who},` : "Hello,",
         "",

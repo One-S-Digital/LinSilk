@@ -45,6 +45,21 @@ describe("orderConfirmationEmail", () => {
     expect(email.content.text).toContain("1204 Geneva")
   })
 
+  it("also comes as HTML, with the same figures and the measurement sheet", () => {
+    const { html, text } = orderConfirmationEmail(order([shirt])).content
+    expect(html).toContain("Burgundy linen")
+    expect(html).toContain("CHF 129")
+    expect(html).toContain("Neck")
+    expect(html).toContain("38 cm")
+    expect(html).toContain("1204 Geneva")
+    expect(text).toContain("Neck")
+  })
+
+  it("remembers whether it said the order is paid, so a payment mail is not sent twice", () => {
+    expect(orderConfirmationEmail(order([shirt])).data).toEqual({ paid: true })
+    expect(orderConfirmationEmail(order([shirt], { payment_status: "awaiting" })).data).toEqual({ paid: false })
+  })
+
   it("tells a commission's client that the bench has it, and prints no sheet", () => {
     const text = orderConfirmationEmail(order([commissioned], { total: 2200 })).content.text
     expect(text).toContain("The bench has your commission")

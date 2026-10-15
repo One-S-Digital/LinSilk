@@ -154,6 +154,14 @@ const routes: MiddlewareRoute[] = [
     middlewares: [catalogue({ resource: "catalogue", operation: "update" })],
   },
 
+  /* Confirming a client's measurement sheet changes the order, and tells the
+     client so. */
+  {
+    matcher: "/admin/orders/:id/confirm-sheet",
+    method: "POST",
+    policies: [{ resource: "order", operation: "update" }],
+  },
+
   /* Commissions — a person with the permission, never a key. */
   {
     matcher: "/admin/commissions",
