@@ -5,16 +5,16 @@ import type { StoryKey } from '@/lib/catalog';
 import { getStoryPage } from '@/lib/payload';
 import styles from './story-page.module.css';
 
-const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand' }[]> = {
+const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand'; src?: string; alt?: string }[]> = {
   cloth: [
     { note: 'cloth, folded', weave: 'bone' },
     { note: 'silk, raking light', weave: 'sand' },
     { note: 'linen, close', weave: 'bone' },
   ],
   contact: [
-    { note: 'the room, morning', weave: 'bone' },
-    { note: 'Geneva desk, order book', weave: 'sand' },
-    { note: 'finished piece, folded', weave: 'bone' },
+    { note: 'hand finishing', weave: 'bone', src: '/images/atelier-needle.webp', alt: 'Hands hand-stitching a silk garment' },
+    { note: 'pattern, marked on cloth', weave: 'sand', src: '/images/commission.webp', alt: 'Pattern lines marked on cloth beside scissors and pins' },
+    { note: 'fitting, on the form', weave: 'bone', src: '/images/atelier-pin.webp', alt: 'A silk blouse being pinned on a dress form' },
   ],
 };
 
@@ -46,6 +46,8 @@ export async function StoryPage({
             <ShotFrame
               note={plate.note}
               weave={plate.weave}
+              src={plate.src}
+              alt={plate.alt}
               ratio="auto"
               style={{ height: '130%', marginTop: '-15%' }}
             />
