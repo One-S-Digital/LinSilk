@@ -1,5 +1,6 @@
 import { hasPermission } from "@medusajs/framework"
 import {
+  authenticate,
   defineMiddlewares,
   type AuthenticatedMedusaRequest,
   type MedusaNextFunction,
@@ -9,6 +10,7 @@ import {
 } from "@medusajs/framework/http"
 import { MedusaError } from "@medusajs/framework/utils"
 import multer from "multer"
+import { isSessionVerified } from "../lib/email-verification-state"
 
 /* Reference images for a commission, and the cloth catalogues the house
    publishes, arrive as multipart. Files are held in memory and handed to the
@@ -77,6 +79,18 @@ const catalogue =
     next(forbidden(`Insufficient permissions. Required policies: ${required}`))
   }
 
+/* What a client keeps on their account — name, phone, saved sheet, addresses —
+   waits for a confirmed email. Browsing, ordering and the password stay open.
+   The session is checked here, ahead of Medusa's own check, so this wall does
+   not depend on which of the two runs first. */
+const verifiedEmailOnly = async (req: MedusaRequest, _res: MedusaResponse, next: MedusaNextFunction) => {
+  const identity = (req as AuthenticatedMedusaRequest).auth_context?.auth_identity_id
+  if (await isSessionVerified(req.scope, identity)) return next()
+  next(forbidden("Confirm your email to change what your account holds. A link was sent when you registered."))
+}
+
+const requireVerifiedCustomer = [authenticate("customer", ["session", "bearer"]), verifiedEmailOnly]
+
 /* Typed as Medusa's own route shape: `policies` is what its core routes use,
    read by the same loader, but defineMiddlewares' input type leaves it out. */
 const routes: MiddlewareRoute[] = [
@@ -102,6 +116,10 @@ const routes: MiddlewareRoute[] = [
     method: "POST",
     policies: [{ resource: "rbac_role", operation: "create" }],
   },
+
+  { matcher: "/store/customers/me", method: "POST", middlewares: requireVerifiedCustomer },
+  { matcher: "/store/customers/me/addresses", method: "POST", middlewares: requireVerifiedCustomer },
+  { matcher: "/store/customers/me/addresses/:id", method: ["POST", "DELETE"], middlewares: requireVerifiedCustomer },
 
   {
     matcher: "/store/commissions",

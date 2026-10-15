@@ -109,6 +109,13 @@ export async function getCustomer(): Promise<ApiCustomer | null> {
   return body?.customer ?? null;
 }
 
+/** Whether the signed-in customer has confirmed their email. Held by the
+    backend, never by anything the customer can edit. */
+export async function isEmailVerified(): Promise<boolean> {
+  const body = await authedFetch<{ verified: boolean }>('/store/customers/me/email-verification');
+  return body?.verified ?? false;
+}
+
 /** Every address the customer has saved — a shipping address book, kept on
     the account rather than typed fresh at every checkout. */
 export async function getAddresses(): Promise<ApiAddress[]> {

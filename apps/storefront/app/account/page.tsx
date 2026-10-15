@@ -4,7 +4,8 @@ import { Button, ButtonLink } from '@/components/ui/button';
 import { AuthForms } from '@/components/account/auth-forms';
 import { logoutAction } from '@/lib/account-actions';
 import { fromLineItemMetadata } from '@/lib/measurements';
-import { getCustomer } from '@/lib/session';
+import { getCustomer, isEmailVerified } from '@/lib/session';
+import { VerifyEmailBanner } from '@/components/account/verify-email-banner';
 import styles from './account.module.css';
 
 export const metadata: Metadata = {
@@ -33,6 +34,7 @@ export default async function AccountPage(props: PageProps<'/account'>) {
     );
   }
 
+  const verified = await isEmailVerified();
   const { values } = fromLineItemMetadata(customer.metadata);
   const taken = Object.keys(values).length;
 
@@ -54,6 +56,7 @@ export default async function AccountPage(props: PageProps<'/account'>) {
         </>
       }
     >
+      {!verified && <VerifyEmailBanner email={customer.email} />}
       <div className={styles.grid}>
         <div className={styles.card}>
           <span className={styles.cardTitle}>Your measurements</span>

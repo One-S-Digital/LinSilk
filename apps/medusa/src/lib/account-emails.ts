@@ -18,6 +18,33 @@ export const passwordResetUrl = (email: string, token: string, actor: ResetActor
   `${actor === "user" ? `${adminUrl()}/reset-password` : `${storefrontUrl()}/account/reset-password`}` +
   `?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
 
+/** Where the link in a verification email leads: the storefront confirms it. */
+export const emailVerificationUrl = (token: string) =>
+  `${storefrontUrl()}/account/verify-email?token=${encodeURIComponent(token)}`
+
+/** To a new client: confirm this address is theirs. */
+export function emailVerificationEmail(email: string, token: string) {
+  return {
+    to: email,
+    channel: "email",
+    template: "email-verification",
+    content: {
+      subject: "Confirm your email — LinSilk",
+      text: [
+        "Welcome to LinSilk.",
+        "",
+        "To confirm this is your address, open this link within a day:",
+        emailVerificationUrl(token),
+        "",
+        "If you did not open an account, ignore this email.",
+        "",
+        "LinSilk",
+        "Geneva, Switzerland",
+      ].join("\n"),
+    },
+  }
+}
+
 /** To the client or the staff member: someone asked to reset this account's password. */
 export function passwordResetEmail(email: string, token: string, actor: ResetActor = "customer") {
   return {
