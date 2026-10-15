@@ -267,14 +267,14 @@ vertical gesture is handed to Lenis explicitly so the easing stays continuous.
 Built — **see `docs/BACKEND-RENDER.md`**:
 
 - Medusa backend: catalogue, three regions, the capped run, the archive gate and the cart rules
-- Euro and sterling prices derived hourly from the franc at the ECB's rate
+- One currency: every region, piece and shipping option is priced in francs
 - Commissions as quote requests, cloth catalogues, and the atelier's screens for both
 - Reference files stored privately; catalogues public
 - Transactional email through Resend (a key and `ATELIER_EMAIL` are needed, or nobody is told)
 
 - Checkout on the backend: a Medusa cart, real shipping options, Stripe Elements, and an order
-  at the end of it. A seasonal cart follows the client to their region, so a Swiss cart becomes a
-  euro one at a German address; a commission cart cannot, and does not try.
+  at the end of it. A seasonal cart follows the client to their region, taking that region's shipping
+  (every region is priced in francs); a commission cart cannot, and does not try.
 - A quote becomes payable by itself: the figure a tailor sets makes the commission a product of
   its own — one variant, stock of one — and emails an unguessable link to pay for it. Paying it
   produces an ordinary order, moves the brief to `in_production` and retires the link.
@@ -317,7 +317,7 @@ and a verified sender, and two R2 buckets (one public, one never). See `BACKEND-
 - Build clean on both apps
 - 38 Vitest tests on the storefront, 47 unit and 46 API tests on the backend
 - Reserve, check out and pay end to end, by hand in a browser: a seasonal piece in Swiss francs,
-  the same cart re-priced in euro at a German address, and a commission accepted from its link
+  the same cart with a German address, still in francs, and a commission accepted from its link
 - An account end to end, by hand: register, sign in, edit the profile, add and edit and remove a
   saved address, change the password, reset a forgotten one from a real emailed link, and close
   the account — each wrong-password and missing-field case refused, each successful change

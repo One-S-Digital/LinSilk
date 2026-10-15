@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   BODY_ZONES,
   LENGTH_ZONES,
+  bodyZonesFor as backendBodyZonesFor,
   missingMeasurements,
 } from '../../medusa/src/lib/measurements';
 import { toLineItemMetadata } from './measurements';
-import { LENGTH_ZONE, ZONES, garmentZonesFor, type LengthKind } from './catalog';
+import { LENGTH_ZONE, ZONES, bodyZonesFor, garmentZonesFor, type LengthKind } from './catalog';
 
 /* The backend refuses a cart line whose sheet is incomplete, using its own
    copy of the zones (apps/medusa/src/lib/measurements.ts). This file pins
@@ -46,6 +47,20 @@ describe('backend measurement sheet', () => {
     expect(missingMeasurements(toLineItemMetadata(values, 'cm', zones), set.lengthKinds!)).toEqual(
       [],
     );
+  });
+
+  it('leaves the leg off a shirt and the upper body off a trouser, on both sides', () => {
+    const keys = (kinds: LengthKind[]) => bodyZonesFor({ lengthKinds: kinds }).map((z) => z.key);
+    expect(keys(['top'])).not.toContain('rise');
+    expect(keys(['top'])).toContain('neck');
+    expect(keys(['trouser'])).not.toContain('neck');
+    expect(keys(['trouser'])).toContain('rise');
+    expect(keys(['skirt'])).not.toContain('bust');
+    expect(keys(['skirt'])).not.toContain('rise');
+    expect(keys(['skirt'])).toEqual(['waist', 'hip', 'hipDepth']);
+    for (const kinds of [[], ['top'], ['trouser'], ['skirt'], ['dress'], ['top', 'trouser']] as LengthKind[][]) {
+      expect(backendBodyZonesFor(kinds).map((z) => z.key)).toEqual(keys(kinds));
+    }
   });
 
   it('refuses the partial sheet the storefront would never send', () => {

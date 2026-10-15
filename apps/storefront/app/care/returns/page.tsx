@@ -5,7 +5,7 @@ import { ButtonLink } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Returns',
   description:
-    'Why made-to-measure work is not returnable, what is done about a fault, and when a reservation can be released.',
+    'Why made-to-measure work is not returnable, what is done about a fault, and when an order can be released.',
 };
 
 export default function ReturnsPage() {
@@ -26,7 +26,7 @@ export default function ReturnsPage() {
       <DocSection title="Before anything is cut">
         <DocP>
           Nothing is cut until you have confirmed your sheet in writing, so a
-          reservation can be released at any point up to that reply, in full and
+          order can be released at any point up to that reply, in full and
           without a reason.
         </DocP>
       </DocSection>

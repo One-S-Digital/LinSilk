@@ -42,6 +42,12 @@
   white-space: nowrap;
 }
 
+.approx {
+  display: block;
+  font-size: var(--t-xxs);
+  text-align: right;
+}
+
 .material {
   font-size: var(--t-xxs);
   color: var(--ink-muted);

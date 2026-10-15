@@ -5,6 +5,7 @@ import { ChalkMark, ClothWipe, Reveal } from '@/components/motion';
 import { ShotFrame } from '@/components/shot';
 import { PieceOrderPanel } from '@/components/piece-order-panel';
 import { collectionBySlug, findPiece, getPieces, isOrderable, money, roman } from '@/lib/catalog';
+import { Approx } from '@/lib/currency';
 import { getVariantId } from '@/lib/medusa';
 import styles from './piece.module.css';
 
@@ -121,7 +122,12 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
 
             <div className={styles.metaRow}>
               <span className={styles.material}>{piece.material}</span>
-              {orderable && <span className={styles.price}>{money(piece.price)}</span>}
+              {orderable && (
+                <span className={styles.price}>
+                  {money(piece.price)}
+                  <Approx chf={piece.price} className={styles.approx} />
+                </span>
+              )}
             </div>
 
             <p className={styles.description}>

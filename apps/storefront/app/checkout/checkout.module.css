@@ -288,6 +288,38 @@
   white-space: nowrap;
 }
 
+.promo {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promoForm {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.promoRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.promoRow .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.promoApplied {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-size: var(--t-sm-tight);
+}
+
 .totals {
   margin-top: 20px;
   display: flex;
@@ -328,4 +360,13 @@
   margin-top: 40px;
   padding-top: 34px;
   border-top: 1px solid var(--gold-35);
+}
+
+/* An approximate figure in another currency under the total: a guide, never
+   the charge. */
+.approxTotal {
+  display: block;
+  text-align: right;
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
 }

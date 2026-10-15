@@ -53,9 +53,11 @@ export type CartLine = {
      placeholder frame without going back to a catalogue of its own. */
   shot?: string;
   group?: string;
+  /** The piece's photograph, as the backend holds it on the line. */
+  thumbnail?: string;
 };
 
-/** What a piece page hands over when a client reserves. */
+/** What a piece page hands over when a client orders. */
 export type Reservation = {
   variantId: string;
   pieceId: string;
@@ -108,12 +110,14 @@ type ApiItem = {
   id: string;
   title: string;
   subtitle?: string | null;
+  thumbnail?: string | null;
   unit_price: number;
   product_handle?: string | null;
   variant?: {
     product?: {
       handle?: string | null;
       subtitle?: string | null;
+      thumbnail?: string | null;
       metadata?: Record<string, unknown> | null;
     } | null;
   } | null;
@@ -153,6 +157,7 @@ function readLine(item: ApiItem): CartLine {
     zoneCount: Number(metadata.zone_count ?? Object.keys(measurements).length),
     shot: item.variant?.product?.metadata?.shot as string | undefined,
     group: item.variant?.product?.metadata?.group as string | undefined,
+    thumbnail: item.thumbnail ?? item.variant?.product?.thumbnail ?? undefined,
   };
 }
 

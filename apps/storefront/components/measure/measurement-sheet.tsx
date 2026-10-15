@@ -23,6 +23,7 @@ const GUIDES = {
 
 export function MeasurementSheet({
   group,
+  bodyZones = ZONES,
   garmentZones = [],
   onChange,
   title = 'Your measurements',
@@ -36,6 +37,9 @@ export function MeasurementSheet({
      finished length, say. Empty for anything whose length is already implied,
      like a trouser, where the inseam is the length. */
   garmentZones?: Zone[];
+  /* The body measurements this garment needs; all of them unless the piece
+     is a shirt or a trouser. */
+  bodyZones?: Zone[];
   onChange?: (values: Measurements, unit: Unit) => void;
   title?: string;
   showIntro?: boolean;
@@ -59,7 +63,7 @@ export function MeasurementSheet({
         .map(([k, cm]) => [k, formatValue(cm as number, initialUnit ?? 'cm')]),
     ),
   );
-  const [active, setActive] = useState<string>(ZONES[0].key);
+  const [active, setActive] = useState<string>(bodyZones[0].key);
   const [guide, setGuide] = useState<Group>(group);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -69,7 +73,7 @@ export function MeasurementSheet({
   const hydrated = useHydrated();
   const [restored, setRestored] = useState(Boolean(initialValues));
 
-  const allZones = useMemo(() => [...ZONES, ...garmentZones], [garmentZones]);
+  const allZones = useMemo(() => [...bodyZones, ...garmentZones], [bodyZones, garmentZones]);
 
   // Restore anything the client already typed on a previous visit.
   if (hydrated && !restored) {
@@ -227,7 +231,7 @@ export function MeasurementSheet({
       {showIntro && (
         <p className={styles.intro}>
           There is no small, medium or large. {allZones.length} measurements, taken
-          over close-fitting clothes, with the tape flat against the body. Four of
+          over close-fitting clothes, with the tape flat against the body. Some of
           them are drops rather than girths — they are what let a flat pattern sit on
           your body, and no amount of chest and waist substitutes for them. Take your
           time; this is the part of the order that decides the garment.
@@ -269,7 +273,7 @@ export function MeasurementSheet({
         </div>
       </div>
 
-      <div className={styles.rows}>{ZONES.map((zone, i) => renderRow(zone, i))}</div>
+      <div className={styles.rows}>{bodyZones.map((zone, i) => renderRow(zone, i))}</div>
 
       {garmentZones.length > 0 && (
         <>
@@ -281,7 +285,7 @@ export function MeasurementSheet({
             </p>
           </div>
           <div className={styles.rows}>
-            {garmentZones.map((zone, i) => renderRow(zone, ZONES.length + i))}
+            {garmentZones.map((zone, i) => renderRow(zone, bodyZones.length + i))}
           </div>
         </>
       )}

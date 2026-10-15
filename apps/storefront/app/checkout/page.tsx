@@ -29,7 +29,7 @@ export default function CheckoutPage() {
               lineHeight: 1.8,
             }}
           >
-            There is nothing to check out. Reserve a piece from the season, or begin a
+            There is nothing to check out. Order a piece from the season, or begin a
             commission, and it will appear here.
           </p>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 28 }}>

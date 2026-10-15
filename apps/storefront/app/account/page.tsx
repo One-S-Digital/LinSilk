@@ -68,7 +68,7 @@ export default async function AccountPage(props: PageProps<'/account'>) {
         <div className={styles.card}>
           <span className={styles.cardTitle}>Your orders</span>
           <span className={styles.cardNote}>
-            Every reservation and commission, and its confirmed sheet.
+            Every order and commission, and its confirmed sheet.
           </span>
           <ButtonLink href="/account/orders" variant="rule">
             View orders

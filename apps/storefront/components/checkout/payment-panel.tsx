@@ -89,10 +89,13 @@ function StripeFields({
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
+  /** True once the client has chosen a method and filled it in. Nothing is
+      chosen for them: until then there is nothing to pay with. */
+  const [ready, setReady] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
 
   const pay = async () => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !ready) return;
     setPaying(true);
     setProblem(null);
 
@@ -121,12 +124,17 @@ function StripeFields({
   return (
     <>
       <div className={styles.paymentMount} id="stripe-payment-element">
-        <PaymentElement options={{ layout: 'tabs' }} />
+        {/* An accordion left closed, so no method is picked for the client;
+            the tabs layout opens on the first one. */}
+        <PaymentElement
+          options={{ layout: { type: 'accordion', defaultCollapsed: true } }}
+          onChange={(event) => setReady(event.complete)}
+        />
       </div>
       {problem && <p className={styles.fieldError}>{problem}</p>}
       <div className={styles.continue}>
-        <Button onClick={pay} disabled={!stripe || paying}>
-          {paying ? 'Taking payment…' : `Pay ${amountLabel}`}
+        <Button onClick={pay} disabled={!stripe || !ready || paying}>
+          {paying ? 'Taking payment…' : ready ? `Pay ${amountLabel}` : 'Choose how to pay'}
         </Button>
       </div>
     </>

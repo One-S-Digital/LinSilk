@@ -63,7 +63,7 @@ payload is a no-op update, which is what makes an agent safe to retry.
 | `cloth` | ✓ on create | `metadata.cloth` | `silk` \| `linen`. It decides which swatches the client chooses their colour from on the piece page (`lib/swatches.ts`). A piece without it cannot be reserved; the page says so. |
 | `collection` | ✓ | `collection_id` | A collection handle that must already exist. |
 | `group` | ✓ | `metadata.group` | `women` \| `men`. |
-| `price_chf` | ✓ on create | variant price | Franc is authoritative; EUR/GBP derived (§6). |
+| `price_chf` | ✓ on create | variant price | The house prices in francs alone (§6). |
 | `length_kinds` | | `metadata.length_kinds` | Which lengths the measurement sheet asks for. Empty is a real answer — a scarf asks for none. |
 | `shot` | | `metadata.shot` | Art direction. Kept — it is the `ShotFrame` fallback until the piece is photographed. |
 | `sleep` | | `metadata.sleep` | Splits the sleepwear rail. |
@@ -126,9 +126,8 @@ in the admin.
 
 ## 6. Prices
 
-Set `price_chf`; the route derives EUR and GBP through `lib/pricing.ts`'s `fromChf` at the
-stored ECB rate so the product is correct immediately, and the hourly
-`refresh-exchange-rates` job maintains all three from then on. The agent never sends a
+Set `price_chf`; the route writes it as the variant's one price, in francs. Every region is
+priced in francs, so there is no other currency to derive. The agent never sends a
 non-franc price.
 
 ## 7. Images, and the R2 gap
@@ -228,9 +227,9 @@ Each step has a check that proves it before the next begins.
    created as a draft and is absent from `/store/products`; re-posting the same payload is a
    no-op; an unknown season, either commission collection, a `commission-` handle, a new piece
    with no price, a length outside the chart, an unlisted image host and an unfetchable URL are
-   each refused in the house's own wording; a price move on a published piece is refused while
-   a wording correction on the same piece is allowed. Prices are written in francs with euro
-   and sterling derived (CHF 1'980 → EUR 2'110 / GBP 1'810), the SKU, the `Cut` option, the
+   each refused in the house's own wording; any write to a published piece, a price move or a
+   wording correction alike, is refused and told to edit it in the admin. Prices are written in francs alone
+   (CHF 1'980), the SKU, the `Cut` option, the
    and capped run are all supplied by the route. End to end: two photographs
    posted by URL were stored, the piece published by hand, and the storefront rendered it with
    the photograph while an unphotographed piece beside it kept the placeholder weave.

@@ -23,7 +23,7 @@ export default function ShippingPage() {
       <DocSection title="How long it takes">
         <DocP>
           The clock starts when your measurement sheet is confirmed in writing, not
-          when you reserve. A piece takes two to four weeks at the bench, whether it
+          when you order. A piece takes two to four weeks at the bench, whether it
           comes from a collection or from a commission.
         </DocP>
         <DocRows

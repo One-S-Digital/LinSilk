@@ -5,9 +5,8 @@
  *
  * Safe to run again. Anything missing is created; a piece that already exists
  * has its wording, collection and metadata brought back in line with the
- * catalogue. Prices are written once, at creation — after that the house owns
- * them in the admin, and the refresh-exchange-rates job keeps the euro and
- * sterling figures derived from the franc.
+ * catalogue. Prices are written once, at creation, in francs — after that the
+ * house owns them in the admin. The house prices in francs alone.
  *
  * No season and no piece is seeded. The house's own catalogue arrives through
  * the admin or the ingestion route (docs/CATALOGUE-INGESTION.md) and lives in
@@ -57,20 +56,19 @@ import {
   ATELIER_SHIPPING,
   settleAtelierLocation,
 } from "../lib/atelier-location"
-import { fetchChfRates } from "../lib/exchange-rates"
 import { COMMISSION_COLLECTION, SILHOUETTE_COLLECTION } from "../lib/commission-catalogue"
-import { CURRENCIES, fromChf, type Currency } from "../lib/pricing"
 
 /* Per-piece size of the season's capped run. Placeholder until the client
    gives the real figure for each design. */
 const RUN_CAP = 10
 
-/* One region per currency. Prices are tax-inclusive everywhere: the figure on
-   the page is the figure paid. Tax rates are not set here — the duty and VAT
-   position needs the client's accountant (docs/HANDOVER.md §8). */
+/* One region per shipping zone, all of them priced in francs. Prices are
+   tax-inclusive everywhere: the figure on the page is the figure paid. Tax
+   rates are not set here — the duty and VAT position needs the client's
+   accountant (docs/HANDOVER.md §8). */
 const REGIONS: {
   name: string
-  currency: Currency
+  currency: "chf"
   countries: string[]
   shipping: { name: string; note: string; chf: number }
 }[] = [
@@ -82,13 +80,13 @@ const REGIONS: {
   },
   {
     name: "Europe",
-    currency: "eur",
+    currency: "chf",
     countries: ["at", "be", "de", "dk", "es", "fr", "ie", "it", "lu", "nl", "pt", "se"],
     shipping: { name: "European Union", note: "Three to six days, duty included.", chf: 0 },
   },
   {
     name: "International",
-    currency: "gbp",
+    currency: "chf",
     countries: ["gb", "us", "sg", "jp", "au"],
     shipping: {
       name: "Rest of world",
@@ -103,11 +101,6 @@ export default async function seed({ container }: { container: MedusaContainer }
   const link = container.resolve(ContainerRegistrationKeys.LINK)
   const query = container.resolve(ContainerRegistrationKeys.QUERY)
   const fulfillment = container.resolve(Modules.FULFILLMENT)
-
-  /* Fetched before anything is written: a run that cannot price in euro and
-     sterling should fail here, not halfway through. */
-  const rates = await fetchChfRates()
-  logger.info(`Pricing at ECB rates of ${rates.date}.`)
 
   /* ---- Store, sales channel, publishable key, shipping profile ----
      Medusa creates a default store, sales channel and publishable key on
@@ -214,11 +207,9 @@ export default async function seed({ container }: { container: MedusaContainer }
         name: "LinSilk",
         /* Variant prices are keyed by currency, so it is the currency's
            preference — not the region's — that decides tax inclusivity. */
-        supported_currencies: CURRENCIES.map((currency_code) => ({
-          currency_code,
-          is_default: currency_code === "chf",
-          is_tax_inclusive: true,
-        })),
+        supported_currencies: [
+          { currency_code: "chf", is_default: true, is_tax_inclusive: true },
+        ],
         default_region_id: regionId("Switzerland"),
       },
     },
@@ -319,12 +310,7 @@ export default async function seed({ container }: { container: MedusaContainer }
         service_zone_id: zoneId(r.name),
         shipping_profile_id: shippingProfile.id,
         type: { label: r.shipping.name, description: r.shipping.note, code: r.currency },
-        /* The franc price sits beside the regional one as the source the
-           exchange-rate job derives it from. */
-        prices: [
-          { region_id: regionId(r.name), amount: fromChf(r.shipping.chf, r.currency, rates) },
-          ...(r.currency === "chf" ? [] : [{ currency_code: "chf", amount: r.shipping.chf }]),
-        ],
+        prices: [{ region_id: regionId(r.name), amount: r.shipping.chf }],
         rules: [
           { attribute: "enabled_in_store", value: "true", operator: "eq" as const },
           { attribute: "is_return", value: "false", operator: "eq" as const },
@@ -469,10 +455,7 @@ export default async function seed({ container }: { container: MedusaContainer }
                  it is created. */
               manage_inventory: false,
               allow_backorder: false,
-              prices: CURRENCIES.map((currency_code) => ({
-                currency_code,
-                amount: fromChf(p.chf, currency_code, rates),
-              })),
+              prices: [{ currency_code: "chf", amount: p.chf }],
             },
           ],
         })),

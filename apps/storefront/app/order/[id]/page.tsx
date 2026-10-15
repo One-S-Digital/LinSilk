@@ -41,7 +41,7 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
       lead={
         isCommission
           ? 'Your commission is paid for and the bench has it. A pattern is drawn to your sheet before anything is cut.'
-          : 'Your reservation is paid for. Nothing is cut until the atelier has read your sheet and written back to confirm it.'
+          : 'Your order is paid for. Nothing is cut until the atelier has read your sheet and written back to confirm it.'
       }
       foot={
         <>

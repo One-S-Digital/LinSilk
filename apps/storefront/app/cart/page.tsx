@@ -2,6 +2,7 @@
 
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
+import { Approx, ApproxNote } from '@/lib/currency';
 import { useCart } from '@/lib/cart';
 import { formatMoney } from '@/lib/medusa';
 import { formatValue } from '@/lib/measurements';
@@ -16,17 +17,17 @@ export default function CartPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Your reservations</h1>
+      <h1 className={styles.title}>Your cart</h1>
       <p className={styles.lede}>
-        Nothing is cut until the atelier has read your sheet and written back. A
-        reservation holds the design against the season’s capped run in the meantime.
+        Nothing is cut until the atelier has read your sheet and written back. An
+        order holds the design against the season’s capped run in the meantime.
       </p>
 
       {/* Held until the stored cart is read, so the page never flashes an empty
-          state at someone who has three pieces reserved. */}
+          state at someone who has three pieces ordered. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>Nothing reserved yet.</p>
+          <p className={styles.emptyText}>Your cart is empty.</p>
           <div className={styles.emptyActions}>
             <ButtonLink href="/collection" variant="outline">
               Enter the collection
@@ -44,7 +45,9 @@ export default function CartPage() {
               return (
                 <article key={line.id} className={styles.line}>
                   <ShotFrame
-                    note={line.shot}
+                    src={line.thumbnail}
+                    alt={line.name}
+                    note={line.thumbnail ? undefined : line.shot}
                     weave={line.group === 'men' ? 'sand' : 'bone'}
                     ratio="3 / 4"
                   />
@@ -62,13 +65,10 @@ export default function CartPage() {
                         <span className={styles.briefKey}>Sheet</span>
                         <span>
                           {taken} of {line.zoneCount} taken
-                          {taken > 0 && (
+                          {/* A trouser or a skirt is not asked for a chest. */}
+                          {typeof line.measurements.bust === 'number' && (
                             <>
-                              {' · '}
-                              chest{' '}
-                              {typeof line.measurements.bust === 'number'
-                                ? `${formatValue(line.measurements.bust, line.unit)} ${line.unit}`
-                                : '—'}
+                              {' · '}chest {formatValue(line.measurements.bust, line.unit)} {line.unit}
                             </>
                           )}
                         </span>
@@ -79,12 +79,13 @@ export default function CartPage() {
 
                   <div className={styles.lineAside}>
                     <span className={styles.linePrice}>{money(line.price)}</span>
+                    <Approx chf={line.price} currency={currency} className={styles.approx} />
                     <button
                       type="button"
                       className={styles.remove}
                       onClick={() => remove(line.id)}
                     >
-                      Release
+                      Remove
                     </button>
                   </div>
                 </article>
@@ -113,6 +114,8 @@ export default function CartPage() {
                 <span>Total</span>
                 <span className={styles.totalValue}>{money(subtotal)}</span>
               </div>
+              <Approx chf={subtotal} currency={currency} className={styles.approxTotal} />
+              <ApproxNote className={styles.approxNote} />
 
               <div className={styles.checkout}>
                 <ButtonLink href="/checkout" block>

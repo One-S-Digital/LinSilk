@@ -45,7 +45,7 @@ pnpm --filter medusa exec medusa db:generate <module>
 pnpm --filter medusa exec medusa db:migrate
 pnpm --filter medusa exec medusa user -e <email> -p <password>
 pnpm --filter medusa exec medusa exec ./src/scripts/seed.ts                    # once, on an empty DB
-pnpm --filter medusa exec medusa exec ./src/scripts/refresh-exchange-rates.ts  # re-derive EUR/GBP now
+pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts [apply]       # move an old EUR/GBP database to francs (dry run without `apply`)
 ```
 
 Integration tests read `.env.test` (git-ignored): `DB_HOST`, `DB_PORT`, `DB_USERNAME`,

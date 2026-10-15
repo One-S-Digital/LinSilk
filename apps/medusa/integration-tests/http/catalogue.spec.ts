@@ -21,14 +21,6 @@ jest.setTimeout(180 * 1000)
  * invariant is what most of this file is about.
  */
 
-const ECB_FEED = `<?xml version="1.0" encoding="UTF-8"?>
-<gesmes:Envelope xmlns:gesmes="http://www.gesmes.org/xml/2002-08-01">
-  <Cube><Cube time='2026-09-11'>
-    <Cube currency='GBP' rate='0.85915'/>
-    <Cube currency='CHF' rate='0.9432'/>
-  </Cube></Cube>
-</gesmes:Envelope>`
-
 const season = (handle: string, number: number, extra: Record<string, unknown> = {}) => ({
   handle,
   title: `Season — Collection ${number}`,
@@ -67,9 +59,6 @@ medusaIntegrationTestRunner({
       realFetch = global.fetch
       process.env.CATALOGUE_IMAGE_HOSTS = IMAGE_HOST
       global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-        if (String(input).includes("ecb.europa.eu")) {
-          return new Response(ECB_FEED, { status: 200 })
-        }
         if (String(input).includes(IMAGE_HOST)) {
           return new Response(new Uint8Array([0xff, 0xd8, 0xff]), {
             status: 200,
@@ -182,7 +171,7 @@ medusaIntegrationTestRunner({
         expect(data.products).toHaveLength(0)
       })
 
-      it("is priced in francs, with the other currencies derived", async () => {
+      it("is priced in francs, and in nothing else", async () => {
         await api.post("/admin/catalogue/pieces", piece("w1", "autumn-iv"), admin)
         const { data } = await api.get(
           "/admin/products?handle=w1&fields=*variants.prices",
@@ -191,7 +180,7 @@ medusaIntegrationTestRunner({
         const prices = data.products[0].variants[0].prices.map(
           (p: { currency_code: string; amount: number }) => [p.currency_code, p.amount]
         )
-        expect(Object.fromEntries(prices)).toEqual({ chf: 1980, eur: 2100, gbp: 1800 })
+        expect(Object.fromEntries(prices)).toEqual({ chf: 1980 })
       })
 
       it("is cut in silk or linen, and is refused without one", async () => {
