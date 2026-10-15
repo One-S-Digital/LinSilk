@@ -14,7 +14,7 @@ import { redirect } from 'next/navigation';
 import { ZONES } from './catalog';
 import { toLineItemMetadata, type Measurements, type Unit } from './measurements';
 import { MEDUSA_URL, medusaHeaders } from './medusa';
-import { authedFetch, clearSession, getCustomer, setSession } from './session';
+import { authedFetch, clearSession, getCustomer, getToken, isEmailVerified, setSession } from './session';
 
 type ActionResult = { error?: string };
 
@@ -48,6 +48,8 @@ const actorIdOf = (token: string): string => {
     return '';
   }
 };
+
+const NOT_VERIFIED = 'Confirm your email first — the link was sent when you registered.';
 
 export async function loginAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
   const email = String(form.get('email') ?? '').trim();
@@ -177,6 +179,7 @@ export async function saveMeasurementProfileAction(
 ): Promise<{ error?: string }> {
   const customer = await getCustomer();
   if (!customer) return { error: 'Sign in to save a profile.' };
+  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
 
   const kept = Object.fromEntries(
     Object.entries(customer.metadata ?? {}).filter(
@@ -206,6 +209,7 @@ export async function updateProfileAction(
   const last_name = String(form.get('last_name') ?? '').trim();
   const phone = String(form.get('phone') ?? '').trim();
   if (!first_name) return { error: 'A name is needed.' };
+  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
 
   const updated = await authedFetch('/store/customers/me', {
     method: 'POST',
@@ -255,6 +259,7 @@ export async function addAddressAction(_prev: ActionResult, form: FormData): Pro
     return { error: 'An address, a city and a country are all needed.' };
   }
 
+  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
   const created = await authedFetch('/store/customers/me/addresses', { method: 'POST', json: address });
   if (!created) return { error: 'Could not save that address. Try again in a moment.' };
   revalidatePath('/account/settings');
@@ -271,6 +276,7 @@ export async function updateAddressAction(
     return { error: 'An address, a city and a country are all needed.' };
   }
 
+  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
   const updated = await authedFetch(`/store/customers/me/addresses/${addressId}`, {
     method: 'POST',
     json: address,
@@ -297,4 +303,13 @@ export async function deleteAccountAction(_prev: ActionResult, form: FormData): 
 
   await clearSession();
   redirect('/account?closed=1');
+}
+
+/** Sends the confirmation link again, to the address on the account. */
+export async function resendVerificationAction(): Promise<ActionResult & { sent?: boolean }> {
+  const token = await getToken();
+  if (!token) return { error: 'Sign in first.' };
+  const response = await post('/store/customers/me/email-verification', {}, token);
+  if (!response.ok) return { error: await readError(response, 'Could not send it. Try again in a moment.') };
+  return { sent: true };
 }

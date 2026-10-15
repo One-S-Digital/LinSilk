@@ -1,0 +1,135 @@
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+.placeholders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 2vw, 26px);
+}
+
+.stage {
+  position: relative;
+}
+
+.main {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--gold-35);
+  border-radius: 50%;
+  background: rgba(244, 239, 228, 0.85);
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.arrow[data-side='prev'] { left: 12px; }
+.arrow[data-side='next'] { right: 12px; }
+
+.counter {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  padding: 2px 8px;
+  background: rgba(244, 239, 228, 0.85);
+  color: var(--ink);
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-label);
+}
+
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: clamp(8px, 1vw, 14px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 1px solid transparent;
+  background: var(--bone-soft);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.thumb[data-current] {
+  border-color: var(--gold);
+  opacity: 1;
+}
+
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: rgba(42, 38, 32, 0.92);
+}
+
+.lightbox[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox::backdrop {
+  background: transparent;
+}
+
+.full {
+  max-width: calc(100vw - 120px);
+  max-height: 94dvh;
+  object-fit: contain;
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  border: 0;
+  background: none;
+  color: var(--bone);
+  font-size: 38px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.lightbox .counter {
+  right: auto;
+  left: 50%;
+  translate: -50% 0;
+  bottom: 18px;
+}
+
+@media (max-width: 640px) {
+  .full { max-width: 100vw; }
+}
