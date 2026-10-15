@@ -16,7 +16,12 @@ function Slide({ n, reveal, dir }: { n: number; reveal: boolean; dir: 'rtl' | 'l
         <picture>
           <source media="(max-width: 640px)" srcSet={`/images/hero-${n}-mobile.webp`} />
           <source media="(max-width: 900px)" srcSet={`/images/hero-${n}-tablet.webp`} />
-          <img src={`/images/hero-${n}-desktop.webp`} alt={ALT} />
+          <img
+            src={`/images/hero-${n}-desktop.webp`}
+            alt={ALT}
+            fetchPriority={n === 1 ? 'high' : 'auto'}
+            decoding="async"
+          />
         </picture>
       </div>
     </div>
@@ -36,14 +41,27 @@ export function HeroShutter() {
       : window.matchMedia('(max-width: 900px)').matches
         ? 'tablet'
         : 'desktop';
-    SLIDES.forEach((n) => { new Image().src = `/images/hero-${n}-${size}.webp`; });
+    /* Slide 1 is the LCP image and loads with the page. The others are
+       fetched only once the page has finished loading and the browser is idle,
+       so they never compete with it. */
+    const warm = () => {
+      const run = () =>
+        SLIDES.slice(1).forEach((n) => { new Image().src = `/images/hero-${n}-${size}.webp`; });
+      if ('requestIdleCallback' in window) window.requestIdleCallback(run);
+      else setTimeout(run, 1500);
+    };
+    if (document.readyState === 'complete') warm();
+    else window.addEventListener('load', warm, { once: true });
     const t = setInterval(() => {
       setIndex((i) => {
         setPrev(i);
         return (i + 1) % SLIDES.length;
       });
     }, HOLD_MS);
-    return () => clearInterval(t);
+    return () => {
+      clearInterval(t);
+      window.removeEventListener('load', warm);
+    };
   }, []);
 
   return (

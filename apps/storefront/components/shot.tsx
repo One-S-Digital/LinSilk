@@ -1,3 +1,5 @@
+import Image from 'next/image';
+import { canOptimise } from '@/lib/image-hosts';
 import type { CSSProperties, ReactNode } from 'react';
 import styles from './shot.module.css';
 
@@ -11,6 +13,7 @@ export function ShotFrame({
   alt,
   onDark = false,
   zoom = false,
+  priority = false,
   className,
   style,
   children,
@@ -25,6 +28,8 @@ export function ShotFrame({
   onDark?: boolean;
   /** Lifts the cloth slightly toward the viewer on hover. */
   zoom?: boolean;
+  /** Above-the-fold image: loaded eagerly. */
+  priority?: boolean;
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
@@ -36,7 +41,18 @@ export function ShotFrame({
       style={{ aspectRatio: ratio, ...style }}
     >
       {src ? (
-        <img className={styles.image} src={src} alt={alt ?? ''} loading="lazy" />
+        canOptimise(src) ? (
+          <Image
+            className={styles.image}
+            src={src}
+            alt={alt ?? ''}
+            fill
+            sizes="(max-width: 900px) 100vw, 50vw"
+            priority={priority}
+          />
+        ) : (
+          <img className={styles.image} src={src} alt={alt ?? ''} loading={priority ? 'eager' : 'lazy'} decoding="async" />
+        )
       ) : (
         <div className={styles.weave} data-weave={weave} aria-hidden="true" />
       )}

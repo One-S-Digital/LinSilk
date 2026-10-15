@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { ChalkMark, ClothWipe, Reveal } from '@/components/motion';
-import { ShotFrame } from '@/components/shot';
+import { Reveal } from '@/components/motion';
+import { PieceGallery } from '@/components/piece-gallery';
 import { PieceOrderPanel } from '@/components/piece-order-panel';
 import { collectionBySlug, findPiece, getPieces, isOrderable, money, roman } from '@/lib/catalog';
 import { Approx } from '@/lib/currency';
@@ -77,43 +77,7 @@ export default async function PiecePage(props: PageProps<'/piece/[id]'>) {
 
       <div className={styles.layout}>
         {/* ---- Gallery ---- */}
-        <div className={styles.gallery}>
-          <ClothWipe>
-            <ShotFrame
-              src={piece.images[0]}
-              alt={piece.name}
-              note={piece.images.length ? undefined : piece.shot}
-              weave={weave}
-              ratio="4 / 5"
-            >
-              <ChalkMark
-                label="sleeve · 63"
-                style={{ position: 'absolute', right: -8, top: '34%' }}
-              />
-            </ShotFrame>
-          </ClothWipe>
-
-          <div className={styles.details}>
-            <ClothWipe delay={0.08}>
-              <ShotFrame
-                src={piece.images[1]}
-                alt={piece.name}
-                note={piece.images[1] ? undefined : 'hand-rolled hem'}
-                weave={weave}
-                ratio="1"
-              />
-            </ClothWipe>
-            <ClothWipe delay={0.16}>
-              <ShotFrame
-                src={piece.images[2]}
-                alt={piece.name}
-                note={piece.images[2] ? undefined : 'cloth, raking light'}
-                weave={weave}
-                ratio="1"
-              />
-            </ClothWipe>
-          </div>
-        </div>
+        <PieceGallery images={piece.images} name={piece.name} shot={piece.shot} weave={weave} />
 
         {/* ---- Detail ---- */}
         <div className={styles.detail}>

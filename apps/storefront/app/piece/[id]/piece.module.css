@@ -20,18 +20,6 @@
 
 /* ---- Gallery ---- */
 
-.gallery {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(14px, 2vw, 26px);
-}
-
-.details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(14px, 2vw, 26px);
-}
-
 /* ---- Detail column ---- *
    Sticky on desktop so the measurement sheet stays beside the garment while
    the client works down it. Released below 900, where sticky would trap the
