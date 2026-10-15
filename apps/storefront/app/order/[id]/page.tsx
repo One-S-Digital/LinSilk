@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { DocPage, DocSection, DocP } from '@/components/doc-page';
+import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { medusaGet, formatMoney } from '@/lib/medusa';
 
@@ -16,7 +17,7 @@ type ApiOrder = {
   email?: string | null;
   currency_code: string;
   total: number;
-  items?: { id: string; title: string; subtitle?: string | null; total: number; metadata?: Record<string, unknown> | null }[];
+  items?: { id: string; title: string; subtitle?: string | null; total: number; thumbnail?: string | null; variant?: { product?: { thumbnail?: string | null } | null } | null; metadata?: Record<string, unknown> | null }[];
   shipping_address?: { city?: string | null; country_code?: string | null } | null;
 };
 
@@ -26,7 +27,7 @@ type ApiOrder = {
 export default async function OrderPage(props: PageProps<'/order/[id]'>) {
   const { id } = await props.params;
   const body = await medusaGet<{ order: ApiOrder }>(
-    `/store/orders/${id}?fields=id,display_id,email,currency_code,total,*items,*shipping_address`,
+    `/store/orders/${id}?fields=id,display_id,email,currency_code,total,*items,*items.variant.product,*shipping_address`,
     0,
   );
   const order = body?.order;
@@ -52,10 +53,20 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
     >
       <DocSection title={`Order ${order.display_id ? `no. ${order.display_id}` : order.id}`}>
         {(order.items ?? []).map((item) => (
-          <DocP key={item.id}>
-            {item.title} — {formatMoney(item.total, order.currency_code)}
-            {item.metadata?.fabric_name ? ` · ${String(item.metadata.fabric_name)}` : ''}
-          </DocP>
+          <div
+            key={item.id}
+            style={{ display: 'grid', gridTemplateColumns: '54px 1fr', gap: 14, alignItems: 'start' }}
+          >
+            <ShotFrame
+              src={item.thumbnail ?? item.variant?.product?.thumbnail ?? undefined}
+              alt={item.title}
+              ratio="3 / 4"
+            />
+            <DocP>
+              {item.title} — {formatMoney(item.total, order.currency_code)}
+              {item.metadata?.fabric_name ? ` · ${String(item.metadata.fabric_name)}` : ''}
+            </DocP>
+          </div>
         ))}
         <DocP>
           Paid in full: {formatMoney(order.total, order.currency_code)}. A written

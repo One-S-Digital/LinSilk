@@ -133,7 +133,6 @@ export function DragRail({
     drag.current = { startX: e.clientX, startLeft: el.scrollLeft, moved: 0 };
     setDragging(true);
     setDragged(false);
-    el.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -142,14 +141,21 @@ export function DragRail({
     if (!el) return;
     const travelled = e.clientX - drag.current.startX;
     drag.current.moved = Math.max(drag.current.moved, Math.abs(travelled));
-    if (drag.current.moved > 4) setDragged(true);
+    if (drag.current.moved > 4 && !dragged) {
+      setDragged(true);
+      /* Captured only once it is a drag. Capturing on press retargets the
+         click to the rail, so a plain click never reached the piece's link. */
+      el.setPointerCapture(e.pointerId);
+    }
     el.scrollLeft = drag.current.startLeft - travelled;
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragging) return;
     setDragging(false);
-    rail.current?.releasePointerCapture(e.pointerId);
+    if (rail.current?.hasPointerCapture(e.pointerId)) {
+      rail.current.releasePointerCapture(e.pointerId);
+    }
     // Release the links a frame later, so the click that ends a drag is
     // swallowed but the next real click is not.
     requestAnimationFrame(() => setDragged(false));

@@ -180,9 +180,15 @@ export function CheckoutFlow({
     }
   };
 
-  /* A code changes the total, so it is settled before payment starts: once a
-     payment session exists its amount is fixed, and going back to an earlier
-     section and forward again is what refreshes it. */
+  /* A code changes the total. Once a payment session exists its amount is
+     fixed, so a code applied or removed at the payment step asks for the
+     session again; the panel remounts on the new amount. */
+  const refreshPayment = async (updated: ApiCheckoutCart) => {
+    if (open === 2 && session) {
+      setSession(await startPayment(updated, session.provider_id));
+    }
+  };
+
   const applyPromo = async () => {
     const code = promoInput.trim();
     if (!code || !cart) return;
@@ -193,6 +199,7 @@ export function CheckoutFlow({
       if (updated.promotions?.some((p) => p.code?.toLowerCase() === code.toLowerCase())) {
         setCart(updated);
         setPromoInput('');
+        await refreshPayment(updated);
       } else {
         setPromoProblem('That code is not valid for this order.');
       }
@@ -208,7 +215,9 @@ export function CheckoutFlow({
     setWorking(true);
     setPromoProblem(null);
     try {
-      setCart(await removePromoCode(cart.id, code));
+      const updated = await removePromoCode(cart.id, code);
+      setCart(updated);
+      await refreshPayment(updated);
     } catch (error) {
       setPromoProblem((error as Error).message);
     } finally {
@@ -314,6 +323,40 @@ export function CheckoutFlow({
   if (!cart) return null;
 
   const chosenShipping = cart.shipping_methods?.[0];
+  const promoForm = (
+        <form
+          className={styles.promoForm}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void applyPromo();
+          }}
+        >
+          <label className={styles.label} htmlFor="co-promo">
+            Promo code
+          </label>
+          <div className={styles.promoRow}>
+            <input
+              id="co-promo"
+              className={styles.input}
+              value={promoInput}
+              onChange={(e) => setPromoInput(e.target.value)}
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              aria-invalid={Boolean(promoProblem)}
+            />
+            <button
+              type="submit"
+              className={styles.edit}
+              disabled={working || !promoInput.trim()}
+            >
+              Apply
+            </button>
+          </div>
+        </form>
+      
+  );
+
   const promoCodes = (cart.promotions ?? []).flatMap((p) => (p.code ? [p.code] : []));
   /* The promotion's cut of the pieces alone: `discount_total` also counts a
      discount on shipping, which `shipping_total` already shows. */
@@ -488,7 +531,16 @@ export function CheckoutFlow({
 
           {open === 2 && session && (
             <div className={styles.body}>
+              <div className={styles.promo}>
+                {promoCodes.length === 0 ? (
+                  promoForm
+                ) : (
+                  <p className={styles.answer}>Code {promoCodes.join(', ')} applied.</p>
+                )}
+                {promoProblem && <span className={styles.fieldError}>{promoProblem}</span>}
+              </div>
               <PaymentPanel
+                key={`${session.id}-${cart.total}`}
                 session={session}
                 amountLabel={money(cart.total)}
                 onPaid={placeOrder}
@@ -534,51 +586,20 @@ export function CheckoutFlow({
           {promoCodes.map((code) => (
             <div key={code} className={styles.promoApplied}>
               <span>Code {code}</span>
-              {open !== 2 && (
-                <button
-                  type="button"
-                  className={styles.edit}
-                  onClick={() => dropPromo(code)}
-                  disabled={working}
-                >
-                  Remove
-                </button>
-              )}
+              <button
+                type="button"
+                className={styles.edit}
+                onClick={() => dropPromo(code)}
+                disabled={working}
+              >
+                Remove
+              </button>
             </div>
           ))}
-          {promoCodes.length === 0 && open !== 2 && (
-            <form
-              className={styles.promoForm}
-              onSubmit={(e) => {
-                e.preventDefault();
-                void applyPromo();
-              }}
-            >
-              <label className={styles.label} htmlFor="co-promo">
-                Promo code
-              </label>
-              <div className={styles.promoRow}>
-                <input
-                  id="co-promo"
-                  className={styles.input}
-                  value={promoInput}
-                  onChange={(e) => setPromoInput(e.target.value)}
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                  aria-invalid={Boolean(promoProblem)}
-                />
-                <button
-                  type="submit"
-                  className={styles.edit}
-                  disabled={working || !promoInput.trim()}
-                >
-                  Apply
-                </button>
-              </div>
-            </form>
+          {promoCodes.length === 0 && open !== 2 && promoForm}
+          {open !== 2 && promoProblem && (
+            <span className={styles.fieldError}>{promoProblem}</span>
           )}
-          {promoProblem && <span className={styles.fieldError}>{promoProblem}</span>}
         </div>
 
         <div className={styles.totals}>
