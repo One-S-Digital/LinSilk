@@ -256,8 +256,9 @@ pnpm --filter medusa exec medusa exec ./src/scripts/chf-only.ts apply    # does 
 With no Render Shell, set the web service's Start Command to `pnpm --filter medusa start:render`
 instead. It runs `db:migrate`, then this script as a dry run (the log has the report), then starts
 the server, whatever the report says. Add `CHF_ONLY=apply` to the service's environment and
-redeploy to make it apply; remove the variable afterwards. Leave the background worker on
-`pnpm --filter medusa start`.
+redeploy to make it apply; in that mode a failed run stops the start instead (the deploy shows
+as failed, and the log says why), so nothing is served from a half-moved database. Remove the
+variable afterwards. Leave the background worker on `pnpm --filter medusa start`.
 
 The dry run stops with a list if any price cannot be moved safely (a shipping option or variant
 with no franc price, a sale price with none beside it); nothing is changed until it is clean.

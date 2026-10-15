@@ -6,7 +6,8 @@
  * Where there is no shell (Render's start command is all there is), the
  * `start:render` script runs the dry run on every start and the server starts
  * either way. Setting CHF_ONLY=apply in the environment makes that run apply
- * instead; unset it once the log says the database is in francs.
+ * instead, and then a run that fails stops the start, so a half-moved database
+ * is never served; unset it once the log says the database is in francs.
  *
  * The seed now makes every region priced in francs. A database seeded before
  * that still has a euro region and a sterling one, with euro and sterling

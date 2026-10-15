@@ -5,8 +5,6 @@ import { ECB_URL, parseEcb } from '@/lib/exchange';
    hour for everyone. If it cannot be read the answer is "no rates" and the
    page simply shows francs, which is always correct. */
 
-export const dynamic = 'force-dynamic';
-
 export async function GET() {
   try {
     const response = await fetch(ECB_URL, {
