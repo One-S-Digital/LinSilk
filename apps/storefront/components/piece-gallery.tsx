@@ -3,7 +3,7 @@
 import { useLenis } from 'lenis/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChalkMark, ClothWipe } from '@/components/motion';
-import Image from 'next/image';
+import { Photo } from '@/components/photo';
 import { canOptimise } from '@/lib/image-hosts';
 import { ShotFrame, type Weave } from '@/components/shot';
 import styles from './piece-gallery.module.css';
@@ -102,7 +102,7 @@ export function PieceGallery({
                 aria-current={i === index}
               >
                 {canOptimise(src) ? (
-                  <Image src={src} alt="" fill sizes="120px" />
+                  <Photo src={src} alt="" fill sizes="120px" />
                 ) : (
                   <img src={src} alt="" loading="lazy" decoding="async" />
                 )}

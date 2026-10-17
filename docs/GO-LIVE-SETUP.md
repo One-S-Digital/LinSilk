@@ -368,6 +368,8 @@ Environment variables:
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | from step 5 |
 | `PAYLOAD_SECRET` | from step 1 |
 | `DATABASE_URI` | just built, above |
+| `S3_FILE_URL` | the same public address as on `linsilk-medusa` (step 4), e.g. `https://files.bylinsilk.com`. Without it the storefront cannot resize product photos and sends the full-size originals |
+| `NEXT_PUBLIC_CF_IMAGES` | `1`, after turning on Cloudflare Image Transformations for the zone (Cloudflare dashboard, Images, Transformations). Photos are then resized at Cloudflare instead of on this instance |
 
 **Leave blank for now**: `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` — it doesn't exist until you've
 signed into the Medusa admin, in step 11.
