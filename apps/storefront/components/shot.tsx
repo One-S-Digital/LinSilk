@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import { Photo } from '@/components/photo';
 import { canOptimise } from '@/lib/image-hosts';
 import type { CSSProperties, ReactNode } from 'react';
 import styles from './shot.module.css';
@@ -42,7 +42,7 @@ export function ShotFrame({
     >
       {src ? (
         canOptimise(src) ? (
-          <Image
+          <Photo
             className={styles.image}
             src={src}
             alt={alt ?? ''}
