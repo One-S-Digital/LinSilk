@@ -7,9 +7,9 @@ import styles from './story-page.module.css';
 
 const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand'; src?: string; alt?: string }[]> = {
   cloth: [
-    { note: 'cloth, folded', weave: 'bone' },
-    { note: 'silk, raking light', weave: 'sand' },
-    { note: 'linen, close', weave: 'bone' },
+    { note: 'cloth, folded', weave: 'bone', src: '/images/cloth-folded.webp', alt: 'Folded lengths of silk in woven dragon, rose, lantern and paisley designs, fanned out on an oak table' },
+    { note: 'silk, raking light', weave: 'sand', src: '/images/cloth-silk.webp', alt: 'Ivory and peach silk in deep folds beside a basket of cocoons and a wooden spool of silk thread' },
+    { note: 'linen, close', weave: 'bone', src: '/images/cloth-linen.webp', alt: 'A bolt of oatmeal linen with a frayed edge, unrolled beside a pair of brass shears' },
   ],
   contact: [
     { note: 'hand finishing', weave: 'bone', src: '/images/atelier-needle.webp', alt: 'Hands hand-stitching a silk garment' },
