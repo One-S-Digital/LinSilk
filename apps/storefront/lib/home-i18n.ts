@@ -45,7 +45,7 @@ export const HOME_EN: HomeCopy = {
   description: (colours, from) =>
     `LINSILK makes silk and linen clothing to your own measurements in 2–4 weeks. ${colours}${from}. No fittings needed. From Geneva.`,
   kicker: 'Made-to-measure silk and linen clothing, from Geneva',
-  heroLines: ['Cut from silk and linen.', 'Sewn to your measurements.', 'Made for you in 2–4 weeks.'],
+  heroLines: ['Cut from silk.', 'Woven by hand.', 'Fitted to you.'],
   women: 'Women’s collection',
   men: 'Men’s collection',
   introH: 'How ordering works',
@@ -118,7 +118,7 @@ const HOME_DE_CH: HomeCopy = {
   description: (colours, from) =>
     `LINSILK fertigt Kleidung aus Seide und Leinen nach Ihren eigenen Massen, innert 2–4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
   kicker: 'Kleidung aus Seide und Leinen nach Mass, aus Genf',
-  heroLines: ['Aus Seide und Leinen zugeschnitten.', 'Nach Ihren Massen genäht.', 'Für Sie gefertigt in 2–4 Wochen.'],
+  heroLines: ['Aus Seide geschnitten.', 'Von Hand gewebt.', 'Auf Sie abgestimmt.'],
   women: 'Damenkollektion',
   men: 'Herrenkollektion',
   introH: 'So funktioniert die Bestellung',
@@ -191,7 +191,7 @@ const HOME_FR: HomeCopy = {
   description: (colours, from) =>
     `LINSILK réalise des vêtements en soie et en lin à vos propres mesures en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
   kicker: 'Vêtements en soie et en lin sur mesure, depuis Genève',
-  heroLines: ['Coupé dans la soie et le lin.', 'Cousu à vos mesures.', 'Fait pour vous en 2 à 4 semaines.'],
+  heroLines: ['Taillé dans la soie.', 'Tissé à la main.', 'Ajusté à vous.'],
   women: 'Collection femme',
   men: 'Collection homme',
   introH: 'Comment commander',

@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/json-ld';
-import { Reveal, RuleDraw, Stagger } from '@/components/motion';
+import { RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
+import { SeoText } from '@/components/seo-text';
 import listing from '@/app/collection/[group]/listing.module.css';
 import { getPieces } from '@/lib/catalog';
 import type { Edit } from '@/lib/edits';
@@ -58,9 +59,6 @@ export async function EditPage({ edit }: { edit: Edit }) {
       </p>
 
       <h1 className={styles.title}>{edit.h1}</h1>
-      <Reveal>
-        <p className={styles.intro}>{edit.intro(range)}</p>
-      </Reveal>
 
       {pieces.length > 0 && (
         <>
@@ -75,29 +73,30 @@ export async function EditPage({ edit }: { edit: Edit }) {
         </>
       )}
 
-      <div className={styles.text}>
+      <SeoText>
+        <p>{edit.intro(range)}</p>
         {edit.sections.map((s) => (
-          <section key={s.h2} className={styles.section}>
-            <h2 className={styles.h2}>{s.h2}</h2>
-            <p className={styles.p}>{s.body}</p>
+          <section key={s.h2}>
+            <h2>{s.h2}</h2>
+            <p>{s.body}</p>
           </section>
         ))}
-        <section className={styles.section}>
-          <h2 className={styles.h2}>{ui.howH2}</h2>
-          <p className={styles.p}>
+        <section>
+          <h2>{ui.howH2}</h2>
+          <p>
             {ui.howBody} <Link href={localHref(edit.locale ?? 'en', '/made-to-measure')}>{ui.howLink}</Link>
           </p>
         </section>
-        <section className={styles.section}>
-          <h2 className={styles.h2}>{ui.questions}</h2>
+        <section>
+          <h2>{ui.questions}</h2>
           {edit.faqs.map(({ q, a }) => (
-            <div key={q} className={styles.qa}>
-              <h3 className={styles.q}>{q}</h3>
-              <p className={styles.p}>{a}</p>
+            <div key={q}>
+              <h3>{q}</h3>
+              <p>{a}</p>
             </div>
           ))}
         </section>
-      </div>
+      </SeoText>
     </div>
   );
 }

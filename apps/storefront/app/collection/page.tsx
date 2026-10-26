@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { HeroMedia } from '@/components/motion';
+import { SeoText } from '@/components/seo-text';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { byGroup, currentCollection, roman } from '@/lib/catalog';
-import listing from './[group]/listing.module.css';
-import text from '@/components/edit-page.module.css';
 import styles from './collection.module.css';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -54,6 +53,7 @@ export default async function CollectionPage() {
 
   return (
     <>
+      <h1 className="sr-only">The collection: made-to-measure silk and linen</h1>
 
       {/* No season is open until the house opens one, and two blank doors
           would be a worse answer than saying so. */}
@@ -90,15 +90,15 @@ export default async function CollectionPage() {
       </div>
       )}
 
-      <div className={listing.page}>
-        <h1 className={text.title}>The collection: made-to-measure silk and linen</h1>
-        <p className={text.intro}>
+      <SeoText>
+        <h2>The collection: made-to-measure silk and linen</h2>
+        <p>
           {open ? `${open.title}. ` : ''}Every LINSILK piece is cut and sewn to your own
           measurements in 2–4 weeks, in 100% silk or 100% linen. Choose a piece, choose its
           colour from the swatches of its cloth, and enter your measurements: there are no
           sizes and no fittings. Four small collections a year, from Geneva.
         </p>
-        <p className={text.p}>
+        <p>
           <Link href="/collection/women/silk">Silk dresses and gowns</Link> ·{' '}
           <Link href="/collection/women/silk-separates">Silk skirts and blouses</Link> ·{' '}
           <Link href="/collection/women/linen">Women’s linen sets</Link> ·{' '}
@@ -107,7 +107,7 @@ export default async function CollectionPage() {
           <Link href="/collection/men/trousers">Men’s linen trousers</Link> ·{' '}
           <Link href="/occasion/wedding-guest">Wedding guest dresses</Link>
         </p>
-      </div>
+      </SeoText>
     </>
   );
 }

@@ -1,0 +1,46 @@
+/* Plain-language answers for search engines and AI assistants. They sit at the
+   foot of the page, small and quiet: shoppers come for the pieces, and the
+   text stays in the page for anything that reads it. */
+
+.seo {
+  max-width: 760px;
+  margin-top: clamp(56px, 7vw, 100px);
+  padding-top: 24px;
+  border-top: 1px solid var(--gold-22);
+  font-size: var(--t-xs);
+  line-height: 1.8;
+  color: var(--ink-muted);
+}
+
+.seo h2 {
+  margin-top: 22px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.seo > h2:first-child {
+  margin-top: 0;
+}
+
+.seo h3 {
+  margin-top: 14px;
+  font-size: var(--t-xs);
+  font-weight: 500;
+  color: var(--ink-secondary);
+}
+
+.seo p {
+  margin-top: 8px;
+  max-width: 70ch;
+}
+
+.seo ol {
+  margin: 8px 0;
+  padding-left: 18px;
+}
+
+.seo a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
