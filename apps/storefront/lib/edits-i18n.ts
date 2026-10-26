@@ -84,7 +84,7 @@ const COPY: Record<string, Record<Locale, Entry>> = {
       title: 'Seidenpyjama und Morgenmantel nach Mass',
       h1: 'Seidenpyjama, Morgenmantel und Slipkleid nach Mass',
       description: (f) =>
-        `Seidenpyjamas, Morgenmäntel und Slipkleider nach Ihren Massen, gefertigt innert 2–4 Wochen. Ein persönliches Geschenk${f}. Masse bis 20. November bestätigen.`,
+        `Seidenpyjamas, Morgenmäntel und Slipkleider nach Ihren Massen, gefertigt innert 2–4 Wochen. Ein persönliches Geschenk${f}. Masse bis 17. November bestätigen.`,
       intro: (s) =>
         `Die Schlafmode von LINSILK wird innert 2–4 Wochen nach Ihren Massen gefertigt, aus 100 % Seide. Pyjama-Sets, ein langer Wickel-Morgenmantel mit Slipkleid, ein dreiteiliges Kimono-Set und ein Slip-Minikleid gibt es in 48 Seidenfarben${s}.`,
       sections: [
@@ -109,7 +109,7 @@ const COPY: Record<string, Record<Locale, Entry>> = {
       title: 'Pyjamas et peignoirs en soie sur mesure',
       h1: 'Pyjamas, peignoirs et nuisettes en soie, sur mesure',
       description: (f) =>
-        `Pyjamas, peignoirs et nuisettes en soie faits à vos mesures en 2 à 4 semaines. Un cadeau personnel${f}. Mesures à confirmer avant le 20 novembre.`,
+        `Pyjamas, peignoirs et nuisettes en soie faits à vos mesures en 2 à 4 semaines. Un cadeau personnel${f}. Mesures à confirmer avant le 17 novembre.`,
       intro: (s) =>
         `Les vêtements de nuit en soie de LINSILK sont faits à vos mesures en 2 à 4 semaines, en 100 % soie. Ensembles pyjama, long peignoir portefeuille avec robe nuisette, ensemble kimono trois pièces et mini-robe nuisette existent en 48 coloris de soie${s}.`,
       sections: [

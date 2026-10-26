@@ -128,10 +128,13 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             </div>
           </Reveal>
 
-          <PieceOrderPanel
-            piece={piece}
-            variantId={orderable ? await getVariantId(piece.id) : null}
-          />
+          {/* Still English in every language, and marked so. */}
+          <div lang={lang === 'en' ? undefined : 'en'}>
+            <PieceOrderPanel
+              piece={piece}
+              variantId={orderable ? await getVariantId(piece.id) : null}
+            />
+          </div>
         </div>
       </div>
 

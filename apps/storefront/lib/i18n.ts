@@ -45,12 +45,14 @@ export function langFromPath(pathname: string): Lang {
 export const toDe = (s: string) =>
   s
     .replace(/Mass/g, 'Maß')
-    .replace(/Gross/g, 'Groß')
+    .replace(/[Gg]ross/g, (m) => `${m[0]}roß`)
     .replace(/rösse/g, 'röße')
-    .replace(/Aussen/g, 'Außen')
+    .replace(/[Aa]ussen/g, (m) => `${m[0]}ußen`)
+    .replace(/[Aa]usser/g, (m) => `${m[0]}ußer`)
     .replace(/heiss/g, 'heiß')
-    .replace(/Schliess/g, 'Schließ')
-    .replace(/innert /g, 'in ');
+    .replace(/[Ss]chliess/g, (m) => `${m[0]}chließ`)
+    .replace(/innert (?=\d)/g, 'in ')
+    .replace(/innert /g, 'innerhalb ');
 
 /** The spoken-language families, for choosing a suggestion from a browser. */
 export function suggestLocale(browserLanguage: string): Locale | null {

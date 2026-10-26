@@ -32,5 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
     ...open.flatMap((p) => LOCALES.map((l) => entry(piecePathIn(l, p), pieceAlternates(p)))),
   ];
-  return [...english, ...translated];
+  /* Two pieces whose translated names slug the same would list one address
+     twice (and the page would resolve to the first); list it once. */
+  const seen = new Set<string>();
+  return [...english, ...translated].filter((e) => !seen.has(e.url) && seen.add(e.url));
 }

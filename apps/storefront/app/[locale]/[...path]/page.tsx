@@ -71,7 +71,7 @@ export async function generateMetadata(props: PageProps<'/[locale]/[...path]'>):
   }
 
   const { locale, enPath } = t;
-  const low = priceRange(await getPieces())?.from;
+  const low = priceRange((await getPieces()).filter((p) => p.orderable && !p.retired))?.from;
   switch (enPath) {
     case '/made-to-measure': {
       const c = mtmCopy(locale);

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { EDITS } from './edits';
 import { editForSlug } from './edits-i18n';
-import { LOCALES, suggestLocale } from './i18n';
+import { LOCALES, suggestLocale, toDe } from './i18n';
+import { slugify } from './slug';
 import { enPathOf, languagesFor, ROUTES, switchPath, translatedPath } from './locale-routes';
 import { PIECE_NAMES, pieceName } from './piece-names';
 import { localSlug } from './piece-i18n';
@@ -90,6 +91,23 @@ describe('piece names', () => {
   it('falls back to the English title when a piece is not listed', () => {
     expect(pieceName('Silk mock-neck blouse', 'fr')).toBe('Chemisier en soie à col montant');
     expect(pieceName('Unlisted piece', 'de')).toBe('Unlisted piece');
+  });
+});
+
+describe('German-market spelling', () => {
+  it('turns Swiss ss into ß without breaking phrases', () => {
+    expect(toDe('in der Regel innert eines Tages')).toBe('in der Regel innerhalb eines Tages');
+    expect(toDe('gefertigt innert 2–4 Wochen')).toBe('gefertigt in 2–4 Wochen');
+    expect(toDe('ausserhalb der Aussenseite, Grössen, heiss, einschliesst')).toBe(
+      'außerhalb der Außenseite, Größen, heiß, einschließt',
+    );
+  });
+});
+
+describe('slugs', () => {
+  it('transliterates œ and æ rather than leaving a hyphen', () => {
+    expect(slugify('gilet cache-cœur à nouer')).toBe('gilet-cache-coeur-a-nouer');
+    expect(slugify('Schräg geschnittener Rock')).toBe('schraeg-geschnittener-rock');
   });
 });
 

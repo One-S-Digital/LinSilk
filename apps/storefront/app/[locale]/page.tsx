@@ -17,7 +17,7 @@ export async function generateMetadata(props: PageProps<'/[locale]'>): Promise<M
   const { locale } = await props.params;
   if (!isLocale(locale)) return {};
   const c = homeCopy(locale);
-  const range = priceRange(await getPieces());
+  const range = priceRange((await getPieces()).filter((p) => p.orderable && !p.retired));
   const colours = locale.startsWith('de')
     ? `${COLOURS.silk} Seidenfarben und ${COLOURS.linen} Leinenfarben`
     : `${COLOURS.silk} coloris de soie et ${COLOURS.linen} coloris de lin`;
