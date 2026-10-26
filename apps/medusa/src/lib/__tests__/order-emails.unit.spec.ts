@@ -36,7 +36,7 @@ describe("orderConfirmationEmail", () => {
   it("goes to the client and says what happens to a seasonal piece", () => {
     const email = orderConfirmationEmail(order([shirt]))
     expect(email.to).toBe("ada@example.com")
-    expect(email.content.subject).toBe("Your order no. 12 — LinSilk")
+    expect(email.content.subject).toBe("Your order no. 12 — LINSILK")
     expect(email.content.text).toContain("Dear Ada Lovelace,")
     expect(email.content.text).toContain("written back to confirm it")
     expect(email.content.text).toContain("Burgundy linen — CHF 129")

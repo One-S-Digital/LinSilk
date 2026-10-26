@@ -6,6 +6,10 @@ import styles from './site-footer.module.css';
 
 const shopLinks = async () => [
   { href: '/collection', label: 'Collection' },
+  { href: '/collection/women/silk', label: 'Silk dresses and gowns' },
+  { href: '/collection/sleepwear', label: 'Silk sleepwear' },
+  { href: '/collection/men/shirts', label: 'Linen shirts' },
+  { href: '/made-to-measure', label: 'Made to measure' },
   { href: '/design', label: 'Design Your Own' },
   ...((await pastCollections()).length > 0
     ? [{ href: '/archive', label: 'Past Collections' }]
@@ -20,8 +24,9 @@ const CARE = [
 ];
 
 const HOUSE = [
-  { href: '/contact', label: 'About' },
+  { href: '/about', label: 'About' },
   { href: '/cloth', label: 'The Cloth' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export async function SiteFooter() {
@@ -35,13 +40,13 @@ export async function SiteFooter() {
             <Image
               className={styles.brand}
               src="/brand/lockup-gold.png"
-              alt="LinSilk"
+              alt="LINSILK"
               width={160}
               height={159}
             />
             <p className={styles.blurb}>
-              Made to measure in pure natural fibre. Four small collections a year,
-              each made once.
+              Made-to-measure silk and linen, from Geneva. Cut and sewn to your
+              measurements in 2–4 weeks. Four small collections a year.
             </p>
             <p className={styles.where}>
               Geneva, Switzerland
@@ -95,7 +100,7 @@ export async function SiteFooter() {
         </div>
 
         <div className={styles.legal}>
-          <span>© {new Date().getFullYear()} LinSilk</span>
+          <span>© {new Date().getFullYear()} LINSILK</span>
           <span>Prices in CHF</span>
           <CurrencyPicker />
           <Link href="/legal/terms" className={styles.link}>

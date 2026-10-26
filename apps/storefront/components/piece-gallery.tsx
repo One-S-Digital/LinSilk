@@ -13,11 +13,14 @@ import styles from './piece-gallery.module.css';
    frame. With no photographs yet it keeps the woven placeholders. */
 export function PieceGallery({
   images,
+  alts,
   name,
   shot,
   weave,
 }: {
   images: string[];
+  /** One description per image, naming the view it shows. */
+  alts: string[];
   name: string;
   shot: string;
   weave: Weave;
@@ -55,7 +58,7 @@ export function PieceGallery({
             onClick={() => setOpen(true)}
             aria-label={`Open ${name}, image ${index + 1} of ${count}, full screen`}
           >
-            <ShotFrame src={images[index]} alt={`${name}, image ${index + 1}`} ratio="4 / 5" priority />
+            <ShotFrame src={images[index]} alt={alts[index]} ratio="4 / 5" priority />
           </button>
           <ChalkMark
             label="sleeve · 63"
@@ -115,6 +118,7 @@ export function PieceGallery({
       {open && (
         <Lightbox
           images={images}
+          alts={alts}
           name={name}
           index={index}
           onGo={go}
@@ -127,12 +131,14 @@ export function PieceGallery({
 
 function Lightbox({
   images,
+  alts,
   name,
   index,
   onGo,
   onClose,
 }: {
   images: string[];
+  alts: string[];
   name: string;
   index: number;
   onGo: (step: number) => void;
@@ -173,7 +179,7 @@ function Lightbox({
         if (e.key === 'ArrowRight') onGo(1);
       }}
     >
-      <img className={styles.full} src={images[index]} alt={`${name}, image ${index + 1}`} />
+      <img className={styles.full} src={images[index]} alt={alts[index]} />
       <button
         type="button"
         className={styles.close}

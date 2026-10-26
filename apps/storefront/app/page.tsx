@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { JsonLd } from '@/components/json-ld';
 import {
   ChalkMark,
   ClothWipe,
@@ -13,8 +15,21 @@ import { HeroShutter } from '@/components/hero-shutter';
 import { DragRail } from '@/components/drag-rail';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
-import { currentCollection, money, piecesIn } from '@/lib/catalog';
+import { currentCollection, getPieces, money, piecesIn } from '@/lib/catalog';
+import { COLOURS, priceRange } from '@/lib/house';
+import { websiteLd } from '@/lib/jsonld';
 import styles from './home.module.css';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const range = priceRange(await getPieces());
+  return {
+    title: { absolute: 'LINSILK | Made-to-measure silk and linen clothing from Geneva' },
+    description:
+      `LINSILK makes silk and linen clothing to your own measurements in 2–4 weeks. ` +
+      `${COLOURS.silk} silk and ${COLOURS.linen} linen colours${range ? `, from ${money(range.from)}` : ''}. No fittings needed. From Geneva.`,
+    alternates: { canonical: '/' },
+  };
+}
 
 export default async function HomePage() {
   /* The season rail leads with the women's opening five, then the men's first
@@ -36,21 +51,21 @@ export default async function HomePage() {
         <div className={styles.heroScrim} />
 
         <div className={styles.heroInner}>
+          <Reveal y={10}>
+            <h1 className={styles.kicker}>Made-to-measure silk and linen clothing, from Geneva</h1>
+          </Reveal>
           <LineRise delay={0.15}>
-            <span className={styles.kicker} style={{ display: 'block' }}>
-              {OPEN?.title ?? ''}
+            <span className={styles.heroLine} style={{ display: 'block' }}>
+              Cut from silk and linen.
             </span>
             <span className={styles.heroLine} style={{ display: 'block' }}>
-              Cut from silk.
-            </span>
-            <span className={styles.heroLine} style={{ display: 'block' }}>
-              Woven by hand.
+              Sewn to your measurements.
             </span>
             <span
               className={`${styles.heroLine} ${styles.heroLineItalic}`}
               style={{ display: 'block' }}
             >
-              Fitted to you.
+              Made for you in 2–4 weeks.
             </span>
           </LineRise>
 
@@ -65,6 +80,29 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <JsonLd data={websiteLd()} />
+
+      {/* ---- What the house is, said plainly enough to be quoted ---- */}
+      <section className={styles.intro} aria-labelledby="intro-heading">
+        <Reveal>
+          <h2 id="intro-heading" className={styles.introTitle}>How ordering works</h2>
+          <p className={styles.introLead}>
+            LINSILK is a made-to-measure silk and linen clothing house based in Geneva,
+            Switzerland. You choose a piece, choose its colour from swatches of the cloth,
+            enter your own measurements, and it is cut and sewn for you in 2–4 weeks.
+          </p>
+          <ol className={styles.introSteps}>
+            <li>Choose a piece from the women’s or men’s collection.</li>
+            <li>Choose its colour: {COLOURS.silk} silk colours, {COLOURS.linen} linen colours.</li>
+            <li>Enter your measurements. No fittings: measure yourself, or take the guide to any tailor.</li>
+            <li>It is cut and sewn in 2–4 weeks from your confirmed sheet, then sent with tracking.</li>
+          </ol>
+          <ButtonLink href="/made-to-measure" variant="rule">
+            How made-to-measure works
+          </ButtonLink>
+        </Reveal>
+      </section>
+
       {/* ---- The house in three lines ---- */}
       <section className={styles.pillars}>
         <div className={styles.pillarGrid}>
@@ -72,8 +110,8 @@ export default async function HomePage() {
             <h2 className={styles.pillarTitle}>Luxury, premium-quality material</h2>
             <p className={styles.pillarBody}>
               Silk and linen of the finest grade, chosen for how they feel against the
-              skin before how they look on a hanger. Nothing synthetic enters the
-              shell, the lining or the thread.
+              skin before how they look on a hanger. Every LINSILK garment is made in
+              100% silk or 100% linen cloth: no polyester and no blended cloth.
             </p>
           </Reveal>
           <Reveal className={styles.pillar} delay={0.1}>
@@ -113,7 +151,7 @@ export default async function HomePage() {
         <DragRail label="This season">
             {SEASON.map((piece) => (
               <article key={piece.id} className={styles.tile}>
-                <Link href={`/piece/${piece.id}`}>
+                <Link href={`/piece/${piece.slug}`}>
                   <ShotFrame
                     src={piece.images[0]}
                     alt={piece.name}
@@ -144,7 +182,7 @@ export default async function HomePage() {
               weave="forest"
               ratio="4 / 5"
               src="/images/commission.webp"
-              alt="Ivory silk chalked with a pattern, with shears, pins and thread"
+              alt="Silk chalked with a pattern, with shears, pins and thread"
               onDark
             />
           </ClothWipe>
@@ -177,7 +215,7 @@ export default async function HomePage() {
               Clothes made the way they were always meant to be had.
             </h2>
             <p className={styles.prose}>
-              LinSilk does not make mass-produced, low-grade, synthetic clothing. Each
+              LINSILK does not make mass-produced, low-grade, synthetic clothing. Each
               piece is made to your own measurements, so the garment follows your body
               instead of asking your body to follow it. That fit is what lets smooth,
               breathable silk and linen do what they do best: rest lightly on the
@@ -192,7 +230,7 @@ export default async function HomePage() {
                 weave="bone"
                 ratio="auto"
                 src="/images/atelier-needle.webp"
-                alt="Hands stitching emerald floral silk by hand"
+                alt="Hands stitching a floral silk by hand"
                 style={{ height: '130%', marginTop: '-15%' }}
               >
                 <ChalkMark
@@ -286,15 +324,14 @@ export default async function HomePage() {
           <div className={styles.clothColumns}>
             <Reveal delay={0.08}>
               <p className={styles.clothProse}>
-                Premium silk and premium linen, and nothing else. No
-                polyester in the shell, the lining, the pocket bag or the thread.
-                Synthetic fibre is cheaper to sew and it holds a press longer, which is
-                precisely why most houses use it where you cannot see.
+                Premium silk and premium linen, and nothing else: no polyester and no
+                blended cloth. Synthetic fibre is cheaper to sew and it holds a press
+                longer, which is precisely why so much clothing is made from it.
               </p>
             </Reveal>
             <Reveal delay={0.16}>
               <p className={styles.clothProse}>
-                Natural fibre moves, creases and ages. A linen jacket worn through one
+                Natural fibre moves, creases and ages. A linen shirt worn through one
                 summer will not look the way it looked in the photograph, and that is
                 the point of it. Silk and linen breathe and rest lightly on the skin, which
                 is why comfort comes first.
@@ -309,7 +346,7 @@ export default async function HomePage() {
               <dd className={styles.statNum}>
                 <Count to={100} suffix="%" />
               </dd>
-              <dt className={styles.statLabel}>natural fibre, shell to thread</dt>
+              <dt className={styles.statLabel}>silk or linen cloth</dt>
             </div>
             <div className={styles.stat}>
               <dd className={styles.statNum}>

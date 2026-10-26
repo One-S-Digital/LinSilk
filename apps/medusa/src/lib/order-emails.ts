@@ -166,7 +166,7 @@ export function orderConfirmationEmail(order: OrderRecord) {
        client who has already been told, here, that the order is paid for. */
     data: { paid },
     content: {
-      subject: `Your order ${numberOf(order)} — LinSilk`,
+      subject: `Your order ${numberOf(order)} — LINSILK`,
       html: renderHtml({
         heading: "Your order",
         greeting: who ? `Dear ${who},` : "Hello,",
@@ -200,7 +200,7 @@ export function orderConfirmationEmail(order: OrderRecord) {
         "Sent to",
         addressText(order),
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n"),
     },

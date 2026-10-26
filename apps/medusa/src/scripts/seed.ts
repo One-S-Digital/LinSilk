@@ -204,7 +204,7 @@ export default async function seed({ container }: { container: MedusaContainer }
     input: {
       selector: { id: store.id },
       update: {
-        name: "LinSilk",
+        name: "LINSILK",
         /* Variant prices are keyed by currency, so it is the currency's
            preference — not the region's — that decides tax inclusivity. */
         supported_currencies: [

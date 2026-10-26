@@ -88,7 +88,7 @@ export function commissionReceivedEmail(commission: CommissionRecord) {
     channel: "email",
     template: "commission-received",
     content: {
-      subject: "Your commission — LinSilk",
+      subject: "Your commission — LINSILK",
       text: [
         `Dear ${commission.name},`,
         "",
@@ -102,7 +102,7 @@ export function commissionReceivedEmail(commission: CommissionRecord) {
         "If anything in the brief has changed, reply to this email and we will",
         "amend it before the tailor reads it.",
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n"),
     },
@@ -146,7 +146,7 @@ export function commissionQuotedEmail(commission: CommissionRecord & { access_to
         "weeks from that point. If anything here is wrong, reply and it is amended",
         "before a pattern is drawn.",
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n"),
     },

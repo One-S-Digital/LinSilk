@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: 'Shipping',
   description:
     'Everything is made to order and dispatched from Geneva. Times, duty and tracking.',
+  alternates: { canonical: '/care/shipping' },
 };
 
 export default function ShippingPage() {

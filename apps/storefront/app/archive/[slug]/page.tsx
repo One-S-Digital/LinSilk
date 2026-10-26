@@ -19,6 +19,7 @@ export async function generateMetadata(
   return {
     title: collection.title,
     description: `${collection.note} An archived collection — these designs closed with their season and are not made again.`,
+    alternates: { canonical: `/archive/${collection.slug}` },
   };
 }
 

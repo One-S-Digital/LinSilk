@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { track } from '@/lib/analytics';
 import { MeasurementSheet } from '@/components/measure/measurement-sheet';
 import { SwatchDialog } from '@/components/swatch-dialog';
 import { SwatchTile } from '@/components/swatch-picker';
@@ -56,6 +57,13 @@ export function PieceOrderPanel({
   const orderable = isOrderable(piece);
   const complete = isComplete(sheet.values, allZones);
   const taken = takenCount(sheet.values, allZones);
+  const started = useRef(false);
+  useEffect(() => {
+    if (taken > 0 && !started.current) {
+      started.current = true;
+      track('sheet_started', { piece: piece.id });
+    }
+  }, [taken, piece.id]);
   const cloth = piece.cloth;
   const swatch = cloth && swatchKey ? findSwatch(cloth, swatchKey) : undefined;
 
@@ -68,6 +76,7 @@ export function PieceOrderPanel({
      takes focus, and the first time the sheet is brought into view with it. */
   const chooseColour = (key: string) => {
     const first = step === 'start';
+    track('select_colour', { piece: piece.id, cloth: cloth ?? '' });
     setSwatchKey(key);
     setStep('measure');
     setChoosing(false);
@@ -130,6 +139,7 @@ export function PieceOrderPanel({
         unit: sheet.unit,
         zones: allZones,
       });
+      track('sheet_confirmed', { piece: piece.id });
       /* Straight to checkout: the piece is in the cart, and `holding` stays
          set so the button cannot be pressed twice while the page changes. */
       router.push('/checkout');
