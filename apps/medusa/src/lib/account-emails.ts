@@ -29,16 +29,16 @@ export function emailVerificationEmail(email: string, token: string) {
     channel: "email",
     template: "email-verification",
     content: {
-      subject: "Confirm your email — LinSilk",
+      subject: "Confirm your email — LINSILK",
       text: [
-        "Welcome to LinSilk.",
+        "Welcome to LINSILK.",
         "",
         "To confirm this is your address, open this link within a day:",
         emailVerificationUrl(token),
         "",
         "If you did not open an account, ignore this email.",
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n"),
     },
@@ -52,7 +52,7 @@ export function passwordResetEmail(email: string, token: string, actor: ResetAct
     channel: "email",
     template: actor === "user" ? "admin-password-reset" : "password-reset",
     content: {
-      subject: actor === "user" ? "Reset your admin password — LinSilk" : "Reset your password — LinSilk",
+      subject: actor === "user" ? "Reset your admin password — LINSILK" : "Reset your password — LINSILK",
       text: [
         "A password reset was requested for this account.",
         "",
@@ -62,7 +62,7 @@ export function passwordResetEmail(email: string, token: string, actor: ResetAct
         "If you did not ask for this, ignore this email — nothing changes",
         "unless the link above is opened.",
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n"),
     },

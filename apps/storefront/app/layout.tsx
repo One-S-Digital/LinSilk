@@ -3,6 +3,8 @@ import { Archivo, Newsreader, Caveat } from 'next/font/google';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { SmoothScroll } from '@/components/smooth-scroll';
+import { JsonLd } from '@/components/json-ld';
+import { organizationLd } from '@/lib/jsonld';
 import { CartProvider } from '@/lib/cart';
 import { CurrencyProvider } from '@/lib/currency';
 import { pastCollections } from '@/lib/catalog';
@@ -37,14 +39,14 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   metadataBase: new URL('https://bylinsilk.com'),
   title: {
-    default: 'LinSilk — made to measure in pure natural fibre',
-    template: '%s — LinSilk',
+    default: 'LINSILK | Made-to-measure silk and linen clothing from Geneva',
+    template: '%s | LINSILK',
   },
   description:
     'Made-to-measure silk and linen clothing from Geneva, Switzerland.',
   openGraph: {
     type: 'website',
-    siteName: 'LinSilk',
+    siteName: 'LINSILK',
     locale: 'en_CH',
     images: ['/brand/social-card.png'],
   },
@@ -58,6 +60,7 @@ export const metadata: Metadata = {
 async function buildNav() {
   return [
     { href: '/collection', label: 'Collection' },
+    { href: '/made-to-measure', label: 'Made to Measure' },
     { href: '/design', label: 'Design Your Own' },
     { href: '/cloth', label: 'The Cloth' },
     ...((await pastCollections()).length > 0
@@ -79,6 +82,12 @@ export default async function RootLayout({
       className={`${archivo.variable} ${newsreader.variable} ${caveat.variable}`}
     >
       <head>
+        {/* Umami Cloud, cookieless (SEO-GEO-PLAN §6.10). */}
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="b072ba84-e4d3-4c20-b747-326fbdf3f3ba"
+        />
         {/* Motion primitives render their resting state server-side as
             opacity:0. If the script never arrives, this restores them rather
             than leaving the page blank. */}
@@ -87,6 +96,7 @@ export default async function RootLayout({
         </noscript>
       </head>
       <body>
+        <JsonLd data={organizationLd()} />
         <CartProvider>
          <CurrencyProvider>
           <SmoothScroll>

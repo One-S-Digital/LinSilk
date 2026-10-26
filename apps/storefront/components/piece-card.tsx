@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShotFrame } from '@/components/shot';
 import { isOrderable, money, type Piece } from '@/lib/catalog';
+import { imageAlt } from '@/lib/garments';
 import { Approx } from '@/lib/currency';
 import styles from './piece-card.module.css';
 
@@ -18,14 +19,14 @@ export function PieceCard({
 }) {
   return (
     <Link
-      href={`/piece/${piece.id}`}
+      href={`/piece/${piece.slug}`}
       className={styles.card}
       data-offset={index % 3}
     >
       <ShotFrame
         className={styles.frame}
         src={piece.images[0]}
-        alt={piece.name}
+        alt={piece.images[0] ? imageAlt(piece, piece.images[0], 0) : piece.name}
         note={piece.images.length ? undefined : piece.shot}
         weave={piece.group === 'men' ? 'sand' : 'bone'}
         ratio={ratio}

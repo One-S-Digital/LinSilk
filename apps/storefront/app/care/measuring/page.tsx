@@ -4,9 +4,10 @@ import { ButtonLink } from '@/components/ui/button';
 import { ZONES } from '@/lib/catalog';
 
 export const metadata: Metadata = {
-  title: 'Measurement guide',
+  title: 'How to measure yourself for a dress: 15 measurements',
   description:
-    'How to take the fifteen measurements the atelier needs, and what to do if you would rather a tailor took them.',
+    'A step-by-step guide to the 15 body measurements for made-to-measure clothing: ten minutes, a soft tape and a helper, or any tailor.',
+  alternates: { canonical: '/care/measuring' },
 };
 
 export default function MeasuringPage() {

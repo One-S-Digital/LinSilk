@@ -449,3 +449,40 @@
   margin-top: 8px;
   max-width: 20ch;
 }
+
+/* ------------------------------------------------------------------ *
+ * How ordering works: the plain answer, under the hero
+ * ------------------------------------------------------------------ */
+
+h1.kicker {
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: 1.5;
+}
+
+.intro {
+  max-width: 760px;
+  margin-inline: auto;
+  padding: var(--section-y) var(--gutter) 0;
+}
+
+.introTitle {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(24px, 2.6vw, 34px);
+}
+
+.introLead {
+  font-size: var(--t-body-lg);
+  line-height: 1.85;
+  color: var(--ink-body);
+  margin-top: 20px;
+}
+
+.introSteps {
+  margin: 20px 0 28px;
+  padding-left: 20px;
+  font-size: var(--t-body);
+  line-height: 1.9;
+  color: var(--ink-body);
+}

@@ -3,7 +3,7 @@ import { DocPage, DocSection, DocP, DocList } from '@/components/doc-page';
 
 export const metadata: Metadata = {
   title: 'Terms',
-  description: 'Terms of sale for LinSilk.',
+  description: 'Terms of sale for LINSILK.',
   robots: { index: false },
 };
 
@@ -12,7 +12,7 @@ export default function TermsPage() {
     <DocPage
       eyebrow="Legal"
       title="Terms of sale"
-      lead="LinSilk sells made-to-measure garments from Geneva. These terms govern reservations, confirmation, payment and delivery."
+      lead="LINSILK sells made-to-measure garments from Geneva. These terms govern reservations, confirmation, payment and delivery."
     >
       <DocSection title="Awaiting legal review">
         <DocP>

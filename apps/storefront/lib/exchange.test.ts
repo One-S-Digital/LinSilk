@@ -16,6 +16,10 @@ describe('parseEcb', () => {
     expect(parsed.rates.USD).toBeCloseTo(1.16 / 0.93, 6);
   });
 
+  it('works the dirham out of the dollar, which it is pegged to', () => {
+    expect(parseEcb(xml)!.rates.AED).toBeCloseTo((1.16 / 0.93) * 3.6725, 6);
+  });
+
   it('gives nothing when the file lacks a rate it needs', () => {
     expect(parseEcb(xml.replace("currency='CHF'", "currency='JPY'"))).toBeNull();
     expect(parseEcb('<html>down for maintenance</html>')).toBeNull();
@@ -38,6 +42,7 @@ describe('currencyForLocale', () => {
     expect(currencyForLocale('fr-FR')).toBe('EUR');
     expect(currencyForLocale('en-GB')).toBe('GBP');
     expect(currencyForLocale('en-US')).toBe('USD');
+    expect(currencyForLocale('ar-AE')).toBe('AED');
     expect(currencyForLocale('de-CH')).toBeNull();
     expect(currencyForLocale('en')).toBeNull();
     expect(currencyForLocale(undefined)).toBeNull();

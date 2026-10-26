@@ -48,6 +48,14 @@ export type Collection = {
 
 export type Piece = {
   id: string;
+  /* The public address, /piece/{slug}: the house's own `metadata.slug` when
+     set, otherwise read from the name. `id` (the Medusa handle) stays the key
+     everything else uses — orders, sheets, the cart. */
+  slug: string;
+  /* Phased out: the page redirects to `successor` (another piece's id) or to
+     its category, and the piece leaves the feed and the sitemap. */
+  retired?: boolean;
+  successor?: string;
   /** Slug of the collection this piece belongs to. */
   collection: string;
   group: Group;
@@ -121,6 +129,15 @@ const readCollection = (c: ApiCollection): Collection | null => {
 
 const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top', 'robe'];
 
+/** 'Silk cowl halter gown' → 'silk-cowl-halter-gown'. */
+export const slugify = (name: string) =>
+  name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 const readPiece = (p: ApiProduct, collection: Collection): Piece => {
   const meta = p.metadata ?? {};
   const kinds = Array.isArray(meta.length_kinds)
@@ -136,6 +153,9 @@ const readPiece = (p: ApiProduct, collection: Collection): Piece => {
 
   return {
     id: p.handle,
+    slug: typeof meta.slug === 'string' && meta.slug ? meta.slug : slugify(p.title),
+    ...(meta.retired ? { retired: true } : {}),
+    ...(typeof meta.successor === 'string' ? { successor: meta.successor } : {}),
     collection: collection.slug,
     group: meta.group === 'men' ? 'men' : 'women',
     name: p.title,
@@ -170,9 +190,12 @@ async function swissRegionId(): Promise<string | null> {
 
 /* ---- Lookups ---- */
 
-export async function getCollections(): Promise<Collection[]> {
+/* `revalidate` is for callers that refresh less often than the pages do (the
+   sitemap): a shorter fetch interval would shorten theirs too. */
+export async function getCollections(revalidate?: number): Promise<Collection[]> {
   const body = await medusaGet<{ collections: ApiCollection[] }>(
     '/store/collections?limit=100&fields=handle,title,metadata',
+    revalidate,
   );
   return (body?.collections ?? [])
     .map(readCollection)
@@ -180,14 +203,15 @@ export async function getCollections(): Promise<Collection[]> {
     .sort((a, b) => b.number - a.number);
 }
 
-export async function getPieces(): Promise<Piece[]> {
+export async function getPieces(revalidate?: number): Promise<Piece[]> {
   const region = await swissRegionId();
-  const seasons = new Map((await getCollections()).map((c) => [c.slug, c]));
+  const seasons = new Map((await getCollections(revalidate)).map((c) => [c.slug, c]));
   if (!region || seasons.size === 0) return [];
 
   const body = await medusaGet<{ products: ApiProduct[] }>(
     `/store/products?limit=200&region_id=${region}` +
       '&fields=handle,title,subtitle,thumbnail,metadata,*images,*collection,*variants.calculated_price',
+    revalidate,
   );
 
   return (body?.products ?? [])
@@ -201,8 +225,8 @@ export async function getPieces(): Promise<Piece[]> {
 export const currentCollection = async () =>
   (await getCollections()).find((c) => c.status === 'current');
 
-export const pastCollections = async () =>
-  (await getCollections()).filter((c) => c.status === 'past');
+export const pastCollections = async (revalidate?: number) =>
+  (await getCollections(revalidate)).filter((c) => c.status === 'past');
 
 export const collectionBySlug = async (slug: string) =>
   (await getCollections()).find((c) => c.slug === slug);
@@ -210,8 +234,9 @@ export const collectionBySlug = async (slug: string) =>
 export const piecesIn = async (slug: string) =>
   (await getPieces()).filter((p) => p.collection === slug);
 
-export const findPiece = async (id: string) =>
-  (await getPieces()).find((p) => p.id === id);
+/** By slug or by the old numeric address (/piece/004), which redirects. */
+export const findPiece = async (idOrSlug: string) =>
+  (await getPieces()).find((p) => p.slug === idOrSlug || p.id === idOrSlug);
 
 /** True when the piece's collection is still open, so it can be ordered. */
 export const isOrderable = (piece: Piece) => piece.orderable;
@@ -339,14 +364,14 @@ export const COMMISSION_STEPS = [
 
 export const STORY = {
   cloth: {
-    title: 'The Cloth',
-    lead: 'Premium silk and premium linen, and nothing else. No synthetic fibre in the shell, the lining, the pocket bag or the thread.',
-    a: 'Silk is smooth and light, and keeps you comfortable when the temperature drops as well as when it rises. Linen is crisp, airy and cooling, and softens with every wear. Both breathe, move with the body and rest lightly on the skin.',
-    b: 'Natural fibre creases, moves and ages. A linen jacket after one summer does not look like the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew, which is why most houses put them where the customer cannot see. The house does not keep any in the room.',
+    title: 'The cloth: pure silk and pure linen',
+    lead: 'LINSILK makes in two cloths only, pure silk and pure linen: no polyester and no blended cloth. You choose your piece’s colour from swatches of its own cloth, so this page shows what you are choosing from.',
+    a: 'Silk is smooth and light, and keeps you comfortable when the temperature drops as well as when it rises. It comes in three weaves: plain (15 colours), jacquard (20 patterned colourways) and brocade (13 patterned colourways), 48 silk colours in all, used for the dresses, gowns, skirts, blouses and sleepwear.',
+    b: 'Linen is crisp, airy and cooling, and softens with every wear; its 40 colours are used for all the menswear and the women’s waistcoat and trouser sets. Natural fibre creases, moves and ages. A linen shirt worn through one summer will not look the way it did in the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew; LINSILK’s cloth is pure silk or pure linen.',
   },
   contact: {
     title: 'The house',
-    lead: 'LinSilk was set up to make one thing properly: clothing in pure natural fibre, cut for one body, made in small capped runs and never restocked.',
+    lead: 'LINSILK was set up to make one thing properly: clothing in pure silk and pure linen, cut for one body, in four small collections a year.',
     a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A piece takes two to four weeks from the confirmed measurement sheet.',
     b: 'Write to hello@bylinsilk.com with any question about a piece or your order.',
   },

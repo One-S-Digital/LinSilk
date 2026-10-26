@@ -5,7 +5,11 @@ import { getStoryPage } from '@/lib/payload';
 
 export async function generateMetadata(): Promise<Metadata> {
   const story = await getStoryPage('contact');
-  return { title: story.title, description: story.lead };
+  return {
+    title: 'Contact the house',
+    description: story.lead,
+    alternates: { canonical: '/contact' },
+  };
 }
 
 export default function ContactPage() {

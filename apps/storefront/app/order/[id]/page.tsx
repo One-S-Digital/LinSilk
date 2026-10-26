@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { DocPage, DocSection, DocP } from '@/components/doc-page';
 import { ShotFrame } from '@/components/shot';
+import { TrackEvent } from '@/components/track-event';
 import { ButtonLink } from '@/components/ui/button';
 import { medusaGet, formatMoney } from '@/lib/medusa';
 
@@ -51,6 +52,15 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
         </>
       }
     >
+      <TrackEvent
+        name="order_placed"
+        once={`order-${order.id}`}
+        data={{
+          order: order.id,
+          revenue: order.total,
+          currency: order.currency_code.toUpperCase(),
+        }}
+      />
       <DocSection title={`Order ${order.display_id ? `no. ${order.display_id}` : order.id}`}>
         {(order.items ?? []).map((item) => (
           <div

@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Reveal, RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
 import { byGroup, currentCollection, roman, type Group } from '@/lib/catalog';
+import { EDITS, GROUP_EDITS } from '@/lib/edits';
 import styles from './listing.module.css';
 
 const GROUPS: Group[] = ['women', 'men'];
@@ -21,11 +22,16 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { group } = await props.params;
   if (!isGroup(group)) return {};
-  const open = await currentCollection();
-  const season = open ? `${open.season} ${roman(open.number)}` : 'the open collection';
   return {
-    title: open ? `${LABEL[group]} — ${season}` : LABEL[group],
-    description: `The ${LABEL[group].toLowerCase()}’s pieces in ${season}, each cut to your measurements and made in a capped run.`,
+    title:
+      group === 'women'
+        ? 'Women’s silk and linen clothing, made to measure'
+        : 'Men’s linen clothing, made to measure',
+    description:
+      group === 'women'
+        ? 'Silk dresses, gowns, skirts, blouses and sleepwear, and linen two-piece sets, each cut and sewn to your measurements in 2–4 weeks. From Geneva.'
+        : 'Linen shirts, trousers and two-piece looks for men, each cut and sewn to your measurements in 2–4 weeks in 100% linen. From Geneva.',
+    alternates: { canonical: `/collection/${group}` },
   };
 }
 
@@ -63,10 +69,26 @@ export default async function CollectionGroupPage(
 
       <Reveal>
         <p className={styles.intro}>
-          Each is cut to your measurements and made in a capped run.{' '}
-          {open?.closes
-            ? `When the season closes in ${open.closes} these designs are archived and are not made again.`
-            : 'When the season closes these designs are archived and are not made again.'}
+          {group === 'women'
+            ? 'LINSILK’s women’s pieces in 100% silk and 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'
+            : 'LINSILK’s men’s pieces in 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'}{' '}
+          Choose the colour from the swatches of its cloth on the piece’s page.
+        </p>
+        <p className={styles.intro}>
+          {GROUP_EDITS.filter((e) => e.group === group).map((e, i) => (
+            <span key={e.edit}>
+              {i > 0 && ' · '}
+              <Link href={EDITS[`${e.group}/${e.edit}`].path}>{EDITS[`${e.group}/${e.edit}`].h1}</Link>
+            </span>
+          ))}
+          {group === 'women' && (
+            <>
+              {' · '}
+              <Link href="/occasion/wedding-guest">Wedding guest dresses in silk</Link>
+              {' · '}
+              <Link href="/collection/sleepwear">Silk sleepwear</Link>
+            </>
+          )}
         </p>
       </Reveal>
 

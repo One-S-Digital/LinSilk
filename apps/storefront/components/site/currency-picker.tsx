@@ -8,6 +8,7 @@ const NAMES: Record<ApproxCurrency, string> = {
   EUR: 'Euro (EUR)',
   GBP: 'Pound (GBP)',
   USD: 'US dollar (USD)',
+  AED: 'UAE dirham (AED)',
 };
 
 /* Prices are in francs and are charged in francs. This only chooses whether an

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: 'Returns',
   description:
     'Why made-to-measure work is not returnable, what is done about a fault, and when an order can be released.',
+  alternates: { canonical: '/care/returns' },
 };
 
 export default function ReturnsPage() {
