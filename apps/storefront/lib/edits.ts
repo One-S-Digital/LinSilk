@@ -7,6 +7,7 @@
 import { money, type Group, type Piece } from './catalog';
 import { garmentType, type QA } from './garments';
 import { COLOURS } from './house';
+import type { Locale } from './i18n';
 
 export type Range = { from: number; to: number } | null;
 
@@ -21,6 +22,19 @@ export type Edit = {
   faqs: QA[];
   pick: (p: Piece) => boolean;
   crumb: { name: string; path: string }[];
+  /* Set on the translated copies of a page (lib/edits-i18n.ts). */
+  locale?: Locale;
+  /** The English page this one is a translation of. */
+  enPath?: string;
+  ui?: EditUi;
+};
+
+/** The labels the page template adds around the copy. */
+export type EditUi = {
+  howH2: string;
+  howBody: string;
+  howLink: string;
+  questions: string;
 };
 
 const from = (r: Range) => (r ? ` From ${money(r.from)}.` : '');

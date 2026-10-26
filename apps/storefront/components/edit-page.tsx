@@ -7,6 +7,8 @@ import listing from '@/app/collection/[group]/listing.module.css';
 import { getPieces } from '@/lib/catalog';
 import type { Edit } from '@/lib/edits';
 import { priceRange } from '@/lib/house';
+import { languagesFor } from '@/lib/edits-i18n';
+import { LANG, OG_LOCALE } from '@/lib/i18n';
 import { breadcrumbLd } from '@/lib/jsonld';
 import styles from './edit-page.module.css';
 
@@ -19,7 +21,8 @@ export async function editMetadata(edit: Edit): Promise<Metadata> {
   return {
     title: edit.title,
     description: edit.description(range),
-    alternates: { canonical: edit.path },
+    alternates: { canonical: edit.path, languages: languagesFor(edit.enPath ?? edit.path) },
+    ...(edit.locale && { openGraph: { locale: OG_LOCALE[edit.locale] } }),
   };
 }
 
@@ -29,10 +32,19 @@ export async function editMetadata(edit: Edit): Promise<Metadata> {
 export async function EditPage({ edit }: { edit: Edit }) {
   const pieces = await piecesFor(edit);
   const range = priceRange(pieces);
+  const ui = edit.ui ?? {
+    howH2: 'How made-to-measure works here',
+    howBody:
+      'Choose the piece, choose its colour from the swatches of its cloth, and enter your measurements. It is cut and sewn in 2–4 weeks from your confirmed sheet.',
+    howLink: 'How made-to-measure works',
+    questions: 'Questions',
+  };
 
   return (
-    <div className={listing.page}>
-      <JsonLd data={breadcrumbLd([...edit.crumb, { name: edit.h1, path: edit.path }])} />
+    <div className={listing.page} lang={edit.locale && LANG[edit.locale]}>
+      {edit.crumb.length > 0 && (
+        <JsonLd data={breadcrumbLd([...edit.crumb, { name: edit.h1, path: edit.path }])} />
+      )}
       <p className={listing.crumb}>
         {edit.crumb.map((c) => (
           <span key={c.path}>
@@ -71,15 +83,13 @@ export async function EditPage({ edit }: { edit: Edit }) {
           </section>
         ))}
         <section className={styles.section}>
-          <h2 className={styles.h2}>How made-to-measure works here</h2>
+          <h2 className={styles.h2}>{ui.howH2}</h2>
           <p className={styles.p}>
-            Choose the piece, choose its colour from the swatches of its cloth, and enter
-            your measurements. It is cut and sewn in 2–4 weeks from your confirmed sheet.{' '}
-            <Link href="/made-to-measure">How made-to-measure works</Link>
+            {ui.howBody} <Link href="/made-to-measure">{ui.howLink}</Link>
           </p>
         </section>
         <section className={styles.section}>
-          <h2 className={styles.h2}>Questions</h2>
+          <h2 className={styles.h2}>{ui.questions}</h2>
           {edit.faqs.map(({ q, a }) => (
             <div key={q} className={styles.qa}>
               <h3 className={styles.q}>{q}</h3>

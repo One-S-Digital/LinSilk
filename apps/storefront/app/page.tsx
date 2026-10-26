@@ -356,12 +356,6 @@ export default async function HomePage() {
                 {OPEN ? `designs in ${OPEN.season}` : 'designs this season'}
               </dt>
             </div>
-            <div className={styles.stat}>
-              <dd className={styles.statNum}>
-                <Count to={0} />
-              </dd>
-              <dt className={styles.statLabel}>designs ever restocked</dt>
-            </div>
           </dl>
         </div>
       </section>
