@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Archivo, Newsreader, Caveat } from 'next/font/google';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
+import { LocaleChrome, SkipLink } from '@/components/site/locale-chrome';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { JsonLd } from '@/components/json-ld';
 import { organizationLd } from '@/lib/jsonld';
@@ -100,12 +101,11 @@ export default async function RootLayout({
         <CartProvider>
          <CurrencyProvider>
           <SmoothScroll>
-            <a href="#main" className="sr-only">
-              Skip to content
-            </a>
+            <SkipLink />
             <SiteHeader nav={nav} />
             <main id="main">{children}</main>
             <SiteFooter />
+            <LocaleChrome />
           </SmoothScroll>
          </CurrencyProvider>
         </CartProvider>

@@ -1,0 +1,165 @@
+/* The words around the pages: header, footer, menu, the currency line, the
+ * language names. German and French are for a native-speaker pass before they
+ * go live (docs/seo/SEO-GEO-PLAN.md §13.7). */
+
+import { deepDe, type Lang } from './i18n';
+
+const EN = {
+  home: 'LINSILK — home',
+  skip: 'Skip to content',
+  primary: 'Primary',
+  menu: 'Menu',
+  close: 'Close',
+  account: 'Account',
+  cart: 'Cart',
+  where: 'Geneva, Switzerland',
+  nav: {
+    '/collection': 'Collection',
+    '/made-to-measure': 'Made to Measure',
+    '/design': 'Design Your Own',
+    '/cloth': 'The Cloth',
+    '/archive': 'Past Collections',
+    '/contact': 'Contact',
+  } as Record<string, string>,
+  blurb:
+    'Made-to-measure silk and linen, from Geneva. Cut and sewn to your measurements in 2–4 weeks. Four small collections a year.',
+  shop: 'Shop',
+  care: 'Client care',
+  house: 'The house',
+  connect: 'Connect',
+  links: {
+    '/collection/women/silk': 'Silk dresses and gowns',
+    '/collection/sleepwear': 'Silk sleepwear',
+    '/collection/men/shirts': 'Linen shirts',
+    '/care/shipping': 'Shipping',
+    '/care/measuring': 'Measurement guide',
+    '/care/returns': 'Returns',
+    '/care/questions': 'Questions',
+    '/about': 'About',
+    '/season-letter': 'Season letter',
+    '/legal/terms': 'Terms',
+    '/legal/privacy': 'Privacy',
+  } as Record<string, string>,
+  prices: 'Prices in CHF',
+  credit: 'Powered by:',
+  currencyLabel: 'Also show approximately in',
+  francsOnly: 'Francs only',
+  currencies: { EUR: 'Euro (EUR)', GBP: 'Pound (GBP)', USD: 'US dollar (USD)', AED: 'UAE dirham (AED)' } as Record<string, string>,
+  language: 'Language',
+  suggestOwn: '',
+  suggestGo: '',
+  dismiss: 'Dismiss',
+};
+
+type Chrome = typeof EN;
+
+const DE_CH: Chrome = {
+  home: 'LINSILK — Startseite',
+  skip: 'Zum Inhalt springen',
+  primary: 'Hauptnavigation',
+  menu: 'Menü',
+  close: 'Schliessen',
+  account: 'Konto',
+  cart: 'Warenkorb',
+  where: 'Genf, Schweiz',
+  nav: {
+    '/collection': 'Kollektion',
+    '/made-to-measure': 'Nach Mass',
+    '/design': 'Selbst entwerfen',
+    '/cloth': 'Der Stoff',
+    '/archive': 'Frühere Kollektionen',
+    '/contact': 'Kontakt',
+  },
+  blurb:
+    'Seide und Leinen nach Mass, aus Genf. Nach Ihren Massen zugeschnitten und genäht, innert 2–4 Wochen. Vier kleine Kollektionen im Jahr.',
+  shop: 'Shop',
+  care: 'Kundendienst',
+  house: 'Das Haus',
+  connect: 'Kontakt aufnehmen',
+  links: {
+    '/collection/women/silk': 'Seidenkleider und Abendkleider',
+    '/collection/sleepwear': 'Schlafmode aus Seide',
+    '/collection/men/shirts': 'Leinenhemden',
+    '/care/shipping': 'Versand',
+    '/care/measuring': 'Messanleitung',
+    '/care/returns': 'Rückgabe',
+    '/care/questions': 'Fragen',
+    '/about': 'Über uns',
+    '/season-letter': 'Saisonbrief',
+    '/legal/terms': 'AGB',
+    '/legal/privacy': 'Datenschutz',
+  },
+  prices: 'Preise in CHF',
+  credit: 'Realisiert von:',
+  currencyLabel: 'Zusätzlich ungefähr anzeigen in',
+  francsOnly: 'Nur Franken',
+  currencies: { EUR: 'Euro (EUR)', GBP: 'Pfund (GBP)', USD: 'US-Dollar (USD)', AED: 'VAE-Dirham (AED)' },
+  language: 'Sprache',
+  suggestOwn: 'Diese Seite gibt es auch auf Deutsch.',
+  suggestGo: 'Auf Deutsch ansehen',
+  dismiss: 'Schliessen',
+};
+
+const FR: Chrome = {
+  home: 'LINSILK — accueil',
+  skip: 'Aller au contenu',
+  primary: 'Navigation principale',
+  menu: 'Menu',
+  close: 'Fermer',
+  account: 'Compte',
+  cart: 'Panier',
+  where: 'Genève, Suisse',
+  nav: {
+    '/collection': 'Collection',
+    '/made-to-measure': 'Sur mesure',
+    '/design': 'Créer votre pièce',
+    '/cloth': 'Le tissu',
+    '/archive': 'Collections passées',
+    '/contact': 'Contact',
+  },
+  blurb:
+    'Soie et lin sur mesure, depuis Genève. Coupés et cousus à vos mesures en 2 à 4 semaines. Quatre petites collections par an.',
+  shop: 'Boutique',
+  care: 'Service client',
+  house: 'La maison',
+  connect: 'Suivez-nous',
+  links: {
+    '/collection/women/silk': 'Robes en soie et robes de soirée',
+    '/collection/sleepwear': 'Vêtements de nuit en soie',
+    '/collection/men/shirts': 'Chemises en lin',
+    '/care/shipping': 'Livraison',
+    '/care/measuring': 'Guide de mesure',
+    '/care/returns': 'Retours',
+    '/care/questions': 'Questions',
+    '/about': 'À propos',
+    '/season-letter': 'Lettre de saison',
+    '/legal/terms': 'CGV',
+    '/legal/privacy': 'Confidentialité',
+  },
+  prices: 'Prix en CHF',
+  credit: 'Réalisé par :',
+  currencyLabel: 'Afficher aussi approximativement en',
+  francsOnly: 'Francs seulement',
+  currencies: { EUR: 'Euro (EUR)', GBP: 'Livre sterling (GBP)', USD: 'Dollar américain (USD)', AED: 'Dirham des EAU (AED)' },
+  language: 'Langue',
+  suggestOwn: 'Cette page existe aussi en français.',
+  suggestGo: 'Voir en français',
+  dismiss: 'Fermer',
+};
+
+export const CHROME: Record<Lang, Chrome> = {
+  en: EN,
+  'de-ch': DE_CH,
+  de: deepDe(DE_CH),
+  'fr-ch': FR,
+  fr: FR,
+};
+
+/** Names of the languages, each in its own language. */
+export const LANGUAGE_NAMES: Record<Lang, string> = {
+  en: 'English',
+  'de-ch': 'Deutsch (Schweiz)',
+  de: 'Deutsch (Österreich, Deutschland)',
+  'fr-ch': 'Français (Suisse)',
+  fr: 'Français (France, Luxembourg)',
+};

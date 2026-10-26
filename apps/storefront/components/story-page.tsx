@@ -21,11 +21,14 @@ const PLATES: Record<StoryKey, { note: string; weave: 'bone' | 'sand'; src?: str
 export async function StoryPage({
   storyKey,
   children,
+  content,
 }: {
   storyKey: StoryKey;
   children?: ReactNode;
+  /** A translation of the page's copy, which Payload holds in English only. */
+  content?: { title: string; lead: string; a: string; b: string };
 }) {
-  const story = await getStoryPage(storyKey);
+  const story = content ?? (await getStoryPage(storyKey));
   const plates = PLATES[storyKey];
 
   return (

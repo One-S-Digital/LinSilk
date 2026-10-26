@@ -7,8 +7,8 @@ import listing from '@/app/collection/[group]/listing.module.css';
 import { getPieces } from '@/lib/catalog';
 import type { Edit } from '@/lib/edits';
 import { priceRange } from '@/lib/house';
-import { languagesFor } from '@/lib/edits-i18n';
 import { LANG, OG_LOCALE } from '@/lib/i18n';
+import { languagesFor } from '@/lib/locale-routes';
 import { breadcrumbLd } from '@/lib/jsonld';
 import styles from './edit-page.module.css';
 

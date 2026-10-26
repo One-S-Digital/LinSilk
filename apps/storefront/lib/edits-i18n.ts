@@ -5,23 +5,13 @@
 
 import { money } from './catalog';
 import { EDITS, type Edit, type EditUi } from './edits';
-import { absolute } from './house';
-import { HREFLANG, LOCALES, type Locale } from './i18n';
+import { toDe, type Locale } from './i18n';
+import { enPathOf, translatedPath } from './locale-routes';
 
 type Copy = Pick<Edit, 'title' | 'h1' | 'sections' | 'faqs'> & {
   description: (from: string) => string;
   intro: (span: string) => string;
 };
-
-/* /de/ is the Swiss text with Maß, ß and the German "in" for "innert". */
-const toDe = (s: string) =>
-  s
-    .replace(/Mass/g, 'Maß')
-    .replace(/Gross/g, 'Groß')
-    .replace(/rösse/g, 'röße')
-    .replace(/Aussen/g, 'Außen')
-    .replace(/heiss/g, 'heiß')
-    .replace(/innert /g, 'in ');
 
 const DE_CH_UI: EditUi = {
   howH2: 'So funktioniert Nach-Mass bei LINSILK',
@@ -48,23 +38,18 @@ const toDeCopy = (c: Copy): Copy => ({
   faqs: c.faqs.map((x) => ({ q: toDe(x.q), a: toDe(x.a) })),
 });
 
-type Entry = { slug: string; copy: Copy; ui: EditUi };
+type Entry = { copy: Copy; ui: EditUi };
 
 /* One page in all four locales: the Swiss text is written, /de/ derives from
    it, and the French serves both fr-ch and fr. */
-const page = (
-  slugs: { de: string; fr: string },
-  deCh: Copy,
-  fr: Copy,
-): Partial<Record<Locale, Entry>> => ({
-  'de-ch': { slug: slugs.de, copy: deCh, ui: DE_CH_UI },
+const page = (deCh: Copy, fr: Copy): Record<Locale, Entry> => ({
+  'de-ch': { copy: deCh, ui: DE_CH_UI },
   de: {
-    slug: slugs.de,
     copy: toDeCopy(deCh),
     ui: Object.fromEntries(Object.entries(DE_CH_UI).map(([k, v]) => [k, toDe(v)])) as EditUi,
   },
-  'fr-ch': { slug: slugs.fr, copy: fr, ui: FR_UI },
-  fr: { slug: slugs.fr, copy: fr, ui: FR_UI },
+  'fr-ch': { copy: fr, ui: FR_UI },
+  fr: { copy: fr, ui: FR_UI },
 });
 
 const LEAD_DE = {
@@ -93,9 +78,8 @@ const CREASE_FR = {
 };
 
 /* Keyed by the English page's path. */
-const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
+const COPY: Record<string, Record<Locale, Entry>> = {
   [EDITS.sleepwear.path]: page(
-    { de: 'schlafmode/seide', fr: 'pyjamas/soie' },
     {
       title: 'Seidenpyjama und Morgenmantel nach Mass',
       h1: 'Seidenpyjama, Morgenmantel und Slipkleid nach Mass',
@@ -149,7 +133,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['women/silk'].path]: page(
-    { de: 'kleider/seide', fr: 'robes/soie' },
     {
       title: 'Seidenkleider und Abendkleider nach Mass',
       h1: 'Seidenkleider und Abendkleider nach Mass',
@@ -211,7 +194,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['women/silk-separates'].path]: page(
-    { de: 'seide/roecke-blusen', fr: 'soie/jupes-chemisiers' },
     {
       title: 'Seidenröcke und Seidenblusen nach Mass',
       h1: 'Seidenröcke und Seidenblusen nach Mass',
@@ -257,7 +239,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['women/linen'].path]: page(
-    { de: 'leinen/sets-damen', fr: 'lin/ensembles-femme' },
     {
       title: 'Leinen-Zweiteiler für Damen nach Mass',
       h1: 'Leinen-Zweiteiler für Damen nach Mass',
@@ -299,7 +280,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['men/shirts'].path]: page(
-    { de: 'herren/leinenhemden', fr: 'hommes/chemises-lin' },
     {
       title: 'Leinenhemden für Herren nach Mass',
       h1: 'Leinenhemden für Herren nach Mass',
@@ -355,7 +335,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['men/trousers'].path]: page(
-    { de: 'herren/leinenhosen', fr: 'hommes/pantalons-lin' },
     {
       title: 'Leinenhosen und Leinen-Looks für Herren nach Mass',
       h1: 'Leinenhosen und Leinen-Looks für Herren nach Mass',
@@ -403,7 +382,6 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 
   [EDITS['wedding-guest'].path]: page(
-    { de: 'anlass/hochzeitsgast', fr: 'occasion/invitee-mariage' },
     {
       title: 'Kleid für Hochzeitsgäste aus Seide nach Mass',
       h1: 'Outfit für Hochzeitsgäste aus Seide, nach Mass',
@@ -479,7 +457,7 @@ const COPY: Record<string, Partial<Record<Locale, Entry>>> = {
   ),
 };
 
-const from = (low: number | undefined, locale: Locale) =>
+export const fromIn = (low: number | undefined, locale: Locale) =>
   low === undefined ? '' : locale.startsWith('de') ? `, ab ${money(low)}` : `, dès ${money(low)}`;
 
 const span = (r: { from: number; to: number } | null, locale: Locale) =>
@@ -491,50 +469,25 @@ const span = (r: { from: number; to: number } | null, locale: Locale) =>
         ? `, ab ${money(r.from)} bis ${money(r.to)}`
         : `, dès ${money(r.from)} jusqu’à ${money(r.to)}`;
 
-export const localePath = (locale: Locale, slug: string) => `/${locale}/${slug}`;
-
 /** The translated Edit for a locale and slug, or undefined. */
 export function editForSlug(locale: Locale, slug: string): Edit | undefined {
-  for (const [enPath, byLocale] of Object.entries(COPY)) {
-    const entry = byLocale[locale];
-    if (!entry || entry.slug !== slug) continue;
-    const en = Object.values(EDITS).find((e) => e.path === enPath)!;
-    const { copy, ui, slug: own } = entry;
-    return {
-      ...en,
-      path: localePath(locale, own),
-      title: copy.title,
-      h1: copy.h1,
-      description: (r) => copy.description(from(r?.from, locale)),
-      intro: (r) => copy.intro(span(r, locale)),
-      sections: copy.sections,
-      faqs: copy.faqs,
-      crumb: [],
-      locale,
-      enPath,
-      ui,
-    };
-  }
-  return undefined;
+  const enPath = enPathOf(locale, slug);
+  const entry = enPath && COPY[enPath]?.[locale];
+  if (!enPath || !entry) return undefined;
+  const en = Object.values(EDITS).find((e) => e.path === enPath)!;
+  const { copy, ui } = entry;
+  return {
+    ...en,
+    path: translatedPath(locale, enPath)!,
+    title: copy.title,
+    h1: copy.h1,
+    description: (r) => copy.description(fromIn(r?.from, locale)),
+    intro: (r) => copy.intro(span(r, locale)),
+    sections: copy.sections,
+    faqs: copy.faqs,
+    crumb: [],
+    locale,
+    enPath,
+    ui,
+  };
 }
-
-/** Every language of one page, keyed by hreflang, for `<link rel="alternate">`
-    and the sitemap. Empty when the page has no translation yet. */
-export function languagesFor(enPath: string): Record<string, string> {
-  const byLocale = COPY[enPath];
-  if (!byLocale) return {};
-  const out: Record<string, string> = { en: absolute(enPath), 'x-default': absolute(enPath) };
-  for (const locale of LOCALES) {
-    const entry = byLocale[locale];
-    if (!entry) continue;
-    for (const code of HREFLANG[locale]) out[code] = absolute(localePath(locale, entry.slug));
-  }
-  return out;
-}
-
-/** Every translated page's path, with the languages it belongs to. */
-export const LOCALE_PAGES = Object.entries(COPY).flatMap(([enPath, byLocale]) =>
-  LOCALES.flatMap((locale) =>
-    byLocale[locale] ? [{ path: localePath(locale, byLocale[locale]!.slug), enPath }] : [],
-  ),
-);
