@@ -12,6 +12,7 @@ import { slugify } from './slug';
 
 export type PieceText = {
   collection: string;
+  view: string;
   men: string;
   women: string;
   archive: string;
@@ -252,6 +253,7 @@ const FR_QUESTIONS: Record<GarmentType, QA[]> = {
 
 const DE_CH: PieceText = {
   collection: 'Kollektion',
+  view: 'Ansehen',
   men: 'Herren',
   women: 'Damen',
   archive: 'Archiv',
@@ -325,6 +327,7 @@ const DE_CH: PieceText = {
 
 const FR: PieceText = {
   collection: 'Collection',
+  view: 'Voir',
   men: 'Hommes',
   women: 'Femmes',
   archive: 'Archives',
@@ -405,6 +408,7 @@ export const PIECE_TEXT: Record<Exclude<Lang, 'en'>, PieceText> = {
 
 const EN: PieceText = {
   collection: 'Collection',
+  view: 'View',
   men: 'Men',
   women: 'Women',
   archive: 'Archive',
@@ -486,3 +490,14 @@ export const pieceAlternates = (piece: Pick<Piece, 'slug' | 'name'>) =>
     piece.slug,
     Object.fromEntries(LOCALES.map((l) => [l, localSlug(l, piece.name)])) as Record<Locale, string>,
   );
+
+/** What a photograph shows, in a language, from its file name. */
+export function altIn(lang: Lang, piece: Pick<Piece, 'group' | 'name'>, src: string, index: number) {
+  const t = pieceText(lang);
+  const view = src.match(/_\d{2}_([A-Z_]+?)-[A-Z0-9]+\.\w+$/)?.[1];
+  return t.altLine(
+    t.altWho[piece.group === 'men' ? 'men' : 'women'],
+    pieceName(piece.name, lang),
+    view && t.views[view] ? t.views[view] : t.viewN(index + 1),
+  );
+}

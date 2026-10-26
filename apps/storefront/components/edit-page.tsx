@@ -8,7 +8,7 @@ import { getPieces } from '@/lib/catalog';
 import type { Edit } from '@/lib/edits';
 import { priceRange } from '@/lib/house';
 import { LANG, OG_LOCALE } from '@/lib/i18n';
-import { languagesFor } from '@/lib/locale-routes';
+import { languagesFor, localHref } from '@/lib/locale-routes';
 import { breadcrumbLd } from '@/lib/jsonld';
 import styles from './edit-page.module.css';
 
@@ -69,7 +69,7 @@ export async function EditPage({ edit }: { edit: Edit }) {
           </div>
           <Stagger className={listing.grid} step={0.07}>
             {pieces.map((piece, i) => (
-              <PieceCard key={piece.id} piece={piece} index={i} />
+              <PieceCard key={piece.id} piece={piece} index={i} lang={edit.locale ?? 'en'} />
             ))}
           </Stagger>
         </>
@@ -85,7 +85,7 @@ export async function EditPage({ edit }: { edit: Edit }) {
         <section className={styles.section}>
           <h2 className={styles.h2}>{ui.howH2}</h2>
           <p className={styles.p}>
-            {ui.howBody} <Link href="/made-to-measure">{ui.howLink}</Link>
+            {ui.howBody} <Link href={localHref(edit.locale ?? 'en', '/made-to-measure')}>{ui.howLink}</Link>
           </p>
         </section>
         <section className={styles.section}>

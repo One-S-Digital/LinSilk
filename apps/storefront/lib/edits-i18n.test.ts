@@ -67,6 +67,13 @@ describe('language switcher', () => {
     expect(switchPath('/uae', 'en', 'de-ch')).toBe('/de-ch');
     expect(translatedPath('fr-ch', '/')).toBe('/fr-ch');
   });
+
+  it('keeps the same piece when the language changes', () => {
+    expect(switchPath('/piece/silk-slip-mini-dress', 'en', 'de-ch')).toBe('/de-ch/stueck/seiden-slip-minikleid');
+    expect(switchPath('/de-ch/stueck/seiden-slip-minikleid', 'de-ch', 'fr')).toBe('/fr/piece/mini-robe-nuisette-en-soie');
+    expect(switchPath('/fr/piece/mini-robe-nuisette-en-soie', 'fr', 'en')).toBe('/piece/silk-slip-mini-dress');
+    expect(switchPath('/piece/not-a-known-piece', 'en', 'fr')).toBe('/fr');
+  });
 });
 
 describe('piece names', () => {

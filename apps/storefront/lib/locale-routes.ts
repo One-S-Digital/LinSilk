@@ -5,6 +5,8 @@
 
 import { absolute } from './house';
 import { HREFLANG, LOCALES, type Lang, type Locale } from './i18n';
+import { PIECE_NAMES } from './piece-names';
+import { slugify } from './slug';
 
 export const ROUTES: Record<string, { de: string; fr: string }> = {
   '/': { de: '', fr: '' },
@@ -70,11 +72,38 @@ export function pieceLanguages(enSlug: string, slugs: Record<Locale, string>) {
   return out;
 }
 
+/* Every piece's slug in each language, from the name glossary. The English
+   slug is the slug of the English title, which is what a piece gets unless its
+   Medusa `metadata.slug` overrides it. */
+const PIECE_SLUGS = Object.entries(PIECE_NAMES).map(([title, n]) => ({
+  en: slugify(title),
+  de: slugify(n.de),
+  fr: slugify(n.fr),
+}));
+
+/** The same piece's address in `to`, or undefined when the path is not a piece. */
+function switchPiece(clean: string, from: Lang, to: Lang): string | undefined {
+  const parts = clean.split('/').filter(Boolean);
+  let slug: string | undefined;
+  if (from === 'en') {
+    if (parts.length === 2 && parts[0] === 'piece') slug = parts[1];
+  } else if (parts.length === 3 && parts[1] === PIECE_SEGMENT[familyOf(from)]) {
+    slug = parts[2];
+  }
+  if (!slug) return undefined;
+  const key = (l: Lang) => (l === 'en' ? 'en' : familyOf(l));
+  const found = PIECE_SLUGS.find((p) => p[key(from)] === slug);
+  if (!found) return to === 'en' ? '/collection' : `/${to}`;
+  return to === 'en' ? `/piece/${found.en}` : piecePath(to, found[key(to)]);
+}
+
 /** Where the same page lives in `to`, from the current path in `from`. Used by
     the language switcher; falls back to the language's home. */
 export function switchPath(pathname: string, from: Lang, to: Lang): string {
   const clean = pathname.replace(/\/$/, '') || '/';
   if (from === to) return clean;
+  const piece = switchPiece(clean, from, to);
+  if (piece) return piece;
   let en: string | undefined;
   if (from === 'en') en = clean;
   else {
@@ -84,8 +113,6 @@ export function switchPath(pathname: string, from: Lang, to: Lang): string {
   if (to === 'en') return en ?? '/';
   return (en && translatedPath(to, en)) || `/${to}`;
 }
-
-export { LOCALES };
 
 /** A link to `enPath` in the reader's language: the translation when there is
     one, otherwise the English page. */

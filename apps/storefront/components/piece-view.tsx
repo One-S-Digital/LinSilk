@@ -12,21 +12,9 @@ import { LANG, type Lang } from '@/lib/i18n';
 import { breadcrumbLd, productLd } from '@/lib/jsonld';
 import { localHref } from '@/lib/locale-routes';
 import { pieceName } from '@/lib/piece-names';
-import { piecePathIn, pieceText } from '@/lib/piece-i18n';
+import { altIn, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { Approx } from '@/lib/currency';
 import { getVariantId } from '@/lib/medusa';
-
-/* The pipeline names every photograph by its view
-   (LINSILK_004_02_UPPER-….jpg), so each one can say what it shows. */
-const altFor = (lang: Lang, piece: Piece, src: string, index: number) => {
-  const t = pieceText(lang);
-  const view = src.match(/_\d{2}_([A-Z_]+?)-[A-Z0-9]+\.\w+$/)?.[1];
-  return t.altLine(
-    t.altWho[piece.group === 'men' ? 'men' : 'women'],
-    pieceName(piece.name, lang),
-    view && t.views[view] ? t.views[view] : t.viewN(index + 1),
-  );
-};
 
 /* One piece page, in any language. The order panel and the measurement sheet
    are still English in every language. */
@@ -45,7 +33,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
   const clothWord = t.cloth[cloth];
   const type = garmentType(piece);
   const questions = t.questions[type];
-  const alts = piece.images.map((src, i) => altFor(lang, piece, src, i));
+  const alts = piece.images.map((src, i) => altIn(lang, piece, src, i));
   const here = piecePathIn(lang, piece);
   const to = (p: string) => localHref(lang, p);
 
