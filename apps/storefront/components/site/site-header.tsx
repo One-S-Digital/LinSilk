@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { EASE } from '@/components/motion';
 import { useCart } from '@/lib/cart';
+import { CHROME } from '@/lib/chrome-i18n';
+import { localHref } from '@/lib/locale-routes';
+import { useLang } from '@/lib/use-lang';
 import styles from './site-header.module.css';
 
 export type NavItem = { href: string; label: string };
@@ -15,6 +18,9 @@ export type NavItem = { href: string; label: string };
    Medusa, a house with no archived seasons should not advertise an archive. */
 export function SiteHeader({ nav }: { nav: NavItem[] }) {
   const pathname = usePathname();
+  const lang = useLang();
+  const t = CHROME[lang];
+  const label = (item: NavItem) => t.nav[item.href] ?? item.label;
   const [open, setOpen] = useState(false);
   const still = useReducedMotion();
   const { count, ready } = useCart();
@@ -42,26 +48,28 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
     };
   }, [open]);
 
-  const isCurrent = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isCurrent = (href: string) => {
+    const here = localHref(lang, href);
+    return pathname === here || (here !== `/${lang}` && pathname.startsWith(`${here}/`));
+  };
 
   return (
     <>
       <header className={styles.header}>
         <div className={styles.inner}>
-          <Link href="/" className={styles.wordmark} aria-label="LINSILK — home">
+          <Link href={localHref(lang, '/')} className={styles.wordmark} aria-label={t.home}>
             <Image src="/brand/logo-horizontal-black.png" alt="LINSILK Genève" width={142} height={32} priority />
           </Link>
 
-          <nav className={styles.nav} aria-label="Primary">
+          <nav className={styles.nav} aria-label={t.primary}>
             {nav.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={localHref(lang, item.href)}
                 className={styles.navLink}
                 data-current={isCurrent(item.href)}
               >
-                {item.label}
+                {label(item)}
               </Link>
             ))}
           </nav>
@@ -74,13 +82,13 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
               aria-expanded={open}
               aria-controls="nav-panel"
             >
-              Menu
+              {t.menu}
             </button>
             <Link href="/account" className={styles.navLink}>
-              Account
+              {t.account}
             </Link>
             <Link href="/cart" className={styles.navLink}>
-              Cart <span className={styles.count}>{cartCount}</span>
+              {t.cart} <span className={styles.count}>{cartCount}</span>
             </Link>
           </div>
         </div>
@@ -97,15 +105,15 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             transition={{ duration: 0.4, ease: EASE }}
           >
             <div className={styles.panelTop}>
-              <Link href="/" className={styles.wordmark} aria-label="LINSILK — home">
+              <Link href={localHref(lang, '/')} className={styles.wordmark} aria-label={t.home}>
                 <Image src="/brand/logo-horizontal-black.png" alt="LINSILK Genève" width={142} height={32} />
               </Link>
               <button type="button" onClick={() => setOpen(false)}>
-                Close
+                {t.close}
               </button>
             </div>
 
-            <nav className={styles.panelNav} aria-label="Primary">
+            <nav className={styles.panelNav} aria-label={t.primary}>
               {nav.map((item, i) => (
                 <motion.span
                   key={item.href}
@@ -113,17 +121,17 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.06 + i * 0.045, ease: EASE }}
                 >
-                  <Link href={item.href} className={styles.panelLink}>
-                    {item.label}
+                  <Link href={localHref(lang, item.href)} className={styles.panelLink}>
+                    {label(item)}
                   </Link>
                 </motion.span>
               ))}
             </nav>
 
             <div className={styles.panelFoot}>
-              <Link href="/account">Account</Link>
-              <Link href="/cart">Cart{cartCount}</Link>
-              <span>Geneva, Switzerland</span>
+              <Link href="/account">{t.account}</Link>
+              <Link href="/cart">{t.cart}{cartCount}</Link>
+              <span>{t.where}</span>
             </div>
           </motion.div>
         )}

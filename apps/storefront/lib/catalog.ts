@@ -26,6 +26,9 @@
    resolves a relative import only with the literal extension — the same
    constraint payload.config.ts documents. */
 import { medusaGet } from './medusa.ts';
+import { slugify } from './slug.ts';
+
+export { slugify };
 
 export type Group = 'women' | 'men';
 /** What a piece is cut from. The house makes in silk and in linen, nothing else. */
@@ -128,15 +131,6 @@ const readCollection = (c: ApiCollection): Collection | null => {
 };
 
 const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top', 'robe'];
-
-/** 'Silk cowl halter gown' → 'silk-cowl-halter-gown'. */
-export const slugify = (name: string) =>
-  name
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 
 const readPiece = (p: ApiProduct, collection: Collection): Piece => {
   const meta = p.metadata ?? {};

@@ -33,8 +33,12 @@ export const websiteLd = () => ({
 /** Images may be relative (local placeholders) or absolute (the file host). */
 const imageUrl = (src: string) => (src.startsWith('http') ? src : absolute(src));
 
-export function productLd(piece: Piece) {
-  const url = absolute(`/piece/${piece.slug}`);
+/** `local` swaps in a translated page's name, address and description. */
+export function productLd(
+  piece: Piece,
+  local?: { name: string; path: string; description: string; inLanguage: string },
+) {
+  const url = absolute(local?.path ?? `/piece/${piece.slug}`);
   const cloth = piece.cloth === 'linen' ? 'linen' : 'silk';
   const type = garmentType(piece);
   const days = (min: number, max: number) => ({
@@ -61,8 +65,11 @@ export function productLd(piece: Piece) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${url}#product`,
-    name: piece.name,
-    description: `${piece.name}, made to measure in 100% ${cloth}: cut and sewn to your own measurements in 2–4 weeks, then dispatched from Geneva.`,
+    name: local?.name ?? piece.name,
+    ...(local ? { inLanguage: local.inLanguage } : {}),
+    description:
+      local?.description ??
+      `${piece.name}, made to measure in 100% ${cloth}: cut and sewn to your own measurements in 2–4 weeks, then dispatched from Geneva.`,
     ...(piece.images.length ? { image: piece.images.map(imageUrl) } : {}),
     sku: piece.id,
     mpn: piece.id,

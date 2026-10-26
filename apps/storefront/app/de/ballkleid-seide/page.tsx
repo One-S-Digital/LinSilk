@@ -7,7 +7,7 @@ import listing from '@/app/collection/[group]/listing.module.css';
 import styles from '@/components/edit-page.module.css';
 import { getPieces, money } from '@/lib/catalog';
 import type { QA } from '@/lib/garments';
-import { priceRange } from '@/lib/house';
+import { absolute, priceRange } from '@/lib/house';
 import { breadcrumbLd, faqLd } from '@/lib/jsonld';
 
 /* Austria, ball season (SEO-GEO-PLAN §5 row 18, copy in COPY-GUIDES-FAQ §2.1).
@@ -47,7 +47,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Ballkleid aus Seide nach Maß | LINSILK Genf',
     description: `Ballkleider aus 100 % Seide, nach Ihren Maßen gefertigt in 2–4 Wochen, 48 Seidenfarben. Von einem Genfer Modehaus. Jetzt für die Ballsaison bestellen.${range ? ` Ab ${money(range.from)}.` : ''}`,
-    alternates: { canonical: PATH },
+    alternates: { canonical: PATH, languages: { 'de-AT': absolute(PATH) } },
     openGraph: { locale: 'de_AT' },
   };
 }
