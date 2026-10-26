@@ -9,13 +9,17 @@
  * is worked out from it.
  */
 
-export const APPROX_CURRENCIES = ['EUR', 'GBP', 'USD'] as const;
+export const APPROX_CURRENCIES = ['EUR', 'GBP', 'USD', 'AED'] as const;
 export type ApproxCurrency = (typeof APPROX_CURRENCIES)[number];
 
 /** How much of each currency one Swiss franc buys. */
 export type Rates = Record<ApproxCurrency, number>;
 
 export const ECB_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
+
+/* The ECB does not publish the dirham. It has been pegged to the US dollar at
+   3.6725 since 1997, so it is worked out from the dollar rate. */
+const AED_PER_USD = 3.6725;
 
 /** Reads the ECB's daily file. Null if it does not carry what is needed. */
 export function parseEcb(xml: string): { date: string; rates: Rates } | null {
@@ -28,7 +32,12 @@ export function parseEcb(xml: string): { date: string; rates: Rates } | null {
   if (!date || !(chf > 0) || !(perEuro.GBP > 0) || !(perEuro.USD > 0)) return null;
   return {
     date,
-    rates: { EUR: 1 / chf, GBP: perEuro.GBP / chf, USD: perEuro.USD / chf },
+    rates: {
+      EUR: 1 / chf,
+      GBP: perEuro.GBP / chf,
+      USD: perEuro.USD / chf,
+      AED: (perEuro.USD / chf) * AED_PER_USD,
+    },
   };
 }
 
@@ -53,5 +62,6 @@ export function currencyForLocale(locale: string | undefined): ApproxCurrency | 
   if (!region) return null;
   if (region === 'GB') return 'GBP';
   if (region === 'US') return 'USD';
+  if (region === 'AE') return 'AED';
   return EURO_AREA.has(region) ? 'EUR' : null;
 }

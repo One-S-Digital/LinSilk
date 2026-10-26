@@ -3,7 +3,7 @@ import { DocPage, DocSection, DocP, DocList } from '@/components/doc-page';
 
 export const metadata: Metadata = {
   title: 'Privacy',
-  description: 'How LinSilk handles your data.',
+  description: 'How LINSILK handles your data.',
   robots: { index: false },
 };
 
@@ -14,6 +14,13 @@ export default function PrivacyPage() {
       title="Privacy"
       lead="The house collects your contact details, delivery address and fifteen body measurements. Body measurements are personal data, and under GDPR they need a lawful basis, a retention period and a deletion route like anything else."
     >
+      <DocSection title="Visit statistics">
+        <DocP>
+          The site counts visits with Umami, a cookieless analytics service. It sets no
+          cookies and stores no personal data about visitors.
+        </DocP>
+      </DocSection>
+
       <DocSection title="Awaiting legal review">
         <DocP>
           This page is a structural placeholder. A privacy notice must be drafted

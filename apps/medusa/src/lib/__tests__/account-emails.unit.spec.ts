@@ -38,7 +38,7 @@ describe("passwordResetUrl for staff", () => {
     process.env.ADMIN_URL = "https://api.bylinsilk.com/app"
     const email = passwordResetEmail("staff@bylinsilk.com", "abc123", "user")
     expect(email.template).toBe("admin-password-reset")
-    expect(email.content.subject).toBe("Reset your admin password — LinSilk")
+    expect(email.content.subject).toBe("Reset your admin password — LINSILK")
     expect(email.content.text).toContain("https://api.bylinsilk.com/app/reset-password?token=abc123")
   })
 })

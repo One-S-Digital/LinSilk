@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: 'Season letter',
   description:
     'Four letters a year, when a collection opens. What was made, what the cloth was, and what closed.',
+  /* A sign-up with nothing to rank for (SEO-GEO-PLAN §6.4). */
+  robots: { index: false },
 };
 
 export default function SeasonLetterPage() {

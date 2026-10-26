@@ -66,7 +66,7 @@ export function orderConfirmedEmail(order: OrderNotice) {
   return email(
     order,
     "order-confirmed",
-    `Your order ${numberOf(order)} is confirmed — LinSilk`,
+    `Your order ${numberOf(order)} is confirmed — LINSILK`,
     "Your order is confirmed",
     [
       {
@@ -90,7 +90,7 @@ export function orderShippedEmail(order: OrderNotice, parcel: Parcel = {}) {
   return email(
     order,
     "order-shipped",
-    `Your order ${numberOf(order)} has been sent — LinSilk`,
+    `Your order ${numberOf(order)} has been sent — LINSILK`,
     "Your order has been sent",
     [
       { kind: "p", text: `Order ${numberOf(order)} has left the atelier and is on its way to you.` },
@@ -108,7 +108,7 @@ export function orderDeliveredEmail(order: OrderNotice) {
   return email(
     order,
     "order-delivered",
-    `Your order ${numberOf(order)} has arrived — LinSilk`,
+    `Your order ${numberOf(order)} has arrived — LINSILK`,
     "Your order has arrived",
     [
       { kind: "p", text: `Order ${numberOf(order)} is marked as delivered.` },
@@ -126,7 +126,7 @@ export function orderCanceledEmail(order: OrderNotice) {
   return email(
     order,
     "order-canceled",
-    `Your order ${numberOf(order)} has been cancelled — LinSilk`,
+    `Your order ${numberOf(order)} has been cancelled — LINSILK`,
     "Your order has been cancelled",
     [
       { kind: "p", text: `Order ${numberOf(order)} has been cancelled, and nothing will be made.` },
@@ -144,7 +144,7 @@ export function paymentRefundedEmail(order: OrderNotice, amount: number | string
   return email(
     order,
     "payment-refunded",
-    `Refund for order ${numberOf(order)} — LinSilk`,
+    `Refund for order ${numberOf(order)} — LINSILK`,
     "Your refund",
     [
       {

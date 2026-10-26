@@ -196,3 +196,75 @@
   line-height: 1.7;
 }
 
+
+/* ---- Below the fold: facts, process, questions, related ---- */
+
+.more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(32px, 4vw, 64px);
+  margin-top: clamp(64px, 8vw, 120px);
+}
+
+.moreTitle {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(20px, 2.2vw, 26px);
+  padding-top: 22px;
+  border-top: 1px solid var(--gold-35);
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gold-22);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+}
+
+.facts dt {
+  color: var(--ink-muted);
+}
+
+.facts {
+  margin-top: 14px;
+}
+
+.howList,
+.relatedList {
+  margin-top: 18px;
+  padding-left: 20px;
+  font-size: var(--t-body);
+  line-height: 1.9;
+  color: var(--ink-body);
+}
+
+.qa {
+  margin-top: 18px;
+}
+
+.q {
+  font-size: var(--t-body);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.a,
+.moreNote {
+  font-size: var(--t-sm);
+  line-height: 1.7;
+  color: var(--ink-body);
+  margin-top: 6px;
+}
+
+.moreNote {
+  margin-top: 18px;
+  color: var(--ink-muted);
+}
+
+.more a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

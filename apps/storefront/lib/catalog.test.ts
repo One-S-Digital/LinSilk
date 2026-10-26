@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { byGroup, currentCollection, getCollections, getPieces, piecesIn } from './catalog';
+import { byGroup, currentCollection, findPiece, getCollections, getPieces, piecesIn } from './catalog';
 
 /* The catalogue is now a translation of what Medusa returns, and the
    translation is where it can go wrong: a season the house has not opened
@@ -144,5 +144,33 @@ describe('the catalogue, read from the backend', () => {
     expect(await getCollections()).toEqual([]);
     expect(await getPieces()).toEqual([]);
     expect(await currentCollection()).toBeUndefined();
+  });
+});
+
+describe('piece addresses', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('gives every piece a slug from its name, or the house’s own', async () => {
+    serve({
+      products: [
+        product('w10', 'autumn-iv', { cloth: 'silk' }),
+        product('w2', 'autumn-iv', { cloth: 'silk', slug: 'silk-wrap-dress' }),
+      ],
+    });
+    const pieces = await getPieces();
+    expect(pieces.map((p) => p.slug)).toEqual(['silk-wrap-dress', 'piece-w10']);
+  });
+
+  it('finds a piece by its slug or by its old numeric address', async () => {
+    serve();
+    expect((await findPiece('piece-w10'))?.id).toBe('w10');
+    expect((await findPiece('w10'))?.slug).toBe('piece-w10');
+  });
+
+  it('carries a retirement and its successor', async () => {
+    serve({ products: [product('w10', 'autumn-iv', { retired: true, successor: 'w2' })] });
+    const [piece] = await getPieces();
+    expect(piece.retired).toBe(true);
+    expect(piece.successor).toBe('w2');
   });
 });

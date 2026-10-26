@@ -20,7 +20,7 @@ export type EmailSpec = {
   blocks: Block[]
 }
 
-const SIGN_OFF = ["LinSilk", "Geneva, Switzerland"]
+const SIGN_OFF = ["LINSILK", "Geneva, Switzerland"]
 
 const INK = "#2a2620"
 const INK_BODY = "#4a4438"

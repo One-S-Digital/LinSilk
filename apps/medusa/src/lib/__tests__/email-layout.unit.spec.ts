@@ -29,7 +29,7 @@ describe("renderText", () => {
         "Follow your parcel:",
         "https://track.example.com/abc",
         "",
-        "LinSilk",
+        "LINSILK",
         "Geneva, Switzerland",
       ].join("\n")
     )

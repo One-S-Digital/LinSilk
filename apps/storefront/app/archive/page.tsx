@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: 'Past collections',
   description:
     'An archive of closed seasons. These designs are not made again — the record of what the house has made is kept because it is part of what the house is.',
+  alternates: { canonical: '/archive' },
 };
 
 export default async function ArchivePage() {
