@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { JsonLd } from '@/components/json-ld';
 import { RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
-import { SeoText } from '@/components/seo-text';
+import { SeoFaq, SeoSubs, SeoText } from '@/components/seo-text';
 import listing from '@/app/collection/[group]/listing.module.css';
 import { getPieces } from '@/lib/catalog';
 import type { Edit } from '@/lib/edits';
@@ -75,27 +75,21 @@ export async function EditPage({ edit }: { edit: Edit }) {
 
       <SeoText>
         <p>{edit.intro(range)}</p>
-        {edit.sections.map((s) => (
-          <section key={s.h2}>
-            <h2>{s.h2}</h2>
-            <p>{s.body}</p>
-          </section>
-        ))}
-        <section>
-          <h2>{ui.howH2}</h2>
-          <p>
-            {ui.howBody} <Link href={localHref(edit.locale ?? 'en', '/made-to-measure')}>{ui.howLink}</Link>
-          </p>
-        </section>
-        <section>
-          <h2>{ui.questions}</h2>
-          {edit.faqs.map(({ q, a }) => (
-            <div key={q}>
-              <h3>{q}</h3>
-              <p>{a}</p>
-            </div>
-          ))}
-        </section>
+        <SeoSubs
+          items={[
+            ...edit.sections.map((s) => ({ title: s.h2, body: s.body })),
+            {
+              title: ui.howH2,
+              body: (
+                <>
+                  {ui.howBody}{' '}
+                  <Link href={localHref(edit.locale ?? 'en', '/made-to-measure')}>{ui.howLink}</Link>
+                </>
+              ),
+            },
+          ]}
+        />
+        <SeoFaq title={ui.questions} items={edit.faqs} />
       </SeoText>
     </div>
   );

@@ -12,7 +12,7 @@ import {
 } from '@/components/motion';
 import { HeroShutter } from '@/components/hero-shutter';
 import { DragRail } from '@/components/drag-rail';
-import { SeoText } from '@/components/seo-text';
+import { SeoSteps, SeoText } from '@/components/seo-text';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import styles from '@/app/home.module.css';
@@ -267,17 +267,12 @@ export async function HomeView({ lang }: { lang: Lang }) {
       {/* ---- What the house is, said plainly enough to be quoted: at the foot
           of the page, small, for search engines and assistants ---- */}
       <div className={styles.seoFoot}>
-        <SeoText>
-          <h2 id="intro-heading">{c.introH}</h2>
+        <SeoText title={c.introH}>
           <p>{c.introLead}</p>
-          <ol>
-            {c.steps(COLOURS.silk, COLOURS.linen).map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ol>
-          <p>
-            <Link href={to('/made-to-measure')}>{c.introCta}</Link>
-          </p>
+          <SeoSteps items={c.steps(COLOURS.silk, COLOURS.linen)} />
+          <ButtonLink href={to('/made-to-measure')} variant="rule">
+            {c.introCta}
+          </ButtonLink>
         </SeoText>
       </div>
     </div>

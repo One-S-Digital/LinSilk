@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { HeroMedia } from '@/components/motion';
-import { SeoText } from '@/components/seo-text';
+import { SeoLinks, SeoText } from '@/components/seo-text';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import { byGroup, currentCollection, roman } from '@/lib/catalog';
@@ -90,23 +90,24 @@ export default async function CollectionPage() {
       </div>
       )}
 
-      <SeoText>
-        <h2>The collection: made-to-measure silk and linen</h2>
+      <SeoText eyebrow="About the collection" title="Made-to-measure silk and linen">
         <p>
           {open ? `${open.title}. ` : ''}Every LINSILK piece is cut and sewn to your own
           measurements in 2–4 weeks, in 100% silk or 100% linen. Choose a piece, choose its
           colour from the swatches of its cloth, and enter your measurements: there are no
           sizes and no fittings. Four small collections a year, from Geneva.
         </p>
-        <p>
-          <Link href="/collection/women/silk">Silk dresses and gowns</Link> ·{' '}
-          <Link href="/collection/women/silk-separates">Silk skirts and blouses</Link> ·{' '}
-          <Link href="/collection/women/linen">Women’s linen sets</Link> ·{' '}
-          <Link href="/collection/sleepwear">Silk sleepwear</Link> ·{' '}
-          <Link href="/collection/men/shirts">Men’s linen shirts</Link> ·{' '}
-          <Link href="/collection/men/trousers">Men’s linen trousers</Link> ·{' '}
-          <Link href="/occasion/wedding-guest">Wedding guest dresses</Link>
-        </p>
+        <SeoLinks
+          links={[
+            { href: '/collection/women/silk', label: 'Silk dresses and gowns' },
+            { href: '/collection/women/silk-separates', label: 'Silk skirts and blouses' },
+            { href: '/collection/women/linen', label: 'Women’s linen sets' },
+            { href: '/collection/sleepwear', label: 'Silk sleepwear' },
+            { href: '/collection/men/shirts', label: 'Men’s linen shirts' },
+            { href: '/collection/men/trousers', label: 'Men’s linen trousers' },
+            { href: '/occasion/wedding-guest', label: 'Wedding guest dresses' },
+          ]}
+        />
       </SeoText>
     </>
   );

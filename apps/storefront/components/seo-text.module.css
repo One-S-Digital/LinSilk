@@ -1,46 +1,212 @@
-/* Plain-language answers for search engines and AI assistants. They sit at the
-   foot of the page, small and quiet: shoppers come for the pieces, and the
-   text stays in the page for anything that reads it. */
+/* The foot-of-page answers for search engines and AI assistants, set as a
+   quiet editorial panel: a heading column, then steps, links and questions.
+   Every word stays in the page's HTML; the questions fold open. */
 
 .seo {
-  max-width: 760px;
-  margin-top: clamp(56px, 7vw, 100px);
-  padding-top: 24px;
-  border-top: 1px solid var(--gold-22);
-  font-size: var(--t-xs);
-  line-height: 1.8;
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+  margin-top: clamp(64px, 8vw, 120px);
+  padding: clamp(28px, 4.5vw, 64px);
+  background: var(--bone-soft);
+  border-top: 1px solid var(--gold-45);
+}
+
+@media (min-width: 900px) {
+  .seo[data-split] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  }
+}
+
+.eyebrow {
+  display: block;
+  font-size: var(--t-xxs);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
   color: var(--ink-muted);
 }
 
-.seo h2 {
-  margin-top: 22px;
-  font-size: var(--t-sm);
-  font-weight: 500;
-  color: var(--ink-secondary);
-}
-
-.seo > h2:first-child {
-  margin-top: 0;
-}
-
-.seo h3 {
+.title {
   margin-top: 14px;
-  font-size: var(--t-xs);
-  font-weight: 500;
+  max-width: 14ch;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--t-h4);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 36px);
+  min-width: 0;
+  max-width: 760px;
+}
+
+.body > p {
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
   color: var(--ink-secondary);
 }
 
-.seo p {
-  margin-top: 8px;
-  max-width: 70ch;
-}
-
-.seo ol {
-  margin: 8px 0;
-  padding-left: 18px;
-}
-
-.seo a {
+.body a {
   text-decoration: underline;
+  text-decoration-color: var(--gold-60);
   text-underline-offset: 3px;
+}
+
+.body a:hover {
+  color: var(--gold);
+}
+
+/* ---- Steps ---- */
+
+.steps {
+  display: grid;
+  gap: 0 clamp(24px, 3vw, 44px);
+  list-style: none;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.steps li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  padding: 18px 0;
+  border-top: 1px solid var(--gold-28);
+  font-size: var(--t-sm);
+  line-height: 1.65;
+  color: var(--ink-body);
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-size: var(--t-mono-sm);
+  letter-spacing: var(--ls-mono);
+  color: var(--gold);
+  padding-top: 3px;
+}
+
+/* ---- Related links ---- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.body .chips a {
+  display: inline-block;
+  padding: 9px 16px;
+  border: 1px solid var(--gold-45);
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-label);
+  text-decoration: none;
+  color: var(--ink);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.body .chips a:hover {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+/* ---- Sub-sections (reasons, how it works) ---- */
+
+.subs {
+  display: grid;
+  gap: 28px clamp(24px, 3vw, 44px);
+}
+
+@media (min-width: 640px) {
+  .subs {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.sub {
+  padding-top: 18px;
+  border-top: 1px solid var(--gold-28);
+}
+
+.subTitle {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(19px, 1.9vw, 23px);
+  line-height: 1.25;
+}
+
+.sub p {
+  margin-top: 10px;
+  font-size: var(--t-sm);
+  line-height: 1.7;
+  color: var(--ink-body);
+}
+
+/* ---- Questions ---- */
+
+.faq {
+  border-bottom: 1px solid var(--gold-28);
+}
+
+.faqTitle {
+  padding-bottom: 14px;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: var(--t-h4);
+  line-height: 1.2;
+}
+
+.faq details {
+  border-top: 1px solid var(--gold-28);
+}
+
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  padding: 18px 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 1.8vw, 21px);
+  line-height: 1.35;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  flex: none;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 22px;
+  color: var(--gold);
+}
+
+.faq details[open] summary::after {
+  content: '–';
+}
+
+.faq summary:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.faq details p {
+  padding: 0 40px 20px 0;
+  font-size: var(--t-sm);
+  line-height: 1.75;
+  color: var(--ink-body);
 }

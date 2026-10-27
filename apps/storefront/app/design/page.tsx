@@ -1,8 +1,7 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
 import { CommissionFlow } from '@/components/commission-flow';
 import { JsonLd } from '@/components/json-ld';
-import { SeoText } from '@/components/seo-text';
+import { SeoFaq, SeoLinks, SeoText } from '@/components/seo-text';
 import listing from '@/app/collection/[group]/listing.module.css';
 import type { QA } from '@/lib/garments';
 import { faqLd } from '@/lib/jsonld';
@@ -39,25 +38,17 @@ function About() {
   return (
     <div className={listing.page}>
       <JsonLd data={faqLd(FAQ)} />
-      <SeoText>
-        <h2>Design your own, made to your measurements</h2>
+      <SeoText title="Design your own, made to your measurements">
         <p>
           Design Your Own is LINSILK’s commission service: you choose a base silhouette
           and the cloth, write a brief to the tailor and submit your measurements; the
           atelier builds one garment to it and replies with a price before anything is
           cut. Every commission is made in 100% silk or 100% linen.
         </p>
-        <p>
-          Looking for a piece from the collection instead?{' '}
-          <Link href="/made-to-measure">How made-to-measure works</Link>
-        </p>
-        <h2>Questions</h2>
-        {FAQ.map(({ q, a }) => (
-          <div key={q}>
-            <h3>{q}</h3>
-            <p>{a}</p>
-          </div>
-        ))}
+        <SeoLinks
+          links={[{ href: '/made-to-measure', label: 'How made-to-measure works' }]}
+        />
+        <SeoFaq title="Questions" items={FAQ} />
       </SeoText>
     </div>
   );
