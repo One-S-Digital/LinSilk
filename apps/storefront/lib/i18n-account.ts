@@ -37,6 +37,10 @@ const EN = {
     none: 'Nothing yet — an order or an accepted commission will appear here.',
     order: (ref: string) => `Order ${ref}`,
     no: (n: number) => `no. ${n}`,
+    status: {
+      pending: 'Pending', completed: 'Completed', canceled: 'Cancelled', requires_action: 'Needs your action',
+      archived: 'Archived', draft: 'Draft',
+    } as Record<string, string>,
   },
   settings: {
     metaTitle: 'Settings',
@@ -151,6 +155,7 @@ const EN = {
     passwordConfirms: 'Your password confirms this — enter it to continue.',
     signInFirst: 'Sign in first.',
     sendFail: 'Could not send it. Try again in a moment.',
+    sentJustNow: (min: number) => `A link was sent just now. Try again in ${min} minutes.`,
   },
 };
 
@@ -188,6 +193,10 @@ const DE_CH: AccountText = {
     none: 'Noch nichts – eine Bestellung oder ein angenommener Auftrag erscheint hier.',
     order: (ref) => `Bestellung ${ref}`,
     no: (n) => `Nr. ${n}`,
+    status: {
+      pending: 'In Bearbeitung', completed: 'Abgeschlossen', canceled: 'Storniert', requires_action: 'Ihre Rückmeldung nötig',
+      archived: 'Archiviert', draft: 'Entwurf',
+    },
   },
   settings: {
     metaTitle: 'Einstellungen',
@@ -302,6 +311,7 @@ const DE_CH: AccountText = {
     passwordConfirms: 'Ihr Passwort bestätigt dies – geben Sie es ein, um fortzufahren.',
     signInFirst: 'Bitte zuerst anmelden.',
     sendFail: 'Senden nicht möglich. Versuchen Sie es gleich noch einmal.',
+    sentJustNow: (min) => `Ein Link wurde soeben gesendet. Versuchen Sie es in ${min} Minuten erneut.`,
   },
 };
 
@@ -337,6 +347,10 @@ const FR: AccountText = {
     none: 'Rien pour l’instant — une commande ou une commande sur mesure acceptée apparaîtra ici.',
     order: (ref) => `Commande ${ref}`,
     no: (n) => `n° ${n}`,
+    status: {
+      pending: 'En cours', completed: 'Terminée', canceled: 'Annulée', requires_action: 'Votre action est requise',
+      archived: 'Archivée', draft: 'Brouillon',
+    },
   },
   settings: {
     metaTitle: 'Paramètres',
@@ -451,6 +465,7 @@ const FR: AccountText = {
     passwordConfirms: 'Votre mot de passe le confirme — saisissez-le pour continuer.',
     signInFirst: 'Connectez-vous d’abord.',
     sendFail: 'Envoi impossible. Réessayez dans un instant.',
+    sentJustNow: (min) => `Un lien vient d’être envoyé. Réessayez dans ${min} minutes.`,
   },
 };
 

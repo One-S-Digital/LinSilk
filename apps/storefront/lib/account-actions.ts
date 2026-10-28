@@ -322,6 +322,11 @@ export async function resendVerificationAction(): Promise<ActionResult & { sent?
   const token = await getToken();
   if (!token) return { error: e.signInFirst };
   const response = await post('/store/customers/me/email-verification', {}, token);
-  if (!response.ok) return { error: await readError(response, e.sendFail) };
+  if (!response.ok) {
+    const message = await readError(response, e.sendFail);
+    /* The wait is the backend's own figure, in an English sentence. */
+    const wait = /try again in (\d+) minutes/i.exec(message)?.[1];
+    return { error: wait ? e.sentJustNow(Number(wait)) : message };
+  }
   return { sent: true };
 }

@@ -16,8 +16,7 @@ import { altIn, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { Approx } from '@/lib/currency';
 import { getVariantId } from '@/lib/medusa';
 
-/* One piece page, in any language. The order panel and the measurement sheet
-   are still English in every language. */
+/* One piece page, in any language, order panel and measurement sheet included. */
 export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
   const t = pieceText(lang);
   const name = pieceName(piece.name, lang);
@@ -128,13 +127,10 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             </div>
           </Reveal>
 
-          {/* Still English in every language, and marked so. */}
-          <div lang={lang === 'en' ? undefined : 'en'}>
-            <PieceOrderPanel
-              piece={piece}
-              variantId={orderable ? await getVariantId(piece.id) : null}
-            />
-          </div>
+          <PieceOrderPanel
+            piece={piece}
+            variantId={orderable ? await getVariantId(piece.id) : null}
+          />
         </div>
       </div>
 

@@ -64,11 +64,26 @@ export function suggestLocale(browserLanguage: string): Locale | null {
 }
 
 /** Applies `toDe` to every string in a structure, including the strings that
-    functions return, to derive the German-market copy from the Swiss copy. */
+    functions return, to derive the German-market copy from the Swiss copy.
+    Text handed to a function (an email address, a name, a code) is the
+    reader's own and comes back exactly as it went in. */
 export const deepDe = <T,>(v: T): T => {
   if (typeof v === 'string') return toDe(v) as T;
-  if (typeof v === 'function')
-    return ((...args: unknown[]) => deepDe((v as (...a: unknown[]) => unknown)(...args))) as T;
+  if (typeof v === 'function') {
+    const fn = v as (...a: unknown[]) => unknown;
+    return ((...args: unknown[]) => {
+      const kept: string[] = [];
+      const guarded = args.map((a) => {
+        if (typeof a !== 'string' || a === '') return a;
+        kept.push(a);
+        return `\uE000${kept.length - 1}\uE001`;
+      });
+      const out = deepDe(fn(...guarded));
+      return typeof out === 'string'
+        ? out.replace(/\uE000(\d+)\uE001/g, (_, i) => kept[Number(i)])
+        : out;
+    }) as T;
+  }
   if (Array.isArray(v)) return v.map(deepDe) as T;
   if (v && typeof v === 'object')
     return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deepDe(x)])) as T;

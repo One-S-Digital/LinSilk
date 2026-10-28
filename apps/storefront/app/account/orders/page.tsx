@@ -42,7 +42,7 @@ export default async function OrdersPage() {
           <Link key={order.id} href={`/order/${order.id}`} className={styles.orderRow}>
             <span>{t.order(order.display_id ? t.no(order.display_id) : order.id)}</span>
             <span className={styles.orderMeta}>
-              {formatMoney(order.total, order.currency_code)} · {order.status}
+              {formatMoney(order.total, order.currency_code)} · {t.status[order.status] ?? order.status}
             </span>
           </Link>
         ))}
