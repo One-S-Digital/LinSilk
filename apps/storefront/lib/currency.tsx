@@ -16,7 +16,9 @@ import {
   type ApproxCurrency,
   type Rates,
 } from './exchange';
+import { shopText } from './i18n-shop';
 import { useHydrated } from './use-hydrated';
+import { useLang } from './use-lang';
 
 /* Which currency, if any, to show an approximate figure in beside a franc
    price. The visitor's choice is kept in this browser; without one, their
@@ -120,12 +122,9 @@ export function Approx({
 /** The sentence that goes under a total, so the figure is never mistaken for the charge. */
 export function ApproxNote({ className }: { className?: string }) {
   const { currency, rates, date } = useCurrency();
+  const lang = useLang();
   if (!currency || !rates) return null;
   return (
-    <p className={className}>
-      You are charged in Swiss francs. The {currency} figure is approximate
-      {date ? `, at the European Central Bank’s rate of ${date}` : ''}; your bank sets
-      its own rate.
-    </p>
+    <p className={className}>{shopText(lang).approx(currency, date ?? null)}</p>
   );
 }

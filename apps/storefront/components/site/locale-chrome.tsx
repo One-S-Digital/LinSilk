@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { CHROME } from '@/lib/chrome-i18n';
-import { LANG, suggestLocale } from '@/lib/i18n';
+import { LANG, langFromPath, suggestLocale } from '@/lib/i18n';
+import { isSharedRoute, setLangPref } from '@/lib/lang-pref';
 import { switchPath } from '@/lib/locale-routes';
 import { useLang } from '@/lib/use-lang';
 import styles from './locale-chrome.module.css';
@@ -38,6 +39,12 @@ export function LocaleChrome() {
   useEffect(() => {
     document.documentElement.lang = lang === 'en' ? 'en' : LANG[lang];
   }, [lang]);
+
+  /* A page in the reader's language is the choice; remember it for the cart,
+     checkout and account, which have one address for everyone. */
+  useEffect(() => {
+    if (!isSharedRoute(pathname)) setLangPref(langFromPath(pathname));
+  }, [pathname]);
 
   if (lang !== 'en' || !offer || closed) return null;
   const t = CHROME[offer];

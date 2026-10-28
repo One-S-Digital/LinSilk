@@ -50,6 +50,7 @@ export const toDe = (s: string) =>
     .replace(/[Aa]ussen/g, (m) => `${m[0]}ußen`)
     .replace(/[Aa]usser/g, (m) => `${m[0]}ußer`)
     .replace(/heiss/g, 'heiß')
+    .replace(/[Ww]eiss/g, (m) => `${m[0]}eiß`)
     .replace(/[Ss]chliess/g, (m) => `${m[0]}chließ`)
     .replace(/innert (?=\d)/g, 'in ')
     .replace(/innert /g, 'innerhalb ');

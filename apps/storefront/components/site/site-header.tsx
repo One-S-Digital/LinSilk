@@ -10,6 +10,7 @@ import { useCart } from '@/lib/cart';
 import { CHROME } from '@/lib/chrome-i18n';
 import { localHref } from '@/lib/locale-routes';
 import { useLang } from '@/lib/use-lang';
+import { LanguageMenu } from './language-menu';
 import styles from './site-header.module.css';
 
 export type NavItem = { href: string; label: string };
@@ -84,6 +85,7 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
             >
               {t.menu}
             </button>
+            <LanguageMenu />
             <Link href="/account" className={styles.navLink}>
               {t.account}
             </Link>

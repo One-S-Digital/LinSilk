@@ -5,6 +5,8 @@ import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import type { ApiPaymentSession } from '@/lib/checkout';
+import { shopText } from '@/lib/i18n-shop';
+import { useLang } from '@/lib/use-lang';
 import styles from '@/app/checkout/checkout.module.css';
 
 /* Payment.
@@ -40,6 +42,7 @@ export function PaymentPanel({
   /** Runs once the money is authorised; completing the cart is the caller's. */
   onPaid: () => Promise<void>;
 }) {
+  const t = shopText(useLang()).pay;
   const isStripe = session.provider_id.includes('stripe');
   const clientSecret = session.data?.client_secret as string | undefined;
   const stripe = useMemo(() => (isStripe ? stripeClient() : null), [isStripe]);
@@ -69,10 +72,7 @@ export function PaymentPanel({
 
   if (isStripe) {
     return (
-      <p className={styles.answer}>
-        Payment is not configured on this storefront yet. Write to
-        hello@bylinsilk.com and the atelier will take it from here.
-      </p>
+      <p className={styles.answer}>{t.notConfigured}</p>
     );
   }
 
@@ -86,6 +86,7 @@ function StripeFields({
   amountLabel: string;
   onPaid: () => Promise<void>;
 }) {
+  const t = shopText(useLang()).pay;
   const stripe = useStripe();
   const elements = useElements();
   const [paying, setPaying] = useState(false);
@@ -108,7 +109,7 @@ function StripeFields({
     });
 
     if (error) {
-      setProblem(error.message ?? 'The payment was not taken. Nothing has been charged.');
+      setProblem(error.message ?? t.notTaken);
       setPaying(false);
       return;
     }
@@ -134,7 +135,7 @@ function StripeFields({
       {problem && <p className={styles.fieldError}>{problem}</p>}
       <div className={styles.continue}>
         <Button onClick={pay} disabled={!stripe || !ready || paying}>
-          {paying ? 'Taking payment…' : ready ? `Pay ${amountLabel}` : 'Choose how to pay'}
+          {paying ? t.taking : ready ? t.pay(amountLabel) : t.choose}
         </Button>
       </div>
     </>
@@ -150,6 +151,7 @@ function SystemFields({
   amountLabel: string;
   onPaid: () => Promise<void>;
 }) {
+  const t = shopText(useLang()).pay;
   const [paying, setPaying] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
 
@@ -171,18 +173,14 @@ function SystemFields({
   return (
     <>
       <div className={styles.paymentMount}>
-        <span className={styles.paymentTag}>no card is charged</span>
-        <div className={styles.paymentTitle}>Standing in for Stripe</div>
-        <p className={styles.paymentBody}>
-          The house has no payment keys on this environment, so the order is placed
-          without money moving. This cannot happen in production: a region with a real
-          payment provider stops offering this one.
-        </p>
+        <span className={styles.paymentTag}>{t.noCard}</span>
+        <div className={styles.paymentTitle}>{t.standIn}</div>
+        <p className={styles.paymentBody}>{t.standInBody}</p>
       </div>
       {problem && <p className={styles.fieldError}>{problem}</p>}
       <div className={styles.continue}>
         <Button onClick={pay} disabled={paying}>
-          {paying ? 'Placing…' : `Place the order — ${amountLabel}`}
+          {paying ? t.placing : t.place(amountLabel)}
         </Button>
       </div>
     </>
