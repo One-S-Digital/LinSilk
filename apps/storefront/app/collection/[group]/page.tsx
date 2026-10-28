@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Reveal, RuleDraw, Stagger } from '@/components/motion';
 import { PieceCard } from '@/components/piece-card';
+import { SeoLinks, SeoText } from '@/components/seo-text';
 import { byGroup, currentCollection, roman, type Group } from '@/lib/catalog';
 import { EDITS, GROUP_EDITS } from '@/lib/edits';
 import styles from './listing.module.css';
@@ -69,26 +70,10 @@ export default async function CollectionGroupPage(
 
       <Reveal>
         <p className={styles.intro}>
-          {group === 'women'
-            ? 'LINSILK’s women’s pieces in 100% silk and 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'
-            : 'LINSILK’s men’s pieces in 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'}{' '}
-          Choose the colour from the swatches of its cloth on the piece’s page.
-        </p>
-        <p className={styles.intro}>
-          {GROUP_EDITS.filter((e) => e.group === group).map((e, i) => (
-            <span key={e.edit}>
-              {i > 0 && ' · '}
-              <Link href={EDITS[`${e.group}/${e.edit}`].path}>{EDITS[`${e.group}/${e.edit}`].h1}</Link>
-            </span>
-          ))}
-          {group === 'women' && (
-            <>
-              {' · '}
-              <Link href="/occasion/wedding-guest">Wedding guest dresses in silk</Link>
-              {' · '}
-              <Link href="/collection/sleepwear">Silk sleepwear</Link>
-            </>
-          )}
+          Each is cut to your measurements and made in a capped run.{' '}
+          {open?.closes
+            ? `When the season closes in ${open.closes} these designs are archived and are not made again.`
+            : 'When the season closes these designs are archived and are not made again.'}
         </p>
       </Reveal>
 
@@ -125,6 +110,29 @@ export default async function CollectionGroupPage(
           </Stagger>
         </>
       )}
+
+      <SeoText eyebrow="About the collection" title="Made to your measurements">
+        <p>
+          {group === 'women'
+            ? 'LINSILK’s women’s pieces in 100% silk and 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'
+            : 'LINSILK’s men’s pieces in 100% linen, each cut and sewn to your own measurements in 2–4 weeks.'}{' '}
+          Choose the colour from the swatches of its cloth on the piece’s page.
+        </p>
+        <SeoLinks
+          links={[
+            ...GROUP_EDITS.filter((e) => e.group === group).map((e) => ({
+              href: EDITS[`${e.group}/${e.edit}`].path,
+              label: EDITS[`${e.group}/${e.edit}`].h1,
+            })),
+            ...(group === 'women'
+              ? [
+                  { href: '/occasion/wedding-guest', label: 'Wedding guest dresses in silk' },
+                  { href: '/collection/sleepwear', label: 'Silk sleepwear' },
+                ]
+              : []),
+          ]}
+        />
+      </SeoText>
     </div>
   );
 }

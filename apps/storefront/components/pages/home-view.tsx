@@ -12,6 +12,7 @@ import {
 } from '@/components/motion';
 import { HeroShutter } from '@/components/hero-shutter';
 import { DragRail } from '@/components/drag-rail';
+import { SeoSteps, SeoText } from '@/components/seo-text';
 import { ShotFrame } from '@/components/shot';
 import { ButtonLink } from '@/components/ui/button';
 import styles from '@/app/home.module.css';
@@ -48,10 +49,11 @@ export async function HomeView({ lang }: { lang: Lang }) {
         <div className={styles.heroScrim} />
 
         <div className={styles.heroInner}>
-          <Reveal y={10}>
-            <h1 className={styles.kicker}>{c.kicker}</h1>
-          </Reveal>
+          <h1 className="sr-only">{c.kicker}</h1>
           <LineRise delay={0.15}>
+            <span className={styles.kicker} style={{ display: 'block' }}>
+              {OPEN?.title ?? ''}
+            </span>
             <span className={styles.heroLine} style={{ display: 'block' }}>
               {c.heroLines[0]}
             </span>
@@ -78,22 +80,6 @@ export async function HomeView({ lang }: { lang: Lang }) {
       </section>
 
       <JsonLd data={{ ...websiteLd(), inLanguage: lang === 'en' ? 'en' : LANG[lang] }} />
-
-      {/* ---- What the house is, said plainly enough to be quoted ---- */}
-      <section className={styles.intro} aria-labelledby="intro-heading">
-        <Reveal>
-          <h2 id="intro-heading" className={styles.introTitle}>{c.introH}</h2>
-          <p className={styles.introLead}>{c.introLead}</p>
-          <ol className={styles.introSteps}>
-            {c.steps(COLOURS.silk, COLOURS.linen).map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ol>
-          <ButtonLink href={to('/made-to-measure')} variant="rule">
-            {c.introCta}
-          </ButtonLink>
-        </Reveal>
-      </section>
 
       {/* ---- The house in three lines ---- */}
       <section className={styles.pillars}>
@@ -277,6 +263,18 @@ export async function HomeView({ lang }: { lang: Lang }) {
           </dl>
         </div>
       </section>
+
+      {/* ---- What the house is, said plainly enough to be quoted: at the foot
+          of the page, small, for search engines and assistants ---- */}
+      <div className={styles.seoFoot}>
+        <SeoText title={c.introH}>
+          <p>{c.introLead}</p>
+          <SeoSteps items={c.steps(COLOURS.silk, COLOURS.linen)} />
+          <ButtonLink href={to('/made-to-measure')} variant="rule">
+            {c.introCta}
+          </ButtonLink>
+        </SeoText>
+      </div>
     </div>
   );
 }
