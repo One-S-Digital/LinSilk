@@ -83,10 +83,15 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
               aria-expanded={open}
               aria-controls="nav-panel"
             >
+              <span className={styles.burger} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
               {t.menu}
             </button>
             <LanguageMenu />
-            <Link href="/account" className={styles.navLink}>
+            <Link href="/account" className={`${styles.navLink} ${styles.accountLink}`}>
               {t.account}
             </Link>
             <Link href="/cart" className={styles.navLink}>
@@ -108,13 +113,21 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
           >
             <div className={styles.panelTop}>
               <Link href={localHref(lang, '/')} className={styles.wordmark} aria-label={t.home}>
-                <Image src="/brand/logo-horizontal-black.png" alt="LINSILK Genève" width={142} height={32} />
+                <Image
+                  className={styles.panelLogo}
+                  src="/brand/logo-horizontal-black.png"
+                  alt="LINSILK Genève"
+                  width={142}
+                  height={32}
+                />
               </Link>
-              <button type="button" onClick={() => setOpen(false)}>
+              <button type="button" className={styles.closeButton} onClick={() => setOpen(false)}>
                 {t.close}
+                <span className={styles.cross} aria-hidden="true" />
               </button>
             </div>
 
+            <p className={styles.panelLabel}>{t.menu}</p>
             <nav className={styles.panelNav} aria-label={t.primary}>
               {nav.map((item, i) => (
                 <motion.span
@@ -124,7 +137,9 @@ export function SiteHeader({ nav }: { nav: NavItem[] }) {
                   transition={{ duration: 0.6, delay: 0.06 + i * 0.045, ease: EASE }}
                 >
                   <Link href={localHref(lang, item.href)} className={styles.panelLink}>
-                    {label(item)}
+                    <span className={styles.panelNum} aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                    <span>{label(item)}</span>
+                    <span className={styles.panelArrow} aria-hidden="true">→</span>
                   </Link>
                 </motion.span>
               ))}
