@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { accountText } from '@/lib/i18n-account';
+import { serverLang } from '@/lib/server-lang';
 import { redirect } from 'next/navigation';
 import { DocPage } from '@/components/doc-page';
 import { formatMoney } from '@/lib/medusa';
 import { authedFetch } from '@/lib/session';
 import styles from '../account.module.css';
 
-export const metadata: Metadata = {
-  title: 'Your orders',
-  description: 'Every order and commission, and where it stands.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = accountText(await serverLang()).orders;
+  return { title: t.metaTitle, description: t.metaDescription };
+}
 
 type ApiOrder = {
   id: string;
@@ -20,6 +22,8 @@ type ApiOrder = {
 };
 
 export default async function OrdersPage() {
+  const a = accountText(await serverLang());
+  const t = a.orders;
   const body = await authedFetch<{ orders: ApiOrder[] }>(
     '/store/orders?fields=id,display_id,status,currency_code,total&order=-created_at',
   );
@@ -27,18 +31,16 @@ export default async function OrdersPage() {
 
   return (
     <DocPage
-      eyebrow="Your account"
-      title="Your orders"
+      eyebrow={a.yourAccount}
+      title={t.title}
       lead={
-        body.orders.length
-          ? 'Every order and commission you have paid for, oldest last.'
-          : 'Nothing yet — an order or an accepted commission will appear here.'
+        body.orders.length ? t.lead : t.none
       }
     >
       <div className={styles.orders}>
         {body.orders.map((order) => (
           <Link key={order.id} href={`/order/${order.id}`} className={styles.orderRow}>
-            <span>Order {order.display_id ? `no. ${order.display_id}` : order.id}</span>
+            <span>{t.order(order.display_id ? t.no(order.display_id) : order.id)}</span>
             <span className={styles.orderMeta}>
               {formatMoney(order.total, order.currency_code)} · {order.status}
             </span>

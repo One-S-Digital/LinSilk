@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { CheckoutFlow } from '@/components/checkout/checkout-flow';
 import { Button } from '@/components/ui/button';
 import { cartToResume } from '@/lib/checkout';
+import { commissionText } from '@/lib/i18n-commission';
+import { accountText } from '@/lib/i18n-account';
 import { medusaFetch, formatMoney } from '@/lib/medusa';
+import { useLang } from '@/lib/use-lang';
 import styles from '@/app/checkout/checkout.module.css';
 
 /* Accepting a quote.
@@ -34,28 +37,12 @@ type ApiCommission = {
    same reason, on the route this page calls into. */
 const PAYABLE_STATUSES = ['quoted', 'approved'];
 
-const COUNTRIES: { code: string; name: string }[] = [
-  { code: 'ch', name: 'Switzerland' },
-  { code: 'at', name: 'Austria' },
-  { code: 'be', name: 'Belgium' },
-  { code: 'de', name: 'Germany' },
-  { code: 'dk', name: 'Denmark' },
-  { code: 'es', name: 'Spain' },
-  { code: 'fr', name: 'France' },
-  { code: 'ie', name: 'Ireland' },
-  { code: 'it', name: 'Italy' },
-  { code: 'lu', name: 'Luxembourg' },
-  { code: 'nl', name: 'Netherlands' },
-  { code: 'pt', name: 'Portugal' },
-  { code: 'se', name: 'Sweden' },
-  { code: 'gb', name: 'United Kingdom' },
-  { code: 'us', name: 'United States' },
-  { code: 'sg', name: 'Singapore' },
-  { code: 'jp', name: 'Japan' },
-  { code: 'au', name: 'Australia' },
-];
+const COUNTRY_CODES = ['ch', 'at', 'be', 'de', 'dk', 'es', 'fr', 'ie', 'it', 'lu', 'nl', 'pt', 'se', 'gb', 'us', 'sg', 'jp', 'au'];
 
 export function CommissionPayment({ token }: { token: string }) {
+  const lang = useLang();
+  const t = commissionText(lang).pay;
+  const countries = accountText(lang).address.countries;
   const [commission, setCommission] = useState<ApiCommission | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [country, setCountry] = useState('ch');
@@ -93,7 +80,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (problem && !commission) {
     return (
       <p className={styles.answer}>
-        {problem} If you believe this is a mistake, write to hello@bylinsilk.com.
+        {problem} {t.mistake}
       </p>
     );
   }
@@ -102,8 +89,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (commission.paid_at) {
     return (
       <p className={styles.answer}>
-        This commission is paid for and is with the bench. Two to four weeks from the day
-        it was settled. Write to hello@bylinsilk.com if anything needs changing.
+        {t.paid}
       </p>
     );
   }
@@ -111,8 +97,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (!commission.quote_amount) {
     return (
       <p className={styles.answer}>
-        A tailor is still reading your brief. The figure comes by email, usually
-        within two working days.
+        {t.reading}
       </p>
     );
   }
@@ -120,9 +105,7 @@ export function CommissionPayment({ token }: { token: string }) {
   if (!PAYABLE_STATUSES.includes(commission.status)) {
     return (
       <p className={styles.answer}>
-        {commission.status === 'declined'
-          ? 'This commission was declined. Write to hello@bylinsilk.com if you believe this is a mistake.'
-          : 'This commission is not ready to pay for yet. Write to hello@bylinsilk.com if you expected otherwise.'}
+        {commission.status === 'declined' ? t.declined : t.notReady}
       </p>
     );
   }
@@ -131,16 +114,13 @@ export function CommissionPayment({ token }: { token: string }) {
     <section className={styles.section}>
       <div className={styles.sectionHead}>
         <h2 className={styles.sectionTitle}>
-          <span className={styles.sectionNum}>00</span> What was agreed
+          <span className={styles.sectionNum}>00</span> {t.agreed}
         </h2>
       </div>
       <p className={styles.answer}>
-        {commission.silhouette_title} in {commission.fabric}, cut to the sheet you sent.
-        {commission.note ? ` “${commission.note}”` : ''}
+        {t.summary(commission.silhouette_title, commission.fabric, commission.note ?? '')}
         <br />
-        Quoted at {formatMoney(commission.quote_amount, commission.currency_code)}. That
-        figure does not change; where the piece is sent decides the currency and the
-        shipping.
+        {t.quoted(formatMoney(commission.quote_amount, commission.currency_code))}
       </p>
     </section>
   );
@@ -153,13 +133,13 @@ export function CommissionPayment({ token }: { token: string }) {
           <section className={styles.section}>
             <div className={styles.sectionHead}>
               <h2 className={styles.sectionTitle}>
-                <span className={styles.sectionNum}>01</span> Where is it going
+                <span className={styles.sectionNum}>01</span> {t.where}
               </h2>
             </div>
             <div className={styles.body}>
               <div className={styles.fields}>
                 <div className={styles.field}>
-                  <label className={styles.label} htmlFor="commission-country">Country</label>
+                  <label className={styles.label} htmlFor="commission-country">{t.country}</label>
                   <select
                     id="commission-country"
                     className={styles.select}
@@ -167,8 +147,8 @@ export function CommissionPayment({ token }: { token: string }) {
                     onChange={(e) => setCountry(e.target.value)}
                     autoComplete="country"
                   >
-                    {COUNTRIES.map((c) => (
-                      <option key={c.code} value={c.code}>{c.name}</option>
+                    {COUNTRY_CODES.map((code) => (
+                      <option key={code} value={code}>{countries[code]}</option>
                     ))}
                   </select>
                 </div>
@@ -176,7 +156,7 @@ export function CommissionPayment({ token }: { token: string }) {
               {problem && <p className={styles.fieldError}>{problem}</p>}
               <div className={styles.continue}>
                 <Button onClick={open} disabled={opening}>
-                  {opening ? 'One moment…' : 'Accept and continue'}
+                  {opening ? t.moment : t.accept}
                 </Button>
               </div>
             </div>

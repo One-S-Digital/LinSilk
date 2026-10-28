@@ -7,8 +7,11 @@ import { useActionState, useState } from 'react';
 import { loginAction, registerAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
 export function AuthForms() {
+  const t = accountText(useLang()).form;
   const [tab, setTab] = useState<'login' | 'register'>('login');
   const [loginState, loginFormAction, loginPending] = useActionState(loginAction, {});
   const [registerState, registerFormAction, registerPending] = useActionState(registerAction, {});
@@ -24,7 +27,7 @@ export function AuthForms() {
           aria-selected={tab === 'login'}
           onClick={() => setTab('login')}
         >
-          Sign in
+          {t.signIn}
         </button>
         <button
           type="button"
@@ -34,7 +37,7 @@ export function AuthForms() {
           aria-selected={tab === 'register'}
           onClick={() => setTab('register')}
         >
-          Open an account
+          {t.open}
         </button>
       </div>
 
@@ -42,7 +45,7 @@ export function AuthForms() {
         <form action={loginFormAction} className={styles.form}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="login-email">
-              Email
+              {t.email}
             </label>
             <input
               id="login-email"
@@ -55,7 +58,7 @@ export function AuthForms() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="login-password">
-              Password
+              {t.password}
             </label>
             <input
               id="login-password"
@@ -69,10 +72,10 @@ export function AuthForms() {
           {loginState.error && <p className={styles.error}>{loginState.error}</p>}
           <div className={styles.actions}>
             <Button type="submit" disabled={loginPending}>
-              {loginPending ? 'Signing in…' : 'Sign in'}
+              {loginPending ? t.signingIn : t.signIn}
             </Button>
             <a href="/account/reset-password" className={styles.switch}>
-              Forgot your password?
+              {t.forgot}
             </a>
           </div>
         </form>
@@ -80,13 +83,13 @@ export function AuthForms() {
         <form action={registerFormAction} className={styles.form}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="register-name">
-              Name
+              {t.name}
             </label>
             <input id="register-name" name="name" type="text" autoComplete="name" required className={styles.input} />
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="register-email">
-              Email
+              {t.email}
             </label>
             <input
               id="register-email"
@@ -99,7 +102,7 @@ export function AuthForms() {
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="register-password">
-              Password
+              {t.password}
             </label>
             <input
               id="register-password"
@@ -110,12 +113,12 @@ export function AuthForms() {
               required
               className={styles.input}
             />
-            <span className={styles.note}>At least eight characters.</span>
+            <span className={styles.note}>{t.eight}</span>
           </div>
           {registerState.error && <p className={styles.error}>{registerState.error}</p>}
           <div className={styles.actions}>
             <Button type="submit" disabled={registerPending}>
-              {registerPending ? 'Opening…' : 'Open an account'}
+              {registerPending ? t.opening : t.open}
             </Button>
           </div>
         </form>

@@ -7,15 +7,18 @@ import { useActionState } from 'react';
 import { completePasswordResetAction, requestPasswordResetAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
 export function RequestResetForm() {
+  const t = accountText(useLang()).reset;
+  const f = accountText(useLang()).form;
   const [state, formAction, pending] = useActionState(requestPasswordResetAction, {});
 
   if (state.sent) {
     return (
       <p className={styles.note} style={{ marginTop: 28 }}>
-        If that email has an account, a link to reset its password is on its way — it
-        works for fifteen minutes.
+        {t.sent}
       </p>
     );
   }
@@ -24,14 +27,14 @@ export function RequestResetForm() {
     <form action={formAction} className={styles.form}>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="reset-email">
-          Email
+          {f.email}
         </label>
         <input id="reset-email" name="email" type="email" autoComplete="email" required className={styles.input} />
       </div>
       {state.error && <p className={styles.error}>{state.error}</p>}
       <div className={styles.actions}>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Sending…' : 'Send the link'}
+          {pending ? t.sending : t.send}
         </Button>
       </div>
     </form>
@@ -39,6 +42,8 @@ export function RequestResetForm() {
 }
 
 export function CompleteResetForm({ token, email }: { token: string; email: string }) {
+  const t = accountText(useLang()).reset;
+  const f = accountText(useLang()).form;
   const [state, formAction, pending] = useActionState(completePasswordResetAction, {});
 
   return (
@@ -47,7 +52,7 @@ export function CompleteResetForm({ token, email }: { token: string; email: stri
       <input type="hidden" name="email" value={email} />
       <div className={styles.field}>
         <label className={styles.label} htmlFor="new-password">
-          New password
+          {t.newPassword}
         </label>
         <input
           id="new-password"
@@ -58,12 +63,12 @@ export function CompleteResetForm({ token, email }: { token: string; email: stri
           required
           className={styles.input}
         />
-        <span className={styles.note}>At least eight characters.</span>
+        <span className={styles.note}>{f.eight}</span>
       </div>
       {state.error && <p className={styles.error}>{state.error}</p>}
       <div className={styles.actions}>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Saving…' : 'Set the new password'}
+          {pending ? t.saving : t.set}
         </Button>
       </div>
     </form>

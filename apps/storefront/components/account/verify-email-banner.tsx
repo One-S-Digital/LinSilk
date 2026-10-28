@@ -6,22 +6,24 @@ import { useActionState } from 'react';
 import { resendVerificationAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
 export function VerifyEmailBanner({ email }: { email: string }) {
+  const t = accountText(useLang()).verify;
   const [state, action, pending] = useActionState(resendVerificationAction, {});
   return (
     <form action={action} className={styles.card}>
-      <span className={styles.cardTitle}>Confirm your email</span>
+      <span className={styles.cardTitle}>{t.bannerTitle}</span>
       <span className={styles.cardNote}>
-        We sent a link to {email}. Until it is opened, your name, phone, measurements and addresses
-        cannot be changed.
+        {t.bannerNote(email)}
       </span>
       {state.error && <p role="alert">{state.error}</p>}
       {state.sent ? (
-        <span className={styles.cardNote}>Sent again. Check your inbox.</span>
+        <span className={styles.cardNote}>{t.sentAgain}</span>
       ) : (
         <Button type="submit" variant="outline" disabled={pending}>
-          {pending ? 'Sending…' : 'Send the link again'}
+          {pending ? t.sending : t.again}
         </Button>
       )}
     </form>

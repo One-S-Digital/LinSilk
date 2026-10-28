@@ -4,15 +4,18 @@ import { useActionState } from 'react';
 import { changePasswordAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
 export function PasswordForm() {
+  const t = accountText(useLang()).form;
   const [state, formAction, pending] = useActionState(changePasswordAction, {});
 
   return (
     <form action={formAction} className={styles.form}>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="current-password">
-          Current password
+          {t.currentPassword}
         </label>
         <input
           id="current-password"
@@ -25,7 +28,7 @@ export function PasswordForm() {
       </div>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="new-password">
-          New password
+          {t.newPassword}
         </label>
         <input
           id="new-password"
@@ -36,13 +39,13 @@ export function PasswordForm() {
           required
           className={styles.input}
         />
-        <span className={styles.note}>At least eight characters.</span>
+        <span className={styles.note}>{t.eight}</span>
       </div>
       {state.error && <p className={styles.error}>{state.error}</p>}
-      {state.saved && <p className={styles.note}>Changed.</p>}
+      {state.saved && <p className={styles.note}>{t.changed}</p>}
       <div className={styles.actions}>
         <Button type="submit" variant="outline" disabled={pending}>
-          {pending ? 'Saving…' : 'Change password'}
+          {pending ? t.saving : t.change}
         </Button>
       </div>
     </form>

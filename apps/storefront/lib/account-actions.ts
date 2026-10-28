@@ -14,6 +14,8 @@ import { redirect } from 'next/navigation';
 import { ZONES } from './catalog';
 import { toLineItemMetadata, type Measurements, type Unit } from './measurements';
 import { MEDUSA_URL, medusaHeaders } from './medusa';
+import { accountText } from './i18n-account';
+import { serverLang } from './server-lang';
 import { authedFetch, clearSession, getCustomer, getToken, isEmailVerified, setSession } from './session';
 
 type ActionResult = { error?: string };
@@ -49,20 +51,20 @@ const actorIdOf = (token: string): string => {
   }
 };
 
-const NOT_VERIFIED = 'Confirm your email first — the link was sent when you registered.';
 
 export async function loginAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const email = String(form.get('email') ?? '').trim();
   const password = String(form.get('password') ?? '');
-  if (!email || !password) return { error: 'An email and a password are both needed.' };
+  if (!email || !password) return { error: e.emailPassword };
 
   const response = await post('/auth/customer/emailpass', { email, password });
   if (!response.ok) {
     return {
       error:
         response.status === 401
-          ? 'That email and password do not match an account here.'
-          : await readError(response, 'Could not sign in. Try again in a moment.'),
+          ? e.noMatch
+          : await readError(response, e.signInFail),
     };
   }
 
@@ -75,13 +77,13 @@ export async function loginAction(_prev: ActionResult, form: FormData): Promise<
   if (!actorIdOf(token)) {
     const created = await post('/store/customers', { email }, token);
     if (!created.ok) {
-      return { error: await readError(created, 'Could not sign in. Try again in a moment.') };
+      return { error: await readError(created, e.signInFail) };
     }
     // This token was issued before the customer existed; it reads as
     // unauthorized now that one is attached, the same as a register token.
     const relogin = await post('/auth/customer/emailpass', { email, password });
     if (!relogin.ok) {
-      return { error: 'Could not sign in. Try again in a moment.' };
+      return { error: e.signInFail };
     }
     const { token: freshToken } = (await relogin.json()) as { token: string };
     await setSession(freshToken);
@@ -93,21 +95,22 @@ export async function loginAction(_prev: ActionResult, form: FormData): Promise<
 }
 
 export async function registerAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const name = String(form.get('name') ?? '').trim();
   const email = String(form.get('email') ?? '').trim();
   const password = String(form.get('password') ?? '');
   if (!name || !email || !password) {
-    return { error: 'A name, an email and a password are all needed.' };
+    return { error: e.nameEmailPassword };
   }
-  if (password.length < 8) return { error: 'The password needs at least eight characters.' };
+  if (password.length < 8) return { error: e.eight };
 
   const registered = await post('/auth/customer/emailpass/register', { email, password });
   if (!registered.ok) {
     return {
       error:
         registered.status === 401
-          ? 'That email already has an account here. Sign in instead.'
-          : await readError(registered, 'Could not open an account. Try again in a moment.'),
+          ? e.exists
+          : await readError(registered, e.openFail),
     };
   }
   const { token: registerToken } = (await registered.json()) as { token: string };
@@ -119,7 +122,7 @@ export async function registerAction(_prev: ActionResult, form: FormData): Promi
     registerToken,
   );
   if (!created.ok) {
-    return { error: await readError(created, 'Could not open an account. Try again in a moment.') };
+    return { error: await readError(created, e.openFail) };
   }
 
   // The registration token has no customer attached; a fresh login does.
@@ -139,8 +142,9 @@ export async function requestPasswordResetAction(
   _prev: ActionResult & { sent?: boolean },
   form: FormData,
 ): Promise<ActionResult & { sent?: boolean }> {
+  const e = accountText(await serverLang()).err;
   const email = String(form.get('email') ?? '').trim();
-  if (!email) return { error: 'An email is needed.' };
+  if (!email) return { error: e.emailNeeded };
 
   await post('/auth/customer/emailpass/reset-password', { identifier: email });
   // Medusa never says whether the address exists, on purpose; neither do we.
@@ -151,15 +155,16 @@ export async function completePasswordResetAction(
   _prev: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const email = String(form.get('email') ?? '').trim();
   const token = String(form.get('token') ?? '');
   const password = String(form.get('password') ?? '');
-  if (!token || !email) return { error: 'This link is missing what it needs. Ask for a new one.' };
-  if (password.length < 8) return { error: 'The password needs at least eight characters.' };
+  if (!token || !email) return { error: e.linkMissing };
+  if (password.length < 8) return { error: e.eight };
 
   const response = await post('/auth/customer/emailpass/update', { email, password }, token);
   if (!response.ok) {
-    return { error: 'This link has expired or was already used. Ask for a new one.' };
+    return { error: e.linkExpired };
   }
 
   const login = await post('/auth/customer/emailpass', { email, password });
@@ -177,9 +182,10 @@ export async function saveMeasurementProfileAction(
   values: Measurements,
   unit: Unit,
 ): Promise<{ error?: string }> {
+  const e = accountText(await serverLang()).err;
   const customer = await getCustomer();
-  if (!customer) return { error: 'Sign in to save a profile.' };
-  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
+  if (!customer) return { error: e.signInToSave };
+  if (!(await isEmailVerified())) return { error: e.notVerified };
 
   const kept = Object.fromEntries(
     Object.entries(customer.metadata ?? {}).filter(
@@ -191,7 +197,7 @@ export async function saveMeasurementProfileAction(
     method: 'POST',
     json: { metadata: { ...kept, ...toLineItemMetadata(values, unit, ZONES) } },
   });
-  if (!updated) return { error: 'Could not save. Try again in a moment.' };
+  if (!updated) return { error: e.saveFail };
   revalidatePath('/account');
   return {};
 }
@@ -205,17 +211,18 @@ export async function updateProfileAction(
   _prev: ActionResult & { saved?: boolean },
   form: FormData,
 ): Promise<ActionResult & { saved?: boolean }> {
+  const e = accountText(await serverLang()).err;
   const first_name = String(form.get('first_name') ?? '').trim();
   const last_name = String(form.get('last_name') ?? '').trim();
   const phone = String(form.get('phone') ?? '').trim();
-  if (!first_name) return { error: 'A name is needed.' };
-  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
+  if (!first_name) return { error: e.nameNeeded };
+  if (!(await isEmailVerified())) return { error: e.notVerified };
 
   const updated = await authedFetch('/store/customers/me', {
     method: 'POST',
     json: { first_name, last_name: last_name || null, phone: phone || null },
   });
-  if (!updated) return { error: 'Could not save. Try again in a moment.' };
+  if (!updated) return { error: e.saveFail };
   revalidatePath('/account');
   revalidatePath('/account/settings');
   return { saved: true };
@@ -225,18 +232,19 @@ export async function changePasswordAction(
   _prev: ActionResult & { saved?: boolean },
   form: FormData,
 ): Promise<ActionResult & { saved?: boolean }> {
+  const e = accountText(await serverLang()).err;
   const current_password = String(form.get('current_password') ?? '');
   const password = String(form.get('password') ?? '');
   if (!current_password || !password) {
-    return { error: 'The current and a new password are both needed.' };
+    return { error: e.bothPasswords };
   }
-  if (password.length < 8) return { error: 'The new password needs at least eight characters.' };
+  if (password.length < 8) return { error: e.newEight };
 
   const result = await authedFetch<{ success?: boolean }>('/store/customers/me/password', {
     method: 'POST',
     json: { current_password, password },
   });
-  if (!result) return { error: 'That is not the current password.' };
+  if (!result) return { error: e.wrongCurrent };
   return { saved: true };
 }
 
@@ -254,14 +262,15 @@ const addressFromForm = (form: FormData) => ({
 });
 
 export async function addAddressAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const address = addressFromForm(form);
   if (!address.address_1 || !address.city || !address.country_code) {
-    return { error: 'An address, a city and a country are all needed.' };
+    return { error: e.addressNeeded };
   }
 
-  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
+  if (!(await isEmailVerified())) return { error: e.notVerified };
   const created = await authedFetch('/store/customers/me/addresses', { method: 'POST', json: address });
-  if (!created) return { error: 'Could not save that address. Try again in a moment.' };
+  if (!created) return { error: e.addressFail };
   revalidatePath('/account/settings');
   return {};
 }
@@ -271,17 +280,18 @@ export async function updateAddressAction(
   _prev: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const address = addressFromForm(form);
   if (!address.address_1 || !address.city || !address.country_code) {
-    return { error: 'An address, a city and a country are all needed.' };
+    return { error: e.addressNeeded };
   }
 
-  if (!(await isEmailVerified())) return { error: NOT_VERIFIED };
+  if (!(await isEmailVerified())) return { error: e.notVerified };
   const updated = await authedFetch(`/store/customers/me/addresses/${addressId}`, {
     method: 'POST',
     json: address,
   });
-  if (!updated) return { error: 'Could not save that address. Try again in a moment.' };
+  if (!updated) return { error: e.addressFail };
   revalidatePath('/account/settings');
   return {};
 }
@@ -292,14 +302,15 @@ export async function removeAddressAction(addressId: string) {
 }
 
 export async function deleteAccountAction(_prev: ActionResult, form: FormData): Promise<ActionResult> {
+  const e = accountText(await serverLang()).err;
   const password = String(form.get('password') ?? '');
-  if (!password) return { error: 'Your password confirms this — enter it to continue.' };
+  if (!password) return { error: e.passwordConfirms };
 
   const result = await authedFetch<{ success?: boolean }>('/store/customers/me/account', {
     method: 'POST',
     json: { password },
   });
-  if (!result) return { error: 'That is not the current password.' };
+  if (!result) return { error: e.wrongCurrent };
 
   await clearSession();
   redirect('/account?closed=1');
@@ -307,9 +318,10 @@ export async function deleteAccountAction(_prev: ActionResult, form: FormData): 
 
 /** Sends the confirmation link again, to the address on the account. */
 export async function resendVerificationAction(): Promise<ActionResult & { sent?: boolean }> {
+  const e = accountText(await serverLang()).err;
   const token = await getToken();
-  if (!token) return { error: 'Sign in first.' };
+  if (!token) return { error: e.signInFirst };
   const response = await post('/store/customers/me/email-verification', {}, token);
-  if (!response.ok) return { error: await readError(response, 'Could not send it. Try again in a moment.') };
+  if (!response.ok) return { error: await readError(response, e.sendFail) };
   return { sent: true };
 }

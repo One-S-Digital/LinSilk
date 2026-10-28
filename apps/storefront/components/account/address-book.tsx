@@ -10,38 +10,23 @@ import { addAddressAction, removeAddressAction, updateAddressAction } from '@/li
 import { Button } from '@/components/ui/button';
 import type { ApiAddress } from '@/lib/session';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
-const COUNTRIES: [string, string][] = [
-  ['ch', 'Switzerland'],
-  ['at', 'Austria'],
-  ['be', 'Belgium'],
-  ['de', 'Germany'],
-  ['dk', 'Denmark'],
-  ['es', 'Spain'],
-  ['fr', 'France'],
-  ['ie', 'Ireland'],
-  ['it', 'Italy'],
-  ['lu', 'Luxembourg'],
-  ['nl', 'Netherlands'],
-  ['pt', 'Portugal'],
-  ['se', 'Sweden'],
-  ['gb', 'United Kingdom'],
-  ['us', 'United States'],
-  ['sg', 'Singapore'],
-  ['jp', 'Japan'],
-  ['au', 'Australia'],
-];
+const COUNTRY_CODES = ['ch', 'at', 'be', 'de', 'dk', 'es', 'fr', 'ie', 'it', 'lu', 'nl', 'pt', 'se', 'gb', 'us', 'sg', 'jp', 'au'];
 
-const addressLines = (address: ApiAddress) =>
+const addressLines = (address: ApiAddress, countries: Record<string, string>) =>
   [
     [address.first_name, address.last_name].filter(Boolean).join(' '),
     address.address_1,
     address.address_2,
     [address.postal_code, address.city].filter(Boolean).join(' '),
-    COUNTRIES.find(([code]) => code === address.country_code)?.[1] ?? address.country_code,
+    countries[address.country_code ?? ''] ?? address.country_code,
   ].filter(Boolean);
 
 function AddressForm({ address, onDone }: { address?: ApiAddress; onDone: () => void }) {
+  const t = accountText(useLang()).address;
+  const f = accountText(useLang()).form;
   const action = address ? updateAddressAction.bind(null, address.id) : addAddressAction;
   const [state, formAction, pending] = useActionState(action, {});
 
@@ -64,51 +49,51 @@ function AddressForm({ address, onDone }: { address?: ApiAddress; onDone: () => 
     <form action={formAction} className={styles.form} style={{ maxWidth: 'none' }}>
       <div className={styles.addressGrid}>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>First name</label>
+          <label className={styles.label}>{f.firstName}</label>
           <input name="first_name" defaultValue={address?.first_name ?? ''} className={styles.input} />
         </div>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>Last name</label>
+          <label className={styles.label}>{f.lastName}</label>
           <input name="last_name" defaultValue={address?.last_name ?? ''} className={styles.input} />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Address</label>
+          <label className={styles.label}>{t.address}</label>
           <input name="address_1" defaultValue={address?.address_1 ?? ''} required className={styles.input} />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Apartment, suite, etc. (optional)</label>
+          <label className={styles.label}>{t.apartment}</label>
           <input name="address_2" defaultValue={address?.address_2 ?? ''} className={styles.input} />
         </div>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>Postal code</label>
+          <label className={styles.label}>{t.postal}</label>
           <input name="postal_code" defaultValue={address?.postal_code ?? ''} className={styles.input} />
         </div>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>City</label>
+          <label className={styles.label}>{t.city}</label>
           <input name="city" defaultValue={address?.city ?? ''} required className={styles.input} />
         </div>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>Country</label>
+          <label className={styles.label}>{t.country}</label>
           <select name="country_code" defaultValue={address?.country_code ?? 'ch'} className={styles.input}>
-            {COUNTRIES.map(([code, name]) => (
+            {COUNTRY_CODES.map((code) => (
               <option key={code} value={code}>
-                {name}
+                {t.countries[code]}
               </option>
             ))}
           </select>
         </div>
         <div className={styles.field} data-half="true">
-          <label className={styles.label}>Phone (optional)</label>
+          <label className={styles.label}>{t.phoneOpt}</label>
           <input name="phone" defaultValue={address?.phone ?? ''} className={styles.input} />
         </div>
       </div>
       {state.error && <p className={styles.error}>{state.error}</p>}
       <div className={styles.actions}>
         <Button type="submit" variant="outline" disabled={pending}>
-          {pending ? 'Saving…' : 'Save address'}
+          {pending ? t.saving : t.save}
         </Button>
         <button type="button" onClick={onDone} className={styles.switch}>
-          Cancel
+          {f.cancel}
         </button>
       </div>
     </form>
@@ -116,6 +101,7 @@ function AddressForm({ address, onDone }: { address?: ApiAddress; onDone: () => 
 }
 
 function AddressCard({ address }: { address: ApiAddress }) {
+  const t = accountText(useLang()).address;
   const [editing, setEditing] = useState(false);
   const [removing, setRemoving] = useState(false);
 
@@ -126,13 +112,13 @@ function AddressCard({ address }: { address: ApiAddress }) {
   return (
     <div className={styles.addressCard}>
       <div className={styles.addressText}>
-        {addressLines(address).map((line, i) => (
+        {addressLines(address, t.countries).map((line, i) => (
           <div key={i}>{line}</div>
         ))}
       </div>
       <div className={styles.addressActions}>
         <button type="button" onClick={() => setEditing(true)} className={styles.switch}>
-          Edit
+          {t.edit}
         </button>
         <button
           type="button"
@@ -143,7 +129,7 @@ function AddressCard({ address }: { address: ApiAddress }) {
           }}
           className={styles.switch}
         >
-          {removing ? 'Removing…' : 'Remove'}
+          {removing ? t.removing : t.remove}
         </button>
       </div>
     </div>
@@ -151,6 +137,7 @@ function AddressCard({ address }: { address: ApiAddress }) {
 }
 
 export function AddressBook({ addresses }: { addresses: ApiAddress[] }) {
+  const t = accountText(useLang()).address;
   const [adding, setAdding] = useState(false);
 
   return (
@@ -170,7 +157,7 @@ export function AddressBook({ addresses }: { addresses: ApiAddress[] }) {
       ) : (
         <div className={styles.actions} style={{ marginTop: addresses.length ? 20 : 0 }}>
           <button type="button" onClick={() => setAdding(true)} className={styles.switch}>
-            + Add an address
+            {t.add}
           </button>
         </div>
       )}
