@@ -1,26 +1,18 @@
 import type { Metadata } from 'next';
-import { StoryPage } from '@/components/story-page';
-import { ButtonLink } from '@/components/ui/button';
+import { ContactView } from '@/components/pages/care-views';
+import { pagesText } from '@/lib/i18n-pages';
+import { languagesFor } from '@/lib/locale-routes';
 import { getStoryPage } from '@/lib/payload';
 
 export async function generateMetadata(): Promise<Metadata> {
   const story = await getStoryPage('contact');
   return {
-    title: 'Contact the house',
+    title: pagesText('en').contact.metaTitle,
     description: story.lead,
-    alternates: { canonical: '/contact' },
+    alternates: { canonical: '/contact', languages: languagesFor('/contact') },
   };
 }
 
 export default function ContactPage() {
-  return (
-    <StoryPage storyKey="contact">
-      <ButtonLink href="mailto:hello@bylinsilk.com" variant="outline">
-        hello@bylinsilk.com
-      </ButtonLink>
-      <ButtonLink href="/care/measuring" variant="rule">
-        Measurement help
-      </ButtonLink>
-    </StoryPage>
-  );
+  return <ContactView lang="en" />;
 }

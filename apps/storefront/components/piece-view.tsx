@@ -65,20 +65,20 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
       <TrackEvent name="piece_view" data={{ piece: piece.id, cloth }} />
       <JsonLd
         data={breadcrumbLd([
-          { name: t.collection, path: '/collection' },
-          { name: label, path: `/collection/${piece.group}` },
+          { name: t.collection, path: to('/collection') },
+          { name: label, path: to(`/collection/${piece.group}`) },
           { name, path: here },
         ])}
       />
       <p className={styles.crumb}>
         {orderable ? (
           <>
-            <Link href="/collection" style={{ color: 'var(--ink-muted)' }}>
+            <Link href={to('/collection')} style={{ color: 'var(--ink-muted)' }}>
               {t.collection}
             </Link>{' '}
             —{' '}
             <Link
-              href={`/collection/${piece.group}`}
+              href={to(`/collection/${piece.group}`)}
               style={{ color: 'var(--ink-muted)' }}
             >
               {label}
@@ -155,7 +155,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             <div>
               <dt>{t.factDelivery}</dt>
               <dd>
-                {t.deliveryLine} <Link href="/care/shipping">{t.shippingLink}</Link>
+                {t.deliveryLine} <Link href={to('/care/shipping')}>{t.shippingLink}</Link>
               </dd>
             </div>
           </dl>
@@ -167,7 +167,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             <li>{t.howList[0]}</li>
             <li>
               {t.measuringPre}
-              <Link href="/care/measuring">{t.measuringLink}</Link>
+              <Link href={to('/care/measuring')}>{t.measuringLink}</Link>
               {t.measuringPost}
             </li>
             <li>{t.howList[2]}</li>

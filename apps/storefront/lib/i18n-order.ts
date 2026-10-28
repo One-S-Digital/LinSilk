@@ -327,6 +327,9 @@ const NAMES: Names = {
   'LS-L40': ['Zartes Flieder', 'Lilas rosé'],
 };
 
+/** The library codes that have a German and French name. */
+export const NAMED_SWATCHES = Object.keys(NAMES);
+
 /** A colour's name in the reader's language; English when it has none. */
 export function swatchName(swatch: { key: string; name: string }, lang: Lang): string {
   if (lang === 'en') return swatch.name;
