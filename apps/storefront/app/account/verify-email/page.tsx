@@ -1,16 +1,20 @@
 import type { Metadata } from 'next';
+import { accountText } from '@/lib/i18n-account';
+import { serverLang } from '@/lib/server-lang';
 import { DocPage } from '@/components/doc-page';
 import { ButtonLink } from '@/components/ui/button';
 import { MEDUSA_URL, medusaHeaders } from '@/lib/medusa';
 
-export const metadata: Metadata = {
-  title: 'Confirm your email',
-  description: 'Opening the link from your email confirms the address on your account.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = accountText(await serverLang()).verify;
+  return { title: t.metaTitle, description: t.metaDescription };
+}
 
 /* The link in the email lands here. The token is the proof, so no session is
    needed; opening it twice does no harm. */
 export default async function VerifyEmailPage(props: PageProps<'/account/verify-email'>) {
+  const a = accountText(await serverLang());
+  const t = a.verify;
   const params = await props.searchParams;
   const token = typeof params.token === 'string' ? params.token : '';
 
@@ -27,16 +31,14 @@ export default async function VerifyEmailPage(props: PageProps<'/account/verify-
 
   return (
     <DocPage
-      eyebrow="The house"
-      title={ok ? 'Email confirmed' : 'This link did not work'}
+      eyebrow={a.eyebrow}
+      title={ok ? t.ok : t.bad}
       lead={
-        ok
-          ? 'Your address is confirmed. Your account is fully open.'
-          : 'It has expired or was not complete. Sign in and ask for a new one from your account page.'
+        ok ? t.okLead : t.badLead
       }
       foot={
         <ButtonLink href="/account" variant="outline">
-          Go to your account
+          {t.go}
         </ButtonLink>
       }
     >

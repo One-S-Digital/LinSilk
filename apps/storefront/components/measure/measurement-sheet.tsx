@@ -6,6 +6,7 @@ import { ZONES, type Group, type Zone } from '@/lib/catalog';
 import {
   formatValue,
   loadLocal,
+  rangeOf,
   saveLocal,
   takenCount,
   toCm,
@@ -13,12 +14,15 @@ import {
   type Measurements,
   type Unit,
 } from '@/lib/measurements';
+import { orderText, zoneText } from '@/lib/i18n-order';
 import { useHydrated } from '@/lib/use-hydrated';
+import { localHref } from '@/lib/locale-routes';
+import { useLang } from '@/lib/use-lang';
 import styles from './measurement-sheet.module.css';
 
 const GUIDES = {
-  women: { src: '/measure/women.png', w: 860, h: 858, alt: 'Measurement guide, women' },
-  men: { src: '/measure/men.png', w: 880, h: 950, alt: 'Measurement guide, men' },
+  women: { src: '/measure/women.png', w: 860, h: 858 },
+  men: { src: '/measure/men.png', w: 880, h: 950 },
 } as const;
 
 export function MeasurementSheet({
@@ -26,7 +30,7 @@ export function MeasurementSheet({
   bodyZones = ZONES,
   garmentZones = [],
   onChange,
-  title = 'Your measurements',
+  title,
   showIntro = true,
   initialValues,
   initialUnit,
@@ -53,6 +57,8 @@ export function MeasurementSheet({
   onSave?: (values: Measurements, unit: Unit) => Promise<{ error?: string } | void>;
 }) {
   const uid = useId();
+  const lang = useLang();
+  const t = orderText(lang).sheet;
   const [unit, setUnit] = useState<Unit>(initialUnit ?? 'cm');
   const [values, setValues] = useState<Measurements>(initialValues ?? {});
   /** What is literally in each input, in the current unit, so typing "17." works. */
@@ -137,7 +143,10 @@ export function MeasurementSheet({
     for (const z of allZones) {
       const cm = values[z.key];
       if (typeof cm !== 'number') continue;
-      const message = validate(z.key, cm, unit);
+      const range = validate(z.key, cm, unit) ? rangeOf(z.key) : undefined;
+      const message = range
+        ? t.range(formatValue(range[0], unit), formatValue(range[1], unit), unit)
+        : null;
       if (message) out[z.key] = message;
     }
     return out;
@@ -173,10 +182,10 @@ export function MeasurementSheet({
 
         <div>
           <label className={styles.label} htmlFor={id}>
-            {zone.label}
+            {zoneText(zone, lang).label}
           </label>
           <p className={styles.hint} id={`${id}-hint`}>
-            {zone.hint}
+            {zoneText(zone, lang).hint}
           </p>
           {error && (
             <p className={styles.error} id={`${id}-error`} role="status">
@@ -211,9 +220,9 @@ export function MeasurementSheet({
     <section className={styles.sheet} aria-labelledby={`${uid}-title`}>
       <div className={styles.head}>
         <h2 id={`${uid}-title`} className={styles.title}>
-          {title}
+          {title ?? t.title}
         </h2>
-        <div className={styles.units} role="group" aria-label="Units">
+        <div className={styles.units} role="group" aria-label={t.units}>
           {(['cm', 'in'] as const).map((u) => (
             <button
               key={u}
@@ -230,11 +239,7 @@ export function MeasurementSheet({
 
       {showIntro && (
         <p className={styles.intro}>
-          There is no small, medium or large. {allZones.length} measurements, taken
-          over close-fitting clothes, with the tape flat against the body. Some of
-          them are drops rather than girths — they are what let a flat pattern sit on
-          your body, and no amount of chest and waist substitutes for them. Take your
-          time; this is the part of the order that decides the garment.
+          {t.intro(allZones.length)}
         </p>
       )}
 
@@ -244,17 +249,17 @@ export function MeasurementSheet({
           src={plate.src}
           width={plate.w}
           height={plate.h}
-          alt={plate.alt}
+          alt={guide === 'men' ? t.guideMen : t.guideWomen}
           sizes="(max-width: 900px) 100vw, 520px"
         />
         <div className={styles.guideFoot}>
-          <span className={styles.guideNote}>where the tape sits</span>
+          <span className={styles.guideNote}>{t.tapeSits}</span>
           <button
             type="button"
             className={styles.guideToggle}
             onClick={() => setGuide((g) => (g === 'men' ? 'women' : 'men'))}
           >
-            {guide === 'men' ? 'Show women’s guide' : 'Show men’s guide'}
+            {guide === 'men' ? t.showWomen : t.showMen}
           </button>
         </div>
       </div>
@@ -262,8 +267,8 @@ export function MeasurementSheet({
       <div className={styles.progress}>
         <span className={styles.progressLabel}>
           {taken === allZones.length
-            ? `All ${allZones.length} taken`
-            : `Measurement ${Math.min(taken + 1, allZones.length)} of ${allZones.length}`}
+            ? t.allTaken(allZones.length)
+            : t.progress(Math.min(taken + 1, allZones.length), allZones.length)}
         </span>
         <div className={styles.progressTrack}>
           <div
@@ -278,11 +283,8 @@ export function MeasurementSheet({
       {garmentZones.length > 0 && (
         <>
           <div className={styles.groupHead}>
-            <h3 className={styles.groupTitle}>The garment</h3>
-            <p className={styles.groupNote}>
-              Not a fact about your body but a decision about the piece. Your
-              measurements say how it should fit; this says how long it should be.
-            </p>
+            <h3 className={styles.groupTitle}>{t.garmentH}</h3>
+            <p className={styles.groupNote}>{t.garmentNote}</p>
           </div>
           <div className={styles.rows}>
             {garmentZones.map((zone, i) => renderRow(zone, bodyZones.length + i))}
@@ -291,8 +293,8 @@ export function MeasurementSheet({
       )}
 
       <div className={styles.actions}>
-        <a href="/care/measuring" style={{ color: 'var(--ink-muted)' }}>
-          Have a tailor take your measurements
+        <a href={localHref(lang, '/care/measuring')} style={{ color: 'var(--ink-muted)' }}>
+          {t.tailor}
         </a>
         <button
           type="button"
@@ -316,7 +318,7 @@ export function MeasurementSheet({
               /* A server action that throws rather than returning an error —
                  the network went, or the server did. */
               if (edits.current === sent) {
-                setSaveError('Could not save just now. Try again in a moment.');
+                setSaveError(t.saveFail);
               }
             } finally {
               setSaving(false);
@@ -325,11 +327,11 @@ export function MeasurementSheet({
           disabled={taken === 0 || saving}
           style={{ color: 'var(--ink-muted)' }}
         >
-          {saving ? 'Saving…' : 'Save this profile'}
+          {saving ? t.saving : t.save}
         </button>
         {saved && (
           <span className={styles.saved}>
-            {onSave ? 'Saved to your account' : 'Saved to this device'}
+            {onSave ? t.savedAccount : t.savedDevice}
           </span>
         )}
         {saveError && (
@@ -341,11 +343,11 @@ export function MeasurementSheet({
 
       {summary.length > 0 && (
         <div className={styles.review}>
-          <div className={styles.reviewHead}>Review</div>
+          <div className={styles.reviewHead}>{t.review}</div>
           <div className={styles.reviewGrid}>
             {summary.map((z) => (
               <div key={z.key} className={styles.reviewRow}>
-                <span style={{ color: 'var(--ink-secondary)' }}>{z.label}</span>
+                <span style={{ color: 'var(--ink-secondary)' }}>{zoneText(z, lang).label}</span>
                 <span className={styles.reviewValue}>
                   {formatValue(values[z.key] as number, unit)} {unit}
                 </span>

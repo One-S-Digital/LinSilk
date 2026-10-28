@@ -5,15 +5,18 @@ import { updateProfileAction } from '@/lib/account-actions';
 import { Button } from '@/components/ui/button';
 import type { ApiCustomer } from '@/lib/session';
 import styles from '@/app/account/account.module.css';
+import { accountText } from '@/lib/i18n-account';
+import { useLang } from '@/lib/use-lang';
 
 export function ProfileForm({ customer }: { customer: ApiCustomer }) {
+  const t = accountText(useLang()).form;
   const [state, formAction, pending] = useActionState(updateProfileAction, {});
 
   return (
     <form action={formAction} className={styles.form}>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="profile-first-name">
-          First name
+          {t.firstName}
         </label>
         <input
           id="profile-first-name"
@@ -26,7 +29,7 @@ export function ProfileForm({ customer }: { customer: ApiCustomer }) {
       </div>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="profile-last-name">
-          Last name
+          {t.lastName}
         </label>
         <input
           id="profile-last-name"
@@ -38,7 +41,7 @@ export function ProfileForm({ customer }: { customer: ApiCustomer }) {
       </div>
       <div className={styles.field}>
         <label className={styles.label} htmlFor="profile-phone">
-          Phone
+          {t.phone}
         </label>
         <input
           id="profile-phone"
@@ -47,13 +50,13 @@ export function ProfileForm({ customer }: { customer: ApiCustomer }) {
           defaultValue={customer.phone ?? ''}
           className={styles.input}
         />
-        <span className={styles.note}>For the courier, if a delivery needs a word with you.</span>
+        <span className={styles.note}>{t.phoneNote}</span>
       </div>
       {state.error && <p className={styles.error}>{state.error}</p>}
-      {state.saved && <p className={styles.note}>Saved.</p>}
+      {state.saved && <p className={styles.note}>{t.savedOk}</p>}
       <div className={styles.actions}>
         <Button type="submit" variant="outline" disabled={pending}>
-          {pending ? 'Saving…' : 'Save changes'}
+          {pending ? t.saving : t.saveChanges}
         </Button>
       </div>
     </form>

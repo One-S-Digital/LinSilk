@@ -14,8 +14,10 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { EASE } from '@/components/motion';
 import { MeasurementSheet } from '@/components/measure/measurement-sheet';
 import { Button } from '@/components/ui/button';
-import { COMMISSION_STEPS, LENGTH_ZONE, ZONES, money, type LengthKind } from '@/lib/catalog';
+import { LENGTH_ZONE, ZONES, money, type LengthKind } from '@/lib/catalog';
 import { MEDUSA_URL, medusaHeaders, type ApiFabricCatalogue, type ApiSilhouette } from '@/lib/medusa';
+import { commissionText } from '@/lib/i18n-commission';
+import { useLang } from '@/lib/use-lang';
 import { isComplete, takenCount, type Measurements, type Unit } from '@/lib/measurements';
 import styles from '@/app/design/design.module.css';
 
@@ -39,6 +41,8 @@ export function CommissionFlow({
   initialMeasurements?: Measurements;
   initialUnit?: Unit;
 }) {
+  const lang = useLang();
+  const t = commissionText(lang);
   const still = useReducedMotion();
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -100,7 +104,7 @@ export function CommissionFlow({
 
   /* You cannot reach a later step until the shape is chosen — everything after
      it is a decision about that shape. */
-  const furthest = silhouette ? COMMISSION_STEPS.length - 1 : 0;
+  const furthest = silhouette ? t.steps.length - 1 : 0;
 
   const acceptFiles = (incoming: FileList | null) => {
     if (!incoming?.length) return;
@@ -111,11 +115,11 @@ export function CommissionFlow({
       const typeOk =
         ACCEPT.some((prefix) => file.type.startsWith(prefix)) || /\.heic$/i.test(file.name);
       if (!typeOk) {
-        problems.push(`${file.name} is not a JPG, PNG, PDF or HEIC.`);
+        problems.push(t.badType(file.name));
         continue;
       }
       if (file.size > MAX_BYTES) {
-        problems.push(`${file.name} is ${readableSize(file.size)} — the limit is 20 MB.`);
+        problems.push(t.tooBig(file.name, readableSize(file.size)));
         continue;
       }
       ok.push(file);
@@ -129,7 +133,7 @@ export function CommissionFlow({
        drop or per picker use is what makes this safe to compute up front. */
     const room = Math.max(0, MAX_FILES - files.length);
     if (ok.length > room) {
-      problems.push(`Ten files at most, so ${ok.length - room} were not added.`);
+      problems.push(t.tooMany(ok.length - room));
     }
     const accepted = ok.slice(0, room);
     if (accepted.length) {
@@ -161,13 +165,11 @@ export function CommissionFlow({
       });
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.message ?? 'The atelier’s desk did not answer.');
+        throw new Error(body?.message ?? t.noAnswer);
       }
       setSent(true);
     } catch (error) {
-      setSendError(
-        `${(error as Error).message} Nothing was lost — try again, or write to hello@bylinsilk.com.`,
-      );
+      setSendError(t.nothingLost((error as Error).message));
     } finally {
       setSending(false);
     }
@@ -176,10 +178,9 @@ export function CommissionFlow({
   const panels = [
     /* ---- 0 · Silhouette ---- */
     <div key="silhouette">
-      <h2 className={styles.h2}>Choose a base silhouette</h2>
+      <h2 className={styles.h2}>{t.silhouetteH}</h2>
       <p className={styles.sub}>
-        The starting shape only. Length, fullness and finishing are settled in your note
-        to the tailor.
+        {t.silhouetteSub}
       </p>
 
       <div className={styles.silhouettes}>
@@ -198,36 +199,29 @@ export function CommissionFlow({
             <span className={styles.silhouetteName}>{option.name}</span>
             <span className={styles.silhouetteNote}>{option.note}</span>
             {option.estimate !== null && (
-              <span className={styles.silhouetteNote}>from {money(option.estimate)}</span>
+              <span className={styles.silhouetteNote}>{t.from(money(option.estimate))}</span>
             )}
           </button>
         ))}
       </div>
 
       <p className={styles.sub} style={{ marginTop: 24 }}>
-        A starting figure, not a price. What a commission costs depends on the cloth and
-        the hours at the bench, so a tailor reads your brief and writes to you with the
-        figure. Nothing is charged until you have agreed it.
+        {t.startingFigure}
       </p>
 
       <div className={styles.upload}>
-        <h3 className={styles.h3}>Upload your own design</h3>
+        <h3 className={styles.h3}>{t.uploadH}</h3>
         <p className={styles.sub}>
-          If you already have the garment drawn, photographed or saved somewhere, send it
-          here. The tailor works from what you give, so more detail shortens the
-          conversation.
+          {t.uploadSub}
         </p>
 
         <div className={styles.uploadGrid}>
           <div>
-            <div className={styles.label}>What to send</div>
+            <div className={styles.label}>{t.whatToSend}</div>
             <ul className={styles.checklist}>
-              <li>Front and back of the outfit, both views, as separate images.</li>
-              <li>Close-ups of anything that matters: collar, cuff, pocket, hem, closure.</li>
-              <li>Sketches, screenshots, pinned references or a photo of a garment you own.</li>
-              <li>Shoot flat or on a hanger in daylight — no flash, nothing folded out of view.</li>
-              <li>Mark lengths on the image if you know them, in centimetres.</li>
-              <li>JPG, PNG, PDF or HEIC, up to 20 MB each. Ten files at most.</li>
+              {t.checklist.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
 
@@ -257,21 +251,21 @@ export function CommissionFlow({
                 }}
                 style={{ display: 'none' }}
               />
-              <span className={styles.dropTitle}>Choose files</span>
-              <span className={styles.dropHint}>or drop them here</span>
+              <span className={styles.dropTitle}>{t.chooseFiles}</span>
+              <span className={styles.dropHint}>{t.orDrop}</span>
             </label>
 
             <div className={styles.views}>
               <div className={styles.view}>
-                Front view
+                {t.front}
                 <span className={styles.viewState}>
-                  {files.some((f) => /front/i.test(f.name)) ? 'received' : 'not yet sent'}
+                  {files.some((f) => /front/i.test(f.name)) ? t.received : t.notYet}
                 </span>
               </div>
               <div className={styles.view}>
-                Back view
+                {t.back}
                 <span className={styles.viewState}>
-                  {files.some((f) => /back/i.test(f.name)) ? 'received' : 'not yet sent'}
+                  {files.some((f) => /back/i.test(f.name)) ? t.received : t.notYet}
                 </span>
               </div>
             </div>
@@ -289,9 +283,9 @@ export function CommissionFlow({
                         type="button"
                         onClick={() => setFiles((c) => c.filter((_, j) => j !== i))}
                         style={{ marginLeft: 14, color: 'var(--ink-muted)' }}
-                        aria-label={`Remove ${file.name}`}
+                        aria-label={t.removeFile(file.name)}
                       >
-                        Remove
+                        {t.remove}
                       </button>
                     </span>
                   </div>
@@ -305,11 +299,9 @@ export function CommissionFlow({
 
     /* ---- 1 · Cloth ---- */
     <div key="cloth">
-      <h2 className={styles.h2}>Choose your cloth</h2>
+      <h2 className={styles.h2}>{t.clothH}</h2>
       <p className={styles.sub}>
-        Read the catalogues the house holds, then write down the cloth you want. If you
-        are between two, say so — the tailor will tell you which behaves better in the
-        shape you have chosen, and a cutting is posted to you before anything is cut.
+        {t.clothSub}
       </p>
 
       {catalogues.length > 0 ? (
@@ -327,21 +319,20 @@ export function CommissionFlow({
                 <span className={styles.catalogueNote}>{catalogue.description}</span>
               )}
               <span className={styles.catalogueOpen}>
-                Open{catalogue.mime_type === 'application/pdf' ? ' the PDF' : ''}
+                {catalogue.mime_type === 'application/pdf' ? t.openPdf : t.open}
               </span>
             </a>
           ))}
         </div>
       ) : (
         <p className={styles.sub}>
-          The cloth catalogues are being reprinted. Write the cloth you have in mind
-          below, or ask the tailor what is on the shelf this season.
+          {t.reprinted}
         </p>
       )}
 
       <div className={styles.fabricField}>
         <label className={styles.label} htmlFor="commission-fabric">
-          The cloth you have chosen
+          {t.fabricLabel}
         </label>
         <input
           id="commission-fabric"
@@ -349,32 +340,31 @@ export function CommissionFlow({
           value={fabric}
           maxLength={FABRIC_LIMIT}
           onChange={(e) => setFabric(e.target.value)}
-          placeholder="Oyster charmeuse, 19mm — page 4 of the autumn silks catalogue"
+          placeholder={t.fabricPlaceholder}
           aria-describedby="commission-fabric-hint"
         />
         <p id="commission-fabric-hint" className={styles.hint}>
-          The name, the weight and the page it is on, if you have them.
+          {t.fabricHint}
         </p>
       </div>
     </div>,
 
     /* ---- 2 · Notes ---- */
     <div key="notes">
-      <h2 className={styles.h2}>Tell your tailor</h2>
+      <h2 className={styles.h2}>{t.notesH}</h2>
       <p className={styles.sub}>
-        Write as you would to a person. Length, sleeve, collar, pockets, how you want it
-        to sit, a garment you already own and like.
+        {t.notesSub}
       </p>
       <textarea
         className={styles.notes}
         value={notes}
         maxLength={NOTE_LIMIT}
         onChange={(e) => setNotes(e.target.value)}
-        placeholder="Mid-calf, a little fuller through the skirt than the bias dress in Collection III. Sleeve to the wrist bone. No lining."
-        aria-label="Your note to the tailor"
+        placeholder={t.notesPlaceholder}
+        aria-label={t.notesAria}
       />
       <div className={styles.counter}>
-        {notes.length} of {NOTE_LIMIT}
+        {t.counter(notes.length, NOTE_LIMIT)}
       </div>
     </div>,
 
@@ -384,7 +374,7 @@ export function CommissionFlow({
         group="women"
         garmentZones={garmentZones}
         onChange={onSheetChange}
-        title="Measurements"
+        title={t.measurements}
         initialValues={sheetTouched ? sheet.values : initialMeasurements}
         initialUnit={sheetTouched ? sheet.unit : initialUnit}
       />
@@ -393,12 +383,12 @@ export function CommissionFlow({
     /* ---- 4 · Send ---- */
     <div key="send" className={styles.reviewGrid}>
       <div>
-        <h2 className={styles.h2}>Send it to the atelier</h2>
+        <h2 className={styles.h2}>{t.sendH}</h2>
 
         <div className={styles.contact}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="commission-name">
-              Your name
+              {t.yourName}
             </label>
             <input
               id="commission-name"
@@ -410,7 +400,7 @@ export function CommissionFlow({
           </div>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="commission-email">
-              Email
+              {t.email}
             </label>
             <input
               id="commission-email"
@@ -421,55 +411,53 @@ export function CommissionFlow({
               onChange={(e) => setEmail(e.target.value)}
               aria-invalid={email.length > 0 && !emailLooksRight}
             />
-            <p className={styles.hint}>The tailor writes to you here with the price.</p>
+            <p className={styles.hint}>{t.emailHint}</p>
           </div>
         </div>
 
         <div style={{ marginTop: 26 }}>
           <div className={styles.reviewRow}>
-            <span style={{ color: 'var(--ink-muted)' }}>Silhouette</span>
-            <span className={styles.reviewValue}>{chosen?.name ?? 'Not chosen'}</span>
+            <span style={{ color: 'var(--ink-muted)' }}>{t.rowSilhouette}</span>
+            <span className={styles.reviewValue}>{chosen?.name ?? t.notChosen}</span>
           </div>
           <div className={styles.reviewRow}>
-            <span style={{ color: 'var(--ink-muted)' }}>Cloth</span>
-            <span className={styles.reviewValue}>{fabric.trim() || 'Not written yet'}</span>
+            <span style={{ color: 'var(--ink-muted)' }}>{t.rowCloth}</span>
+            <span className={styles.reviewValue}>{fabric.trim() || t.notWritten}</span>
           </div>
           <div className={styles.reviewRow}>
-            <span style={{ color: 'var(--ink-muted)' }}>Measurements</span>
+            <span style={{ color: 'var(--ink-muted)' }}>{t.rowMeasurements}</span>
             <span className={styles.reviewValue}>
-              {taken} of {allZones.length} taken
+              {t.taken(taken, allZones.length)}
             </span>
           </div>
           <div className={styles.reviewRow}>
-            <span style={{ color: 'var(--ink-muted)' }}>References</span>
+            <span style={{ color: 'var(--ink-muted)' }}>{t.rowReferences}</span>
             <span className={styles.reviewValue}>
-              {files.length === 0 ? 'None sent' : `${files.length} file${files.length > 1 ? 's' : ''}`}
+              {files.length === 0 ? t.noneSent : t.files(files.length)}
             </span>
           </div>
           <div className={styles.reviewRow}>
-            <span style={{ color: 'var(--ink-muted)' }}>Starting figure</span>
+            <span style={{ color: 'var(--ink-muted)' }}>{t.rowFigure}</span>
             <span className={`${styles.reviewValue} ${styles.estimate}`}>
-              {chosen?.estimate ? `from ${money(chosen.estimate)}` : '—'}
+              {chosen?.estimate ? t.from(money(chosen.estimate)) : '—'}
             </span>
           </div>
         </div>
 
         <div className={styles.submit}>
           <Button onClick={send} disabled={!ready || sending || sent}>
-            {sent ? 'Sent' : sending ? 'Sending…' : 'Request a quote'}
+            {sent ? t.sent : sending ? t.sending : t.request}
           </Button>
 
           {!sent && !complete && (
             <p className={styles.submitNote}>
-              {allZones.length - taken} measurement
-              {allZones.length - taken === 1 ? '' : 's'} still to take. The atelier cannot
-              draw a pattern from a partial sheet.
+              {t.stillToTake(allZones.length - taken)}
             </p>
           )}
 
           {!sent && complete && !ready && (
             <p className={styles.submitNote}>
-              Your name, an email the tailor can reply to, and the cloth you have chosen.
+              {t.stillNeeded}
             </p>
           )}
 
@@ -477,37 +465,32 @@ export function CommissionFlow({
 
           {sent ? (
             <p className={styles.submitNote}>
-              Your brief is with the atelier. A tailor reads every commission by hand, so
-              the price comes by email — usually within two working days. Nothing is
-              charged, and nothing is cut, until you have agreed the figure.
+              {t.sentNote}
             </p>
           ) : (
             <p className={styles.submitNote}>
-              Sending this asks for a price. It is not an order, and nothing is charged
-              now.
+              {t.notOrder}
             </p>
           )}
         </div>
       </div>
 
       <div>
-        <div className={styles.label}>Your note</div>
-        <p className={styles.noteEcho}>{notes.trim() || 'No note written yet.'}</p>
+        <div className={styles.label}>{t.yourNote}</div>
+        <p className={styles.noteEcho}>{notes.trim() || t.noNote}</p>
       </div>
     </div>,
   ];
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Design your own</h1>
+      <h1 className={styles.title}>{t.title}</h1>
       <p className={styles.lede}>
-        A commission, not a configurator. You give the atelier a shape, a cloth, a note
-        and a set of measurements; a tailor reads it and writes back with a price. One
-        garment is made from that brief and no version of it enters a collection.
+        {t.lede}
       </p>
 
-      <nav className={styles.steps} aria-label="Commission steps">
-        {COMMISSION_STEPS.map((label, i) => (
+      <nav className={styles.steps} aria-label={t.stepsAria}>
+        {t.steps.map((label, i) => (
           <button
             key={label}
             type="button"
@@ -544,9 +527,9 @@ export function CommissionFlow({
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
         >
-          Back
+          {t.prev}
         </button>
-        {step < COMMISSION_STEPS.length - 1 && (
+        {step < t.steps.length - 1 && (
           <button
             type="button"
             onClick={() => setStep((s) => Math.min(furthest, s + 1))}
@@ -559,7 +542,7 @@ export function CommissionFlow({
               opacity: step >= furthest ? 0.4 : 1,
             }}
           >
-            {silhouette ? 'Continue' : 'Choose a silhouette to continue'}
+            {silhouette ? t.next : t.chooseFirst}
           </button>
         )}
       </div>

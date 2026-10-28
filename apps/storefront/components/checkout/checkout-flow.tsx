@@ -23,7 +23,9 @@ import {
   type ApiShippingOption,
 } from '@/lib/checkout';
 import { Approx, ApproxNote } from '@/lib/currency';
+import { shopText } from '@/lib/i18n-shop';
 import { formatMoney } from '@/lib/medusa';
+import { useLang } from '@/lib/use-lang';
 import styles from '@/app/checkout/checkout.module.css';
 
 /* Checkout, in three sections: where it goes, how it travels, and paying for
@@ -53,12 +55,6 @@ const REQUIRED: (keyof Details)[] = [
   'email', 'firstName', 'lastName', 'address1', 'postcode', 'city', 'country', 'phone',
 ];
 
-const LABELS: Record<keyof Details, string> = {
-  email: 'Email', firstName: 'First name', lastName: 'Last name',
-  address1: 'Address', address2: 'Apartment, floor (optional)',
-  postcode: 'Postcode', city: 'City', country: 'Country',
-  phone: 'Telephone',
-};
 
 export function CheckoutFlow({
   cartId,
@@ -78,6 +74,8 @@ export function CheckoutFlow({
   allowRegionChange?: boolean;
 }) {
   const router = useRouter();
+  const lang = useLang();
+  const t = shopText(lang).checkout;
   const [cart, setCart] = useState<ApiCheckoutCart | null>(null);
   const [options, setOptions] = useState<ApiShippingOption[]>([]);
   const [session, setSession] = useState<ApiPaymentSession | null>(null);
@@ -131,13 +129,13 @@ export function CheckoutFlow({
   const errors = useMemo(() => {
     const out: Partial<Record<keyof Details, string>> = {};
     for (const key of REQUIRED) {
-      if (!details[key].trim()) out[key] = 'Required';
+      if (!details[key].trim()) out[key] = t.required;
     }
     if (details.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) {
-      out.email = 'Check this address';
+      out.email = t.checkAddress;
     }
     return out;
-  }, [details]);
+  }, [details, t]);
 
   const detailsValid = Object.keys(errors).length === 0;
   const money = (amount: number) => formatMoney(amount, cart?.currency_code ?? 'chf');
@@ -201,7 +199,7 @@ export function CheckoutFlow({
         setPromoInput('');
         await refreshPayment(updated);
       } else {
-        setPromoProblem('That code is not valid for this order.');
+        setPromoProblem(t.invalidCode);
       }
     } catch (error) {
       setPromoProblem((error as Error).message);
@@ -253,7 +251,7 @@ export function CheckoutFlow({
         providers.find((p) => p.id === 'pp_stripe_stripe')?.id ??
         providers.find((p) => !p.id.includes('stripe'))?.id;
       if (!preferred) {
-        throw new Error('The house cannot take payment on this region yet.');
+        throw new Error(t.noPayment);
       }
       setSession(await startPayment(cart, preferred));
       setOpen(2);
@@ -269,12 +267,12 @@ export function CheckoutFlow({
     const result = await completeCart(cartId);
     if (result.type !== 'order') {
       throw new Error(
-        result.error?.message ?? 'The order could not be placed. Nothing has been charged.',
+        result.error?.message ?? t.notPlaced,
       );
     }
     onOrdered?.();
     router.push(`/order/${result.order.id}`);
-  }, [cartId, onOrdered, router]);
+  }, [cartId, onOrdered, router, t]);
 
   /* A card stays on this page to pay; TWINT, a bank or a wallet sends the
      client away to confirm and back again — Stripe's `return_url` is this
@@ -303,7 +301,7 @@ export function CheckoutFlow({
           return;
         }
         setProblem(
-          retrieved?.error?.message ?? 'The payment was not completed. Nothing has been charged.',
+          retrieved?.error?.message ?? t.notCompleted,
         );
       } catch (error) {
         setProblem((error as Error).message);
@@ -314,7 +312,7 @@ export function CheckoutFlow({
   }, [placeOrder]);
 
   if (resuming) {
-    return <p className={styles.answer}>Confirming your payment…</p>;
+    return <p className={styles.answer}>{t.confirming}</p>;
   }
 
   if (problem && !cart) {
@@ -332,7 +330,7 @@ export function CheckoutFlow({
           }}
         >
           <label className={styles.label} htmlFor="co-promo">
-            Promo code
+            {t.promo}
           </label>
           <div className={styles.promoRow}>
             <input
@@ -350,7 +348,7 @@ export function CheckoutFlow({
               className={styles.edit}
               disabled={working || !promoInput.trim()}
             >
-              Apply
+              {t.apply}
             </button>
           </div>
         </form>
@@ -368,7 +366,7 @@ export function CheckoutFlow({
   const field = (key: keyof Details, type = 'text', full = false) => (
     <div className={`${styles.field}${full ? ` ${styles.full}` : ''}`}>
       <label className={styles.label} htmlFor={`co-${key}`}>
-        {LABELS[key]}
+        {t.labels[key]}
       </label>
       <input
         id={`co-${key}`}
@@ -402,11 +400,11 @@ export function CheckoutFlow({
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionNum}>01</span> Where it goes
+              <span className={styles.sectionNum}>01</span> {t.s1}
             </h2>
             {open !== 0 && detailsValid && (
               <button type="button" className={styles.edit} onClick={() => setOpen(0)}>
-                Edit
+                {t.edit}
               </button>
             )}
           </div>
@@ -422,7 +420,7 @@ export function CheckoutFlow({
                 {field('postcode')}
                 {field('city')}
                 <div className={styles.field}>
-                  <label className={styles.label} htmlFor="co-country">Country</label>
+                  <label className={styles.label} htmlFor="co-country">{t.labels.country}</label>
                   <select
                     id="co-country"
                     className={styles.select}
@@ -440,12 +438,11 @@ export function CheckoutFlow({
                 {field('phone', 'tel')}
               </div>
               <p className={styles.answer}>
-                A telephone number is required by the courier for customs clearance.
-                It is not used for anything else.
+                {t.phoneNote}
               </p>
               <div className={styles.continue}>
                 <Button onClick={saveDetails} disabled={working}>
-                  {working ? 'Saving…' : 'Continue to shipping'}
+                  {working ? t.saving : t.toShipping}
                 </Button>
               </div>
             </div>
@@ -466,18 +463,18 @@ export function CheckoutFlow({
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionNum}>02</span> How it travels
+              <span className={styles.sectionNum}>02</span> {t.s2}
             </h2>
             {open !== 1 && open > 1 && (
               <button type="button" className={styles.edit} onClick={() => setOpen(1)}>
-                Edit
+                {t.edit}
               </button>
             )}
           </div>
 
           {open === 1 ? (
             <div className={styles.body}>
-              <div className={styles.choices} role="radiogroup" aria-label="Shipping">
+              <div className={styles.choices} role="radiogroup" aria-label={t.shipping}>
                 {options.map((option) => (
                   <button
                     key={option.id}
@@ -493,20 +490,19 @@ export function CheckoutFlow({
                       <span className={styles.choiceNote}>{option.type?.description}</span>
                     </span>
                     <span className={styles.choicePrice}>
-                      {option.amount === 0 ? 'Included' : money(option.amount)}
+                      {option.amount === 0 ? t.included : money(option.amount)}
                     </span>
                   </button>
                 ))}
                 {options.length === 0 && (
                   <p className={styles.answer}>
-                    The house does not ship to that address yet. Write to
-                    hello@bylinsilk.com and the atelier will arrange it.
+                    {t.noShip}
                   </p>
                 )}
               </div>
               <div className={styles.continue}>
                 <Button onClick={toPayment} disabled={!chosenShipping || working}>
-                  {working ? 'One moment…' : 'Continue to payment'}
+                  {working ? t.moment : t.toPayment}
                 </Button>
               </div>
             </div>
@@ -515,7 +511,7 @@ export function CheckoutFlow({
             chosenShipping && (
               <p className={styles.answer}>
                 {chosenShipping.name} —{' '}
-                {chosenShipping.amount === 0 ? 'included' : money(chosenShipping.amount)}
+                {chosenShipping.amount === 0 ? t.includedLower : money(chosenShipping.amount)}
               </p>
             )
           )}
@@ -525,7 +521,7 @@ export function CheckoutFlow({
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 className={styles.sectionTitle}>
-              <span className={styles.sectionNum}>03</span> Payment
+              <span className={styles.sectionNum}>03</span> {t.s3}
             </h2>
           </div>
 
@@ -535,7 +531,7 @@ export function CheckoutFlow({
                 {promoCodes.length === 0 ? (
                   promoForm
                 ) : (
-                  <p className={styles.answer}>Code {promoCodes.join(', ')} applied.</p>
+                  <p className={styles.answer}>{t.codeApplied(promoCodes.join(', '))}</p>
                 )}
                 {promoProblem && <span className={styles.fieldError}>{promoProblem}</span>}
               </div>
@@ -554,7 +550,7 @@ export function CheckoutFlow({
 
       {/* ---- What is being paid for ---- */}
       <aside className={styles.aside}>
-        <div className={styles.asideHead}>Your order</div>
+        <div className={styles.asideHead}>{t.yourOrder}</div>
 
         <div className={styles.asideLines}>
           {(cart.items ?? []).map((item) => (
@@ -585,14 +581,14 @@ export function CheckoutFlow({
         <div className={styles.promo}>
           {promoCodes.map((code) => (
             <div key={code} className={styles.promoApplied}>
-              <span>Code {code}</span>
+              <span>{t.code(code)}</span>
               <button
                 type="button"
                 className={styles.edit}
                 onClick={() => dropPromo(code)}
                 disabled={working}
               >
-                Remove
+                {t.remove}
               </button>
             </div>
           ))}
@@ -604,25 +600,25 @@ export function CheckoutFlow({
 
         <div className={styles.totals}>
           <div className={styles.totalRow}>
-            <span>Subtotal</span>
+            <span>{t.subtotal}</span>
             <span className={styles.totalValue}>
               {money(cart.original_item_total ?? cart.item_total)}
             </span>
           </div>
           {discount > 0 && (
             <div className={styles.totalRow}>
-              <span>Discount</span>
+              <span>{t.discount}</span>
               <span className={styles.totalValue}>−{money(discount)}</span>
             </div>
           )}
           <div className={styles.totalRow}>
-            <span>Shipping{chosenShipping ? ` — ${chosenShipping.name}` : ''}</span>
+            <span>{t.shipping}{chosenShipping ? ` — ${chosenShipping.name}` : ''}</span>
             <span className={styles.totalValue}>
-              {cart.shipping_total === 0 ? 'Included' : money(cart.shipping_total)}
+              {cart.shipping_total === 0 ? t.included : money(cart.shipping_total)}
             </span>
           </div>
           <div className={`${styles.totalRow} ${styles.grand}`}>
-            <span>Total</span>
+            <span>{t.total}</span>
             <span className={styles.totalValue}>{money(cart.total)}</span>
           </div>
           <Approx
@@ -634,8 +630,7 @@ export function CheckoutFlow({
         <ApproxNote className={styles.reassure} />
 
         <p className={styles.reassure}>
-          Nothing is cut until the atelier has confirmed your measurement sheet in
-          writing.
+          {t.reassure}
         </p>
       </aside>
     </div>

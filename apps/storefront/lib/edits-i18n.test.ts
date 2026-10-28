@@ -120,3 +120,13 @@ describe('language suggestion', () => {
     expect(suggestLocale('en-GB')).toBeNull();
   });
 });
+
+describe('German-market copy', () => {
+  it('leaves text handed to a message exactly as it was', async () => {
+    const { accountText } = await import('./i18n-account');
+    const note = accountText('de').verify.bannerNote('gross@example.com');
+    expect(note).toContain('gross@example.com');
+    expect(note).not.toContain('groß@');
+    expect(accountText('de').orders.status.completed).toBe('Abgeschlossen');
+  });
+});

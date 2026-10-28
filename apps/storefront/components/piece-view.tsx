@@ -16,8 +16,7 @@ import { altIn, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { Approx } from '@/lib/currency';
 import { getVariantId } from '@/lib/medusa';
 
-/* One piece page, in any language. The order panel and the measurement sheet
-   are still English in every language. */
+/* One piece page, in any language, order panel and measurement sheet included. */
 export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
   const t = pieceText(lang);
   const name = pieceName(piece.name, lang);
@@ -65,20 +64,20 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
       <TrackEvent name="piece_view" data={{ piece: piece.id, cloth }} />
       <JsonLd
         data={breadcrumbLd([
-          { name: t.collection, path: '/collection' },
-          { name: label, path: `/collection/${piece.group}` },
+          { name: t.collection, path: to('/collection') },
+          { name: label, path: to(`/collection/${piece.group}`) },
           { name, path: here },
         ])}
       />
       <p className={styles.crumb}>
         {orderable ? (
           <>
-            <Link href="/collection" style={{ color: 'var(--ink-muted)' }}>
+            <Link href={to('/collection')} style={{ color: 'var(--ink-muted)' }}>
               {t.collection}
             </Link>{' '}
             —{' '}
             <Link
-              href={`/collection/${piece.group}`}
+              href={to(`/collection/${piece.group}`)}
               style={{ color: 'var(--ink-muted)' }}
             >
               {label}
@@ -128,13 +127,10 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             </div>
           </Reveal>
 
-          {/* Still English in every language, and marked so. */}
-          <div lang={lang === 'en' ? undefined : 'en'}>
-            <PieceOrderPanel
-              piece={piece}
-              variantId={orderable ? await getVariantId(piece.id) : null}
-            />
-          </div>
+          <PieceOrderPanel
+            piece={piece}
+            variantId={orderable ? await getVariantId(piece.id) : null}
+          />
         </div>
       </div>
 
@@ -155,7 +151,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             <div>
               <dt>{t.factDelivery}</dt>
               <dd>
-                {t.deliveryLine} <Link href="/care/shipping">{t.shippingLink}</Link>
+                {t.deliveryLine} <Link href={to('/care/shipping')}>{t.shippingLink}</Link>
               </dd>
             </div>
           </dl>
@@ -167,7 +163,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
             <li>{t.howList[0]}</li>
             <li>
               {t.measuringPre}
-              <Link href="/care/measuring">{t.measuringLink}</Link>
+              <Link href={to('/care/measuring')}>{t.measuringLink}</Link>
               {t.measuringPost}
             </li>
             <li>{t.howList[2]}</li>

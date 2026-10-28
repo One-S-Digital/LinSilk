@@ -55,6 +55,9 @@ export const RANGES: Record<string, [number, number]> = {
   lengthRobe: [30, 180],
 };
 
+/** The usual range for a measurement, in centimetres, or undefined. */
+export const rangeOf = (key: string): [number, number] | undefined => RANGES[key];
+
 export function validate(key: string, cm: number, unit: Unit): string | null {
   const range = RANGES[key];
   if (!range) return null;

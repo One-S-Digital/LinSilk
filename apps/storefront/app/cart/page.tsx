@@ -5,11 +5,18 @@ import { ButtonLink } from '@/components/ui/button';
 import { Approx, ApproxNote } from '@/lib/currency';
 import { useCart } from '@/lib/cart';
 import { formatMoney } from '@/lib/medusa';
+import { fabricLabel } from '@/lib/i18n-order';
+import { localHref } from '@/lib/locale-routes';
 import { formatValue } from '@/lib/measurements';
+import { materialIn, shopText } from '@/lib/i18n-shop';
+import { pieceName } from '@/lib/piece-names';
+import { useLang } from '@/lib/use-lang';
 import styles from './cart.module.css';
 
 export default function CartPage() {
   const { lines, ready, remove, subtotal, currency } = useCart();
+  const lang = useLang();
+  const t = shopText(lang).cart;
   /* The cart's own currency, not the catalogue's CHF: checkout can move this
      cart to another region, and a client coming back here afterwards must
      see the figures it is actually holding the pieces at. */
@@ -17,23 +24,22 @@ export default function CartPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Your cart</h1>
+      <h1 className={styles.title}>{t.title}</h1>
       <p className={styles.lede}>
-        Nothing is cut until the atelier has read your sheet and written back. An
-        order holds the design against the season’s capped run in the meantime.
+        {t.lede}
       </p>
 
       {/* Held until the stored cart is read, so the page never flashes an empty
           state at someone who has three pieces ordered. */}
       {!ready ? null : lines.length === 0 ? (
         <div className={styles.empty}>
-          <p className={styles.emptyText}>Your cart is empty.</p>
+          <p className={styles.emptyText}>{t.empty}</p>
           <div className={styles.emptyActions}>
-            <ButtonLink href="/collection" variant="outline">
-              Enter the collection
+            <ButtonLink href={localHref(lang, '/collection')} variant="outline">
+              {t.enter}
             </ButtonLink>
-            <ButtonLink href="/design" variant="solid">
-              Design an outfit
+            <ButtonLink href={localHref(lang, '/design')} variant="solid">
+              {t.design}
             </ButtonLink>
           </div>
         </div>
@@ -46,29 +52,29 @@ export default function CartPage() {
                 <article key={line.id} className={styles.line}>
                   <ShotFrame
                     src={line.thumbnail}
-                    alt={line.name}
+                    alt={pieceName(line.name, lang)}
                     note={line.thumbnail ? undefined : line.shot}
                     weave={line.group === 'men' ? 'sand' : 'bone'}
                     ratio="3 / 4"
                   />
 
                   <div>
-                    <h2 className={styles.lineName}>{line.name}</h2>
-                    <p className={styles.lineMaterial}>{line.material}</p>
+                    <h2 className={styles.lineName}>{pieceName(line.name, lang)}</h2>
+                    <p className={styles.lineMaterial}>{materialIn(line.material, lang)}</p>
 
                     <div className={styles.brief}>
                       <div className={styles.briefRow}>
-                        <span className={styles.briefKey}>Cloth</span>
-                        <span>{line.fabricName}</span>
+                        <span className={styles.briefKey}>{t.cloth}</span>
+                        <span>{fabricLabel(line.fabricKey, line.fabricName, lang)}</span>
                       </div>
                       <div className={styles.briefRow}>
-                        <span className={styles.briefKey}>Sheet</span>
+                        <span className={styles.briefKey}>{t.sheet}</span>
                         <span>
-                          {taken} of {line.zoneCount} taken
+                          {t.taken(taken, line.zoneCount)}
                           {/* A trouser or a skirt is not asked for a chest. */}
                           {typeof line.measurements.bust === 'number' && (
                             <>
-                              {' · '}chest {formatValue(line.measurements.bust, line.unit)} {line.unit}
+                              {' · '}{t.chest} {formatValue(line.measurements.bust, line.unit)} {line.unit}
                             </>
                           )}
                         </span>
@@ -85,7 +91,7 @@ export default function CartPage() {
                       className={styles.remove}
                       onClick={() => remove(line.id)}
                     >
-                      Remove
+                      {t.remove}
                     </button>
                   </div>
                 </article>
@@ -95,23 +101,22 @@ export default function CartPage() {
 
           <div className={styles.summary}>
             <p className={styles.terms}>
-              Prices are in Swiss francs and include duty within Switzerland and the
-              EU. A piece takes two to four weeks from the confirmed sheet.
+              {t.terms}
             </p>
 
             <div className={styles.totals}>
               <div className={styles.totalRow}>
                 <span>
-                  {lines.length} {lines.length === 1 ? 'piece' : 'pieces'}
+                  {lines.length} {lines.length === 1 ? t.piece : t.pieces}
                 </span>
                 <span className={styles.totalValue}>{money(subtotal)}</span>
               </div>
               <div className={styles.totalRow}>
-                <span>Shipping</span>
-                <span className={styles.totalValue}>Calculated at checkout</span>
+                <span>{t.shipping}</span>
+                <span className={styles.totalValue}>{t.atCheckout}</span>
               </div>
               <div className={`${styles.totalRow} ${styles.grand}`}>
-                <span>Total</span>
+                <span>{t.total}</span>
                 <span className={styles.totalValue}>{money(subtotal)}</span>
               </div>
               <Approx chf={subtotal} currency={currency} className={styles.approxTotal} />
@@ -119,13 +124,12 @@ export default function CartPage() {
 
               <div className={styles.checkout}>
                 <ButtonLink href="/checkout" block>
-                  Continue to checkout
+                  {t.toCheckout}
                 </ButtonLink>
               </div>
 
               <p className={styles.estimateNotice}>
-                Every figure here is the price of the piece. A commission is quoted
-                separately: a tailor reads the brief and writes to you with its price.
+                {t.estimate}
               </p>
             </div>
           </div>

@@ -7,13 +7,17 @@ import {
   MadeToMeasureTranslated,
   QuestionsTranslated,
 } from '@/components/pages/translated';
+import { ContactView, MeasuringView, ReturnsView, ShippingView } from '@/components/pages/care-views';
+import { CollectionGroupView, CollectionHubView } from '@/components/pages/collection-views';
+import { DesignView } from '@/components/pages/design-view';
 import { PieceView } from '@/components/piece-view';
-import { collectionBySlug, getPieces, isOrderable, money, type Piece } from '@/lib/catalog';
+import { collectionBySlug, currentCollection, getPieces, isOrderable, money, type Piece } from '@/lib/catalog';
 import { editForSlug, fromIn } from '@/lib/edits-i18n';
 import { COLOURS, priceRange } from '@/lib/house';
 import { isLocale, type Locale } from '@/lib/i18n';
 import { localeMetadata } from '@/lib/locale-meta';
 import { enPathOf, familyOf, PIECE_SEGMENT } from '@/lib/locale-routes';
+import { pagesText } from '@/lib/i18n-pages';
 import { aboutCopy, bankCopy, clothCopy, mtmCopy } from '@/lib/pages-i18n';
 import { localSlug, pieceAlternates, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { pieceName } from '@/lib/piece-names';
@@ -89,6 +93,27 @@ export async function generateMetadata(props: PageProps<'/[locale]/[...path]'>):
       const c = bankCopy(locale);
       return localeMetadata(locale, enPath, c.title, c.description);
     }
+    case '/care/shipping':
+      return localeMetadata(locale, enPath, pagesText(locale).shipping.title, pagesText(locale).shipping.description);
+    case '/care/returns':
+      return localeMetadata(locale, enPath, pagesText(locale).returns.title, pagesText(locale).returns.description);
+    case '/care/measuring':
+      return localeMetadata(locale, enPath, pagesText(locale).measuring.metaTitle, pagesText(locale).measuring.description);
+    case '/contact':
+      return localeMetadata(locale, enPath, pagesText(locale).contact.metaTitle, pagesText(locale).contact.story.lead);
+    case '/design':
+      return localeMetadata(locale, enPath, pagesText(locale).design.title, pagesText(locale).design.description);
+    case '/collection': {
+      const open = (await currentCollection())?.title;
+      const c = pagesText(locale).collection;
+      return localeMetadata(locale, enPath, c.title, c.description(open ? `${open}. ` : ''));
+    }
+    case '/collection/women':
+    case '/collection/men': {
+      const g = pagesText(locale).group;
+      const women = enPath === '/collection/women';
+      return localeMetadata(locale, enPath, women ? g.titleWomen : g.titleMen, women ? g.descWomen : g.descMen);
+    }
     default:
       return {};
   }
@@ -110,6 +135,22 @@ export default async function LocalePage(props: PageProps<'/[locale]/[...path]'>
       return <ClothTranslated locale={t.locale} />;
     case '/care/questions':
       return <QuestionsTranslated locale={t.locale} />;
+    case '/care/shipping':
+      return <ShippingView lang={t.locale} />;
+    case '/care/returns':
+      return <ReturnsView lang={t.locale} />;
+    case '/care/measuring':
+      return <MeasuringView lang={t.locale} />;
+    case '/contact':
+      return <ContactView lang={t.locale} />;
+    case '/design':
+      return <DesignView lang={t.locale} />;
+    case '/collection':
+      return <CollectionHubView lang={t.locale} />;
+    case '/collection/women':
+      return <CollectionGroupView group="women" lang={t.locale} />;
+    case '/collection/men':
+      return <CollectionGroupView group="men" lang={t.locale} />;
     default:
       notFound();
   }

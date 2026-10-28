@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { accountText } from '@/lib/i18n-account';
+import { serverLang } from '@/lib/server-lang';
+import { localHref } from '@/lib/locale-routes';
 import { DocPage } from '@/components/doc-page';
 import { Button, ButtonLink } from '@/components/ui/button';
 import { AuthForms } from '@/components/account/auth-forms';
@@ -8,25 +11,25 @@ import { getCustomer, isEmailVerified } from '@/lib/session';
 import { VerifyEmailBanner } from '@/components/account/verify-email-banner';
 import styles from './account.module.css';
 
-export const metadata: Metadata = {
-  title: 'Account',
-  description:
-    'Your orders, your saved measurement profile, and the patterns the atelier holds for you.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = accountText(await serverLang()).home;
+  return { title: t.metaTitle, description: t.metaDescription };
+}
 
 export default async function AccountPage(props: PageProps<'/account'>) {
+  const lang = await serverLang();
+  const a = accountText(lang);
+  const t = a.home;
   const customer = await getCustomer();
   const params = await props.searchParams;
 
   if (!customer) {
     return (
       <DocPage
-        eyebrow="The house"
-        title="Your account"
+        eyebrow={a.eyebrow}
+        title={t.title}
         lead={
-          params.closed
-            ? 'Your account is closed. Anything already ordered stays reachable the way a guest’s does, from the link in its confirmation email.'
-            : 'An account holds the fifteen measurements so you never type them twice, keeps every order and its production status, and records the paper patterns the atelier has drawn for you.'
+          params.closed ? t.closed : t.lead
         }
       >
         <AuthForms />
@@ -40,17 +43,17 @@ export default async function AccountPage(props: PageProps<'/account'>) {
 
   return (
     <DocPage
-      eyebrow="The house"
-      title={`Welcome back${customer.first_name ? `, ${customer.first_name}` : ''}`}
+      eyebrow={a.eyebrow}
+      title={`${t.welcome}${customer.first_name ? `, ${customer.first_name}` : ''}`}
       lead={customer.email}
       foot={
         <>
-          <ButtonLink href="/collection" variant="outline">
-            Enter the collection
+          <ButtonLink href={localHref(lang, '/collection')} variant="outline">
+            {t.enter}
           </ButtonLink>
           <form action={logoutAction}>
             <Button type="submit" variant="solid">
-              Sign out
+              {t.signOut}
             </Button>
           </form>
         </>
@@ -59,31 +62,30 @@ export default async function AccountPage(props: PageProps<'/account'>) {
       {!verified && <VerifyEmailBanner email={customer.email} />}
       <div className={styles.grid}>
         <div className={styles.card}>
-          <span className={styles.cardTitle}>Your measurements</span>
+          <span className={styles.cardTitle}>{t.measurements}</span>
           <span className={styles.cardNote}>
-            {taken > 0 ? `${taken} of 15 saved.` : 'Nothing saved yet.'} Used on every piece page
-            and in Design Your Own, so it is never typed twice.
+            {t.saved(taken)} {t.measurementsNote}
           </span>
           <ButtonLink href="/account/measurements" variant="rule">
-            {taken > 0 ? 'Review your sheet' : 'Save your sheet'}
+            {taken > 0 ? t.review : t.save}
           </ButtonLink>
         </div>
         <div className={styles.card}>
-          <span className={styles.cardTitle}>Your orders</span>
+          <span className={styles.cardTitle}>{t.orders}</span>
           <span className={styles.cardNote}>
-            Every order and commission, and its confirmed sheet.
+            {t.ordersNote}
           </span>
           <ButtonLink href="/account/orders" variant="rule">
-            View orders
+            {t.viewOrders}
           </ButtonLink>
         </div>
         <div className={styles.card}>
-          <span className={styles.cardTitle}>Settings</span>
+          <span className={styles.cardTitle}>{t.settings}</span>
           <span className={styles.cardNote}>
-            Your name and phone, your password, your saved addresses.
+            {t.settingsNote}
           </span>
           <ButtonLink href="/account/settings" variant="rule">
-            Manage settings
+            {t.manage}
           </ButtonLink>
         </div>
       </div>

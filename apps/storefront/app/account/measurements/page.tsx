@@ -1,16 +1,20 @@
 import type { Metadata } from 'next';
+import { accountText } from '@/lib/i18n-account';
+import { serverLang } from '@/lib/server-lang';
 import { redirect } from 'next/navigation';
 import { DocPage } from '@/components/doc-page';
 import { MeasurementProfile } from '@/components/account/measurement-profile';
 import { fromLineItemMetadata } from '@/lib/measurements';
 import { getCustomer } from '@/lib/session';
 
-export const metadata: Metadata = {
-  title: 'Your measurements',
-  description: 'The fifteen-point sheet the atelier keeps for you.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = accountText(await serverLang()).measures;
+  return { title: t.metaTitle, description: t.metaDescription };
+}
 
 export default async function MeasurementsPage() {
+  const a = accountText(await serverLang());
+  const t = a.measures;
   const customer = await getCustomer();
   if (!customer) redirect('/account');
 
@@ -18,9 +22,9 @@ export default async function MeasurementsPage() {
 
   return (
     <DocPage
-      eyebrow="Your account"
-      title="Your measurements"
-      lead="Saved here once, so you never type them again — from a piece page, from Design Your Own, or here."
+      eyebrow={a.yourAccount}
+      title={t.metaTitle}
+      lead={t.lead}
     >
       <MeasurementProfile initialValues={values} initialUnit={unit} />
     </DocPage>

@@ -11,7 +11,10 @@ import { Button } from '@/components/ui/button';
 import { useCart } from '@/lib/cart';
 import { bodyZonesFor, garmentZonesFor, isOrderable, type Piece } from '@/lib/catalog';
 import { isComplete, takenCount, type Measurements, type Unit } from '@/lib/measurements';
+import { orderText, swatchLabelIn } from '@/lib/i18n-order';
+import { localHref } from '@/lib/locale-routes';
 import { CLOTH_NAME, findSwatch, swatchLabel } from '@/lib/swatches';
+import { useLang } from '@/lib/use-lang';
 import styles from '@/app/piece/[id]/piece.module.css';
 
 /* Ordering runs in two steps, colour and then measurements, so the sheet is
@@ -30,6 +33,8 @@ export function PieceOrderPanel({
   variantId: string | null;
 }) {
   const router = useRouter();
+  const lang = useLang();
+  const t = orderText(lang).panel;
   const { add } = useCart();
   const [step, setStep] = useState<Step>('start');
   const [swatchKey, setSwatchKey] = useState<string | null>(null);
@@ -98,25 +103,23 @@ export function PieceOrderPanel({
     return (
       <div className={styles.sheetWrap}>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 'clamp(20px,2.2vw,26px)' }}>
-          Archived
+          {t.archivedH}
         </h2>
         <p className={styles.reserveNote} style={{ maxWidth: '52ch' }}>
-          This design closed with {piece.collectionTitle || 'its season'} and is not
-          made again. The pattern is kept at the bench, and the record of the cloth stays
-          with the piece — but nothing from a closed collection is cut a second time.
+          {t.archived(piece.collectionTitle || t.itsSeason)}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 28 }}>
           <Link
-            href="/collection"
+            href={localHref(lang, '/collection')}
             style={{ borderBottom: '1px solid var(--gold-60)', paddingBottom: 3, fontSize: 'var(--t-sm-tight)' }}
           >
-            See what is open now
+            {t.seeOpen}
           </Link>
           <Link
-            href="/design"
+            href={localHref(lang, '/design')}
             style={{ borderBottom: '1px solid var(--gold-60)', paddingBottom: 3, fontSize: 'var(--t-sm-tight)' }}
           >
-            Commission something like it
+            {t.commission}
           </Link>
         </div>
       </div>
@@ -154,32 +157,28 @@ export function PieceOrderPanel({
   if (!cloth) {
     return (
       <div className={styles.sheetWrap}>
-        <p className={styles.blocked}>
-          The cloth for this piece has not been confirmed yet, so it cannot be ordered
-          just now. Write to hello@bylinsilk.com and the atelier will tell you what it is
-          cut in.
-        </p>
+        <p className={styles.blocked}>{t.noCloth}</p>
       </div>
     );
   }
 
-  const clothName = CLOTH_NAME[cloth];
+  const clothName = orderText(lang).cloth[cloth] ?? CLOTH_NAME[cloth];
   const measuring = step === 'measure';
 
   return (
     <>
-      <ol className={styles.steps} aria-label="Ordering steps">
+      <ol className={styles.steps} aria-label={t.steps}>
         <li
           data-state={swatch ? 'done' : 'current'}
           aria-current={swatch ? undefined : 'step'}
         >
-          01 Colour
+          {t.stepColour}
         </li>
         <li
           data-state={measuring ? 'current' : 'todo'}
           aria-current={measuring ? 'step' : undefined}
         >
-          02 Measurements
+          {t.stepMeasure}
         </li>
       </ol>
 
@@ -187,11 +186,10 @@ export function PieceOrderPanel({
         <div className={styles.colourStart}>
           <div className={styles.clothLabel}>{clothName}</div>
           <p className={styles.reserveNote}>
-            This piece is made in {cloth}. Choose your colour from the {cloth} swatches,
-            then take your measurements.
+            {t.madeIn(lang === 'en' ? cloth : clothName)}
           </p>
           <div className={styles.colourAction}>
-            <Button onClick={(e) => openColours(e.currentTarget)}>Select colour</Button>
+            <Button onClick={(e) => openColours(e.currentTarget)}>{t.selectColour}</Button>
           </div>
         </div>
       )}
@@ -202,13 +200,13 @@ export function PieceOrderPanel({
             <SwatchTile swatch={swatch} />
           </div>
           <div>
-            <div className={styles.chosenName}>{swatchLabel(swatch)}</div>
+            <div className={styles.chosenName}>{swatchLabelIn(swatch, lang)}</div>
             <button
               type="button"
               className={styles.linkButton}
               onClick={(e) => openColours(e.currentTarget)}
             >
-              Change colour
+              {t.changeColour}
             </button>
           </div>
         </div>
@@ -218,7 +216,7 @@ export function PieceOrderPanel({
         <SwatchDialog
           cloth={cloth}
           value={swatchKey}
-          confirmLabel={measuring ? 'Use this colour' : 'Continue to measurements'}
+          confirmLabel={measuring ? t.useColour : t.toMeasure}
           onConfirm={chooseColour}
           onCancel={closeColours}
         />
@@ -235,30 +233,22 @@ export function PieceOrderPanel({
 
           <div className={styles.reserve}>
             <Button onClick={reserve} disabled={!complete || holding || !variantId || !swatch}>
-              {holding ? 'One moment…' : 'Continue to checkout'}
+              {holding ? t.moment : t.checkout}
             </Button>
 
             {refusal && <p className={styles.blocked}>{refusal}</p>}
 
             {!variantId && (
-              <p className={styles.blocked}>
-                The house cannot be reached just now, so nothing can be ordered. Write to
-                hello@bylinsilk.com and the atelier will hold it by hand.
-              </p>
+              <p className={styles.blocked}>{t.unreachable}</p>
             )}
 
             {!complete && (
               <p className={styles.blocked}>
-                {taken === 0
-                  ? `The sheet decides the garment, so all ${allZones.length} measurements are needed before a piece can be ordered.`
-                  : `${allZones.length - taken} more to take. The atelier cannot cut from a partial sheet.`}
+                {taken === 0 ? t.allNeeded(allZones.length) : t.moreToTake(allZones.length - taken)}
               </p>
             )}
 
-            <p className={styles.reserveNote}>
-              Ordering holds the design against the season’s capped run. The atelier
-              writes to you within two days to confirm the sheet before cutting begins.
-            </p>
+            <p className={styles.reserveNote}>{t.note}</p>
           </div>
         </div>
       )}

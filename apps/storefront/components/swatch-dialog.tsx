@@ -5,7 +5,9 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { SwatchPicker, SwatchTile } from '@/components/swatch-picker';
 import { Button } from '@/components/ui/button';
 import type { Cloth } from '@/lib/catalog';
-import { CLOTH_NAME, findSwatch, swatchLabel, swatchesFor } from '@/lib/swatches';
+import { orderText, swatchLabelIn } from '@/lib/i18n-order';
+import { CLOTH_NAME, findSwatch, swatchesFor } from '@/lib/swatches';
+import { useLang } from '@/lib/use-lang';
 import styles from './swatch-dialog.module.css';
 
 /* The colour choice, in a pop-up over the piece.
@@ -30,6 +32,10 @@ export function SwatchDialog({
   onCancel: () => void;
 }) {
   const titleId = useId();
+  const lang = useLang();
+  const ot = orderText(lang);
+  const t = ot.swatch;
+  const clothWord = ot.cloth[cloth] ?? CLOTH_NAME[cloth];
   const dialog = useRef<HTMLDialogElement>(null);
   const [pick, setPick] = useState<string | null>(value);
   const swatch = pick ? findSwatch(cloth, pick) : undefined;
@@ -68,13 +74,12 @@ export function SwatchDialog({
       <div className={styles.panel}>
         <header className={styles.head}>
           <div>
-            <div className={styles.eyebrow}>{CLOTH_NAME[cloth]}</div>
+            <div className={styles.eyebrow}>{clothWord}</div>
             <h2 id={titleId} className={styles.title}>
-              Choose your colour
+              {t.title}
             </h2>
             <p className={styles.lead}>
-              {swatchesFor(cloth).length} colours in {cloth}. Choose the one this piece is
-              cut in.
+              {t.lead(swatchesFor(cloth).length, lang === 'en' ? cloth : clothWord)}
             </p>
           </div>
           <button
@@ -82,7 +87,7 @@ export function SwatchDialog({
             className={styles.close}
             onClick={() => dialog.current?.close()}
           >
-            Close
+            {t.close}
           </button>
         </header>
 
@@ -98,7 +103,7 @@ export function SwatchDialog({
               </div>
             )}
             <span className={styles.chosenName}>
-              {swatch ? swatchLabel(swatch) : 'No colour chosen yet'}
+              {swatch ? swatchLabelIn(swatch, lang) : t.none}
             </span>
           </div>
           <Button disabled={!swatch} onClick={() => pick && onConfirm(pick)}>
