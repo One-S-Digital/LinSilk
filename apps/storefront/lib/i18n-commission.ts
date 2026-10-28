@@ -7,7 +7,7 @@ import { deepDe, type Lang } from './i18n';
 
 const EN = {
   title: 'Design your own',
-  back: 'Back',
+  prev: 'Back',
   next: 'Continue',
   chooseFirst: 'Choose a silhouette to continue',
   lede:
@@ -102,7 +102,7 @@ export type CommissionText = typeof EN;
 
 const DE_CH: CommissionText = {
   title: 'Selbst entwerfen',
-  back: 'Zurück',
+  prev: 'Zurück',
   next: 'Weiter',
   chooseFirst: 'Wählen Sie eine Silhouette, um fortzufahren',
   lede:
@@ -194,7 +194,7 @@ const DE_CH: CommissionText = {
 
 const FR: CommissionText = {
   title: 'Concevoir sur mesure',
-  back: 'Retour',
+  prev: 'Retour',
   next: 'Continuer',
   chooseFirst: 'Choisissez une silhouette pour continuer',
   lede:

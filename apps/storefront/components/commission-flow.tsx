@@ -527,7 +527,7 @@ export function CommissionFlow({
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
         >
-          {t.back}
+          {t.prev}
         </button>
         {step < t.steps.length - 1 && (
           <button
