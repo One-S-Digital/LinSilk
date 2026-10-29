@@ -173,7 +173,7 @@ medusaIntegrationTestRunner({
         const response = await add(cart.id, { variant_id: openVariantId, quantity: 1 })
         expect(refusal(response).status).toBe(400)
         expect(refusal(response).message).toMatch(
-          /^The atelier cannot cut Coat, autumn silk from a partial sheet: Neck, Shoulder, .* and Desired length are missing\.$/
+          /^The tailor cannot cut Coat, autumn silk from a partial sheet: Neck, Shoulder, .* and Desired length are missing\.$/
         )
       })
 
@@ -183,11 +183,11 @@ medusaIntegrationTestRunner({
         const response = await add(cart.id, { variant_id: openVariantId, quantity: 1, metadata: noLength })
         expect(refusal(response)).toEqual({
           status: 400,
-          message: "The atelier cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
+          message: "The tailor cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
         })
       })
 
-      it("accepts a value outside the usual range, which the atelier confirms by hand", async () => {
+      it("accepts a value outside the usual range, which the tailor confirms by hand", async () => {
         const { data: { cart } } = await newCart()
         const response = await add(cart.id, {
           variant_id: openVariantId,

@@ -103,7 +103,7 @@ describe("an order whose payment has not been captured", () => {
     expect(text).toContain("once your payment is confirmed")
   })
 
-  it("tells the atelier to check before starting", () => {
+  it("tells the tailor to check before starting", () => {
     const text = orderPlacedEmail(authorised, "hello@bylinsilk.com").content.text
     expect(text).not.toContain("has paid")
     expect(text).toContain("status: authorized")

@@ -46,7 +46,7 @@ function bank(range: { from: number; to: number } | null): { title: string; item
         },
         {
           q: 'What is the difference between a piece and a commission?',
-          a: 'A piece is a design the house drew, cut to your measurements. A commission is a garment that exists because you described it: you give the shape, the cloth and a note, and the atelier builds one garment to that brief.',
+          a: 'A piece is a design the house drew, cut to your measurements. A commission is a garment that exists because you described it: you give the shape, the cloth and a note, and the tailor builds one garment to that brief.',
         },
         {
           q: 'Does LINSILK offer alterations?',

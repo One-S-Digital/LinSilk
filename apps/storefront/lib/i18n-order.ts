@@ -17,7 +17,7 @@ const EN = {
     seeOpen: 'See what is open now',
     commission: 'Commission something like it',
     noCloth:
-      'The cloth for this piece has not been confirmed yet, so it cannot be ordered just now. Write to hello@bylinsilk.com and the atelier will tell you what it is cut in.',
+      'The cloth for this piece has not been confirmed yet, so it cannot be ordered just now. Write to hello@bylinsilk.com and the tailor will tell you what it is cut in.',
     steps: 'Ordering steps',
     stepColour: '01 Colour',
     stepMeasure: '02 Measurements',
@@ -30,12 +30,12 @@ const EN = {
     moment: 'One moment…',
     checkout: 'Continue to checkout',
     unreachable:
-      'The house cannot be reached just now, so nothing can be ordered. Write to hello@bylinsilk.com and the atelier will hold it by hand.',
+      'The house cannot be reached just now, so nothing can be ordered. Write to hello@bylinsilk.com and the tailor will hold it by hand.',
     allNeeded: (n: number) =>
       `The sheet decides the garment, so all ${n} measurements are needed before a piece can be ordered.`,
-    moreToTake: (n: number) => `${n} more to take. The atelier cannot cut from a partial sheet.`,
+    moreToTake: (n: number) => `${n} more to take. The tailor cannot cut from a partial sheet.`,
     note:
-      'Ordering holds the design against the season’s capped run. The atelier writes to you within two days to confirm the sheet before cutting begins.',
+      'Ordering holds the design against the season’s capped run. The tailor writes to you within two days to confirm the sheet before cutting begins.',
   },
   swatch: {
     title: 'Choose your colour',

@@ -78,10 +78,10 @@ export const HOME_EN: HomeCopy = {
   eyebrowDesign: 'Design Your Own',
   designH: 'A piece that exists because you described it.',
   designBody:
-    'Choose a base silhouette, choose the cloth, write to the tailor, submit your measurements. The atelier builds one garment to that brief. It is the only path where the design is yours before it is ours.',
+    'Choose a base silhouette, choose the cloth, write to the tailor, submit your measurements. The tailor builds one garment to that brief. It is the only path where the design is yours before it is ours.',
   designCta: 'Begin a commission',
   designAlt: 'Silk chalked with a pattern, with shears, pins and thread',
-  eyebrowAtelier: 'The Atelier',
+  eyebrowAtelier: 'The Tailor',
   atelierH: 'Clothes made the way they were always meant to be had.',
   atelierBody:
     'LINSILK does not make mass-produced, low-grade, synthetic clothing. Each piece is made to your own measurements, so the garment follows your body instead of asking your body to follow it. That fit is what lets smooth, breathable silk and linen do what they do best: rest lightly on the skin, move with you, and stay comfortable from the first hour to the last.',

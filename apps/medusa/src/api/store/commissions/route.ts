@@ -101,7 +101,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   if (missing.length) {
     throw new MedusaError(
       MedusaError.Types.INVALID_DATA,
-      `The atelier cannot quote from a partial sheet: ${missing.join(", ")} missing.`
+      `The tailor cannot quote from a partial sheet: ${missing.join(", ")} missing.`
     )
   }
 

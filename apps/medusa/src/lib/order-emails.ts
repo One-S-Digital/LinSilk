@@ -133,7 +133,7 @@ const confirmationBlocks = (order: OrderRecord, paid: boolean, seasonal: boolean
   {
     kind: "p",
     text: seasonal
-      ? "Nothing is cut until the atelier has read your measurement sheet and written back to confirm it — usually within two working days. If anything on the sheet is wrong, reply to this email and it is amended before a pattern is drawn. A piece takes two to four weeks from the confirmed sheet."
+      ? "Nothing is cut until the tailor has read your measurement sheet and written back to confirm it — usually within two working days. If anything on the sheet is wrong, reply to this email and it is amended before a pattern is drawn. A piece takes two to four weeks from the confirmed sheet."
       : "The bench has your commission. A pattern is drawn to your sheet before anything is cut, and a piece takes two to four weeks from that point.",
   },
   {
@@ -181,7 +181,7 @@ export function orderConfirmationEmail(order: OrderRecord) {
         "",
         ...(seasonal
           ? [
-              "Nothing is cut until the atelier has read your measurement sheet and",
+              "Nothing is cut until the tailor has read your measurement sheet and",
               "written back to confirm it — usually within two working days. If",
               "anything on the sheet is wrong, reply to this email and it is amended",
               "before a pattern is drawn. A piece takes two to four weeks from the",
