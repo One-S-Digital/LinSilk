@@ -109,7 +109,7 @@ export default async function MadeToMeasurePage() {
       <DocSection title="Want something not in the collection?">
         <DocP>
           Design your own piece as a commission: choose a base silhouette and the cloth,
-          write a brief, and the atelier replies with a price.{' '}
+          write a brief, and the tailor replies with a price.{' '}
           <Link href="/design">Design your own</Link>
         </DocP>
       </DocSection>

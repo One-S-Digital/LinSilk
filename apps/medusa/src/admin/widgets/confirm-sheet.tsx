@@ -180,7 +180,7 @@ const drawForm = async (order: OrderForSheet, item: SheetItem): Promise<Blob> =>
   })
 
   rule(1150, "#d2c8b8", 1)
-  text("Nothing is cut until the atelier has confirmed this sheet in writing.", 60, 1180, serif(20, "italic"), mute)
+  text("Nothing is cut until the tailor has confirmed this sheet in writing.", 60, 1180, serif(20, "italic"), mute)
 
   return new Promise((resolve, reject) =>
     canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("Could not draw the image"))), "image/png")

@@ -71,7 +71,7 @@ export function orderConfirmedEmail(order: OrderNotice) {
     [
       {
         kind: "p",
-        text: `The atelier has read your measurement sheet for order ${numberOf(order)} and confirmed it.`,
+        text: `The tailor has read your measurement sheet for order ${numberOf(order)} and confirmed it.`,
       },
       {
         kind: "p",
@@ -93,7 +93,7 @@ export function orderShippedEmail(order: OrderNotice, parcel: Parcel = {}) {
     `Your order ${numberOf(order)} has been sent — LINSILK`,
     "Your order has been sent",
     [
-      { kind: "p", text: `Order ${numberOf(order)} has left the atelier and is on its way to you.` },
+      { kind: "p", text: `Order ${numberOf(order)} has left the tailor and is on its way to you.` },
       ...(rows.length ? [{ kind: "rows", title: "Parcel", rows } as Block] : []),
       ...(parcel.tracking_url
         ? [{ kind: "link", label: "Follow your parcel", url: parcel.tracking_url } as Block]

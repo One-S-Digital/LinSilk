@@ -10,10 +10,10 @@ const EN = {
   yourAccount: 'Your account',
   home: {
     metaTitle: 'Account',
-    metaDescription: 'Your orders, your saved measurement profile, and the patterns the atelier holds for you.',
+    metaDescription: 'Your orders, your saved measurement profile, and the patterns the tailor holds for you.',
     title: 'Your account',
     closed: 'Your account is closed. Anything already ordered stays reachable the way a guest’s does, from the link in its confirmation email.',
-    lead: 'An account holds the fifteen measurements so you never type them twice, keeps every order and its production status, and records the paper patterns the atelier has drawn for you.',
+    lead: 'An account holds the fifteen measurements so you never type them twice, keeps every order and its production status, and records the paper patterns the tailor has drawn for you.',
     welcome: 'Welcome back',
     enter: 'Enter the collection',
     signOut: 'Sign out',
@@ -53,7 +53,7 @@ const EN = {
   },
   measures: {
     metaTitle: 'Your measurements',
-    metaDescription: 'The fifteen-point sheet the atelier keeps for you.',
+    metaDescription: 'The fifteen-point sheet the tailor keeps for you.',
     lead: 'Saved here once, so you never type them again — from a piece page, from Design Your Own, or here.',
     profile: 'Your saved profile',
   },

@@ -66,13 +66,13 @@ const EN = {
       'Design your own piece: choose a base silhouette and the cloth, write a brief, add your measurements. A tailor reads it and replies with a price. Silk or linen only.',
     aboutTitle: 'Design your own, made to your measurements',
     about:
-      'Design Your Own is LINSILK’s commission service: you choose a base silhouette and the cloth, write a brief to the tailor and submit your measurements; the atelier builds one garment to it and replies with a price before anything is cut. Every commission is made in 100% silk or 100% linen.',
+      'Design Your Own is LINSILK’s commission service: you choose a base silhouette and the cloth, write a brief to the tailor and submit your measurements; the tailor builds one garment to it and replies with a price before anything is cut. Every commission is made in 100% silk or 100% linen.',
     mtmLink: 'How made-to-measure works',
-    unreachablePre: 'Commissions cannot be sent just now — the atelier’s desk is unreachable. Write to ',
+    unreachablePre: 'Commissions cannot be sent just now — the tailor’s desk is unreachable. Write to ',
     unreachablePost: ' and a tailor will take your brief by email instead.',
     questions: 'Questions',
     faq: [
-      { q: 'Can I design my own dress online?', a: 'Yes. Choose a base silhouette, choose the cloth, write a note to the tailor and enter your measurements. The atelier builds one garment to that brief.' },
+      { q: 'Can I design my own dress online?', a: 'Yes. Choose a base silhouette, choose the cloth, write a note to the tailor and enter your measurements. The tailor builds one garment to that brief.' },
       { q: 'How is a commission priced?', a: 'Each silhouette shows an opening figure. A tailor reads every brief and replies with the price for your piece before anything is cut.' },
       { q: 'How long does a commission take?', a: 'Two to four weeks at the bench from your confirmed measurement sheet, the same as a piece from the collection, plus delivery.' },
     ],
@@ -126,7 +126,7 @@ const EN = {
     ratherH: 'If you would rather not',
     rather: 'Any tailor or alterations shop will take these fifteen in a few minutes, often for nothing. Print this page, or show them the list on your phone.',
     wrongH: 'If a measurement looks wrong',
-    wrong: 'The sheet flags a figure that sits outside the usual range for that zone. That is a prompt to check the tape, not a refusal — bodies vary, and the atelier would rather cut to an unusual number you have confirmed than to a typing error you did not notice.',
+    wrong: 'The sheet flags a figure that sits outside the usual range for that zone. That is a prompt to check the tape, not a refusal — bodies vary, and the tailor would rather cut to an unusual number you have confirmed than to a typing error you did not notice.',
   },
   contact: {
     metaTitle: 'Contact the house',

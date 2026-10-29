@@ -112,7 +112,7 @@ describe("lineRefusals", () => {
 
   it("refuses a set that is missing one of its two lengths", () => {
     expect(lineRefusals({ quantity: 1, metadata: sheet(["top"]), variant: sleepSet })).toEqual([
-      "The atelier cannot cut Sleep set, cream silk from a partial sheet: Trouser length is missing.",
+      "The tailor cannot cut Sleep set, cream silk from a partial sheet: Trouser length is missing.",
     ])
   })
 
@@ -184,7 +184,7 @@ describe("lineRefusals", () => {
 
   it("refuses a partial sheet, naming what is missing", () => {
     expect(lineRefusals({ quantity: 1, metadata: sheet([]), variant: coat })).toEqual([
-      "The atelier cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
+      "The tailor cannot cut Coat, autumn silk from a partial sheet: Desired length is missing.",
     ])
     const twoMissing = sheet(["top"], { measure_hip_cm: undefined, measure_bust_cm: undefined })
     expect(lineRefusals({ quantity: 1, metadata: twoMissing, variant: coat })[0]).toContain(
@@ -198,7 +198,7 @@ describe("lineRefusals", () => {
 })
 
 describe("cartRefusal", () => {
-  it("is null when the atelier can accept every line", () => {
+  it("is null when the tailor can accept every line", () => {
     expect(cartRefusal([{ quantity: 1, metadata: sheet(), variant: coat }])).toBeNull()
     expect(cartRefusal([])).toBeNull()
   })

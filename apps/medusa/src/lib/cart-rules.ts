@@ -52,7 +52,7 @@ export function lineRefusals({ quantity, metadata, variant, commission }: CartLi
   const missing = missingMeasurements(metadata, lengthKindsOf(variant.product?.metadata))
   if (missing.length) {
     refusals.push(
-      `The atelier cannot cut ${piece} from a partial sheet: ${list(missing)} ${
+      `The tailor cannot cut ${piece} from a partial sheet: ${list(missing)} ${
         missing.length === 1 ? "is" : "are"
       } missing.`
     )
@@ -61,7 +61,7 @@ export function lineRefusals({ quantity, metadata, variant, commission }: CartLi
   return refusals
 }
 
-/** Every refusal across the cart, or null when the atelier can accept it. */
+/** Every refusal across the cart, or null when the tailor can accept it. */
 export function cartRefusal(lines: CartLine[]): string | null {
   const refusals = lines.flatMap(lineRefusals)
   return refusals.length ? refusals.join(" ") : null
