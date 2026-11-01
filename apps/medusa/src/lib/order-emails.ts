@@ -126,6 +126,25 @@ const addressLines = (order: OrderRecord) => {
   ].filter((part): part is string => Boolean(part))
 }
 
+/** The order itself, for the HTML versions: its lines, the sheet on each
+    seasonal line, the figures, and where it is going. */
+const detailBlocks = (order: OrderRecord, lines: OrderLine[]): Block[] => [
+  {
+    kind: "rows",
+    title: `Order ${numberOf(order)}`,
+    rows: lines.map((line): [string, string] => [
+      `${line.title}${line.metadata?.fabric_name ? ` · ${String(line.metadata.fabric_name)}` : ""}`,
+      money(line.total, order.currency_code),
+    ]),
+  },
+  ...lines.flatMap((line): Block[] => {
+    const rows = line.commission ? [] : sheetRows(line)
+    return rows.length ? [{ kind: "rows", title: `Measurements — ${line.title}`, rows }] : []
+  }),
+  { kind: "rows", rows: figureRows(order) },
+  { kind: "lines", title: "Sent to", lines: addressLines(order) },
+]
+
 const COLOUR_ONLY =
   "Nothing is made until the tailor has written back to confirm your colour — usually within two working days. If it is not the colour you meant, reply to this email and it is amended before the tie is made."
 
@@ -150,20 +169,7 @@ const confirmationBlocks = (
       ? "Nothing is cut until the tailor has read your measurement sheet and written back to confirm it — usually within two working days. If anything on the sheet is wrong, reply to this email and it is amended before a pattern is drawn. A piece takes two to four weeks from the confirmed sheet."
       : "The bench has your commission. A pattern is drawn to your sheet before anything is cut, and a piece takes two to four weeks from that point.",
   },
-  {
-    kind: "rows",
-    title: `Order ${numberOf(order)}`,
-    rows: order.items.map((line): [string, string] => [
-      `${line.title}${line.metadata?.fabric_name ? ` · ${String(line.metadata.fabric_name)}` : ""}`,
-      money(line.total, order.currency_code),
-    ]),
-  },
-  ...order.items.flatMap((line): Block[] => {
-    const rows = line.commission ? [] : sheetRows(line)
-    return rows.length ? [{ kind: "rows", title: `Measurements — ${line.title}`, rows }] : []
-  }),
-  { kind: "rows", rows: figureRows(order) },
-  { kind: "lines", title: "Sent to", lines: addressLines(order) },
+  ...detailBlocks(order, order.items),
 ]
 
 /** To the client: it is paid, and what happens next. */
@@ -244,6 +250,37 @@ export function orderPlacedEmail(order: OrderRecord, to: string) {
     provider_data: order.email ? { reply_to: order.email } : undefined,
     content: {
       subject: `Order ${numberOf(order)} — ${lines.map((l) => l.title).join(", ")}`,
+      html: renderHtml({
+        heading: "New order",
+        preheader: `${nameOf(order) || "A client"} ${paid ? "has paid for" : "has placed"} order ${numberOf(order)}.`,
+        blocks: [
+          {
+            kind: "p",
+            text: `${nameOf(order) || "A client"}${order.email ? ` <${order.email}>` : ""} ${
+              paid ? "has paid for an order." : "has placed an order."
+            }`,
+          },
+          ...(paid
+            ? []
+            : [
+                {
+                  kind: "p",
+                  text: `Payment is not yet confirmed as taken (status: ${order.payment_status ?? "unknown"}). Check it in the admin before starting.`,
+                } as Block,
+              ]),
+          { kind: "p", text: toConfirm },
+          ...(mixed
+            ? [
+                {
+                  kind: "p",
+                  text: "This order also includes a commission, so the figures below are for the whole order.",
+                } as Block,
+              ]
+            : []),
+          ...detailBlocks(order, lines),
+          { kind: "p", text: `Open it in the admin: orders / ${order.id}` },
+        ],
+      }),
       text: [
         `${nameOf(order) || "A client"}${order.email ? ` <${order.email}>` : ""} ${
           paid ? "has paid for an order." : "has placed an order."

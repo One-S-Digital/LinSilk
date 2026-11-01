@@ -121,6 +121,19 @@ describe("orderPlacedEmail", () => {
     expect(email.content.text).toContain("orders / order_01TEST")
   })
 
+  it("carries the same order, sheet and warnings in its HTML", () => {
+    const html = orderPlacedEmail(
+      order([shirt, commissioned], { payment_status: "authorized" }),
+      "hello@bylinsilk.com"
+    ).content.html
+    expect(html).toContain(shirt.title)
+    expect(html).toContain("38 cm")
+    expect(html).toContain("status: authorized")
+    expect(html).toContain("whole order")
+    expect(html).toContain("orders / order_01TEST")
+    expect(html).not.toContain("Dress, for Ada")
+  })
+
   it("leaves a commission's lines to commission-paid", () => {
     const email = orderPlacedEmail(order([shirt, commissioned]), "hello@bylinsilk.com")
     expect(email.content.text).toContain(shirt.title)
