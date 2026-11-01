@@ -5,14 +5,15 @@ import {
   type GatedCommission,
   type GatedVariant,
 } from "./archive"
-import { lengthKindsOf, missingMeasurements } from "./measurements"
+import { lengthKindsOf, missingMeasurements, needsNoMeasurements } from "./measurements"
 
 /* What makes a cart line one the atelier can accept:
    - the piece belongs to the current collection (archive.ts), or is a
      commission that can still be paid for;
    - it is ordered one at a time, because every garment is cut for one
      person and holds one place in the season's capped run;
-   - it carries a complete measurement sheet (measurements.ts).
+   - it carries a complete measurement sheet (measurements.ts), unless the
+     piece is one that asks for none, such as a tie.
 
    Lines without a variant are not seasonal pieces and are left alone. */
 
@@ -49,7 +50,9 @@ export function lineRefusals({ quantity, metadata, variant, commission }: CartLi
     refusals.push(`Each piece is cut for one person, so ${piece} is ordered one at a time.`)
   }
 
-  const missing = missingMeasurements(metadata, lengthKindsOf(variant.product?.metadata))
+  const missing = needsNoMeasurements(variant.product?.metadata)
+    ? []
+    : missingMeasurements(metadata, lengthKindsOf(variant.product?.metadata))
   if (missing.length) {
     refusals.push(
       `The tailor cannot cut ${piece} from a partial sheet: ${list(missing)} ${

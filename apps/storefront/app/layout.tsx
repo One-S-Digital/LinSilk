@@ -40,11 +40,11 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   metadataBase: new URL('https://bylinsilk.com'),
   title: {
-    default: 'LINSILK | Made-to-measure silk and linen clothing from Geneva',
+    default: 'LINSILK | Made-to-measure silk, linen and high frequency fabrics, Geneva',
     template: '%s | LINSILK',
   },
   description:
-    'Made-to-measure silk and linen clothing from Geneva, Switzerland.',
+    'Made-to-measure clothing in silk, linen and high frequency fabrics from Geneva, Switzerland.',
   openGraph: {
     type: 'website',
     siteName: 'LINSILK',

@@ -174,3 +174,38 @@ describe('piece addresses', () => {
     expect(piece.successor).toBe('w2');
   });
 });
+
+describe('cashmere and ties', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('reads cashmere as a cloth, so a cashmere piece can be ordered', async () => {
+    serve({ products: [product('c1', 'autumn-iv', { cloth: 'cashmere', length_kinds: ['trouser'] })] });
+    const [piece] = await getPieces();
+    expect(piece.cloth).toBe('cashmere');
+  });
+
+  it('still reads a cloth the house does not make as untagged', async () => {
+    serve({ products: [product('c1', 'autumn-iv', { cloth: 'polyester' })] });
+    expect((await getPieces())[0].cloth).toBeNull();
+  });
+
+  it('carries a piece’s own colours and its need for no measurements', async () => {
+    serve({
+      products: [
+        product('t1', 'autumn-iv', { cloth: 'silk', group: 'men', swatches: ['LS-S04', 'LS-S06', 7], no_measurements: true }),
+        product('w1', 'autumn-iv', { cloth: 'silk' }),
+      ],
+    });
+    const [tie, dress] = await getPieces();
+    expect(tie.swatches).toEqual(['LS-S04', 'LS-S06']);
+    expect(tie.noMeasurements).toBe(true);
+    expect(dress.swatches).toBeUndefined();
+    expect(dress.noMeasurements).toBeUndefined();
+  });
+
+  it('sends a link written before titles said pants to the new address', async () => {
+    serve({ products: [product('m9', 'autumn-iv', { cloth: 'linen', group: 'men', slug: 'linen-gurkha-pants' })] });
+    expect((await findPiece('linen-gurkha-trousers'))?.slug).toBe('linen-gurkha-pants');
+    expect(await findPiece('linen-gurkha-shorts')).toBeUndefined();
+  });
+});

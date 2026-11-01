@@ -13,10 +13,13 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { EASE } from '@/components/motion';
 import { MeasurementSheet } from '@/components/measure/measurement-sheet';
+import { SwatchPicker } from '@/components/swatch-picker';
 import { Button } from '@/components/ui/button';
-import { LENGTH_ZONE, ZONES, money, type LengthKind } from '@/lib/catalog';
+import { LENGTH_ZONE, ZONES, money, type Cloth, type LengthKind } from '@/lib/catalog';
 import { MEDUSA_URL, medusaHeaders, type ApiFabricCatalogue, type ApiSilhouette } from '@/lib/medusa';
 import { commissionText } from '@/lib/i18n-commission';
+import { orderText } from '@/lib/i18n-order';
+import { CLOTH_NAME, SWATCHES, findSwatch, swatchLabel } from '@/lib/swatches';
 import { useLang } from '@/lib/use-lang';
 import { isComplete, takenCount, type Measurements, type Unit } from '@/lib/measurements';
 import styles from '@/app/design/design.module.css';
@@ -49,6 +52,10 @@ export function CommissionFlow({
   const [step, setStep] = useState(0);
   const [silhouette, setSilhouette] = useState<string | null>(null);
   const [fabric, setFabric] = useState('');
+  /* Choosing from the house's own cloths is a shortcut for writing the cloth
+     down: it fills the same box, which stays editable. */
+  const [clothPick, setClothPick] = useState<Cloth | null>(null);
+  const [swatchPick, setSwatchPick] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -303,6 +310,41 @@ export function CommissionFlow({
       <p className={styles.sub}>
         {t.clothSub}
       </p>
+
+      <div className={styles.houseCloths}>
+        <h3 className={styles.label}>{t.houseClothsH}</h3>
+        <p className={styles.hint}>{t.houseClothsSub}</p>
+        <div className={styles.clothTabs} role="group" aria-label={t.houseClothsH}>
+          {(Object.keys(SWATCHES) as Cloth[]).map((cloth) => (
+            <button
+              key={cloth}
+              type="button"
+              className={styles.clothTab}
+              aria-pressed={clothPick === cloth}
+              onClick={() => {
+                setClothPick(clothPick === cloth ? null : cloth);
+                setSwatchPick(null);
+              }}
+            >
+              {orderText(lang).cloth[cloth] ?? CLOTH_NAME[cloth]}
+            </button>
+          ))}
+        </div>
+        {clothPick && (
+          <SwatchPicker
+            cloth={clothPick}
+            value={swatchPick}
+            idPrefix="commission-colour"
+            onChange={(key) => {
+              const swatch = findSwatch(clothPick, key);
+              setSwatchPick(key);
+              /* The atelier reads English, so the box carries the library's
+                 own name and code whatever language the page is in. */
+              if (swatch) setFabric(`${swatchLabel(swatch)} (${key})`.slice(0, FABRIC_LIMIT));
+            }}
+          />
+        )}
+      </div>
 
       {catalogues.length > 0 ? (
         <div className={styles.catalogues}>

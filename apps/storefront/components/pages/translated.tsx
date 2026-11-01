@@ -39,7 +39,7 @@ export async function MadeToMeasureTranslated({ locale }: { locale: Locale }) {
         <JsonLd data={faqLd(c.faq)} />
 
         <DocSection title={c.howH}>
-          <DocList items={c.steps(COLOURS.silk, COLOURS.linen)} />
+          <DocList items={c.steps(COLOURS.silk, COLOURS.linen, COLOURS.cashmere)} />
         </DocSection>
 
         {all && (
@@ -121,7 +121,7 @@ export async function AboutTranslated({ locale }: { locale: Locale }) {
               c.rows.what,
               c.rows.where,
               c.rows.cloth,
-              [c.rows.colours[0], c.rows.colours[1](COLOURS.silk, COLOURS.linen)],
+              [c.rows.colours[0], c.rows.colours[1](COLOURS.silk, COLOURS.linen, COLOURS.cashmere)],
               ...(r ? [[c.rows.price[0], c.rows.price[1](range(r))] as [string, string]] : []),
               c.rows.making,
               c.rows.order,
@@ -141,7 +141,7 @@ export function ClothTranslated({ locale }: { locale: Locale }) {
   const c = clothCopy(locale);
   return (
     <div lang={LANG[locale]}>
-      <StoryPage storyKey="cloth" content={{ title: c.h1, lead: c.lead, a: c.a, b: c.b }}>
+      <StoryPage storyKey="cloth" content={{ title: c.h1, lead: c.lead, a: c.a, b: c.b }} extra={c.c}>
         <ButtonLink href={localHref(locale, '/care/questions')} variant="rule">
           {c.cta}
         </ButtonLink>
@@ -159,7 +159,7 @@ export async function QuestionsTranslated({ locale }: { locale: Locale }) {
     ...g,
     items:
       i === 1
-        ? [...g.items.slice(0, 5), c.colours(COLOURS.silk, COLOURS.linen), ...g.items.slice(5)]
+        ? [...g.items.slice(0, 5), c.colours(COLOURS.silk, COLOURS.linen, COLOURS.cashmere), ...g.items.slice(5)]
         : i === 2 && r
           ? [...g.items.slice(0, 2), c.price(range(r)), ...g.items.slice(2)]
           : i === 3

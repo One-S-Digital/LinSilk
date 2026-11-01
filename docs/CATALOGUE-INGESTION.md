@@ -58,12 +58,14 @@ payload is a no-op update, which is what makes an agent safe to retry.
 | Field | Required | Goes to | Notes |
 |---|---|---|---|
 | `handle` | ✓ | `product.handle` | The catalogue's piece id (`w1`, `m3`). |
-| `title` | ✓ | `product.title` | Never a colour, and never "satin": the house sells silk and linen and nothing is sold by colour. |
+| `title` | ✓ | `product.title` | Never a colour, never "satin", and "pants" rather than "trousers": nothing is sold by colour. |
 | `material` | ✓ | `product.subtitle` | Shown under the name on every tile. |
-| `cloth` | ✓ on create | `metadata.cloth` | `silk` \| `linen`. It decides which swatches the client chooses their colour from on the piece page (`lib/swatches.ts`). A piece without it cannot be reserved; the page says so. |
+| `cloth` | ✓ on create | `metadata.cloth` | `silk` \| `linen` \| `cashmere`. It decides which swatches the client chooses their colour from on the piece page (`lib/swatches.ts`). A piece without it cannot be reserved; the page says so. |
 | `collection` | ✓ | `collection_id` | A collection handle that must already exist. |
 | `group` | ✓ | `metadata.group` | `women` \| `men`. |
 | `price_chf` | ✓ on create | variant price | The house prices in francs alone (§6). |
+| `swatches` | | `metadata.swatches` | Swatch codes the piece is offered in when that is not the whole cloth (a plain tie: `LS-S01`…`S15`). Left out, every colour of the cloth. See `CASHMERE-TIES.md`. |
+| `no_measurements` | | `metadata.no_measurements` | `true` for a tie: ordered by colour alone, no measurement sheet. Then `length_kinds` stays empty. |
 | `length_kinds` | | `metadata.length_kinds` | Which lengths the measurement sheet asks for. Empty is a real answer — a scarf asks for none. |
 | `shot` | | `metadata.shot` | Art direction. Kept — it is the `ShotFrame` fallback until the piece is photographed. |
 | `sleep` | | `metadata.sleep` | Splits the sleepwear rail. |

@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "seed:pages": "payload run ./payload/seed.ts",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap"
   },

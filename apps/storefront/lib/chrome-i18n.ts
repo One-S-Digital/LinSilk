@@ -22,7 +22,7 @@ const EN = {
     '/contact': 'Contact',
   } as Record<string, string>,
   blurb:
-    'Made-to-measure silk and linen, from Geneva. Cut and sewn to your measurements in 2–4 weeks. Four small collections a year.',
+    'Made-to-measure silk, linen and high frequency fabrics, from Geneva. Cut and sewn to your measurements in 2–4 weeks. Four small collections a year.',
   shop: 'Shop',
   care: 'Client care',
   house: 'The house',
@@ -71,7 +71,7 @@ const DE_CH: Chrome = {
     '/contact': 'Kontakt',
   },
   blurb:
-    'Seide und Leinen nach Mass, aus Genf. Nach Ihren Massen zugeschnitten und genäht, innert 2–4 Wochen. Vier kleine Kollektionen im Jahr.',
+    'Seide, Leinen und hochfrequente Stoffe nach Mass, aus Genf. Nach Ihren Massen zugeschnitten und genäht, innert 2–4 Wochen. Vier kleine Kollektionen im Jahr.',
   shop: 'Shop',
   care: 'Kundendienst',
   house: 'Das Haus',

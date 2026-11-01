@@ -128,9 +128,9 @@ export const EDITS: Record<string, Edit> = {
     title: 'Linen two-piece sets for women, made to measure',
     h1: 'Linen two-piece sets for women, made to measure',
     description: (r) =>
-      `Women’s linen waistcoat, vest and trouser sets, made to your measurements in 2–4 weeks. 100% linen, ${COLOURS.linen} colours.${from(r)}`,
+      `Women’s linen waistcoat, vest and pants sets, made to your measurements in 2–4 weeks. 100% linen, ${COLOURS.linen} colours.${from(r)}`,
     intro: (r) =>
-      `LINSILK’s women’s linen sets pair a waistcoat, vest or top with trousers, each cut and sewn to your measurements in 2–4 weeks. They are made in 100% linen and come in ${COLOURS.linen} linen colours${span(r)}.`,
+      `LINSILK’s women’s linen sets pair a waistcoat, vest or top with pants, each cut and sewn to your measurements in 2–4 weeks. They are made in 100% linen and come in ${COLOURS.linen} linen colours${span(r)}.`,
     sections: [
       {
         h2: 'For warm days and travel',
@@ -213,27 +213,27 @@ export const EDITS: Record<string, Edit> = {
 
   'men/trousers': {
     path: '/collection/men/trousers',
-    title: 'Linen trousers and full looks for men, made to measure',
-    h1: 'Linen trousers and full looks for men, made to measure',
+    title: 'Linen pants and full looks for men, made to measure',
+    h1: 'Linen pants and full looks for men, made to measure',
     description: (r) =>
-      `Pleated, straight, wide-leg and gurkha linen trousers and full linen looks for men, made to your measurements in 2–4 weeks. 100% linen.${from(r)}`,
+      `Pleated, straight, wide-leg and gurkha linen pants and full linen looks for men, made to your measurements in 2–4 weeks. 100% linen.${from(r)}`,
     intro: (r) =>
-      `LINSILK makes men’s linen trousers, pleated, straight, wide-leg and gurkha, and linen two-piece looks, each cut and sewn to your measurements in 2–4 weeks, in 100% linen and ${COLOURS.linen} colours${span(r)}.`,
+      `LINSILK makes men’s linen pants, pleated, straight, wide-leg and gurkha, and linen two-piece looks, each cut and sewn to your measurements in 2–4 weeks, in 100% linen and ${COLOURS.linen} colours${span(r)}.`,
     sections: [
       {
         h2: 'Summer weddings and holidays',
-        body: 'A full linen look for a summer wedding is a shirt and trousers ordered together, each to your measurements.',
+        body: 'A full linen look for a summer wedding is a shirt and pants ordered together, each to your measurements.',
       },
     ],
     faqs: [
       {
-        q: 'How do I choose the trouser length?',
+        q: 'How do I choose the pants length?',
         a: 'Measure from your natural waist down the outside of the leg to where you want the hem to fall, without shoes.',
       },
       CREASE_QA,
       LEAD_TIME_QA,
     ],
-    pick: (p) => p.group === 'men' && ['trousers', 'linen-set'].includes(garmentType(p)),
+    pick: (p) => p.group === 'men' && p.cloth === 'linen' && ['trousers', 'linen-set'].includes(garmentType(p)),
     crumb: [
       { name: 'Collection', path: '/collection' },
       { name: 'Men', path: '/collection/men' },

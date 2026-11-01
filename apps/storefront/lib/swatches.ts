@@ -1,12 +1,12 @@
 /* The house's colour library, one list for each cloth.
  *
- * Nothing here is sold by colour: a piece is made in silk or in linen, and the
+ * Nothing here is sold by colour: a piece is made in silk, linen or cashmere, and the
  * client chooses the colour from that cloth's swatches. So the library is
  * keyed by cloth, and a piece offers only its own. There is no satin: the
  * silks are silks, whatever the weave — plain, jacquard or brocade.
  *
  * The key is the library code the bench uses (LS-S silk plain, LS-J jacquard,
- * LS-B brocade, LS-L linen). It travels on the order line, so a swatch keeps
+ * LS-B brocade, LS-L linen, LS-C cashmere). It travels on the order line, so a swatch keeps
  * its code when its name or its photograph changes. Photographs are the
  * library's clean renders, resized, in public/swatches/<cloth>/.
  */
@@ -75,9 +75,29 @@ const LINEN: Swatch[] = (
   image: `/swatches/linen/LS-L${code}.webp`,
 }));
 
-export const SWATCHES: Record<Cloth, Swatch[]> = { silk: SILK, linen: LINEN };
+/* The cashmere library, from the house's own cloth. Charcoal Twill is the one
+   name that carries a weave. */
+const CASHMERE: Swatch[] = (
+  [
+    ['01', 'Light Grey'], ['02', 'Mid Grey'], ['03', 'Charcoal Twill'], ['04', 'Black'],
+    ['05', 'Camel'], ['06', 'Tobacco'], ['07', 'Taupe'], ['08', 'Coral'],
+    ['09', 'Red'], ['10', 'Burgundy'], ['11', 'Plum'], ['12', 'Navy'],
+  ] as [string, string][]
+).map(([code, name]) => ({
+  key: `LS-C${code}`,
+  cloth: 'cashmere' as const,
+  name,
+  image: `/swatches/cashmere/LS-C${code}.webp`,
+}));
 
-export const swatchesFor = (cloth: Cloth) => SWATCHES[cloth];
+export const SWATCHES: Record<Cloth, Swatch[]> = { silk: SILK, linen: LINEN, cashmere: CASHMERE };
+
+/* The colours a piece is offered in: its own list when it names one (a plain
+   tie offers the plain silks only), otherwise the whole of its cloth. Keys that
+   are not in the cloth are ignored, so a typo in the catalogue cannot put a
+   colour of another cloth on a piece. */
+export const swatchesFor = (cloth: Cloth, only?: readonly string[]) =>
+  only?.length ? SWATCHES[cloth].filter((s) => only.includes(s.key)) : SWATCHES[cloth];
 
 export const findSwatch = (cloth: Cloth, key: string) =>
   SWATCHES[cloth].find((s) => s.key === key);
@@ -85,4 +105,4 @@ export const findSwatch = (cloth: Cloth, key: string) =>
 /** What the order line, the cart and the bench call the cloth: 'Cobalt silk'. */
 export const swatchLabel = (swatch: Swatch) => `${swatch.name} ${swatch.cloth}`;
 
-export const CLOTH_NAME: Record<Cloth, string> = { silk: 'Silk', linen: 'Linen' };
+export const CLOTH_NAME: Record<Cloth, string> = { silk: 'Silk', linen: 'Linen', cashmere: 'Cashmere' };

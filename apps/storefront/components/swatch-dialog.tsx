@@ -23,8 +23,11 @@ export function SwatchDialog({
   confirmLabel,
   onConfirm,
   onCancel,
+  only,
 }: {
   cloth: Cloth;
+  /** The colours this piece is offered in, when it is not the whole cloth. */
+  only?: readonly string[];
   /** The colour the client already holds, or null before they have chosen. */
   value: string | null;
   confirmLabel: string;
@@ -38,7 +41,7 @@ export function SwatchDialog({
   const clothWord = ot.cloth[cloth] ?? CLOTH_NAME[cloth];
   const dialog = useRef<HTMLDialogElement>(null);
   const [pick, setPick] = useState<string | null>(value);
-  const swatch = pick ? findSwatch(cloth, pick) : undefined;
+  const swatch = pick && swatchesFor(cloth, only).some((s) => s.key === pick) ? findSwatch(cloth, pick) : undefined;
   const lenis = useLenis();
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export function SwatchDialog({
               {t.title}
             </h2>
             <p className={styles.lead}>
-              {t.lead(swatchesFor(cloth).length, lang === 'en' ? cloth : clothWord)}
+              {t.lead(swatchesFor(cloth, only).length, lang === 'en' ? cloth : clothWord)}
             </p>
           </div>
           <button
@@ -92,7 +95,7 @@ export function SwatchDialog({
         </header>
 
         <div className={styles.body} data-lenis-prevent>
-          <SwatchPicker cloth={cloth} value={pick} onChange={setPick} idPrefix="piece-colour" />
+          <SwatchPicker cloth={cloth} value={pick} onChange={setPick} idPrefix="piece-colour" only={only} />
         </div>
 
         <footer className={styles.foot}>

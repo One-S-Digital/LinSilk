@@ -31,8 +31,8 @@ import { slugify } from './slug.ts';
 export { slugify };
 
 export type Group = 'women' | 'men';
-/** What a piece is cut from. The house makes in silk and in linen, nothing else. */
-export type Cloth = 'silk' | 'linen';
+/** What a piece is cut from. The house makes in silk, linen and high frequency fabrics (cashmere so far), nothing else. */
+export type Cloth = 'silk' | 'linen' | 'cashmere';
 export type CollectionStatus = 'current' | 'past';
 
 export type Collection = {
@@ -78,6 +78,13 @@ export type Piece = {
      from the shoulder, so the piece names its own — and a set names both,
      because it is two garments on one ticket. */
   lengthKinds?: LengthKind[];
+  /* The colours this piece is offered in, as swatch keys, when it is not the
+     whole cloth: a plain tie offers the plain silks only. Absent means every
+     colour of its cloth, which is every piece made before ties. */
+  swatches?: string[];
+  /* A piece that is not cut to a body — a tie — is ordered by colour alone and
+     asks for no measurement sheet. */
+  noMeasurements?: boolean;
   /** Photography, once a piece has any. Empty until then, and an empty list is
       what tells the frame to render the placeholder weave from `shot`. */
   images: string[];
@@ -132,8 +139,13 @@ const readCollection = (c: ApiCollection): Collection | null => {
 
 const LENGTH_KINDS: LengthKind[] = ['dress', 'skirt', 'trouser', 'top', 'robe'];
 
+const CLOTHS: Cloth[] = ['silk', 'linen', 'cashmere'];
+
 const readPiece = (p: ApiProduct, collection: Collection): Piece => {
   const meta = p.metadata ?? {};
+  const swatchKeys = Array.isArray(meta.swatches)
+    ? meta.swatches.filter((k): k is string => typeof k === 'string')
+    : [];
   const kinds = Array.isArray(meta.length_kinds)
     ? meta.length_kinds.filter((k): k is LengthKind =>
         LENGTH_KINDS.includes(k as LengthKind),
@@ -154,11 +166,13 @@ const readPiece = (p: ApiProduct, collection: Collection): Piece => {
     group: meta.group === 'men' ? 'men' : 'women',
     name: p.title,
     material: p.subtitle ?? '',
-    cloth: meta.cloth === 'silk' || meta.cloth === 'linen' ? meta.cloth : null,
+    cloth: CLOTHS.includes(meta.cloth as Cloth) ? (meta.cloth as Cloth) : null,
     price: p.variants?.[0]?.calculated_price?.calculated_amount ?? 0,
     shot: String(meta.shot ?? ''),
     ...(meta.sleep ? { sleep: true } : {}),
     ...(kinds.length ? { lengthKinds: kinds } : {}),
+    ...(swatchKeys.length ? { swatches: swatchKeys } : {}),
+    ...(meta.no_measurements === true ? { noMeasurements: true } : {}),
     images,
     orderable: collection.status === 'current',
     collectionTitle: collection.title,
@@ -229,8 +243,17 @@ export const piecesIn = async (slug: string) =>
   (await getPieces()).filter((p) => p.collection === slug);
 
 /** By slug or by the old numeric address (/piece/004), which redirects. */
-export const findPiece = async (idOrSlug: string) =>
-  (await getPieces()).find((p) => p.slug === idOrSlug || p.id === idOrSlug);
+export const findPiece = async (idOrSlug: string) => {
+  const pieces = await getPieces();
+  return (
+    pieces.find((p) => p.slug === idOrSlug || p.id === idOrSlug) ??
+    /* A link written before titles said "pants" still ends in "trousers": it
+       finds the same piece, and the page redirects it to the new address. */
+    (idOrSlug.includes('trouser')
+      ? pieces.find((p) => p.slug === idOrSlug.replace(/trousers/g, 'pants').replace(/trouser/g, 'pant'))
+      : undefined)
+  );
+};
 
 /** True when the piece's collection is still open, so it can be ordered. */
 export const isOrderable = (piece: Piece) => piece.orderable;
@@ -287,7 +310,8 @@ const UPPER_KEYS = [
   'neck', 'shoulder', 'bust', 'bustPoint', 'frontWaist', 'backWaist', 'sleeve', 'bicep', 'wrist',
 ];
 
-export const bodyZonesFor = (piece: Pick<Piece, 'lengthKinds'>): Zone[] => {
+export const bodyZonesFor = (piece: Pick<Piece, 'lengthKinds' | 'noMeasurements'>): Zone[] => {
+  if (piece.noMeasurements) return [];
   const kinds = piece.lengthKinds ?? [];
   const skip =
     kinds.length === 1 && kinds[0] === 'top'
@@ -358,14 +382,14 @@ export const COMMISSION_STEPS = [
 
 export const STORY = {
   cloth: {
-    title: 'The cloth: pure silk and pure linen',
-    lead: 'LINSILK makes in two cloths only, pure silk and pure linen: no polyester and no blended cloth. You choose your piece’s colour from swatches of its own cloth, so this page shows what you are choosing from.',
+    title: 'The cloth: pure silk, pure linen and cashmere',
+    lead: 'LINSILK makes in silk, linen and high frequency fabrics only: pure silk, pure linen and cashmere. There is no polyester and no blended cloth. You choose your piece’s colour from swatches of its own cloth, so this page shows what you are choosing from.',
     a: 'Silk is smooth and light, and keeps you comfortable when the temperature drops as well as when it rises. It comes in three weaves: plain (15 colours), jacquard (20 patterned colourways) and brocade (13 patterned colourways), 48 silk colours in all, used for the dresses, gowns, skirts, blouses and sleepwear.',
-    b: 'Linen is crisp, airy and cooling, and softens with every wear; its 40 colours are used for all the menswear and the women’s waistcoat and trouser sets. Natural fibre creases, moves and ages. A linen shirt worn through one summer will not look the way it did in the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew; LINSILK’s cloth is pure silk or pure linen.',
+    b: 'Linen is crisp, airy and cooling, and softens with every wear; its 40 colours are used for all the menswear and the women’s waistcoat and pants sets. Natural fibre creases, moves and ages. A linen shirt worn through one summer will not look the way it did in the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew; LINSILK’s cloth is pure silk or pure linen. Cashmere, one of the house’s high frequency fabrics, is soft and warm, is used for the pants, and comes in 12 colours.',
   },
   contact: {
     title: 'The house',
-    lead: 'LINSILK was set up to make one thing properly: clothing in pure silk and pure linen, cut for one body, in four small collections a year.',
+    lead: 'LINSILK was set up to make one thing properly: clothing in pure silk, pure linen and high frequency fabrics, cut for one body, in four small collections a year.',
     a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A piece takes two to four weeks from the confirmed measurement sheet.',
     b: 'Write to hello@bylinsilk.com with any question about a piece or your order.',
   },

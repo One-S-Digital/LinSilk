@@ -325,5 +325,6 @@ export function materialIn(material: string, lang: Lang): string {
   const fr = lang === 'fr' || lang === 'fr-ch';
   return material
     .replace(/\bsilk\b/gi, fr ? 'soie' : 'Seide')
-    .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen');
+    .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen')
+    .replace(/\bcashmere\b/gi, fr ? 'cachemire' : 'Kaschmir');
 }

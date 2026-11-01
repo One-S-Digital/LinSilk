@@ -3,7 +3,8 @@
  * components/json-ld.tsx. docs/seo/COPY-PAGES.md §8 is the reference. */
 
 import type { Piece } from './catalog';
-import { CATEGORY, garmentType, type QA } from './garments';
+import { CATEGORY, garmentType, schemaDescription, type QA } from './garments';
+import { CLOTH_NAME } from './swatches';
 import { absolute, EMAIL, ENTITY, HANDLING_DAYS, SAME_AS, SHIPPING, SITE_URL } from './house';
 
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -39,7 +40,7 @@ export function productLd(
   local?: { name: string; path: string; description: string; inLanguage: string },
 ) {
   const url = absolute(local?.path ?? `/piece/${piece.slug}`);
-  const cloth = piece.cloth === 'linen' ? 'linen' : 'silk';
+  const cloth = piece.cloth ?? 'silk';
   const type = garmentType(piece);
   const days = (min: number, max: number) => ({
     '@type': 'QuantitativeValue',
@@ -67,14 +68,12 @@ export function productLd(
     '@id': `${url}#product`,
     name: local?.name ?? piece.name,
     ...(local ? { inLanguage: local.inLanguage } : {}),
-    description:
-      local?.description ??
-      `${piece.name}, made to measure in 100% ${cloth}: cut and sewn to your own measurements in 2–4 weeks, then dispatched from Geneva.`,
+    description: local?.description ?? schemaDescription(piece),
     ...(piece.images.length ? { image: piece.images.map(imageUrl) } : {}),
     sku: piece.id,
     mpn: piece.id,
     brand: { '@type': 'Brand', name: 'LINSILK' },
-    material: cloth === 'linen' ? 'Linen' : 'Silk',
+    material: CLOTH_NAME[cloth],
     category: `${piece.group === 'men' ? 'Men' : 'Women'} > ${CATEGORY[type].label}`,
     /* A piece from a closed season, or one being phased out, is a record:
        it keeps its Product but offers nothing. */

@@ -67,6 +67,8 @@ export default function CartPage() {
                         <span className={styles.briefKey}>{t.cloth}</span>
                         <span>{fabricLabel(line.fabricKey, line.fabricName, lang)}</span>
                       </div>
+                      {/* A tie is ordered by colour alone and carries no sheet. */}
+                      {line.zoneCount > 0 && (
                       <div className={styles.briefRow}>
                         <span className={styles.briefKey}>{t.sheet}</span>
                         <span>
@@ -79,6 +81,7 @@ export default function CartPage() {
                           )}
                         </span>
                       </div>
+                      )}
                     </div>
 
                   </div>

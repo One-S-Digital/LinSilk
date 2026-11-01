@@ -60,6 +60,9 @@ export function PieceOrderPanel({
   const allZones = useMemo(() => [...bodyZones, ...garmentZones], [bodyZones, garmentZones]);
 
   const orderable = isOrderable(piece);
+  /* A tie is ordered by colour alone: no sheet, and the colour step is the
+     only step. */
+  const noSheet = Boolean(piece.noMeasurements);
   const complete = isComplete(sheet.values, allZones);
   const taken = takenCount(sheet.values, allZones);
   const started = useRef(false);
@@ -174,19 +177,21 @@ export function PieceOrderPanel({
         >
           {t.stepColour}
         </li>
-        <li
-          data-state={measuring ? 'current' : 'todo'}
-          aria-current={measuring ? 'step' : undefined}
-        >
-          {t.stepMeasure}
-        </li>
+        {!noSheet && (
+          <li
+            data-state={measuring ? 'current' : 'todo'}
+            aria-current={measuring ? 'step' : undefined}
+          >
+            {t.stepMeasure}
+          </li>
+        )}
       </ol>
 
       {!measuring && (
         <div className={styles.colourStart}>
           <div className={styles.clothLabel}>{clothName}</div>
           <p className={styles.reserveNote}>
-            {t.madeIn(lang === 'en' ? cloth : clothName)}
+            {(noSheet ? t.madeInTie : t.madeIn)(lang === 'en' ? cloth : clothName)}
           </p>
           <div className={styles.colourAction}>
             <Button onClick={(e) => openColours(e.currentTarget)}>{t.selectColour}</Button>
@@ -215,8 +220,9 @@ export function PieceOrderPanel({
       {choosing && (
         <SwatchDialog
           cloth={cloth}
+          only={piece.swatches}
           value={swatchKey}
-          confirmLabel={measuring ? t.useColour : t.toMeasure}
+          confirmLabel={measuring || noSheet ? t.useColour : t.toMeasure}
           onConfirm={chooseColour}
           onCancel={closeColours}
         />
@@ -224,12 +230,14 @@ export function PieceOrderPanel({
 
       {measuring && (
         <div className={styles.sheetWrap}>
-          <MeasurementSheet
-            group={piece.group}
-            bodyZones={bodyZones}
-            garmentZones={garmentZones}
-            onChange={onSheetChange}
-          />
+          {!noSheet && (
+            <MeasurementSheet
+              group={piece.group}
+              bodyZones={bodyZones}
+              garmentZones={garmentZones}
+              onChange={onSheetChange}
+            />
+          )}
 
           <div className={styles.reserve}>
             <Button onClick={reserve} disabled={!complete || holding || !variantId || !swatch}>
@@ -242,13 +250,13 @@ export function PieceOrderPanel({
               <p className={styles.blocked}>{t.unreachable}</p>
             )}
 
-            {!complete && (
+            {!noSheet && !complete && (
               <p className={styles.blocked}>
                 {taken === 0 ? t.allNeeded(allZones.length) : t.moreToTake(allZones.length - taken)}
               </p>
             )}
 
-            <p className={styles.reserveNote}>{t.note}</p>
+            <p className={styles.reserveNote}>{noSheet ? t.noteTie : t.note}</p>
           </div>
         </div>
       )}

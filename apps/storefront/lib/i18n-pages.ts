@@ -8,9 +8,9 @@ import { deepDe, type Lang } from './i18n';
 
 const EN = {
   collection: {
-    title: 'The collection: made-to-measure silk and linen',
+    title: 'The collection: made-to-measure silk, linen and high frequency fabrics',
     description: (open: string) =>
-      `${open}Women’s and men’s pieces in 100% silk and 100% linen, each cut and sewn to your measurements in 2–4 weeks.`,
+      `${open}Women’s and men’s pieces in 100% silk, 100% linen and high frequency fabrics, each cut and sewn to your measurements in 2–4 weeks.`,
     none: 'No collection is open at the moment. When the next season is cut, its pieces appear here.',
     commission: 'Commission a piece',
     designs: (n: string) => `${n} designs`,
@@ -18,18 +18,18 @@ const EN = {
     women: 'Women',
     men: 'Men',
     womenAlt: 'A woman in a made-to-measure silk wrap dress on a sunlit loggia above the sea',
-    menAlt: 'A man in a made-to-measure linen shirt and trousers seated on limestone steps above the sea',
+    menAlt: 'A man in a made-to-measure linen shirt and pants seated on limestone steps above the sea',
     aboutEyebrow: 'About the collection',
-    aboutTitle: 'Made-to-measure silk and linen',
+    aboutTitle: 'Made-to-measure silk, linen and high frequency fabrics',
     about: (open: string) =>
-      `${open}Every LINSILK piece is cut and sewn to your own measurements in 2–4 weeks, in 100% silk or 100% linen. Choose a piece, choose its colour from the swatches of its cloth, and enter your measurements: there are no sizes and no fittings. Four small collections a year, from Geneva.`,
+      `${open}Every LINSILK piece is cut and sewn to your own measurements in 2–4 weeks, in 100% silk, 100% linen or high frequency fabrics. Choose a piece, choose its colour from the swatches of its cloth, and enter your measurements: there are no sizes and no fittings. Four small collections a year, from Geneva.`,
     links: {
       '/collection/women/silk': 'Silk dresses and gowns',
       '/collection/women/silk-separates': 'Silk skirts and blouses',
       '/collection/women/linen': 'Women’s linen sets',
       '/collection/sleepwear': 'Silk sleepwear',
       '/collection/men/shirts': 'Men’s linen shirts',
-      '/collection/men/trousers': 'Men’s linen trousers',
+      '/collection/men/trousers': 'Men’s linen pants',
       '/occasion/wedding-guest': 'Wedding guest dresses',
     } as Record<string, string>,
   },
@@ -37,12 +37,12 @@ const EN = {
     women: 'Women',
     men: 'Men',
     crumb: 'Collection',
-    titleWomen: 'Women’s silk and linen clothing, made to measure',
-    titleMen: 'Men’s linen clothing, made to measure',
+    titleWomen: 'Women’s clothing in silk, linen and high frequency fabrics, made to measure',
+    titleMen: 'Men’s clothing in silk, linen and high frequency fabrics, made to measure',
     descWomen:
-      'Silk dresses, gowns, skirts, blouses and sleepwear, and linen two-piece sets, each cut and sewn to your measurements in 2–4 weeks. From Geneva.',
+      'Silk dresses, gowns, skirts, blouses and sleepwear, linen two-piece sets and cashmere pants, each cut and sewn to your measurements in 2–4 weeks. From Geneva.',
     descMen:
-      'Linen shirts, trousers and two-piece looks for men, each cut and sewn to your measurements in 2–4 weeks in 100% linen. From Geneva.',
+      'Linen shirts and pants, cashmere pants and silk ties for men. The clothing is cut and sewn to your measurements in 2–4 weeks. From Geneva.',
     intro: (closes: string | undefined) =>
       `Each is cut to your measurements and made in a capped run. ${
         closes
@@ -54,19 +54,19 @@ const EN = {
     aboutEyebrow: 'About the collection',
     aboutTitle: 'Made to your measurements',
     aboutWomen:
-      'LINSILK’s women’s pieces in 100% silk and 100% linen, each cut and sewn to your own measurements in 2–4 weeks.',
-    aboutMen: 'LINSILK’s men’s pieces in 100% linen, each cut and sewn to your own measurements in 2–4 weeks.',
+      'LINSILK’s women’s pieces in 100% silk, 100% linen and cashmere, each cut and sewn to your own measurements in 2–4 weeks.',
+    aboutMen: 'LINSILK’s men’s pieces in 100% linen and cashmere, each cut and sewn to your own measurements in 2–4 weeks, and silk ties ordered by colour alone.',
     colour: 'Choose the colour from the swatches of its cloth on the piece’s page.',
     wedding: 'Wedding guest dresses in silk',
     sleep: 'Silk sleepwear',
   },
   design: {
-    title: 'Design your own dress or shirt in silk or linen',
+    title: 'Design your own dress, shirt or pants in silk, linen or cashmere',
     description:
-      'Design your own piece: choose a base silhouette and the cloth, write a brief, add your measurements. A tailor reads it and replies with a price. Silk or linen only.',
+      'Design your own piece: choose a base silhouette and the cloth, write a brief, add your measurements. A tailor reads it and replies with a price. Silk, linen or cashmere.',
     aboutTitle: 'Design your own, made to your measurements',
     about:
-      'Design Your Own is LINSILK’s commission service: you choose a base silhouette and the cloth, write a brief to the tailor and submit your measurements; the tailor builds one garment to it and replies with a price before anything is cut. Every commission is made in 100% silk or 100% linen.',
+      'Design Your Own is LINSILK’s commission service: you choose a base silhouette and the cloth, write a brief to the tailor and submit your measurements; the tailor builds one garment to it and replies with a price before anything is cut. Every commission is made in 100% silk, 100% linen or cashmere.',
     mtmLink: 'How made-to-measure works',
     unreachablePre: 'Commissions cannot be sent just now — the tailor’s desk is unreachable. Write to ',
     unreachablePost: ' and a tailor will take your brief by email instead.',
@@ -132,7 +132,7 @@ const EN = {
     metaTitle: 'Contact the house',
     story: {
       title: 'The house',
-      lead: 'LINSILK was set up to make one thing properly: clothing in pure silk and pure linen, cut for one body, in four small collections a year.',
+      lead: 'LINSILK was set up to make one thing properly: clothing in pure silk, pure linen and high frequency fabrics, cut for one body, in four small collections a year.',
       a: 'Orders and client care are handled from Geneva. Prices are in Swiss francs and include duty within Switzerland and the EU. A piece takes two to four weeks from the confirmed measurement sheet.',
       b: 'Write to hello@bylinsilk.com with any question about a piece or your order.',
     },
@@ -144,9 +144,9 @@ export type PagesText = typeof EN;
 
 const DE_CH: PagesText = {
   collection: {
-    title: 'Die Kollektion: Seide und Leinen nach Mass',
+    title: 'Die Kollektion: Seide, Leinen und hochfrequente Stoffe nach Mass',
     description: (open) =>
-      `${open}Damen- und Herrenstücke aus 100 % Seide und 100 % Leinen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht.`,
+      `${open}Damen- und Herrenstücke aus 100 % Seide, 100 % Leinen und hochfrequenten Stoffen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht.`,
     none: 'Im Moment ist keine Kollektion geöffnet. Sobald die nächste Saison zugeschnitten ist, erscheinen ihre Stücke hier.',
     commission: 'Ein Stück in Auftrag geben',
     designs: (n) => `${n} Modelle`,
@@ -156,9 +156,9 @@ const DE_CH: PagesText = {
     womenAlt: 'Eine Frau in einem Wickelkleid aus Seide nach Mass auf einer sonnigen Loggia über dem Meer',
     menAlt: 'Ein Mann in Hemd und Hose aus Leinen nach Mass, auf Kalksteinstufen über dem Meer sitzend',
     aboutEyebrow: 'Über die Kollektion',
-    aboutTitle: 'Seide und Leinen nach Mass',
+    aboutTitle: 'Seide, Leinen und hochfrequente Stoffe nach Mass',
     about: (open) =>
-      `${open}Jedes LINSILK-Stück wird nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht, aus 100 % Seide oder 100 % Leinen. Wählen Sie ein Stück, wählen Sie seine Farbe aus den Stoffmustern seines Stoffs und geben Sie Ihre Masse ein: Es gibt keine Konfektionsgrössen und keine Anproben. Vier kleine Kollektionen im Jahr, aus Genf.`,
+      `${open}Jedes LINSILK-Stück wird nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht, aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen. Wählen Sie ein Stück, wählen Sie seine Farbe aus den Stoffmustern seines Stoffs und geben Sie Ihre Masse ein: Es gibt keine Konfektionsgrössen und keine Anproben. Vier kleine Kollektionen im Jahr, aus Genf.`,
     links: {
       '/collection/women/silk': 'Kleider und Roben aus Seide',
       '/collection/women/silk-separates': 'Röcke und Blusen aus Seide',
@@ -173,12 +173,12 @@ const DE_CH: PagesText = {
     women: 'Damen',
     men: 'Herren',
     crumb: 'Kollektion',
-    titleWomen: 'Damenmode aus Seide und Leinen nach Mass',
-    titleMen: 'Herrenmode aus Leinen nach Mass',
+    titleWomen: 'Damenmode aus Seide, Leinen und hochfrequente Stoffe nach Mass',
+    titleMen: 'Herrenmode aus Seide, Leinen und hochfrequenten Stoffen nach Mass',
     descWomen:
-      'Kleider, Roben, Röcke, Blusen und Schlafmode aus Seide sowie zweiteilige Sets aus Leinen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht. Aus Genf.',
+      'Kleider, Roben, Röcke, Blusen und Schlafmode aus Seide, zweiteilige Sets aus Leinen sowie Kaschmirhosen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht. Aus Genf.',
     descMen:
-      'Hemden, Hosen und zweiteilige Outfits aus Leinen für Herren, jedes nach Ihren Massen in 2–4 Wochen aus 100 % Leinen zugeschnitten und genäht. Aus Genf.',
+      'Hemden und Hosen aus Leinen, Kaschmirhosen und Seidenkrawatten für Herren. Die Kleidung wird nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht. Aus Genf.',
     intro: (closes) =>
       `Jedes Stück wird nach Ihren Massen zugeschnitten und in begrenzter Auflage gefertigt. ${
         closes
@@ -190,19 +190,19 @@ const DE_CH: PagesText = {
     aboutEyebrow: 'Über die Kollektion',
     aboutTitle: 'Nach Ihren Massen gefertigt',
     aboutWomen:
-      'Die Damenstücke von LINSILK aus 100 % Seide und 100 % Leinen, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht.',
-    aboutMen: 'Die Herrenstücke von LINSILK aus 100 % Leinen, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht.',
+      'Die Damenstücke von LINSILK aus 100 % Seide, 100 % Leinen und Kaschmir, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht.',
+    aboutMen: 'Die Herrenstücke von LINSILK aus 100 % Leinen und Kaschmir, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht, und Seidenkrawatten, die nur nach Farbe bestellt werden.',
     colour: 'Die Farbe wählen Sie auf der Seite des Stücks aus den Stoffmustern seines Stoffs.',
     wedding: 'Kleider für Hochzeitsgäste aus Seide',
     sleep: 'Schlafmode aus Seide',
   },
   design: {
-    title: 'Kleid oder Hemd aus Seide oder Leinen selbst entwerfen',
+    title: 'Kleid, Hemd oder Hose aus Seide, Leinen oder Kaschmir selbst entwerfen',
     description:
-      'Entwerfen Sie Ihr eigenes Stück: Wählen Sie eine Grundsilhouette und den Stoff, schreiben Sie ein Briefing, geben Sie Ihre Masse an. Das Atelier liest es und antwortet mit einem Preis. Nur Seide oder Leinen.',
+      'Entwerfen Sie Ihr eigenes Stück: Wählen Sie eine Grundsilhouette und den Stoff, schreiben Sie ein Briefing, geben Sie Ihre Masse an. Das Atelier liest es und antwortet mit einem Preis. Seide, Leinen oder Kaschmir.',
     aboutTitle: 'Selbst entwerfen, nach Ihren Massen gefertigt',
     about:
-      '«Selbst entwerfen» ist der Auftragsservice von LINSILK: Sie wählen eine Grundsilhouette und den Stoff, schreiben dem Atelier ein Briefing und geben Ihre Masse an; das Atelier fertigt danach ein einziges Kleidungsstück und antwortet mit einem Preis, bevor etwas zugeschnitten wird. Jeder Auftrag wird aus 100 % Seide oder 100 % Leinen gefertigt.',
+      '«Selbst entwerfen» ist der Auftragsservice von LINSILK: Sie wählen eine Grundsilhouette und den Stoff, schreiben dem Atelier ein Briefing und geben Ihre Masse an; das Atelier fertigt danach ein einziges Kleidungsstück und antwortet mit einem Preis, bevor etwas zugeschnitten wird. Jeder Auftrag wird aus 100 % Seide, 100 % Leinen oder Kaschmir gefertigt.',
     mtmLink: 'So funktioniert Mass-Anfertigung',
     unreachablePre: 'Aufträge lassen sich im Moment nicht senden – das Atelier ist nicht erreichbar. Schreiben Sie an ',
     unreachablePost: ', dann nimmt das Atelier Ihr Briefing stattdessen per E-Mail entgegen.',
@@ -278,9 +278,9 @@ const DE_CH: PagesText = {
 
 const FR: PagesText = {
   collection: {
-    title: 'La collection : soie et lin sur mesure',
+    title: 'La collection : soie, lin et tissus à haute fréquence sur mesure',
     description: (open) =>
-      `${open}Pièces femme et homme en 100 % soie et 100 % lin, chacune coupée et cousue à vos mesures en 2 à 4 semaines.`,
+      `${open}Pièces femme et homme en 100 % soie, 100 % lin et tissus à haute fréquence, chacune coupée et cousue à vos mesures en 2 à 4 semaines.`,
     none: 'Aucune collection n’est ouverte pour le moment. Lorsque la prochaine saison sera coupée, ses pièces apparaîtront ici.',
     commission: 'Commander une pièce sur mesure',
     designs: (n) => `${n} modèles`,
@@ -292,7 +292,7 @@ const FR: PagesText = {
     aboutEyebrow: 'À propos de la collection',
     aboutTitle: 'Soie et lin sur mesure',
     about: (open) =>
-      `${open}Chaque pièce LINSILK est coupée et cousue à vos propres mesures en 2 à 4 semaines, en 100 % soie ou 100 % lin. Choisissez une pièce, choisissez sa couleur parmi les échantillons de son tissu et saisissez vos mesures : pas de tailles, pas d’essayages. Quatre petites collections par an, depuis Genève.`,
+      `${open}Chaque pièce LINSILK est coupée et cousue à vos propres mesures en 2 à 4 semaines, en 100 % soie, 100 % lin ou en tissus à haute fréquence. Choisissez une pièce, choisissez sa couleur parmi les échantillons de son tissu et saisissez vos mesures : pas de tailles, pas d’essayages. Quatre petites collections par an, depuis Genève.`,
     links: {
       '/collection/women/silk': 'Robes et robes longues en soie',
       '/collection/women/silk-separates': 'Jupes et chemisiers en soie',
@@ -307,12 +307,12 @@ const FR: PagesText = {
     women: 'Femme',
     men: 'Homme',
     crumb: 'Collection',
-    titleWomen: 'Vêtements femme en soie et en lin, sur mesure',
-    titleMen: 'Vêtements homme en lin, sur mesure',
+    titleWomen: 'Vêtements femme en soie, en lin et en tissus à haute fréquence, sur mesure',
+    titleMen: 'Vêtements homme en soie, en lin et en tissus à haute fréquence, sur mesure',
     descWomen:
-      'Robes, robes longues, jupes, chemisiers et vêtements de nuit en soie, et ensembles deux pièces en lin, chacun coupé et cousu à vos mesures en 2 à 4 semaines. Depuis Genève.',
+      'Robes, robes longues, jupes, chemisiers et vêtements de nuit en soie, ensembles deux pièces en lin et pantalons en cachemire, chacun coupé et cousu à vos mesures en 2 à 4 semaines. Depuis Genève.',
     descMen:
-      'Chemises, pantalons et tenues deux pièces en lin pour homme, chacun coupé et cousu à vos mesures en 2 à 4 semaines, en 100 % lin. Depuis Genève.',
+      'Chemises et pantalons en lin, pantalons en cachemire et cravates en soie pour homme. Les vêtements sont coupés et cousus à vos mesures en 2 à 4 semaines. Depuis Genève.',
     intro: (closes) =>
       `Chaque pièce est coupée à vos mesures et fabriquée en série limitée. ${
         closes
@@ -324,19 +324,19 @@ const FR: PagesText = {
     aboutEyebrow: 'À propos de la collection',
     aboutTitle: 'Faite à vos mesures',
     aboutWomen:
-      'Les pièces femme de LINSILK en 100 % soie et 100 % lin, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines.',
-    aboutMen: 'Les pièces homme de LINSILK en 100 % lin, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines.',
+      'Les pièces femme de LINSILK en 100 % soie, 100 % lin et cachemire, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines.',
+    aboutMen: 'Les pièces homme de LINSILK en 100 % lin et en cachemire, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines, et des cravates en soie commandées par coloris seulement.',
     colour: 'Choisissez la couleur parmi les échantillons de son tissu, sur la page de la pièce.',
     wedding: 'Robes d’invitée de mariage en soie',
     sleep: 'Vêtements de nuit en soie',
   },
   design: {
-    title: 'Concevoir votre robe ou chemise en soie ou en lin',
+    title: 'Concevoir votre robe, chemise ou pantalon en soie, en lin ou en cachemire',
     description:
-      'Concevez votre propre pièce : choisissez une silhouette de base et le tissu, rédigez un brief, ajoutez vos mesures. Un tailleur le lit et vous répond avec un prix. Soie ou lin uniquement.',
+      'Concevez votre propre pièce : choisissez une silhouette de base et le tissu, rédigez un brief, ajoutez vos mesures. Un tailleur le lit et vous répond avec un prix. Soie, lin ou cachemire.',
     aboutTitle: 'Concevoir sur mesure, à vos mesures',
     about:
-      '« Concevoir sur mesure » est le service de commande de LINSILK : vous choisissez une silhouette de base et le tissu, rédigez un brief au tailleur et envoyez vos mesures ; l’atelier fabrique un seul vêtement d’après ce brief et répond avec un prix avant toute coupe. Chaque commande est réalisée en 100 % soie ou 100 % lin.',
+      '« Concevoir sur mesure » est le service de commande de LINSILK : vous choisissez une silhouette de base et le tissu, rédigez un brief au tailleur et envoyez vos mesures ; l’atelier fabrique un seul vêtement d’après ce brief et répond avec un prix avant toute coupe. Chaque commande est réalisée en 100 % soie, 100 % lin ou en cachemire.',
     mtmLink: 'Comment fonctionne le sur-mesure',
     unreachablePre: 'Les commandes ne peuvent pas être envoyées pour le moment — le bureau de l’atelier est injoignable. Écrivez à ',
     unreachablePost: ' et un tailleur prendra votre brief par e-mail à la place.',

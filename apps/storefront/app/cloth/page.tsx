@@ -5,9 +5,9 @@ import { COLOURS } from '@/lib/house';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: `Silk and linen cloth: ${COLOURS.silk} silk and ${COLOURS.linen} linen colours`,
+    title: `Silk, linen and high frequency fabrics: ${COLOURS.silk} silk, ${COLOURS.linen} linen and ${COLOURS.cashmere} cashmere colours`,
     description:
-      'The cloths LINSILK makes in: pure silk (plain, jacquard, brocade) and pure linen. How they feel, how they wear, how to care for them, and all 88 colours.',
+      'The cloths LINSILK makes in: pure silk (plain, jacquard, brocade), pure linen and cashmere. How they feel, how they wear, how to care for them, and all 100 colours.',
     alternates: { canonical: '/cloth' },
   };
 }

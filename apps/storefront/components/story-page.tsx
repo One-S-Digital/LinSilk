@@ -22,11 +22,14 @@ export async function StoryPage({
   storyKey,
   children,
   content,
+  extra,
 }: {
   storyKey: StoryKey;
   children?: ReactNode;
   /** A translation of the page's copy, which Payload holds in English only. */
   content?: { title: string; lead: string; a: string; b: string };
+  /** A third paragraph, for a cloth the stored page does not mention yet. */
+  extra?: string;
 }) {
   const story = content ?? (await getStoryPage(storyKey));
   const plates = PLATES[storyKey];
@@ -69,6 +72,11 @@ export async function StoryPage({
         <Reveal delay={0.1}>
           <p className={styles.prose}>{story.b}</p>
         </Reveal>
+        {extra && (
+          <Reveal delay={0.2}>
+            <p className={styles.prose}>{extra}</p>
+          </Reveal>
+        )}
       </div>
 
       {children && <div className={styles.foot}>{children}</div>}

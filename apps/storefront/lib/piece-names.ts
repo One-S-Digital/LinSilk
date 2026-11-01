@@ -65,55 +65,55 @@ const N: Record<string, Name> = {
     de: 'Schräg geschnittener Seiden-Maxirock mit Godet-Saum',
     fr: 'Jupe maxi en soie coupée dans le biais, ourlet à godets',
   },
-  'Linen shirt and wide-leg trousers set': {
+  'Linen shirt and wide-leg pants set': {
     de: 'Leinen-Set aus Hemd und weiter Hose',
     fr: 'Ensemble en lin chemise et pantalon large',
   },
-  'Linen tie-front vest and wide-leg trousers set': {
+  'Linen tie-front vest and wide-leg pants set': {
     de: 'Leinen-Set aus Weste zum Binden und weiter Hose',
     fr: 'Ensemble en lin gilet à nouer et pantalon large',
   },
-  'Linen button-front waistcoat and patch-pocket trousers set': {
+  'Linen button-front waistcoat and patch-pocket pants set': {
     de: 'Leinen-Set aus geknöpfter Weste und Hose mit aufgesetzten Taschen',
     fr: 'Ensemble en lin gilet boutonné et pantalon à poches plaquées',
   },
-  'Linen crop top and drawstring trousers set': {
+  'Linen crop top and drawstring pants set': {
     de: 'Leinen-Set aus Crop-Top und Hose mit Kordelzug',
     fr: 'Ensemble en lin top court et pantalon à cordon',
   },
-  'Linen waistcoat and pleated wide-leg trousers set': {
+  'Linen waistcoat and pleated wide-leg pants set': {
     de: 'Leinen-Set aus Weste und weiter Bundfaltenhose',
     fr: 'Ensemble en lin gilet et pantalon large à pinces',
   },
-  'Linen wrap-tie waistcoat and relaxed trousers set': {
+  'Linen wrap-tie waistcoat and relaxed pants set': {
     de: 'Leinen-Set aus Wickelweste zum Binden und lockerer Hose',
     fr: 'Ensemble en lin gilet cache-cœur à nouer et pantalon ample',
   },
-  'Linen longline duster vest and wide-leg trousers set': {
+  'Linen longline duster vest and wide-leg pants set': {
     de: 'Leinen-Set aus langer Duster-Weste und weiter Hose',
     fr: 'Ensemble en lin gilet long type duster et pantalon large',
   },
-  'Linen deep-V waistcoat and wide-leg trousers set': {
+  'Linen deep-V waistcoat and wide-leg pants set': {
     de: 'Leinen-Set aus Weste mit tiefem V-Ausschnitt und weiter Hose',
     fr: 'Ensemble en lin gilet à décolleté en V profond et pantalon large',
   },
-  'Linen asymmetric-button waistcoat and wide-leg trousers set': {
+  'Linen asymmetric-button waistcoat and wide-leg pants set': {
     de: 'Leinen-Set aus Weste mit asymmetrischer Knopfleiste und weiter Hose',
     fr: 'Ensemble en lin gilet à boutonnage asymétrique et pantalon large',
   },
-  'Linen mock-neck longline vest and pleated trousers set': {
+  'Linen mock-neck longline vest and pleated pants set': {
     de: 'Leinen-Set aus langer Weste mit Stehkragen und Bundfaltenhose',
     fr: 'Ensemble en lin gilet long à col montant et pantalon à pinces',
   },
-  'Linen wrap-tie waistcoat and pleated trousers set': {
+  'Linen wrap-tie waistcoat and pleated pants set': {
     de: 'Leinen-Set aus Wickelweste zum Binden und Bundfaltenhose',
     fr: 'Ensemble en lin gilet cache-cœur à nouer et pantalon à pinces plissé',
   },
-  'Linen cascade-panel top and cropped wide-leg trousers set': {
+  'Linen cascade-panel top and cropped wide-leg pants set': {
     de: 'Leinen-Set aus Top mit Kaskadenpartie und verkürzter weiter Hose',
     fr: 'Ensemble en lin top à panneau cascade et pantalon large court',
   },
-  'Linen button-front waistcoat and slant-pocket trousers set': {
+  'Linen button-front waistcoat and slant-pocket pants set': {
     de: 'Leinen-Set aus geknöpfter Weste und Hose mit Schrägtaschen',
     fr: 'Ensemble en lin gilet boutonné et pantalon à poches obliques',
   },
@@ -129,11 +129,11 @@ const N: Record<string, Name> = {
     de: 'Seiden-Set aus Neckholder-Cami zum Binden und Shorts',
     fr: 'Ensemble en soie caraco dos-nu à nouer et short',
   },
-  'Silk tie-halter cami and wide-leg trousers set': {
+  'Silk tie-halter cami and wide-leg pants set': {
     de: 'Seiden-Set aus Neckholder-Cami zum Binden und weiter Hose',
     fr: 'Ensemble en soie caraco dos-nu à nouer et pantalon large',
   },
-  'Silk boxy tee and wide-leg trousers set': {
+  'Silk boxy tee and wide-leg pants set': {
     de: 'Seiden-Set aus Boxy-Shirt und weiter Hose',
     fr: 'Ensemble en soie tee-shirt boxy et pantalon large',
   },
@@ -153,7 +153,7 @@ const N: Record<string, Name> = {
     de: 'Seiden-Set aus langem Wickel-Morgenmantel und Midi-Slipkleid',
     fr: 'Ensemble en soie long peignoir portefeuille et robe nuisette midi',
   },
-  'Silk wrap-front pyjama shirt and trousers set': {
+  'Silk wrap-front pyjama shirt and pants set': {
     de: 'Seiden-Pyjama-Set aus Wickelhemd und Hose',
     fr: 'Pyjama en soie chemise cache-cœur et pantalon',
   },
@@ -165,7 +165,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit Kentkragen',
     fr: 'Chemise en lin à col italien',
   },
-  'Linen cuffed trousers with side adjuster': {
+  'Linen cuffed pants with side adjuster': {
     de: 'Leinenhose mit Umschlag und seitlichem Verstellband',
     fr: 'Pantalon en lin à revers avec serrage latéral',
   },
@@ -177,7 +177,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit offenem Camp-Kragen',
     fr: 'Chemise en lin à col cubain ouvert',
   },
-  'Linen gurkha trousers': {
+  'Linen gurkha pants': {
     de: 'Leinen-Gurkhahose',
     fr: 'Pantalon gurkha en lin',
   },
@@ -185,7 +185,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit geschlossenem Camp-Kragen',
     fr: 'Chemise cubaine en lin à col fermé',
   },
-  'Linen high-waist trousers with double side buckles': {
+  'Linen high-waist pants with double side buckles': {
     de: 'Leinenhose mit hohem Bund und doppelten seitlichen Schnallen',
     fr: 'Pantalon en lin taille haute à doubles boucles latérales',
   },
@@ -193,7 +193,7 @@ const N: Record<string, Name> = {
     de: 'Strukturiertes Leinenhemd mit Camp-Kragen',
     fr: 'Chemise en lin texturée à col cubain',
   },
-  'Linen slim single-pleat trousers': {
+  'Linen slim single-pleat pants': {
     de: 'Schmale Leinenhose mit einer Bundfalte',
     fr: 'Pantalon en lin slim à un pli',
   },
@@ -201,7 +201,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit Camp-Kragen in Waffelstruktur',
     fr: 'Chemise en lin à col cubain, texture gaufrée',
   },
-  'Linen pleated trousers with double-button waist': {
+  'Linen pleated pants with double-button waist': {
     de: 'Leinen-Bundfaltenhose mit Doppelknopf-Bund',
     fr: 'Pantalon en lin à pinces, taille à double bouton',
   },
@@ -209,7 +209,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd im Utility-Stil mit Camp-Kragen',
     fr: 'Chemise en lin utilitaire à col cubain',
   },
-  'Linen pleated trousers with wide waistband': {
+  'Linen pleated pants with wide waistband': {
     de: 'Leinen-Bundfaltenhose mit breitem Bund',
     fr: 'Pantalon en lin à pinces, ceinture large',
   },
@@ -217,11 +217,11 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit Camp-Kragen und geradem Saum',
     fr: 'Chemise en lin à col cubain et ourlet droit',
   },
-  'Linen high-rise straight-leg trousers': {
+  'Linen high-rise straight-leg pants': {
     de: 'Gerade Leinenhose mit hohem Bund',
     fr: 'Pantalon en lin droit taille haute',
   },
-  'Linen pleated trousers with side adjuster tabs': {
+  'Linen pleated pants with side adjuster tabs': {
     de: 'Leinen-Bundfaltenhose mit seitlichen Verstelllaschen',
     fr: 'Pantalon en lin à pinces avec pattes de serrage latérales',
   },
@@ -241,11 +241,11 @@ const N: Record<string, Name> = {
     de: 'Zweireihiges Leinenhemd mit Stehkragen',
     fr: 'Chemise en lin croisée à col mao',
   },
-  'Linen straight-leg trousers with button-trim panels': {
+  'Linen straight-leg pants with button-trim panels': {
     de: 'Gerade Leinenhose mit Einsätzen und Knopfbesatz',
     fr: 'Pantalon en lin droit à empiècements boutonnés',
   },
-  'Linen wide-leg drawstring trousers with side buttons': {
+  'Linen wide-leg drawstring pants with side buttons': {
     de: 'Weite Leinenhose mit Kordelzug und seitlichen Knöpfen',
     fr: 'Pantalon large en lin à cordon et boutons latéraux',
   },
@@ -265,7 +265,7 @@ const N: Record<string, Name> = {
     de: 'Leinenhemd mit Knopfleiste',
     fr: 'Chemise en lin boutonnée',
   },
-  'Linen pleated tapered trousers': {
+  'Linen pleated tapered pants': {
     de: 'Zulaufende Leinen-Bundfaltenhose',
     fr: 'Pantalon en lin à pinces fuselé',
   },
@@ -277,6 +277,30 @@ const N: Record<string, Name> = {
     de: 'Seidenbluse mit Stehkragen',
     fr: 'Chemisier en soie à col montant',
   },
+  'Cashmere drawstring pants': {
+    de: 'Kaschmirhose mit Kordelzug',
+    fr: 'Pantalon en cachemire à cordon',
+  },
+  'Cashmere pressed straight pants': {
+    de: 'Gerade Kaschmirhose mit Bügelfalte',
+    fr: 'Pantalon droit en cachemire à pli',
+  },
+  'Cashmere high-waist wide-leg pants': {
+    de: 'Weite Kaschmirhose mit hohem Bund',
+    fr: 'Pantalon large taille haute en cachemire',
+  },
+  'Cashmere pleated wide-leg pants': {
+    de: 'Weite Kaschmir-Bundfaltenhose',
+    fr: 'Pantalon large à pinces en cachemire',
+  },
+  'Silk tie': {
+    de: 'Seidenkrawatte',
+    fr: 'Cravate en soie',
+  },
+  'Patterned silk tie': {
+    de: 'Gemusterte Seidenkrawatte',
+    fr: 'Cravate en soie à motif',
+  },
 };
 
 export const PIECE_NAMES = N;
@@ -284,6 +308,8 @@ export const PIECE_NAMES = N;
 /** A piece's name in a language; the English title when it is not listed. */
 export function pieceName(title: string, lang: Lang): string {
   if (lang === 'en') return title;
-  const n = N[title];
+  /* A title still written "trousers" (a catalogue not yet renamed) reads from
+     the same entry as its "pants" successor. */
+  const n = N[title] ?? N[title.replace(/\btrousers\b/, 'pants')];
   return n ? (lang.startsWith('de') ? n.de : n.fr) : title;
 }

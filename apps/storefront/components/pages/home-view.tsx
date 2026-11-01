@@ -269,7 +269,7 @@ export async function HomeView({ lang }: { lang: Lang }) {
       <div className={styles.seoFoot}>
         <SeoText title={c.introH}>
           <p>{c.introLead}</p>
-          <SeoSteps items={c.steps(COLOURS.silk, COLOURS.linen)} />
+          <SeoSteps items={c.steps(COLOURS.silk, COLOURS.linen, COLOURS.cashmere)} />
           <ButtonLink href={to('/made-to-measure')} variant="rule">
             {c.introCta}
           </ButtonLink>

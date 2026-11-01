@@ -21,8 +21,11 @@ export function SwatchPicker({
   value,
   onChange,
   idPrefix = 'swatch',
+  only,
 }: {
   cloth: Cloth;
+  /** The colours this piece is offered in, when it is not the whole cloth. */
+  only?: readonly string[];
   /** The chosen swatch's key, or null before a colour has been chosen. */
   value: string | null;
   onChange: (key: string) => void;
@@ -34,7 +37,7 @@ export function SwatchPicker({
   /* Silk comes in three weaves and is shown under a heading for each; linen is
      one list. The order of the library is kept either way. */
   const sections: { name?: string; items: Swatch[] }[] = [];
-  for (const swatch of swatchesFor(cloth)) {
+  for (const swatch of swatchesFor(cloth, only)) {
     const last = sections[sections.length - 1];
     if (last && last.name === swatch.group) last.items.push(swatch);
     else sections.push({ name: swatch.group, items: [swatch] });

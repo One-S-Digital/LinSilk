@@ -10,7 +10,7 @@ import { COLOURS, EMAIL, ENTITY, priceRange } from '@/lib/house';
    ("LINSILK at a glance") for answer engines to quote. */
 
 export const metadata: Metadata = {
-  title: 'About LINSILK: made-to-measure silk and linen from Geneva',
+  title: 'About LINSILK: made-to-measure silk, linen and high frequency fabrics from Geneva',
   description:
     'LINSILK is a Geneva house making clothing to your measurements in 100% silk and 100% linen. How it is made, what it costs, and how to order.',
   alternates: { canonical: '/about' },
@@ -41,11 +41,11 @@ export default async function AboutPage() {
         </DocP>
       </DocSection>
 
-      <DocSection title="Why only silk and linen">
+      <DocSection title="Why only silk, linen and high frequency fabrics">
         <DocP>
-          Silk and linen are natural fibres that breathe, move with the body and rest
-          lightly on the skin. Every LINSILK garment is made in 100% silk or 100% linen
-          cloth, never a blend or a synthetic. Polyester, nylon and PU cloths are made from
+          Silk, linen and high frequency fabrics are natural fibres that move with the body and rest
+          lightly on the skin. Every LINSILK garment is made in 100% silk, 100% linen or
+          high frequency fabric, never a synthetic. Polyester, nylon and PU cloths are made from
           petroleum, do not breathe, and shed microplastic fibres when worn and washed.
         </DocP>
       </DocSection>
@@ -55,8 +55,8 @@ export default async function AboutPage() {
           rows={[
             ['What', 'Made-to-measure clothing for women and men'],
             ['Where', 'Based in Geneva, Switzerland'],
-            ['Cloth', '100% silk or 100% linen'],
-            ['Colours', `${COLOURS.silk} silk colours (plain, jacquard, brocade); ${COLOURS.linen} linen colours`],
+            ['Cloth', '100% silk, 100% linen or high frequency fabrics'],
+            ['Colours', `${COLOURS.silk} silk colours (plain, jacquard, brocade); ${COLOURS.linen} linen colours; ${COLOURS.cashmere} cashmere colours`],
             ...(range ? [['Price', `${money(range.from)}–${range.to} per piece`] as [string, string]] : []),
             ['Making time', '2–4 weeks from your confirmed measurement sheet'],
             ['How to order', 'Choose a piece and its colour, enter 15 measurements, and it is cut and sewn for you'],
