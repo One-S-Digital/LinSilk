@@ -44,6 +44,10 @@ export type OrderRecord = {
   } | null
 }
 
+/** A line with no sheet to confirm, such as a tie, which is ordered by colour
+    alone: the storefront writes `zone_count` 0 on it. */
+const noSheet = (line: OrderLine) => !line.commission && Number(line.metadata?.zone_count) === 0
+
 const ZONE_LABELS: Record<string, string> = Object.fromEntries(
   [...BODY_ZONES, ...Object.values(LENGTH_ZONES)].map((zone) => [zone.key, zone.label])
 )
@@ -122,8 +126,16 @@ const addressLines = (order: OrderRecord) => {
   ].filter((part): part is string => Boolean(part))
 }
 
+const COLOUR_ONLY =
+  "Nothing is made until the tailor has written back to confirm your colour — usually within two working days. If it is not the colour you meant, reply to this email and it is amended before the tie is made."
+
 /** The same message as the plain text below, laid out for the HTML version. */
-const confirmationBlocks = (order: OrderRecord, paid: boolean, seasonal: boolean): Block[] => [
+const confirmationBlocks = (
+  order: OrderRecord,
+  paid: boolean,
+  seasonal: boolean,
+  colourOnly: boolean
+): Block[] => [
   {
     kind: "p",
     text: paid
@@ -132,7 +144,9 @@ const confirmationBlocks = (order: OrderRecord, paid: boolean, seasonal: boolean
   },
   {
     kind: "p",
-    text: seasonal
+    text: colourOnly
+      ? COLOUR_ONLY
+      : seasonal
       ? "Nothing is cut until the tailor has read your measurement sheet and written back to confirm it — usually within two working days. If anything on the sheet is wrong, reply to this email and it is amended before a pattern is drawn. A piece takes two to four weeks from the confirmed sheet."
       : "The bench has your commission. A pattern is drawn to your sheet before anything is cut, and a piece takes two to four weeks from that point.",
   },
@@ -156,6 +170,7 @@ const confirmationBlocks = (order: OrderRecord, paid: boolean, seasonal: boolean
 export function orderConfirmationEmail(order: OrderRecord) {
   const paid = order.payment_status === "captured"
   const seasonal = order.items.some((line) => !line.commission)
+  const colourOnly = seasonal && order.items.filter((line) => !line.commission).every(noSheet)
   const who = nameOf(order)
 
   return {
@@ -170,7 +185,7 @@ export function orderConfirmationEmail(order: OrderRecord) {
       html: renderHtml({
         heading: "Your order",
         greeting: who ? `Dear ${who},` : "Hello,",
-        blocks: confirmationBlocks(order, paid, seasonal),
+        blocks: confirmationBlocks(order, paid, seasonal, colourOnly),
       }),
       text: [
         who ? `Dear ${who},` : "Hello,",
@@ -179,7 +194,13 @@ export function orderConfirmationEmail(order: OrderRecord) {
           ? "Thank you. Your order is paid for."
           : "Thank you. We have your order, and will write again once your payment is confirmed.",
         "",
-        ...(seasonal
+        ...(colourOnly
+          ? [
+              "Nothing is made until the tailor has written back to confirm your colour",
+              "— usually within two working days. If it is not the colour you meant,",
+              "reply to this email and it is amended before the tie is made.",
+            ]
+          : seasonal
           ? [
               "Nothing is cut until the tailor has read your measurement sheet and",
               "written back to confirm it — usually within two working days. If",
@@ -212,6 +233,9 @@ export function orderPlacedEmail(order: OrderRecord, to: string) {
   const lines = order.items.filter((line) => !line.commission)
   const paid = order.payment_status === "captured"
   const mixed = lines.length < order.items.length
+  const toConfirm = lines.every(noSheet)
+    ? "To write back and confirm the colour, within two working days."
+    : "To read the sheet and write back to confirm it, within two working days."
 
   return {
     to,
@@ -232,7 +256,7 @@ export function orderPlacedEmail(order: OrderRecord, to: string) {
               "Check it in the admin before starting.",
             ]),
         "",
-        "To read the sheet and write back to confirm it, within two working days.",
+        toConfirm,
         "",
         `Order ${numberOf(order)}`,
         ...lines.map((line) => lineText(line, order.currency_code)),

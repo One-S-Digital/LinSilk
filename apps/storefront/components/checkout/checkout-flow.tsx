@@ -630,7 +630,10 @@ export function CheckoutFlow({
         <ApproxNote className={styles.reassure} />
 
         <p className={styles.reassure}>
-          {t.reassure}
+          {(cart.items ?? []).length > 0 &&
+          (cart.items ?? []).every((item) => Number(item.metadata?.zone_count) === 0)
+            ? t.reassureTie
+            : t.reassure}
         </p>
       </aside>
     </div>

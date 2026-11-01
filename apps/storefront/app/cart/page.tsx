@@ -21,12 +21,14 @@ export default function CartPage() {
      cart to another region, and a client coming back here afterwards must
      see the figures it is actually holding the pieces at. */
   const money = (amount: number) => formatMoney(amount, currency);
+  /* A cart of ties alone has no sheet to confirm; the tailor confirms the colour. */
+  const noSheet = lines.length > 0 && lines.every((line) => line.zoneCount === 0);
 
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>{t.title}</h1>
       <p className={styles.lede}>
-        {t.lede}
+        {noSheet ? t.ledeTie : t.lede}
       </p>
 
       {/* Held until the stored cart is read, so the page never flashes an empty
@@ -104,7 +106,7 @@ export default function CartPage() {
 
           <div className={styles.summary}>
             <p className={styles.terms}>
-              {t.terms}
+              {noSheet ? t.termsTie : t.terms}
             </p>
 
             <div className={styles.totals}>

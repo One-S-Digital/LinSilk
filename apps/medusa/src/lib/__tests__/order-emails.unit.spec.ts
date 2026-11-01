@@ -133,3 +133,32 @@ describe("orderPlacedEmail", () => {
     expect(orderPlacedEmail(order([shirt]), "hello@bylinsilk.com").content.text).not.toContain("whole order")
   })
 })
+
+describe("an order of ties, which have no sheet to confirm", () => {
+  const tie = {
+    title: "Silk tie",
+    total: 65,
+    commission: false,
+    metadata: { fabric_name: "Navy silk", fabric_key: "LS-S04", zone_count: 0 },
+  }
+
+  it("asks the client to confirm a colour, not a measurement sheet", () => {
+    const { text, html } = orderConfirmationEmail(order([tie], { item_total: 65, total: 65 })).content
+    expect(text).toContain("confirm your colour")
+    expect(html).toContain("confirm your colour")
+    expect(text).not.toContain("measurement sheet")
+    expect(html).not.toContain("measurement sheet")
+  })
+
+  it("asks the house to confirm the colour", () => {
+    const { text } = orderPlacedEmail(order([tie]), "atelier@example.com").content
+    expect(text).toContain("confirm the colour")
+    expect(text).not.toContain("read the sheet")
+  })
+
+  it("keeps the sheet wording when a garment is in the order too", () => {
+    const { text } = orderConfirmationEmail(order([tie, shirt])).content
+    expect(text).toContain("measurement sheet")
+    expect(text).not.toContain("confirm your colour")
+  })
+})

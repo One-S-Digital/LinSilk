@@ -13,7 +13,9 @@ import { lengthKindsOf, missingMeasurements, needsNoMeasurements } from "./measu
    - it is ordered one at a time, because every garment is cut for one
      person and holds one place in the season's capped run;
    - it carries a complete measurement sheet (measurements.ts), unless the
-     piece is one that asks for none, such as a tie.
+     piece is one that asks for none, such as a tie;
+   - where a piece offers only some colours (a tie's `metadata.swatches`),
+     the line names one of them.
 
    Lines without a variant are not seasonal pieces and are left alone. */
 
@@ -29,6 +31,13 @@ const list = (labels: string[]) =>
   labels.length === 1
     ? labels[0]
     : `${labels.slice(0, -1).join(", ")} and ${labels[labels.length - 1]}`
+
+/** The colours a piece offers, from its product metadata; empty when it
+    offers its cloth's whole library. */
+const swatchesOf = (metadata: Record<string, unknown> | null | undefined): string[] => {
+  const swatches = metadata?.swatches
+  return Array.isArray(swatches) ? swatches.filter((s): s is string => typeof s === "string") : []
+}
 
 export function lineRefusals({ quantity, metadata, variant, commission }: CartLine): string[] {
   if (!variant) {
@@ -59,6 +68,12 @@ export function lineRefusals({ quantity, metadata, variant, commission }: CartLi
         missing.length === 1 ? "is" : "are"
       } missing.`
     )
+  }
+
+  const offered = swatchesOf(variant.product?.metadata)
+  const colour = metadata?.fabric_key
+  if (offered.length && !(typeof colour === "string" && offered.includes(colour))) {
+    refusals.push(`${piece} is not offered in that colour. Choose one of the colours shown for it.`)
   }
 
   return refusals
