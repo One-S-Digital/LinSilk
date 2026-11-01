@@ -6,7 +6,7 @@
 import { deepDe, type Lang } from './i18n';
 import { SWATCHES } from './swatches';
 
-const ALL_SWATCHES = [...SWATCHES.silk, ...SWATCHES.linen];
+const ALL_SWATCHES = [...SWATCHES.silk, ...SWATCHES.linen, ...SWATCHES.cashmere];
 
 const EN = {
   panel: {
@@ -23,6 +23,8 @@ const EN = {
     stepMeasure: '02 Measurements',
     madeIn: (cloth: string) =>
       `This piece is made in ${cloth}. Choose your colour from the ${cloth} swatches, then take your measurements.`,
+    madeInTie: (cloth: string) =>
+      `This tie is made in ${cloth}. Choose your colour from the swatches offered for it; it needs no measurements.`,
     selectColour: 'Select colour',
     changeColour: 'Change colour',
     useColour: 'Use this colour',
@@ -36,6 +38,8 @@ const EN = {
     moreToTake: (n: number) => `${n} more to take. The tailor cannot cut from a partial sheet.`,
     note:
       'Ordering holds the design against the season’s capped run. The tailor writes to you within two days to confirm the sheet before cutting begins.',
+    noteTie:
+      'Ordering holds the tie against the season’s capped run. The tailor writes to you within two days to confirm your colour before it is made.',
   },
   swatch: {
     title: 'Choose your colour',
@@ -92,7 +96,7 @@ const EN = {
     lengthTop: ['Desired length', 'From the top of the shoulder seam straight down to where you want the hem to fall. Measure against a garment you already own and like.'],
     lengthRobe: ['Robe length', 'From the top of the shoulder seam straight down to where you want the robe to fall. Measure against a robe you already own and like.'],
   } as Record<string, [string, string]>,
-  cloth: { silk: 'Silk', linen: 'Linen' } as Record<string, string>,
+  cloth: { silk: 'Silk', linen: 'Linen', cashmere: 'Cashmere' } as Record<string, string>,
   weave: { Plain: 'Plain', Jacquard: 'Jacquard', Brocade: 'Brocade' } as Record<string, string>,
   /* `name – cloth`, as the colour is shown beside a piece. */
   label: (name: string, cloth: string) => `${name} ${cloth.toLowerCase()}`,
@@ -115,6 +119,8 @@ const DE_CH: OrderText = {
     stepMeasure: '02 Masse',
     madeIn: (cloth) =>
       `Dieses Stück wird aus ${cloth} gefertigt. Wählen Sie Ihre Farbe aus den ${cloth}-Stoffmustern und nehmen Sie dann Ihre Masse.`,
+    madeInTie: (cloth) =>
+      `Diese Krawatte wird aus ${cloth} gefertigt. Wählen Sie Ihre Farbe aus den dafür angebotenen Mustern; Masse sind nicht nötig.`,
     selectColour: 'Farbe wählen',
     changeColour: 'Farbe ändern',
     useColour: 'Diese Farbe verwenden',
@@ -128,6 +134,8 @@ const DE_CH: OrderText = {
     moreToTake: (n) => `Noch ${n} zu nehmen. Das Atelier kann nicht nach einem unvollständigen Massblatt zuschneiden.`,
     note:
       'Mit der Bestellung wird das Modell in der begrenzten Auflage der Saison für Sie reserviert. Das Atelier schreibt Ihnen innert zwei Tagen, um das Massblatt zu bestätigen, bevor der Zuschnitt beginnt.',
+    noteTie:
+      'Mit der Bestellung wird die Krawatte in der begrenzten Auflage der Saison für Sie reserviert. Das Atelier schreibt Ihnen innert zwei Tagen, um Ihre Farbe zu bestätigen, bevor sie gefertigt wird.',
   },
   swatch: {
     title: 'Wählen Sie Ihre Farbe',
@@ -184,7 +192,7 @@ const DE_CH: OrderText = {
     lengthTop: ['Gewünschte Länge', 'Von der Schulternaht senkrecht hinunter bis dorthin, wo der Saum fallen soll. Am besten an einem Kleidungsstück messen, das Sie schon besitzen und mögen.'],
     lengthRobe: ['Länge des Morgenmantels', 'Von der Schulternaht senkrecht hinunter bis dorthin, wo der Morgenmantel fallen soll. Am besten an einem Morgenmantel messen, den Sie schon besitzen und mögen.'],
   },
-  cloth: { silk: 'Seide', linen: 'Leinen' },
+  cloth: { silk: 'Seide', linen: 'Leinen', cashmere: 'Kaschmir' },
   weave: { Plain: 'Uni', Jacquard: 'Jacquard', Brocade: 'Brokat' },
   label: (name, cloth) => `${cloth} – ${name}`,
 };
@@ -204,6 +212,8 @@ const FR: OrderText = {
     stepMeasure: '02 Mesures',
     madeIn: (cloth) =>
       `Cette pièce est confectionnée en ${cloth}. Choisissez votre couleur parmi les échantillons de ${cloth}, puis prenez vos mesures.`,
+    madeInTie: (cloth) =>
+      `Cette cravate est confectionnée en ${cloth}. Choisissez votre couleur parmi les échantillons proposés ; aucune mesure n’est nécessaire.`,
     selectColour: 'Choisir la couleur',
     changeColour: 'Changer de couleur',
     useColour: 'Utiliser cette couleur',
@@ -217,6 +227,8 @@ const FR: OrderText = {
     moreToTake: (n) => `Encore ${n} à prendre. L’atelier ne peut pas couper à partir d’une fiche incomplète.`,
     note:
       'La commande réserve le modèle dans la série limitée de la saison. L’atelier vous écrit sous deux jours pour confirmer la fiche avant le début de la coupe.',
+    noteTie:
+      'La commande réserve la cravate dans la série limitée de la saison. L’atelier vous écrit sous deux jours pour confirmer votre coloris avant la confection.',
   },
   swatch: {
     title: 'Choisissez votre couleur',
@@ -273,7 +285,7 @@ const FR: OrderText = {
     lengthTop: ['Longueur souhaitée', 'De la couture d’épaule, droit jusqu’à l’endroit où l’ourlet doit tomber. Mesurez sur un vêtement que vous possédez déjà et aimez.'],
     lengthRobe: ['Longueur du peignoir', 'De la couture d’épaule, droit jusqu’à l’endroit où le peignoir doit tomber. Mesurez sur un peignoir que vous possédez déjà et aimez.'],
   },
-  cloth: { silk: 'Soie', linen: 'Lin' },
+  cloth: { silk: 'Soie', linen: 'Lin', cashmere: 'Cachemire' },
   weave: { Plain: 'Uni', Jacquard: 'Jacquard', Brocade: 'Brocart' },
   label: (name, cloth) => `${cloth} – ${name}`,
 };
@@ -325,6 +337,11 @@ const NAMES: Names = {
   'LS-L34': ['Mokka-Taupe', 'Taupe moka'], 'LS-L35': ['Schokolade', 'Chocolat'], 'LS-L36': ['Espresso', 'Expresso'],
   'LS-L37': ['Rot', 'Rouge'], 'LS-L38': ['Altrosa', 'Vieux rose'], 'LS-L39': ['Burgunder', 'Bordeaux'],
   'LS-L40': ['Zartes Flieder', 'Lilas rosé'],
+  'LS-C01': ['Hellgrau', 'Gris clair'], 'LS-C02': ['Mittelgrau', 'Gris moyen'],
+  'LS-C03': ['Anthrazit, Köper', 'Anthracite, sergé'], 'LS-C04': ['Schwarz', 'Noir'],
+  'LS-C05': ['Camel', 'Camel'], 'LS-C06': ['Tabak', 'Tabac'], 'LS-C07': ['Taupe', 'Taupe'],
+  'LS-C08': ['Koralle', 'Corail'], 'LS-C09': ['Rot', 'Rouge'], 'LS-C10': ['Burgunder', 'Bordeaux'],
+  'LS-C11': ['Pflaume', 'Prune'], 'LS-C12': ['Marine', 'Marine'],
 };
 
 /** The library codes that have a German and French name. */

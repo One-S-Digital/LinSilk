@@ -13,13 +13,13 @@ import { DesignView } from '@/components/pages/design-view';
 import { PieceView } from '@/components/piece-view';
 import { collectionBySlug, currentCollection, getPieces, isOrderable, money, type Piece } from '@/lib/catalog';
 import { editForSlug, fromIn } from '@/lib/edits-i18n';
-import { COLOURS, priceRange } from '@/lib/house';
+import { coloursOf, priceRange } from '@/lib/house';
 import { isLocale, type Locale } from '@/lib/i18n';
 import { localeMetadata } from '@/lib/locale-meta';
 import { enPathOf, familyOf, PIECE_SEGMENT } from '@/lib/locale-routes';
 import { pagesText } from '@/lib/i18n-pages';
 import { aboutCopy, bankCopy, clothCopy, mtmCopy } from '@/lib/pages-i18n';
-import { localSlug, pieceAlternates, piecePathIn, pieceText } from '@/lib/piece-i18n';
+import { coloursIn, fibreIn, localSlug, pieceAlternates, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { pieceName } from '@/lib/piece-names';
 import { OG_LOCALE } from '@/lib/i18n';
 
@@ -59,15 +59,12 @@ export async function generateMetadata(props: PageProps<'/[locale]/[...path]'>):
     const { locale, piece } = t;
     const x = pieceText(locale);
     const name = pieceName(piece.name, locale);
-    const cloth = x.cloth[piece.cloth === 'linen' ? 'linen' : 'silk'];
-    const colours =
-      piece.cloth === 'linen'
-        ? `${COLOURS.linen} ${locale.startsWith('de') ? 'Leinenfarben' : 'coloris de lin'}`
-        : `${COLOURS.silk} ${locale.startsWith('de') ? 'Seidenfarben' : 'coloris de soie'}`;
+    const cloth = fibreIn(locale, piece.cloth ?? 'silk');
+    const colours = coloursIn(locale, piece.cloth ?? 'silk', coloursOf(piece));
     return {
-      title: { absolute: x.title(name) },
+      title: { absolute: piece.noMeasurements ? x.tie.title(name) : x.title(name) },
       description: isOrderable(piece)
-        ? x.meta(name, cloth, colours, money(piece.price))
+        ? (piece.noMeasurements ? x.tie.meta : x.meta)(name, cloth, colours, money(piece.price))
         : x.metaClosed(name, cloth, (await collectionBySlug(piece.collection))?.title ?? ''),
       alternates: { canonical: piecePathIn(locale, piece), languages: pieceAlternates(piece) },
       openGraph: { locale: OG_LOCALE[locale], images: piece.images[0] ? [piece.images[0]] : undefined },

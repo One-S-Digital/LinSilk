@@ -18,7 +18,7 @@ export default function LegalNoticePage() {
     <DocPage
       eyebrow="Legal"
       title="Legal notice"
-      lead="LINSILK is a made-to-measure silk and linen clothing house based in Geneva, Switzerland."
+      lead="LINSILK is a made-to-measure clothing house based in Geneva, Switzerland, working in silk, linen and high frequency fabrics."
     >
       <DocSection title="The house">
         <DocRows

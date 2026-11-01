@@ -1,6 +1,7 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { commissionIdOf, type GatedVariant } from "../lib/archive"
+import { composeContent } from "../lib/email-layout"
 import { ATELIER_MODULE } from "../modules/atelier"
 import type AtelierModuleService from "../modules/atelier/service"
 
@@ -73,17 +74,23 @@ export default async function commissionPaidHandler({
         to: process.env.ATELIER_EMAIL ?? "",
         channel: "email",
         template: "commission-paid",
-        content: {
-          subject: `Commission paid — ${commission.silhouette_title}, ${commission.name}`,
-          text: [
-            `${commission.name} has paid for their ${commission.silhouette_title.toLowerCase()}.`,
-            "",
-            `Cloth   ${commission.fabric}`,
-            `Order   ${order.id}`,
-            "",
-            "The sheet is on the order line, and on the commission in the admin.",
-          ].join("\n"),
-        },
+        content: composeContent(`Commission paid — ${commission.silhouette_title}, ${commission.name}`, {
+          heading: "Commission paid",
+          blocks: [
+            {
+              kind: "p",
+              text: `${commission.name} has paid for their ${commission.silhouette_title.toLowerCase()}.`,
+            },
+            {
+              kind: "rows",
+              rows: [
+                ["Cloth", commission.fabric],
+                ["Order", order.id],
+              ],
+            },
+            { kind: "p", text: "The sheet is on the order line, and on the commission in the admin." },
+          ],
+        }),
       })
     } catch (error) {
       logger.error(`Commission ${commissionId} is paid, but the bench was not told: ${(error as Error).message}`)

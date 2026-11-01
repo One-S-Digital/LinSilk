@@ -46,6 +46,30 @@ describe("renderHtml", () => {
     expect(html).toContain("#ede6d9")
   })
 
+  it("draws a link as a button, with the address written out under it", () => {
+    const html = renderHtml({
+      heading: "x",
+      blocks: [{ kind: "link", label: "Confirm my email", url: "https://example.com/verify?token=a&b=c" }],
+    })
+    expect(html).toContain('<a href="https://example.com/verify?token=a&amp;b=c"')
+    expect(html).toContain(">Confirm my email</a>")
+    expect(html).toContain("If the button does not work, copy this address into your browser")
+    expect(html).toContain('<span style="word-break:break-all;color:#4a4438;">https://example.com/verify?token=a&amp;b=c</span>')
+  })
+
+  it("puts a hidden preview line ahead of the card, the first paragraph unless told otherwise", () => {
+    const first = renderHtml({ heading: "Head", blocks: [{ kind: "p", text: "Thank you for  your\norder." }] })
+    expect(first).toMatch(/display:none[^>]*>Thank you for your order\./)
+    const told = renderHtml({ heading: "Head", preheader: "One step left.", blocks: [{ kind: "p", text: "Body." }] })
+    expect(told).toMatch(/display:none[^>]*>One step left\./)
+    expect(told.indexOf("One step left.")).toBeLessThan(told.indexOf("<h1"))
+  })
+
+  it("cuts a long preview to what an inbox can show", () => {
+    const html = renderHtml({ heading: "Head", blocks: [{ kind: "p", text: "word ".repeat(60) }] })
+    expect(html).toMatch(/display:none[^>]*>(word ){1,}word…/)
+  })
+
   it("escapes anything a client typed", () => {
     const html = renderHtml({
       heading: "x",

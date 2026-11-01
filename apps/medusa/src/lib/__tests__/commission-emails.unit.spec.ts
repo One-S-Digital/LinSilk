@@ -52,6 +52,14 @@ describe("what the house is sent", () => {
     expect(content.text).toContain("the client was reading in")
     expect(content.text).toContain("sketch.png")
   })
+
+  it("draws the same brief in HTML, the client's note line by line", () => {
+    const { content } = commissionSubmittedEmail({ ...brief, note: "Bias cut.\nLow back." }, "hello@linsilk.ch")
+    expect(content.html).toContain("Bias cut.<br>Low back.")
+    expect(content.html).toContain("Oyster charmeuse, 19mm")
+    expect(content.html).toContain("36 cm")
+    expect(content.html).toContain("sketch.png")
+  })
 })
 
 describe("what the client is sent", () => {
@@ -59,6 +67,8 @@ describe("what the client is sent", () => {
     const { content } = commissionReceivedEmail(brief)
     expect(content.text).toContain("A tailor reads every commission by hand")
     expect(content.text).not.toContain("2200")
+    expect(content.html).toContain("We have your brief")
+    expect(content.html).not.toContain("2200")
   })
 
   it("gives the figure and a link that is theirs alone", () => {
@@ -72,11 +82,14 @@ describe("what the client is sent", () => {
     expect(content.text).toContain("https://linsilk.ch/commission/tok_abc")
     expect(content.text).toContain("do")
     expect(content.text).toContain("not forward it")
+    expect(content.html).toContain('<a href="https://linsilk.ch/commission/tok_abc"')
+    expect(content.html).toContain(">Accept and pay</a>")
   })
 
   it("falls back to a reply when there is no link to give", () => {
     const { content } = commissionQuotedEmail({ ...brief, quote_amount: 2450 })
     expect(content.text).toContain("Reply to this email to accept.")
     expect(content.text).not.toContain("/commission/")
+    expect(content.html).not.toContain("<a ")
   })
 })

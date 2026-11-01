@@ -2,9 +2,12 @@
    rendered twice — as plain text, the voice every earlier mail was written in,
    and as HTML in the storefront's own colours — so the two cannot drift apart.
 
-   Email clients ignore stylesheets and web fonts, so the HTML is a single
-   centred table with inline styles and a Georgia stack standing in for the
-   site's serif. The palette is the storefront's (globals.css). */
+   Email clients ignore stylesheets and web fonts, so the HTML is nested tables
+   with inline styles and a Georgia stack standing in for the site's serif: a
+   centred wordmark, one paper-coloured card on the bone ground, a sign-off
+   beneath. A link is drawn as a button, with its address written out under it
+   for the client whose mail app strips buttons. The palette is the
+   storefront's (globals.css). */
 
 export type Block =
   | { kind: "p"; text: string }
@@ -16,6 +19,8 @@ export type Block =
 
 export type EmailSpec = {
   heading: string
+  /** What the inbox shows beside the subject. Defaults to the first paragraph. */
+  preheader?: string
   greeting?: string
   blocks: Block[]
 }
@@ -26,8 +31,11 @@ const INK = "#2a2620"
 const INK_BODY = "#4a4438"
 const INK_MUTED = "#6e6555"
 const BONE = "#ede6d9"
+const PAPER = "#f7f3ea"
+const SAND = "#d9cbb3"
 const GOLD = "#9c7a44"
 const SERIF = "Georgia, 'Times New Roman', serif"
+const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif"
 
 export const escapeHtml = (value: string) =>
   value
@@ -72,7 +80,7 @@ const paragraph = (text: string) =>
 
 const caption = (title?: string) =>
   title
-    ? `<p style="margin:26px 0 8px;font:12px/1.4 ${SERIF};letter-spacing:.14em;text-transform:uppercase;color:${GOLD};">${escapeHtml(title)}</p>`
+    ? `<p style="margin:28px 0 8px;font:12px/1.4 ${SERIF};letter-spacing:.14em;text-transform:uppercase;color:${GOLD};">${escapeHtml(title)}</p>`
     : ""
 
 function renderBlock(block: Block): string {
@@ -84,10 +92,11 @@ function renderBlock(block: Block): string {
         .map(
           ([label, value]) =>
             `<tr>${cell(
-              `padding:9px 12px 9px 0;border-bottom:1px solid #d9cbb3;font:15px/1.5 ${SERIF};color:${INK_MUTED};`,
+              `padding:10px 14px 10px 0;border-bottom:1px solid ${SAND};font:15px/1.5 ${SERIF};color:${INK_MUTED};vertical-align:top;`,
               escapeHtml(label)
             )}${cell(
-              `padding:9px 0;border-bottom:1px solid #d9cbb3;font:15px/1.5 ${SERIF};color:${INK};text-align:right;`,
+              /* A figure never breaks across two lines; a long cloth name may. */
+              `padding:10px 0;border-bottom:1px solid ${SAND};font:15px/1.5 ${SERIF};color:${INK};text-align:right;vertical-align:top;${value.length <= 24 ? "white-space:nowrap;" : ""}`,
               escapeHtml(value)
             )}</tr>`
         )
@@ -98,11 +107,26 @@ function renderBlock(block: Block): string {
         .join("<br>")}</p>`
     case "link": {
       const url = safeUrl(block.url)
-      return url
-        ? `<p style="margin:8px 0 22px;"><a href="${escapeHtml(url)}" style="display:inline-block;padding:13px 26px;background:${INK};color:${BONE};font:14px ${SERIF};letter-spacing:.08em;text-decoration:none;">${escapeHtml(block.label)}</a></p>`
-        : paragraph(`${block.label}: ${block.url}`)
+      if (!url) return paragraph(`${block.label}: ${block.url}`)
+      /* The button is a table cell with the colour on it, so a client that
+         ignores padding on a link still draws a button. */
+      return (
+        `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:10px 0 14px;"><tr>` +
+        `<td bgcolor="${INK}" style="background:${INK};border-radius:2px;">` +
+        `<a href="${escapeHtml(url)}" style="display:inline-block;padding:16px 36px;font:600 13px/1.4 ${SANS};letter-spacing:.14em;text-align:center;text-transform:uppercase;text-decoration:none;color:${BONE};">${escapeHtml(block.label)}</a>` +
+        `</td></tr></table>` +
+        `<p style="margin:0 0 24px;font:13px/1.55 ${SERIF};color:${INK_MUTED};">If the button does not work, copy this address into your browser:<br>` +
+        `<span style="word-break:break-all;color:${INK_BODY};">${escapeHtml(url)}</span></p>`
+      )
     }
   }
+}
+
+/** The first paragraph, cut to what an inbox has room to show. */
+const previewOf = (spec: EmailSpec) => {
+  const first = spec.blocks.find((block) => block.kind === "p")
+  const text = (spec.preheader ?? (first?.kind === "p" ? first.text : spec.heading)).replace(/\s+/g, " ").trim()
+  return text.length > 110 ? `${text.slice(0, 109).trimEnd()}…` : text
 }
 
 export function renderHtml(spec: EmailSpec): string {
@@ -110,18 +134,26 @@ export function renderHtml(spec: EmailSpec): string {
     spec.greeting ? paragraph(spec.greeting) : "",
     ...spec.blocks.map(renderBlock),
   ].join("")
+  const [house, place] = SIGN_OFF
+
+  /* The invisible padding after the preview keeps the mail app from filling the
+     rest of the line with the first words of the body. */
+  const preview =
+    `<div style="display:none;max-height:0;max-width:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;mso-hide:all;">` +
+    `${escapeHtml(previewOf(spec))}${"&#847;&zwnj;&nbsp;".repeat(40)}</div>`
 
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(spec.heading)}</title></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${escapeHtml(spec.heading)}</title></head>
 <body style="margin:0;padding:0;background:${BONE};">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BONE};"><tr><td align="center" style="padding:36px 16px;">
+${preview}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${BONE}" style="background:${BONE};"><tr><td align="center" style="padding:40px 16px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
-<tr><td style="padding:0 0 22px;border-bottom:1px solid ${GOLD};font:22px ${SERIF};letter-spacing:.32em;color:${INK};">LINSILK</td></tr>
-<tr><td style="padding:30px 0 6px;">
-<h1 style="margin:0 0 22px;font:400 26px/1.25 ${SERIF};color:${INK};">${escapeHtml(spec.heading)}</h1>
+<tr><td align="center" style="padding:0 0 28px;font:22px/1 ${SERIF};letter-spacing:.42em;color:${INK};">${escapeHtml(house)}</td></tr>
+<tr><td bgcolor="${PAPER}" style="background:${PAPER};border:1px solid ${SAND};border-top:3px solid ${GOLD};padding:38px 32px 18px;">
+<h1 style="margin:0 0 22px;font:400 28px/1.25 ${SERIF};color:${INK};">${escapeHtml(spec.heading)}</h1>
 ${body}
 </td></tr>
-<tr><td style="padding:22px 0 0;border-top:1px solid ${GOLD};font:13px/1.6 ${SERIF};color:${INK_MUTED};">${SIGN_OFF.map(escapeHtml).join("<br>")}</td></tr>
+<tr><td align="center" style="padding:28px 16px 0;font:13px/1.7 ${SERIF};color:${INK_MUTED};"><span style="letter-spacing:.32em;color:${INK};">${escapeHtml(house)}</span><br>${escapeHtml(place)}</td></tr>
 </table></td></tr></table></body></html>`
 }
 

@@ -1,6 +1,9 @@
-/* What the house sends when someone asks to reset a password. Plain text, in
-   the house's voice, kept beside the code that sends it rather than in a
-   vendor's dashboard. Mirrors commission-emails.ts. */
+import { composeContent } from "./email-layout"
+
+/* What the house sends to open an account and to reset a password, in the
+   house's voice, kept beside the code that sends it rather than in a vendor's
+   dashboard. Each is plain text and HTML from one description
+   (email-layout.ts); the link is a button in the HTML. */
 
 const storefrontUrl = () => (process.env.STOREFRONT_URL || "http://localhost:3000").replace(/\/$/, "")
 
@@ -28,20 +31,16 @@ export function emailVerificationEmail(email: string, token: string) {
     to: email,
     channel: "email",
     template: "email-verification",
-    content: {
-      subject: "Confirm your email — LINSILK",
-      text: [
-        "Welcome to LINSILK.",
-        "",
-        "To confirm this is your address, open this link within a day:",
-        emailVerificationUrl(token),
-        "",
-        "If you did not open an account, ignore this email.",
-        "",
-        "LINSILK",
-        "Geneva, Switzerland",
-      ].join("\n"),
-    },
+    content: composeContent("Confirm your email — LINSILK", {
+      heading: "Confirm your email",
+      preheader: "One step left to finish opening your account.",
+      greeting: "Welcome to LINSILK.",
+      blocks: [
+        { kind: "p", text: "Please confirm that this is your address. The link works for one day." },
+        { kind: "link", label: "Confirm my email", url: emailVerificationUrl(token) },
+        { kind: "p", text: "If you did not open an account, you can ignore this email." },
+      ],
+    }),
   }
 }
 
@@ -51,20 +50,24 @@ export function passwordResetEmail(email: string, token: string, actor: ResetAct
     to: email,
     channel: "email",
     template: actor === "user" ? "admin-password-reset" : "password-reset",
-    content: {
-      subject: actor === "user" ? "Reset your admin password — LINSILK" : "Reset your password — LINSILK",
-      text: [
-        "A password reset was requested for this account.",
-        "",
-        "To choose a new one, open this link within fifteen minutes:",
-        passwordResetUrl(email, token, actor),
-        "",
-        "If you did not ask for this, ignore this email — nothing changes",
-        "unless the link above is opened.",
-        "",
-        "LINSILK",
-        "Geneva, Switzerland",
-      ].join("\n"),
-    },
+    content: composeContent(
+      actor === "user" ? "Reset your admin password — LINSILK" : "Reset your password — LINSILK",
+      {
+        heading: actor === "user" ? "Reset your admin password" : "Reset your password",
+        preheader: "The link works for fifteen minutes.",
+        blocks: [
+          { kind: "p", text: "A password reset was requested for this account." },
+          {
+            kind: "link",
+            label: "Reset my password",
+            url: passwordResetUrl(email, token, actor),
+          },
+          {
+            kind: "p",
+            text: "The link works for fifteen minutes. If you did not ask for this, ignore this email — nothing changes unless the link is opened.",
+          },
+        ],
+      }
+    ),
   }
 }

@@ -7,7 +7,7 @@ import { SWATCHES, findSwatch, swatchLabel, swatchesFor } from './swatches';
    by its code, so the library has to hold together: no code twice, nothing in
    the wrong cloth, and nothing drawn from a photograph that is not there. */
 
-const all = [...SWATCHES.silk, ...SWATCHES.linen];
+const all = [...SWATCHES.silk, ...SWATCHES.linen, ...SWATCHES.cashmere];
 
 describe('the colour library', () => {
   it('holds each cloth in its own list and no code twice', () => {
@@ -16,6 +16,11 @@ describe('the colour library', () => {
     expect(new Set(all.map((s) => s.key)).size).toBe(all.length);
     expect(SWATCHES.silk).toHaveLength(48);
     expect(SWATCHES.linen).toHaveLength(40);
+    expect(SWATCHES.cashmere.every((s) => s.cloth === 'cashmere')).toBe(true);
+    expect(SWATCHES.cashmere).toHaveLength(12);
+    expect(SWATCHES.cashmere.map((s) => s.key)).toEqual(
+      Array.from({ length: 12 }, (_, i) => `LS-C${String(i + 1).padStart(2, '0')}`),
+    );
   });
 
   it('sells silk and linen only: no swatch is called satin', () => {
@@ -33,8 +38,18 @@ describe('the colour library', () => {
     expect(findSwatch('linen', 'LS-S02')).toBeUndefined();
   });
 
+  it('offers a piece only its own list of colours when it names one', () => {
+    const plain = SWATCHES.silk.filter((s) => s.group === 'Plain').map((s) => s.key);
+    expect(swatchesFor('silk', plain)).toHaveLength(15);
+    /* A key from another cloth is ignored rather than put on the piece. */
+    expect(swatchesFor('silk', ['LS-S04', 'LS-L04']).map((s) => s.key)).toEqual(['LS-S04']);
+    expect(swatchesFor('silk', [])).toHaveLength(48);
+    expect(swatchesFor('cashmere')).toHaveLength(12);
+  });
+
   it('labels a choice with its colour and its cloth', () => {
     expect(swatchLabel(findSwatch('silk', 'LS-S02')!)).toBe('Cobalt silk');
     expect(swatchLabel(findSwatch('linen', 'LS-L04')!)).toBe('Oatmeal linen');
+    expect(swatchLabel(findSwatch('cashmere', 'LS-C05')!)).toBe('Camel cashmere');
   });
 });

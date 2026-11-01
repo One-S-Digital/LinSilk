@@ -36,6 +36,31 @@ describe('googleFeed', () => {
   });
 });
 
+describe('cashmere and ties', () => {
+  const pants = piece({
+    id: 'c1', slug: 'cashmere-pleated-wide-leg-pants', name: 'Cashmere pleated wide-leg pants', cloth: 'cashmere',
+    price: 169, lengthKinds: ['trouser'],
+  });
+  const tie = piece({
+    id: 't1', slug: 'patterned-silk-tie', name: 'Patterned silk tie', cloth: 'silk', price: 65,
+    noMeasurements: true, swatches: ['LS-J01', 'LS-J04'],
+  });
+  const xml = googleFeed([pants, tie]);
+
+  it('describes cashmere as cashmere, never as silk', () => {
+    expect(xml).toContain('<g:material>cashmere</g:material>');
+    expect(xml).toContain('Women &gt; Cashmere &gt; Cashmere pants');
+    expect(xml).toContain('Choose from 12 cashmere colours');
+    expect(xml).not.toContain('made to measure in 100% cashmere');
+  });
+
+  it('does not call a tie made to measure, and counts only the colours it offers', () => {
+    expect(xml).toContain('<g:title>Patterned silk tie</g:title>');
+    expect(xml).toContain('Choose from 2 silk colours');
+    expect(xml).toContain('ordered by colour alone');
+  });
+});
+
 describe('inFeed', () => {
   it('needs a price, a photograph, a cloth and an open collection', () => {
     expect(inFeed(piece())).toBe(true);

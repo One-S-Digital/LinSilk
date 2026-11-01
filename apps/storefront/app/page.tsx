@@ -7,10 +7,10 @@ import { languagesFor } from '@/lib/locale-routes';
 export async function generateMetadata(): Promise<Metadata> {
   const range = priceRange(await getPieces());
   return {
-    title: { absolute: 'LINSILK | Made-to-measure silk and linen clothing from Geneva' },
+    title: { absolute: 'LINSILK | Made-to-measure silk, linen and high frequency fabrics, Geneva' },
     description:
-      `LINSILK makes silk and linen clothing to your own measurements in 2–4 weeks. ` +
-      `${COLOURS.silk} silk and ${COLOURS.linen} linen colours${range ? `, from ${money(range.from)}` : ''}. No fittings needed. From Geneva.`,
+      `LINSILK makes clothing in silk, linen and high frequency fabrics to your own measurements in 2–4 weeks. ` +
+      `${COLOURS.silk} silk, ${COLOURS.linen} linen and ${COLOURS.cashmere} cashmere colours${range ? `, from ${money(range.from)}` : ''}. No fittings needed. From Geneva.`,
     alternates: { canonical: '/', languages: languagesFor('/') },
   };
 }

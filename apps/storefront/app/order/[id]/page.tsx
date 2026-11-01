@@ -23,7 +23,7 @@ type ApiOrder = {
   email?: string | null;
   currency_code: string;
   total: number;
-  items?: { id: string; title: string; subtitle?: string | null; total: number; thumbnail?: string | null; variant?: { product?: { thumbnail?: string | null } | null } | null; metadata?: Record<string, unknown> | null }[];
+  items?: { id: string; title: string; subtitle?: string | null; total: number; thumbnail?: string | null; variant?: { product?: { thumbnail?: string | null; metadata?: Record<string, unknown> | null } | null } | null; metadata?: Record<string, unknown> | null }[];
   shipping_address?: { city?: string | null; country_code?: string | null } | null;
 };
 
@@ -42,13 +42,17 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
   if (!order) notFound();
 
   const isCommission = (order.items ?? []).some((item) => item.metadata?.commission_id);
+  /* Ties are ordered by colour alone: there is no sheet to confirm. */
+  const noSheet =
+    (order.items ?? []).length > 0 &&
+    (order.items ?? []).every((item) => item.variant?.product?.metadata?.no_measurements === true);
 
   return (
     <DocPage
       eyebrow={t.eyebrow}
       title={t.title}
       lead={
-        isCommission ? t.leadCommission : t.lead
+        isCommission ? t.leadCommission : noSheet ? t.leadTie : t.lead
       }
       foot={
         <>
@@ -92,7 +96,7 @@ export default async function OrderPage(props: PageProps<'/order/[id]'>) {
 
       <DocSection title={t.next}>
         <DocP>
-          {isCommission ? t.nextCommission : t.nextOrder}
+          {isCommission ? t.nextCommission : noSheet ? t.nextTie : t.nextOrder}
         </DocP>
         <DocP>
           {t.change}{' '}

@@ -18,7 +18,7 @@ export type MtmCopy = {
   see: string;
   guide: string;
   howH: string;
-  steps: (silk: number, linen: number) => string[];
+  steps: (silk: number, linen: number, cashmere: number) => string[];
   payH: string;
   payLine: (all: string, silkLinen: string) => string;
   silkLinen: (silk: string, linen: string) => string;
@@ -39,16 +39,16 @@ export type MtmCopy = {
 const MTM_DE_CH: MtmCopy = {
   title: 'Kleidung nach Mass online bestellen: so funktioniert es',
   description: (from) =>
-    `So bestellen Sie Kleidung aus Seide und Leinen nach Mass online: auswählen, 15 Masse eingeben, in 2–4 Wochen fertig. Ohne Anprobe${from}.`,
+    `So bestellen Sie Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass online: auswählen, 15 Masse eingeben, in 2–4 Wochen fertig. Ohne Anprobe${from}.`,
   eyebrow: 'Nach Mass',
   h1: 'Kleidung nach Mass, online bestellt',
-  lead: 'Kleidung nach Mass wird nach Ihren eigenen Körpermassen zugeschnitten und genäht, nicht in einer Standardgrösse. Bei LINSILK bestellen Sie online: Sie wählen ein Stück aus Seide oder Leinen, wählen seine Farbe, geben fünfzehn Masse ein, und es wird innert 2–4 Wochen für Sie zugeschnitten und genäht und ab Genf versandt.',
+  lead: 'Kleidung nach Mass wird nach Ihren eigenen Körpermassen zugeschnitten und genäht, nicht in einer Standardgrösse. Bei LINSILK bestellen Sie online: Sie wählen ein Stück aus Seide, Leinen oder einem hochfrequenten Stoff, wählen seine Farbe, geben fünfzehn Masse ein, und es wird innert 2–4 Wochen für Sie zugeschnitten und genäht und ab Genf versandt.',
   see: 'Kollektion ansehen',
   guide: 'Messanleitung',
   howH: 'So funktioniert es',
-  steps: (silk, linen) => [
+  steps: (silk, linen, cashmere) => [
     'Wählen Sie ein Stück aus der Damen- oder Herrenkollektion.',
-    `Wählen Sie seine Farbe aus den Mustern seines Stoffs (${silk} Seidenfarben, ${linen} Leinenfarben).`,
+    `Wählen Sie seine Farbe aus den Mustern seines Stoffs (${silk} Seidenfarben, ${linen} Leinenfarben, ${cashmere} Kaschmirfarben).`,
     'Geben Sie Ihre Masse ein, die Messanleitung neben sich. Ohne Anprobe: Sie messen selbst, oder Sie gehen mit der Anleitung zu einer beliebigen Schneiderei.',
     'Es wird in 2–4 Wochen ab Ihrem bestätigten Blatt zugeschnitten und genäht, zweimal geprüft und mit Sendungsverfolgung versandt.',
   ],
@@ -89,7 +89,7 @@ const MTM_DE_CH: MtmCopy = {
     },
     {
       q: 'Kann ich ein Kleid online anfertigen lassen?',
-      a: 'Ja. Wählen Sie ein Stück aus Seide oder Leinen, wählen Sie seine Farbe aus den Mustern, geben Sie Ihre Masse ein, und LINSILK schneidet und näht es in 2–4 Wochen für Sie und versendet es ab Genf.',
+      a: 'Ja. Wählen Sie ein Stück aus Seide, Leinen oder einem hochfrequenten Stoff, wählen Sie seine Farbe aus den Mustern, geben Sie Ihre Masse ein, und LINSILK schneidet und näht es in 2–4 Wochen für Sie und versendet es ab Genf.',
     },
   ],
 };
@@ -97,16 +97,16 @@ const MTM_DE_CH: MtmCopy = {
 const MTM_FR: MtmCopy = {
   title: 'Vêtements sur mesure en ligne : comment ça marche',
   description: (from) =>
-    `Comment commander des vêtements en soie et en lin sur mesure en ligne : choisir, indiquer 15 mesures, prêt en 2 à 4 semaines. Sans essayage${from}.`,
+    `Comment commander des vêtements en soie, en lin et en tissus à haute fréquence sur mesure en ligne : choisir, indiquer 15 mesures, prêt en 2 à 4 semaines. Sans essayage${from}.`,
   eyebrow: 'Sur mesure',
   h1: 'Des vêtements sur mesure, commandés en ligne',
-  lead: 'Un vêtement sur mesure est coupé et cousu à vos propres mesures plutôt que dans une taille standard. Chez LINSILK, vous commandez en ligne : vous choisissez une pièce en soie ou en lin, son coloris, vous indiquez quinze mesures, et elle est coupée et cousue pour vous en 2 à 4 semaines, puis expédiée depuis Genève.',
+  lead: 'Un vêtement sur mesure est coupé et cousu à vos propres mesures plutôt que dans une taille standard. Chez LINSILK, vous commandez en ligne : vous choisissez une pièce en soie, en lin ou en tissu à haute fréquence, son coloris, vous indiquez quinze mesures, et elle est coupée et cousue pour vous en 2 à 4 semaines, puis expédiée depuis Genève.',
   see: 'Voir la collection',
   guide: 'Guide de mesure',
   howH: 'Comment ça marche',
-  steps: (silk, linen) => [
+  steps: (silk, linen, cashmere) => [
     'Choisissez une pièce dans la collection femme ou homme.',
-    `Choisissez son coloris parmi les échantillons de son tissu (${silk} coloris de soie, ${linen} coloris de lin).`,
+    `Choisissez son coloris parmi les échantillons de son tissu (${silk} coloris de soie, ${linen} coloris de lin, ${cashmere} coloris de cachemire).`,
     'Indiquez vos mesures, le guide de mesure à côté de vous. Sans essayage : vous vous mesurez vous-même, ou vous emportez le guide chez n’importe quel tailleur.',
     'Elle est coupée et cousue en 2 à 4 semaines à partir de votre fiche confirmée, inspectée deux fois, puis envoyée avec suivi.',
   ],
@@ -147,7 +147,7 @@ const MTM_FR: MtmCopy = {
     },
     {
       q: 'Puis-je faire faire une robe en ligne ?',
-      a: 'Oui. Choisissez une pièce en soie ou en lin, choisissez son coloris parmi les échantillons, indiquez vos mesures, et LINSILK la coupe et la coud pour vous en 2 à 4 semaines, puis l’expédie depuis Genève.',
+      a: 'Oui. Choisissez une pièce en soie, en lin ou en tissu à haute fréquence, choisissez son coloris parmi les échantillons, indiquez vos mesures, et LINSILK la coupe et la coud pour vous en 2 à 4 semaines, puis l’expédie depuis Genève.',
     },
   ],
 };
@@ -173,7 +173,7 @@ export type AboutCopy = {
     what: [string, string];
     where: [string, string];
     cloth: [string, string];
-    colours: [string, (silk: number, linen: number) => string];
+    colours: [string, (silk: number, linen: number, cashmere: number) => string];
     price: [string, (range: string) => string];
     making: [string, string];
     order: [string, string];
@@ -185,13 +185,13 @@ export type AboutCopy = {
 };
 
 const ABOUT_DE_CH: AboutCopy = {
-  title: 'Über LINSILK: Seide und Leinen nach Mass aus Genf',
+  title: 'Über LINSILK: Seide, Leinen und hochfrequente Stoffe nach Mass aus Genf',
   description:
     'LINSILK ist ein Genfer Modehaus, das Kleidung nach Ihren Massen aus 100 % Seide und 100 % Leinen fertigt. Wie sie entsteht, was sie kostet und wie Sie bestellen.',
   eyebrow: 'Das Haus',
   h1: 'Über LINSILK',
   entity:
-    'LINSILK ist ein Genfer Modehaus für Seide und Leinen nach Mass. Jedes Stück wird nach den eigenen Massen der Kundin oder des Kunden zugeschnitten und genäht, innert 2–4 Wochen, aus 100 % Seide oder 100 % Leinen.',
+    'LINSILK ist ein Genfer Modehaus für Seide, Leinen und hochfrequente Stoffe nach Mass. Jedes Stück wird nach den eigenen Massen der Kundin oder des Kunden zugeschnitten und genäht, innert 2–4 Wochen, aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen.',
   see: 'Kollektion ansehen',
   contact: 'Kontakt',
   meansH: 'Was Nach-Mass bei LINSILK bedeutet',
@@ -199,14 +199,14 @@ const ABOUT_DE_CH: AboutCopy = {
     'Nichts wird in einer Standardgrösse gefertigt. Ihre fünfzehn Masse werden zu einem Schnitt, der nur für Sie gezeichnet wird. Das Stück wird danach einzeln flach zugeschnitten, genäht, zweimal an Ihren Massen geprüft und ab Genf versandt. LINSILK führt keine Anproben durch: Sie messen selbst, oder Sie gehen mit der ',
   guideLink: 'Messanleitung',
   meansPost: ' zu einer beliebigen Schneiderei.',
-  whyH: 'Warum nur Seide und Leinen',
-  why: 'Seide und Leinen sind Naturfasern, die atmen, sich mit dem Körper bewegen und leicht auf der Haut liegen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide oder 100 % Leinen gefertigt, nie aus einer Mischung oder aus Synthetik. Polyester, Nylon und PU-Stoffe werden aus Erdöl hergestellt, atmen nicht und geben beim Tragen und Waschen Mikroplastikfasern ab.',
+  whyH: 'Warum nur Seide, Leinen und hochfrequente Stoffe',
+  why: 'Seide, Leinen und hochfrequente Stoffe sind Naturfasern, die sich mit dem Körper bewegen und leicht auf der Haut liegen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen gefertigt, nie aus Synthetik. Polyester, Nylon und PU-Stoffe werden aus Erdöl hergestellt, atmen nicht und geben beim Tragen und Waschen Mikroplastikfasern ab.',
   glanceH: 'LINSILK auf einen Blick',
   rows: {
     what: ['Was', 'Kleidung nach Mass für Damen und Herren'],
     where: ['Wo', 'Mit Sitz in Genf, Schweiz'],
-    cloth: ['Stoff', '100 % Seide oder 100 % Leinen'],
-    colours: ['Farben', (s, l) => `${s} Seidenfarben (glatt, Jacquard, Brokat); ${l} Leinenfarben`],
+    cloth: ['Stoff', '100 % Seide, 100 % Leinen oder hochfrequente Stoffe'],
+    colours: ['Farben', (s, l, c) => `${s} Seidenfarben (glatt, Jacquard, Brokat); ${l} Leinenfarben; ${c} Kaschmirfarben`],
     price: ['Preis', (r) => `${r} pro Stück`],
     making: ['Fertigungszeit', '2–4 Wochen ab Ihrem bestätigten Massblatt'],
     order: ['So bestellen Sie', 'Stück und Farbe wählen, 15 Masse eingeben, und es wird für Sie zugeschnitten und genäht'],
@@ -218,13 +218,13 @@ const ABOUT_DE_CH: AboutCopy = {
 };
 
 const ABOUT_FR: AboutCopy = {
-  title: 'À propos de LINSILK : soie et lin sur mesure, de Genève',
+  title: 'À propos de LINSILK : soie, lin et tissus à haute fréquence sur mesure, de Genève',
   description:
     'LINSILK est une maison genevoise qui réalise des vêtements à vos mesures en 100 % soie et 100 % lin. Comment ils sont faits, ce qu’ils coûtent et comment commander.',
   eyebrow: 'La maison',
   h1: 'À propos de LINSILK',
   entity:
-    'LINSILK est une maison genevoise de vêtements sur mesure en soie et en lin. Chaque pièce est coupée et cousue aux mesures de la cliente ou du client en 2 à 4 semaines, en 100 % soie ou 100 % lin.',
+    'LINSILK est une maison genevoise de vêtements sur mesure en soie, en lin et en tissus à haute fréquence. Chaque pièce est coupée et cousue aux mesures de la cliente ou du client en 2 à 4 semaines, en 100 % soie, 100 % lin ou en tissus à haute fréquence.',
   see: 'Voir la collection',
   contact: 'Contact',
   meansH: 'Ce que signifie le sur-mesure chez LINSILK',
@@ -233,13 +233,13 @@ const ABOUT_FR: AboutCopy = {
   guideLink: 'guide de mesure',
   meansPost: ' chez n’importe quel tailleur.',
   whyH: 'Pourquoi seulement la soie et le lin',
-  why: 'La soie et le lin sont des fibres naturelles qui respirent, suivent le corps et reposent légèrement sur la peau. Chaque vêtement LINSILK est fait en 100 % soie ou 100 % lin, jamais en mélange ni en synthétique. Les tissus en polyester, nylon et PU sont issus du pétrole, ne respirent pas et libèrent des microfibres de plastique quand on les porte et les lave.',
+  why: 'La soie, le lin et les tissus à haute fréquence sont des fibres naturelles qui suivent le corps et reposent légèrement sur la peau. Chaque vêtement LINSILK est fait en 100 % soie, 100 % lin ou en tissus à haute fréquence, jamais en synthétique. Les tissus en polyester, nylon et PU sont issus du pétrole, ne respirent pas et libèrent des microfibres de plastique quand on les porte et les lave.',
   glanceH: 'LINSILK en un coup d’œil',
   rows: {
     what: ['Quoi', 'Des vêtements sur mesure pour femme et pour homme'],
     where: ['Où', 'Basée à Genève, en Suisse'],
-    cloth: ['Tissu', '100 % soie ou 100 % lin'],
-    colours: ['Coloris', (s, l) => `${s} coloris de soie (uni, jacquard, brocart) ; ${l} coloris de lin`],
+    cloth: ['Tissu', '100 % soie, 100 % lin ou tissus à haute fréquence'],
+    colours: ['Coloris', (s, l, c) => `${s} coloris de soie (uni, jacquard, brocart) ; ${l} coloris de lin ; ${c} coloris de cachemire`],
     price: ['Prix', (r) => `${r} par pièce`],
     making: ['Délai de confection', '2 à 4 semaines à partir de votre fiche de mesures confirmée'],
     order: ['Comment commander', 'Choisir une pièce et son coloris, indiquer 15 mesures, et elle est coupée et cousue pour vous'],
@@ -259,28 +259,32 @@ export type ClothCopy = {
   h1: string;
   a: string;
   b: string;
+  /** The cashmere paragraph. */
+  c: string;
   cta: string;
 };
 
 const CLOTH_DE_CH: ClothCopy = {
-  title: 'Seide und Leinen: 48 Seidenfarben und 40 Leinenfarben',
+  title: 'Seide, Leinen und hochfrequente Stoffe: 48 Seidenfarben, 40 Leinenfarben und 12 Kaschmirfarben',
   description:
-    'Die Stoffe, in denen LINSILK fertigt: reine Seide (glatt, Jacquard, Brokat) und reines Leinen. Wie sie sich anfühlen, wie sie sich tragen, wie man sie pflegt, und alle 88 Farben.',
-  h1: 'Der Stoff: reine Seide und reines Leinen',
-  lead: 'LINSILK fertigt in nur zwei Stoffen, reiner Seide und reinem Leinen: kein Polyester und kein Mischgewebe. Die Farbe Ihres Stücks wählen Sie aus Mustern seines eigenen Stoffs; diese Seite zeigt, woraus Sie wählen.',
+    'Die Stoffe, in denen LINSILK fertigt: reine Seide (glatt, Jacquard, Brokat), reines Leinen und Kaschmir. Wie sie sich anfühlen, wie sie sich tragen, wie man sie pflegt, und alle 100 Farben.',
+  h1: 'Der Stoff: reine Seide, reines Leinen und Kaschmir',
+  lead: 'LINSILK fertigt nur in Seide, Leinen und hochfrequenten Stoffen, also in reiner Seide, reinem Leinen und Kaschmir: kein Polyester und kein Mischgewebe. Die Farbe Ihres Stücks wählen Sie aus Mustern seines eigenen Stoffs; diese Seite zeigt, woraus Sie wählen.',
   a: 'Seide ist glatt und leicht und bleibt angenehm, wenn die Temperatur sinkt wie auch wenn sie steigt. Sie gibt es in drei Bindungen: glatt (15 Farben), Jacquard (20 gemusterte Farbstellungen) und Brokat (13 gemusterte Farbstellungen), zusammen 48 Seidenfarben, verwendet für die Kleider, Abendkleider, Röcke, Blusen und die Schlafmode.',
   b: 'Leinen ist fest, luftig und kühlend und wird mit jedem Tragen weicher; seine 40 Farben werden für die gesamte Herrenmode und für die Westen-Hosen-Sets der Damen verwendet. Naturfaser knittert, bewegt sich und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht nicht mehr so aus wie auf dem Foto, und dafür ist es da. Synthetische Mischungen halten die Bügelfalte länger und sind günstiger zu nähen; der Stoff von LINSILK ist reine Seide oder reines Leinen.',
+  c: 'Kaschmir ist weich und warm und wird für die Hosen verwendet; es gibt ihn in 12 Farben.',
   cta: 'Ein Stoffmuster anfragen',
 };
 
 const CLOTH_FR: ClothCopy = {
-  title: 'Soie et lin : 48 coloris de soie et 40 coloris de lin',
+  title: 'Soie, lin et tissus à haute fréquence : 48 coloris de soie, 40 de lin et 12 de cachemire',
   description:
-    'Les tissus dans lesquels LINSILK réalise ses pièces : soie pure (unie, jacquard, brocart) et lin pur. Leur toucher, leur tenue, leur entretien, et les 88 coloris.',
-  h1: 'Le tissu : soie pure et lin pur',
-  lead: 'LINSILK ne travaille que deux tissus, la soie pure et le lin pur : ni polyester ni tissu mélangé. Vous choisissez le coloris de votre pièce parmi des échantillons de son propre tissu ; cette page montre ce parmi quoi vous choisissez.',
+    'Les tissus dans lesquels LINSILK réalise ses pièces : soie pure (unie, jacquard, brocart), lin pur et cachemire. Leur toucher, leur tenue, leur entretien, et les 100 coloris.',
+  h1: 'Le tissu : soie pure, lin pur et cachemire',
+  lead: 'LINSILK ne travaille que la soie, le lin et les tissus à haute fréquence, soit la soie pure, le lin pur et le cachemire : ni polyester ni tissu mélangé. Vous choisissez le coloris de votre pièce parmi des échantillons de son propre tissu ; cette page montre ce parmi quoi vous choisissez.',
   a: 'La soie est lisse et légère, et reste agréable quand la température baisse comme quand elle monte. Elle existe en trois armures : unie (15 coloris), jacquard (20 coloris à motifs) et brocart (13 coloris à motifs), soit 48 coloris de soie au total, utilisés pour les robes, robes de soirée, jupes, chemisiers et vêtements de nuit.',
   b: 'Le lin est ferme, aéré et rafraîchissant, et s’assouplit à chaque port ; ses 40 coloris servent à tout le vestiaire masculin et aux ensembles gilet-pantalon pour femme. La fibre naturelle se froisse, bouge et vieillit. Une chemise en lin portée tout un été ne ressemblera plus à ce qu’elle était sur la photo, et c’est ce qui la rend précieuse. Les mélanges synthétiques tiennent mieux le pli et coûtent moins cher à coudre ; le tissu de LINSILK est de la soie pure ou du lin pur.',
+  c: 'Le cachemire est doux et chaud, et sert aux pantalons ; il existe en 12 coloris.',
   cta: 'Demander un échantillon',
 };
 
@@ -296,14 +300,14 @@ export type BankCopy = {
   groups: { title: string; items: QA[] }[];
   /** Questions that carry a number from the live catalogue. */
   price: (range: string) => QA;
-  colours: (silk: number, linen: number) => QA;
+  colours: (silk: number, linen: number, cashmere: number) => QA;
   contactQ: (email: string) => QA;
 };
 
 const BANK_DE_CH: BankCopy = {
   title: 'Fragen: Nach Mass, Stoff, Lieferung und Rückgabe',
   description:
-    'Antworten auf das, was LINSILK am häufigsten gefragt wird: wie Nach-Mass funktioniert, Anproben, Fertigungszeit, Pflege von Seide und Leinen, Lieferung, Zoll und Rückgabe.',
+    'Antworten auf das, was LINSILK am häufigsten gefragt wird: wie Nach-Mass funktioniert, Anproben, Fertigungszeit, Pflege von Seide, Leinen und hochfrequenten Stoffen, Lieferung, Zoll und Rückgabe.',
   h1: 'Fragen',
   lead: (email) =>
     `Was das Büro in Genf am häufigsten gefragt wird. Was hier fehlt, schreiben Sie an ${email} – eine Person antwortet, in der Regel innert eines Tages.`,
@@ -313,13 +317,13 @@ const BANK_DE_CH: BankCopy = {
     q: 'Was kosten die Stücke von LINSILK?',
     a: `${range}, je nach Stück. Die Preise gelten in Schweizer Franken; die Seite kann ungefähre Beträge in Euro, Pfund, Dollar oder Dirham anzeigen.`,
   }),
-  colours: (silk, linen) => ({
+  colours: (silk, linen, cashmere) => ({
     q: 'Wie viele Farben stehen zur Auswahl?',
-    a: `${silk} Seidenfarben (glatt, Jacquard und Brokat) und ${linen} Leinenfarben; Sie wählen aus Mustern des eigenen Stoffs des Stücks.`,
+    a: `${silk} Seidenfarben (glatt, Jacquard und Brokat), ${linen} Leinenfarben und ${cashmere} Kaschmirfarben; Sie wählen aus Mustern des eigenen Stoffs des Stücks.`,
   }),
   contactQ: (email) => ({
     q: 'Gibt es LINSILK wirklich?',
-    a: `LINSILK ist ein Haus für Seide und Leinen nach Mass mit Sitz in Genf; jedes Stück wird nach den Massen der Kundschaft zugeschnitten und genäht und mit Sendungsverfolgung versandt. Kontakt: ${email}.`,
+    a: `LINSILK ist ein Haus für Seide, Leinen und hochfrequente Stoffe nach Mass mit Sitz in Genf; jedes Stück wird nach den Massen der Kundschaft zugeschnitten und genäht und mit Sendungsverfolgung versandt. Kontakt: ${email}.`,
   }),
   groups: [
     {
@@ -337,10 +341,10 @@ const BANK_DE_CH: BankCopy = {
     {
       title: 'Stoff und Pflege',
       items: [
-        { q: 'Warum verwendet LINSILK nur Seide und Leinen?', a: 'Seide und Leinen sind Naturfasern, die atmen, sich mit dem Körper bewegen und leicht auf der Haut liegen; LINSILK fertigt deshalb in nichts anderem: 100 % Seide oder 100 % Leinen, nie eine Mischung oder Synthetik.' },
-        { q: 'Sind die Stücke von LINSILK 100 % Seide oder Leinen?', a: 'Ja: Jedes LINSILK-Kleidungsstück ist aus 100 % Seide oder 100 % Leinen gefertigt. Knöpfe, Reissverschlüsse und ähnliche Verschlüsse sind nicht aus Seide oder Leinen.' },
+        { q: 'Warum verwendet LINSILK nur Seide, Leinen und hochfrequente Stoffe?', a: 'Seide, Leinen und hochfrequente Stoffe sind Naturfasern, die sich mit dem Körper bewegen und leicht auf der Haut liegen; LINSILK fertigt deshalb in nichts anderem: 100 % Seide, 100 % Leinen oder Kaschmir, nie Synthetik.' },
+        { q: 'Sind die Stücke von LINSILK 100 % Seide oder Leinen, und was ist mit Kaschmir?', a: 'Seidenstücke sind aus 100 % Seide, Leinenstücke aus 100 % Leinen gefertigt; die Kaschmirstücke sind aus Kaschmir gefertigt. Knöpfe, Reissverschlüsse und ähnliche Verschlüsse sind nicht aus dem Stoff.' },
         { q: 'Ist Seide oder Leinen besser bei warmem Wetter?', a: 'Beide atmen. Leinen ist fest, luftig und kühlend und wird mit dem Tragen weicher; Seide ist glatt und leicht und hält Sie auch bei kühlerem Wetter angenehm warm.' },
-        { q: 'Wie wasche ich es?', a: 'Seide und Leinen mögen beide kühle Handwäsche und liegendes Trocknen ohne direkte Sonne; keines von beiden gehört in den Tumbler.' },
+        { q: 'Wie wasche ich es?', a: 'Seide, Leinen und Kaschmir mögen alle kühle Handwäsche und liegendes Trocknen ohne direkte Sonne; keines davon gehört in den Tumbler.' },
         { q: 'Knittert Leinen?', a: 'Ja; natürliches Leinen knittert, wird weicher und altert, was zum Stoff gehört und kein Mangel ist.' },
         { q: 'Warum meidet LINSILK Polyester?', a: 'Polyester-, Nylon- und PU-Stoffe werden aus Erdöl hergestellt, atmen nicht, stauen Wärme und Feuchtigkeit auf der Haut und geben beim Tragen und Waschen Mikroplastikfasern ab.' },
       ],
@@ -361,7 +365,7 @@ const BANK_DE_CH: BankCopy = {
       title: 'Das Haus',
       items: [
         { q: 'Wo hat LINSILK seinen Sitz?', a: 'LINSILK hat seinen Sitz in Genf, Schweiz.' },
-        { q: 'Fertigt LINSILK auch Herrenmode?', a: 'Ja: Leinenhemden, Hosen und zweiteilige Looks für Herren, nach Ihren Massen gefertigt in 2–4 Wochen.' },
+        { q: 'Fertigt LINSILK auch Herrenmode?', a: 'Ja: Leinenhemden, Hosen und zweiteilige Looks für Herren sowie Kaschmirhosen, nach Ihren Massen gefertigt in 2–4 Wochen, und Seidenkrawatten, die nur nach Farbe bestellt werden.' },
         { q: 'Ist ein Seidenpyjama ein gutes Geschenk?', a: 'Ja, mit einer Einschränkung: Er wird nach Mass gefertigt, daher braucht es die Masse der beschenkten Person.' },
       ],
     },
@@ -381,9 +385,9 @@ const BANK_FR: BankCopy = {
     q: 'Combien coûtent les pièces LINSILK ?',
     a: `${range}, selon la pièce. Les prix sont en francs suisses ; le site peut afficher un montant approximatif en euros, livres, dollars ou dirhams.`,
   }),
-  colours: (silk, linen) => ({
+  colours: (silk, linen, cashmere) => ({
     q: 'Parmi combien de coloris puis-je choisir ?',
-    a: `${silk} coloris de soie (unie, jacquard et brocart) et ${linen} coloris de lin ; vous choisissez parmi des échantillons du tissu propre à la pièce.`,
+    a: `${silk} coloris de soie (unie, jacquard et brocart), ${linen} coloris de lin et ${cashmere} coloris de cachemire ; vous choisissez parmi des échantillons du tissu propre à la pièce.`,
   }),
   contactQ: (email) => ({
     q: 'LINSILK est-elle une vraie marque ?',
@@ -405,8 +409,8 @@ const BANK_FR: BankCopy = {
     {
       title: 'Tissu et entretien',
       items: [
-        { q: 'Pourquoi LINSILK n’utilise-t-elle que la soie et le lin ?', a: 'La soie et le lin sont des fibres naturelles qui respirent, suivent le corps et reposent légèrement sur la peau ; LINSILK ne fait donc rien d’autre : 100 % soie ou 100 % lin, jamais de mélange ni de synthétique.' },
-        { q: 'Les pièces LINSILK sont-elles 100 % soie ou lin ?', a: 'Oui : chaque vêtement LINSILK est fait en 100 % soie ou 100 % lin. Les boutons, fermetures éclair et attaches du même type ne sont ni en soie ni en lin.' },
+        { q: 'Pourquoi LINSILK n’utilise-t-elle que la soie, le lin et les tissus à haute fréquence ?', a: 'La soie, le lin et les tissus à haute fréquence sont des fibres naturelles qui suivent le corps et reposent légèrement sur la peau ; LINSILK ne fait donc rien d’autre : 100 % soie, 100 % lin ou tissus à haute fréquence, jamais de synthétique.' },
+        { q: 'Les pièces LINSILK sont-elles 100 % soie ou lin, et le cachemire ?', a: 'Les pièces en soie sont faites en 100 % soie et celles en lin en 100 % lin ; les pièces en cachemire sont faites en cachemire. Les boutons, fermetures éclair et attaches du même type ne sont pas dans le tissu.' },
         { q: 'La soie ou le lin est-il préférable par temps chaud ?', a: 'Tous deux respirent. Le lin est ferme, aéré et rafraîchissant, et s’assouplit au port ; la soie est lisse et légère et reste agréable aussi quand il fait plus frais.' },
         { q: 'Comment le laver ?', a: 'La soie et le lin préfèrent tous deux un lavage à la main à l’eau fraîche et un séchage à plat à l’abri du soleil direct ; ni l’un ni l’autre n’aime le sèche-linge.' },
         { q: 'Le lin se froisse-t-il ?', a: 'Oui ; le lin naturel se froisse, s’assouplit et vieillit, ce qui fait partie du tissu et n’est pas un défaut.' },
@@ -429,7 +433,7 @@ const BANK_FR: BankCopy = {
       title: 'La maison',
       items: [
         { q: 'Où est basée LINSILK ?', a: 'LINSILK est basée à Genève, en Suisse.' },
-        { q: 'LINSILK fait-elle de la mode masculine ?', a: 'Oui : chemises, pantalons et tenues deux pièces en lin pour homme, faits à vos mesures en 2 à 4 semaines.' },
+        { q: 'LINSILK fait-elle de la mode masculine ?', a: 'Oui : chemises, pantalons et tenues deux pièces en lin pour homme, ainsi que des pantalons en cachemire, faits à vos mesures en 2 à 4 semaines, et des cravates en soie, commandées par coloris seulement.' },
         { q: 'Un pyjama en soie est-il un bon cadeau ?', a: 'Oui, avec une réserve : il est fait sur mesure, il faut donc les mesures de la personne qui le reçoit.' },
       ],
     },

@@ -13,7 +13,7 @@ export type HomeCopy = {
   men: string;
   introH: string;
   introLead: string;
-  steps: (silk: number, linen: number) => string[];
+  steps: (silk: number, linen: number, cashmere: number) => string[];
   introCta: string;
   pillars: { title: string; body: string }[];
   seasonH: string;
@@ -41,19 +41,19 @@ export type HomeCopy = {
 };
 
 export const HOME_EN: HomeCopy = {
-  title: 'LINSILK | Made-to-measure silk and linen clothing from Geneva',
+  title: 'LINSILK | Made-to-measure silk, linen and high frequency fabrics, Geneva',
   description: (colours, from) =>
-    `LINSILK makes silk and linen clothing to your own measurements in 2–4 weeks. ${colours}${from}. No fittings needed. From Geneva.`,
-  kicker: 'Made-to-measure silk and linen clothing, from Geneva',
+    `LINSILK makes clothing in silk, linen and high frequency fabrics to your own measurements in 2–4 weeks. ${colours}${from}. No fittings needed. From Geneva.`,
+  kicker: 'Made-to-measure clothing in silk, linen and high frequency fabrics, from Geneva',
   heroLines: ['Cut from silk.', 'Woven by hand.', 'Fitted to you.'],
   women: 'Women’s collection',
   men: 'Men’s collection',
   introH: 'How ordering works',
   introLead:
-    'LINSILK is a made-to-measure silk and linen clothing house based in Geneva, Switzerland. You choose a piece, choose its colour from swatches of the cloth, enter your own measurements, and it is cut and sewn for you in 2–4 weeks.',
-  steps: (silk, linen) => [
+    'LINSILK is a made-to-measure clothing house based in Geneva, Switzerland, working in silk, linen and high frequency fabrics. You choose a piece, choose its colour from swatches of the cloth, enter your own measurements, and it is cut and sewn for you in 2–4 weeks.',
+  steps: (silk, linen, cashmere) => [
     'Choose a piece from the women’s or men’s collection.',
-    `Choose its colour: ${silk} silk colours, ${linen} linen colours.`,
+    `Choose its colour: ${silk} silk colours, ${linen} linen colours, ${cashmere} cashmere colours.`,
     'Enter your measurements. No fittings: measure yourself, or take the guide to any tailor.',
     'It is cut and sewn in 2–4 weeks from your confirmed sheet, then sent with tracking.',
   ],
@@ -61,7 +61,7 @@ export const HOME_EN: HomeCopy = {
   pillars: [
     {
       title: 'Luxury, premium-quality material',
-      body: 'Silk and linen of the finest grade, chosen for how they feel against the skin before how they look on a hanger. Every LINSILK garment is made in 100% silk or 100% linen cloth: no polyester and no blended cloth.',
+      body: 'Silk, linen and high frequency fabrics of the finest grade, chosen for how they feel against the skin before how they look on a hanger. Every LINSILK garment is made in 100% silk, 100% linen or high frequency fabric: no polyester and no blended cloth.',
     },
     {
       title: 'Made to your fit and measurements',
@@ -84,7 +84,7 @@ export const HOME_EN: HomeCopy = {
   eyebrowAtelier: 'The Tailor',
   atelierH: 'Clothes made the way they were always meant to be had.',
   atelierBody:
-    'LINSILK does not make mass-produced, low-grade, synthetic clothing. Each piece is made to your own measurements, so the garment follows your body instead of asking your body to follow it. That fit is what lets smooth, breathable silk and linen do what they do best: rest lightly on the skin, move with you, and stay comfortable from the first hour to the last.',
+    'LINSILK does not make mass-produced, low-grade, synthetic clothing. Each piece is made to your own measurements, so the garment follows your body instead of asking your body to follow it. That fit is what lets smooth, breathable silk, linen and high frequency fabrics do what they do best: rest lightly on the skin, move with you, and stay comfortable from the first hour to the last.',
   atelierAlts: ['Hands stitching a floral silk by hand', 'Hands pinning a silk top on a dress form'],
   chalk: 'shoulder · 41',
   eyebrowFreq: 'High Frequency',
@@ -96,7 +96,7 @@ export const HOME_EN: HomeCopy = {
     },
     {
       title: 'All energy has a frequency',
-      body: 'Energy vibrates, and each kind vibrates differently: light, sound, heat, and the activity of your own body. Cloth lies against you all day, so we believe it belongs in that picture. We want our clothes not only to feel comfortable but to raise your natural frequency. Silk and linen come from living things, the silkworm and the flax plant, and we hold that they carry that life into the garment.',
+      body: 'Energy vibrates, and each kind vibrates differently: light, sound, heat, and the activity of your own body. Cloth lies against you all day, so we believe it belongs in that picture. We want our clothes not only to feel comfortable but to raise your natural frequency. Silk, linen and cashmere come from living things, the silkworm, the flax plant and the cashmere goat, and we hold that they carry that life into the garment.',
     },
     {
       title: 'What synthetics take away',
@@ -104,29 +104,29 @@ export const HOME_EN: HomeCopy = {
     },
   ],
   eyebrowCloth: 'The Cloth',
-  clothH: 'Silk and linen. Nothing else enters the room.',
+  clothH: 'Silk, linen and high frequency fabrics. Nothing else enters the room.',
   clothP1:
-    'Premium silk and premium linen, and nothing else: no polyester and no blended cloth. Synthetic fibre is cheaper to sew and it holds a press longer, which is precisely why so much clothing is made from it.',
+    'Premium silk, premium linen and high frequency fabrics, and nothing else: no polyester and no blended cloth. Synthetic fibre is cheaper to sew and it holds a press longer, which is precisely why so much clothing is made from it.',
   clothP2:
-    'Natural fibre moves, creases and ages. A linen shirt worn through one summer will not look the way it looked in the photograph, and that is the point of it. Silk and linen breathe and rest lightly on the skin, which is why comfort comes first.',
-  statCloth: 'silk or linen cloth',
+    'Natural fibre moves, creases and ages. A linen shirt worn through one summer will not look the way it looked in the photograph, and that is the point of it. Silk, linen and high frequency fabrics rest lightly on the skin, which is why comfort comes first.',
+  statCloth: 'silk, linen or high frequency cloth',
   statDesigns: (season) => (season ? `designs in ${season}` : 'designs this season'),
 };
 
 const HOME_DE_CH: HomeCopy = {
-  title: 'LINSILK | Kleidung aus Seide und Leinen nach Mass, aus Genf',
+  title: 'LINSILK | Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass, aus Genf',
   description: (colours, from) =>
-    `LINSILK fertigt Kleidung aus Seide und Leinen nach Ihren eigenen Massen, innert 2–4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
-  kicker: 'Kleidung aus Seide und Leinen nach Mass, aus Genf',
+    `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren eigenen Massen, innert 2–4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
+  kicker: 'Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass, aus Genf',
   heroLines: ['Aus Seide geschnitten.', 'Von Hand gewebt.', 'Auf Sie abgestimmt.'],
   women: 'Damenkollektion',
   men: 'Herrenkollektion',
   introH: 'So funktioniert die Bestellung',
   introLead:
-    'LINSILK ist ein Genfer Modehaus für Seide und Leinen nach Mass. Sie wählen ein Stück, wählen seine Farbe aus Mustern des Stoffs, geben Ihre eigenen Masse ein, und es wird innert 2–4 Wochen für Sie zugeschnitten und genäht.',
-  steps: (silk, linen) => [
+    'LINSILK ist ein Genfer Modehaus für Seide, Leinen und hochfrequente Stoffe nach Mass. Sie wählen ein Stück, wählen seine Farbe aus Mustern des Stoffs, geben Ihre eigenen Masse ein, und es wird innert 2–4 Wochen für Sie zugeschnitten und genäht.',
+  steps: (silk, linen, cashmere) => [
     'Wählen Sie ein Stück aus der Damen- oder Herrenkollektion.',
-    `Wählen Sie seine Farbe: ${silk} Seidenfarben, ${linen} Leinenfarben.`,
+    `Wählen Sie seine Farbe: ${silk} Seidenfarben, ${linen} Leinenfarben, ${cashmere} Kaschmirfarben.`,
     'Geben Sie Ihre Masse ein. Ohne Anprobe: Sie messen selbst, oder Sie gehen mit der Anleitung zu einer beliebigen Schneiderei.',
     'Es wird in 2–4 Wochen ab Ihrem bestätigten Blatt zugeschnitten und genäht und dann mit Sendungsverfolgung versandt.',
   ],
@@ -134,7 +134,7 @@ const HOME_DE_CH: HomeCopy = {
   pillars: [
     {
       title: 'Luxuriöses Material von höchster Qualität',
-      body: 'Seide und Leinen von feinster Güte, ausgewählt dafür, wie sie sich auf der Haut anfühlen, bevor es darum geht, wie sie am Bügel aussehen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide oder 100 % Leinen gefertigt: kein Polyester und kein Mischgewebe.',
+      body: 'Seide, Leinen und hochfrequente Stoffe von feinster Güte, ausgewählt dafür, wie sie sich auf der Haut anfühlen, bevor es darum geht, wie sie am Bügel aussehen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen gefertigt: kein Polyester und kein Mischgewebe.',
     },
     {
       title: 'Nach Ihrer Passform und Ihren Massen',
@@ -157,7 +157,7 @@ const HOME_DE_CH: HomeCopy = {
   eyebrowAtelier: 'Das Atelier',
   atelierH: 'Kleidung, so gefertigt, wie sie immer gedacht war.',
   atelierBody:
-    'LINSILK fertigt keine massenproduzierte, minderwertige, synthetische Kleidung. Jedes Stück wird nach Ihren eigenen Massen gefertigt, sodass das Kleidungsstück Ihrem Körper folgt, statt zu verlangen, dass Ihr Körper ihm folgt. Diese Passform lässt glatte, atmungsaktive Seide und Leinen tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
+    'LINSILK fertigt keine massenproduzierte, minderwertige, synthetische Kleidung. Jedes Stück wird nach Ihren eigenen Massen gefertigt, sodass das Kleidungsstück Ihrem Körper folgt, statt zu verlangen, dass Ihr Körper ihm folgt. Diese Passform lässt glatte, atmungsaktive Seide, Leinen und hochfrequente Stoffe tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
   atelierAlts: ['Hände, die eine Blumenseide von Hand nähen', 'Hände, die ein Seidenoberteil an einer Schneiderpuppe feststecken'],
   chalk: 'Schulter · 41',
   eyebrowFreq: 'Hohe Frequenz',
@@ -169,7 +169,7 @@ const HOME_DE_CH: HomeCopy = {
     },
     {
       title: 'Jede Energie hat eine Frequenz',
-      body: 'Energie schwingt, und jede Art schwingt anders: Licht, Schall, Wärme und die Aktivität Ihres eigenen Körpers. Stoff liegt den ganzen Tag an Ihnen an, darum gehört er unserer Überzeugung nach in dieses Bild. Wir möchten, dass unsere Kleidung sich nicht nur angenehm anfühlt, sondern Ihre natürliche Frequenz anhebt. Seide und Leinen stammen von lebenden Wesen, der Seidenraupe und der Flachspflanze, und wir sind überzeugt, dass sie dieses Leben in das Kleidungsstück tragen.',
+      body: 'Energie schwingt, und jede Art schwingt anders: Licht, Schall, Wärme und die Aktivität Ihres eigenen Körpers. Stoff liegt den ganzen Tag an Ihnen an, darum gehört er unserer Überzeugung nach in dieses Bild. Wir möchten, dass unsere Kleidung sich nicht nur angenehm anfühlt, sondern Ihre natürliche Frequenz anhebt. Seide, Leinen und Kaschmir stammen von lebenden Wesen, der Seidenraupe, der Flachspflanze und der Kaschmirziege, und wir sind überzeugt, dass sie dieses Leben in das Kleidungsstück tragen.',
     },
     {
       title: 'Was Synthetik nimmt',
@@ -177,29 +177,29 @@ const HOME_DE_CH: HomeCopy = {
     },
   ],
   eyebrowCloth: 'Der Stoff',
-  clothH: 'Seide und Leinen. Sonst kommt nichts in den Raum.',
+  clothH: 'Seide, Leinen und hochfrequente Stoffe. Sonst kommt nichts in den Raum.',
   clothP1:
-    'Erstklassige Seide und erstklassiges Leinen, und sonst nichts: kein Polyester und kein Mischgewebe. Synthetische Faser ist günstiger zu nähen und hält die Bügelfalte länger, und genau deshalb wird so viel Kleidung daraus gefertigt.',
+    'Erstklassige Seide, erstklassiges Leinen und hochfrequente Stoffe, und sonst nichts: kein Polyester und kein Mischgewebe. Synthetische Faser ist günstiger zu nähen und hält die Bügelfalte länger, und genau deshalb wird so viel Kleidung daraus gefertigt.',
   clothP2:
-    'Naturfaser bewegt sich, knittert und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht nicht mehr so aus wie auf dem Foto, und darin liegt sein Sinn. Seide und Leinen atmen und liegen leicht auf der Haut, weshalb Komfort an erster Stelle steht.',
-  statCloth: 'Seiden- oder Leinenstoff',
+    'Naturfaser bewegt sich, knittert und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht nicht mehr so aus wie auf dem Foto, und darin liegt sein Sinn. Seide, Leinen und hochfrequente Stoffe liegen leicht auf der Haut, weshalb Komfort an erster Stelle steht.',
+  statCloth: 'Seide, Leinen oder hochfrequenter Stoff',
   statDesigns: (season) => (season ? `Entwürfe in ${season}` : 'Entwürfe diese Saison'),
 };
 
 const HOME_FR: HomeCopy = {
-  title: 'LINSILK | Vêtements en soie et en lin sur mesure, depuis Genève',
+  title: 'LINSILK | Vêtements sur mesure en soie, en lin et en tissus à haute fréquence, depuis Genève',
   description: (colours, from) =>
-    `LINSILK réalise des vêtements en soie et en lin à vos propres mesures en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
-  kicker: 'Vêtements en soie et en lin sur mesure, depuis Genève',
+    `LINSILK réalise des vêtements en soie, en lin et en tissus à haute fréquence à vos propres mesures en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
+  kicker: 'Vêtements sur mesure en soie, en lin et en tissus à haute fréquence, depuis Genève',
   heroLines: ['Taillé dans la soie.', 'Tissé à la main.', 'Ajusté à vous.'],
   women: 'Collection femme',
   men: 'Collection homme',
   introH: 'Comment commander',
   introLead:
-    'LINSILK est une maison genevoise de vêtements sur mesure en soie et en lin. Vous choisissez une pièce, son coloris parmi des échantillons du tissu, vous indiquez vos propres mesures, et elle est coupée et cousue pour vous en 2 à 4 semaines.',
-  steps: (silk, linen) => [
+    'LINSILK est une maison genevoise de vêtements sur mesure en soie, en lin et en tissus à haute fréquence. Vous choisissez une pièce, son coloris parmi des échantillons du tissu, vous indiquez vos propres mesures, et elle est coupée et cousue pour vous en 2 à 4 semaines.',
+  steps: (silk, linen, cashmere) => [
     'Choisissez une pièce dans la collection femme ou homme.',
-    `Choisissez son coloris : ${silk} coloris de soie, ${linen} coloris de lin.`,
+    `Choisissez son coloris : ${silk} coloris de soie, ${linen} coloris de lin, ${cashmere} coloris de cachemire.`,
     'Indiquez vos mesures. Sans essayage : vous vous mesurez vous-même, ou vous emportez le guide chez n’importe quel tailleur.',
     'Elle est coupée et cousue en 2 à 4 semaines à partir de votre fiche confirmée, puis envoyée avec suivi.',
   ],
@@ -207,7 +207,7 @@ const HOME_FR: HomeCopy = {
   pillars: [
     {
       title: 'Une matière de luxe, de qualité supérieure',
-      body: 'Soie et lin de la plus belle qualité, choisis pour ce qu’ils font sentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est fait en 100 % soie ou 100 % lin : ni polyester ni tissu mélangé.',
+      body: 'Soie, lin et tissus à haute fréquence de la plus belle qualité, choisis pour ce qu’ils font sentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est fait en 100 % soie, 100 % lin ou en tissus à haute fréquence : ni polyester ni tissu mélangé.',
     },
     {
       title: 'Fait à votre coupe et à vos mesures',
@@ -230,7 +230,7 @@ const HOME_FR: HomeCopy = {
   eyebrowAtelier: 'L’atelier',
   atelierH: 'Des vêtements faits comme ils auraient toujours dû l’être.',
   atelierBody:
-    'LINSILK ne fait pas de vêtements produits en série, de qualité médiocre et synthétiques. Chaque pièce est faite à vos propres mesures, si bien que le vêtement suit votre corps au lieu de demander à votre corps de le suivre. C’est cette coupe qui laisse la soie et le lin, lisses et respirants, faire ce qu’ils font de mieux : reposer légèrement sur la peau, bouger avec vous et rester confortables de la première heure à la dernière.',
+    'LINSILK ne fait pas de vêtements produits en série, de qualité médiocre et synthétiques. Chaque pièce est faite à vos propres mesures, si bien que le vêtement suit votre corps au lieu de demander à votre corps de le suivre. C’est cette coupe qui laisse la soie, le lin et les tissus à haute fréquence, lisses et respirants, faire ce qu’ils font de mieux : reposer légèrement sur la peau, bouger avec vous et rester confortables de la première heure à la dernière.',
   atelierAlts: ['Des mains cousant à la main une soie à fleurs', 'Des mains épinglant un haut en soie sur un mannequin'],
   chalk: 'épaule · 41',
   eyebrowFreq: 'Haute fréquence',
@@ -242,7 +242,7 @@ const HOME_FR: HomeCopy = {
     },
     {
       title: 'Toute énergie a une fréquence',
-      body: 'L’énergie vibre, et chaque forme vibre différemment : la lumière, le son, la chaleur et l’activité de votre propre corps. Le tissu reste contre vous toute la journée, nous pensons donc qu’il a sa place dans ce tableau. Nous voulons que nos vêtements soient non seulement confortables, mais qu’ils élèvent votre fréquence naturelle. La soie et le lin viennent d’êtres vivants, le ver à soie et le lin cultivé, et nous tenons qu’ils portent cette vie dans le vêtement.',
+      body: 'L’énergie vibre, et chaque forme vibre différemment : la lumière, le son, la chaleur et l’activité de votre propre corps. Le tissu reste contre vous toute la journée, nous pensons donc qu’il a sa place dans ce tableau. Nous voulons que nos vêtements soient non seulement confortables, mais qu’ils élèvent votre fréquence naturelle. La soie, le lin et le cachemire viennent d’êtres vivants, le ver à soie, le lin cultivé et la chèvre cachemire, et nous tenons qu’ils portent cette vie dans le vêtement.',
     },
     {
       title: 'Ce que les synthétiques enlèvent',
@@ -250,12 +250,12 @@ const HOME_FR: HomeCopy = {
     },
   ],
   eyebrowCloth: 'Le tissu',
-  clothH: 'La soie et le lin. Rien d’autre n’entre dans la pièce.',
+  clothH: 'La soie, le lin et les tissus à haute fréquence. Rien d’autre n’entre dans la pièce.',
   clothP1:
-    'Une soie et un lin de première qualité, et rien d’autre : ni polyester ni tissu mélangé. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, et c’est précisément pourquoi tant de vêtements en sont faits.',
+    'Une soie, un lin et des tissus à haute fréquence de première qualité, et rien d’autre : ni polyester ni tissu mélangé. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, et c’est précisément pourquoi tant de vêtements en sont faits.',
   clothP2:
-    'La fibre naturelle bouge, se froisse et vieillit. Une chemise en lin portée tout un été ne ressemblera plus à ce qu’elle était sur la photo, et c’est tout son intérêt. La soie et le lin respirent et reposent légèrement sur la peau, c’est pourquoi le confort passe en premier.',
-  statCloth: 'tissu de soie ou de lin',
+    'La fibre naturelle bouge, se froisse et vieillit. Une chemise en lin portée tout un été ne ressemblera plus à ce qu’elle était sur la photo, et c’est tout son intérêt. La soie, le lin et les tissus à haute fréquence reposent légèrement sur la peau, c’est pourquoi le confort passe en premier.',
+  statCloth: 'tissu de soie, de lin ou à haute fréquence',
   statDesigns: (season) => (season ? `modèles en ${season}` : 'modèles cette saison'),
 };
 

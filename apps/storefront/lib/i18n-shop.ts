@@ -10,6 +10,8 @@ const EN = {
     title: 'Your cart',
     lede:
       'Nothing is cut until the tailor has read your sheet and written back. An order holds the design against the season’s capped run in the meantime.',
+    ledeTie:
+      'Nothing is made until the tailor has confirmed your colour. An order holds the piece against the season’s capped run in the meantime.',
     empty: 'Your cart is empty.',
     enter: 'Enter the collection',
     design: 'Design an outfit',
@@ -20,6 +22,8 @@ const EN = {
     remove: 'Remove',
     terms:
       'Prices are in Swiss francs and include duty within Switzerland and the EU. A piece takes two to four weeks from the confirmed sheet.',
+    termsTie:
+      'Prices are in Swiss francs and include duty within Switzerland and the EU. The tailor confirms your colour in writing before the tie is made.',
     piece: 'piece',
     pieces: 'pieces',
     shipping: 'Shipping',
@@ -69,6 +73,7 @@ const EN = {
     discount: 'Discount',
     total: 'Total',
     reassure: 'Nothing is cut until the tailor has confirmed your measurement sheet in writing.',
+    reassureTie: 'Nothing is made until the tailor has confirmed your colour in writing.',
   },
   pay: {
     notConfigured: 'Payment is not configured on this storefront yet. Write to hello@bylinsilk.com and the tailor will take it from here.',
@@ -92,6 +97,7 @@ const EN = {
     title: 'Thank you — it is with the tailor',
     leadCommission: 'Your commission is paid for and the bench has it. A pattern is drawn to your sheet before anything is cut.',
     lead: 'Your order is paid for. Nothing is cut until the tailor has read your sheet and written back to confirm it.',
+    leadTie: 'Your order is paid for. Nothing is made until the tailor has written back to confirm your colour.',
     enter: 'Enter the collection',
     questions: 'Questions',
     heading: (ref: string) => `Order ${ref}`,
@@ -101,6 +107,7 @@ const EN = {
     next: 'What happens next',
     nextCommission: 'Two to four weeks at the bench from today.',
     nextOrder: 'The tailor writes within two days to confirm your measurement sheet. Cutting begins once you have agreed it, and takes two to four weeks.',
+    nextTie: 'The tailor writes within two days to confirm your colour. The tie is made once you have agreed it.',
     change: 'Anything to change, or a question about the sheet — write to',
     theHouse: 'the house',
     quote: 'and quote this order.',
@@ -114,6 +121,8 @@ const DE_CH: ShopText = {
     title: 'Ihr Warenkorb',
     lede:
       'Nichts wird zugeschnitten, bevor das Atelier Ihr Massblatt gelesen und Ihnen geantwortet hat. Bis dahin reserviert die Bestellung das Modell in der begrenzten Auflage der Saison.',
+    ledeTie:
+      'Nichts wird gefertigt, bevor das Atelier Ihre Farbe bestätigt hat. Bis dahin reserviert die Bestellung das Stück in der begrenzten Auflage der Saison.',
     empty: 'Ihr Warenkorb ist leer.',
     enter: 'Zur Kollektion',
     design: 'Ein Outfit entwerfen',
@@ -124,6 +133,8 @@ const DE_CH: ShopText = {
     remove: 'Entfernen',
     terms:
       'Die Preise verstehen sich in Schweizer Franken und enthalten die Zollabgaben innerhalb der Schweiz und der EU. Ein Stück braucht ab dem bestätigten Massblatt zwei bis vier Wochen.',
+    termsTie:
+      'Die Preise verstehen sich in Schweizer Franken und enthalten die Zollabgaben innerhalb der Schweiz und der EU. Das Atelier bestätigt Ihre Farbe schriftlich, bevor die Krawatte gefertigt wird.',
     piece: 'Stück',
     pieces: 'Stücke',
     shipping: 'Versand',
@@ -173,6 +184,7 @@ const DE_CH: ShopText = {
     discount: 'Rabatt',
     total: 'Total',
     reassure: 'Nichts wird zugeschnitten, bevor das Atelier Ihr Massblatt schriftlich bestätigt hat.',
+    reassureTie: 'Nichts wird gefertigt, bevor das Atelier Ihre Farbe schriftlich bestätigt hat.',
   },
   pay: {
     notConfigured: 'Die Zahlung ist in diesem Shop noch nicht eingerichtet. Schreiben Sie an hello@bylinsilk.com, das Atelier übernimmt von dort.',
@@ -196,6 +208,7 @@ const DE_CH: ShopText = {
     title: 'Vielen Dank – es ist im Atelier',
     leadCommission: 'Ihr Auftrag ist bezahlt und liegt in der Werkstatt. Bevor zugeschnitten wird, entsteht ein Schnittmuster nach Ihrem Massblatt.',
     lead: 'Ihre Bestellung ist bezahlt. Es wird nichts zugeschnitten, bevor das Atelier Ihr Massblatt gelesen und Ihnen zur Bestätigung geschrieben hat.',
+    leadTie: 'Ihre Bestellung ist bezahlt. Es wird nichts gefertigt, bevor das Atelier Ihnen zur Bestätigung Ihrer Farbe geschrieben hat.',
     enter: 'Zur Kollektion',
     questions: 'Fragen',
     heading: (ref) => `Bestellung ${ref}`,
@@ -205,6 +218,7 @@ const DE_CH: ShopText = {
     next: 'Wie es weitergeht',
     nextCommission: 'Ab heute zwei bis vier Wochen in der Werkstatt.',
     nextOrder: 'Das Atelier schreibt Ihnen innert zwei Tagen, um Ihr Massblatt zu bestätigen. Der Zuschnitt beginnt, sobald Sie zugestimmt haben, und dauert zwei bis vier Wochen.',
+    nextTie: 'Das Atelier schreibt Ihnen innert zwei Tagen, um Ihre Farbe zu bestätigen. Die Krawatte wird gefertigt, sobald Sie zugestimmt haben.',
     change: 'Etwas zu ändern oder eine Frage zum Massblatt? Schreiben Sie an',
     theHouse: 'das Haus',
     quote: 'und nennen Sie diese Bestellung.',
@@ -216,6 +230,8 @@ const FR: ShopText = {
     title: 'Votre panier',
     lede:
       'Rien n’est coupé avant que l’atelier ait lu votre fiche de mesures et vous ait répondu. D’ici là, la commande réserve le modèle dans la série limitée de la saison.',
+    ledeTie:
+      'Rien n’est confectionné avant que l’atelier ait confirmé votre coloris. D’ici là, la commande réserve la pièce dans la série limitée de la saison.',
     empty: 'Votre panier est vide.',
     enter: 'Entrer dans la collection',
     design: 'Concevoir une tenue',
@@ -226,6 +242,8 @@ const FR: ShopText = {
     remove: 'Retirer',
     terms:
       'Les prix sont en francs suisses et comprennent les droits de douane en Suisse et dans l’UE. Une pièce demande de deux à quatre semaines à partir de la fiche confirmée.',
+    termsTie:
+      'Les prix sont en francs suisses et comprennent les droits de douane en Suisse et dans l’UE. L’atelier confirme votre coloris par écrit avant la confection de la cravate.',
     piece: 'pièce',
     pieces: 'pièces',
     shipping: 'Livraison',
@@ -275,6 +293,7 @@ const FR: ShopText = {
     discount: 'Remise',
     total: 'Total',
     reassure: 'Rien n’est coupé avant que l’atelier ait confirmé votre fiche de mesures par écrit.',
+    reassureTie: 'Rien n’est confectionné avant que l’atelier ait confirmé votre coloris par écrit.',
   },
   pay: {
     notConfigured: 'Le paiement n’est pas encore configuré sur cette boutique. Écrivez à hello@bylinsilk.com : l’atelier prendra le relais.',
@@ -298,6 +317,7 @@ const FR: ShopText = {
     title: 'Merci — c’est à l’atelier',
     leadCommission: 'Votre commande sur mesure est payée et l’établi l’a reçue. Un patron est dessiné d’après votre fiche avant toute coupe.',
     lead: 'Votre commande est payée. Rien n’est coupé avant que l’atelier ait lu votre fiche de mesures et vous ait écrit pour la confirmer.',
+    leadTie: 'Votre commande est payée. Rien n’est confectionné avant que l’atelier vous ait écrit pour confirmer votre coloris.',
     enter: 'Entrer dans la collection',
     questions: 'Questions',
     heading: (ref) => `Commande ${ref}`,
@@ -307,6 +327,7 @@ const FR: ShopText = {
     next: 'La suite',
     nextCommission: 'De deux à quatre semaines à l’établi à partir d’aujourd’hui.',
     nextOrder: 'L’atelier vous écrit sous deux jours pour confirmer votre fiche de mesures. La coupe commence dès que vous l’avez approuvée et dure de deux à quatre semaines.',
+    nextTie: 'L’atelier vous écrit sous deux jours pour confirmer votre coloris. La cravate est confectionnée dès que vous l’avez approuvé.',
     change: 'Quelque chose à modifier, ou une question sur la fiche ? Écrivez à',
     theHouse: 'la maison',
     quote: 'en indiquant cette commande.',
@@ -325,5 +346,6 @@ export function materialIn(material: string, lang: Lang): string {
   const fr = lang === 'fr' || lang === 'fr-ch';
   return material
     .replace(/\bsilk\b/gi, fr ? 'soie' : 'Seide')
-    .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen');
+    .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen')
+    .replace(/\bcashmere\b/gi, fr ? 'cachemire' : 'Kaschmir');
 }

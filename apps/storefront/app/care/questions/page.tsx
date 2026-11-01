@@ -15,7 +15,7 @@ import { faqLd } from '@/lib/jsonld';
 export const metadata: Metadata = {
   title: 'Questions: made to measure, cloth, delivery and returns',
   description:
-    'Answers to what LINSILK is asked most: how made-to-measure works, fittings, lead times, silk and linen care, delivery, duty and returns.',
+    'Answers to what LINSILK is asked most: how made-to-measure works, fittings, lead times, the care of silk, linen and high frequency fabrics, delivery, duty and returns.',
   alternates: { canonical: '/care/questions' },
 };
 
@@ -58,12 +58,12 @@ function bank(range: { from: number; to: number } | null): { title: string; item
       title: 'Cloth and care',
       items: [
         {
-          q: 'Why does LINSILK use only silk and linen?',
-          a: 'Silk and linen are natural fibres that breathe, move with the body and rest lightly on the skin, so LINSILK makes its garments in nothing else: 100% silk or 100% linen cloth, never a blend or a synthetic.',
+          q: 'Why does LINSILK use only silk, linen and high frequency fabrics?',
+          a: 'Silk, linen and high frequency fabrics are natural fibres that move with the body and rest lightly on the skin, so LINSILK makes its garments in nothing else: 100% silk, 100% linen or high frequency fabric, never a synthetic.',
         },
         {
-          q: 'Are LINSILK pieces 100% silk or linen?',
-          a: 'Yes: every LINSILK garment is made in 100% silk or 100% linen cloth. Buttons, zips and similar fastenings are not silk or linen.',
+          q: 'Are LINSILK pieces 100% silk or linen, and what about cashmere?',
+          a: 'Silk pieces are made in 100% silk and linen pieces in 100% linen cloth; the cashmere pieces are made in cashmere cloth. Buttons, zips and similar fastenings are not the cloth.',
         },
         {
           q: 'Is silk or linen better for warm weather?',
@@ -71,7 +71,7 @@ function bank(range: { from: number; to: number } | null): { title: string; item
         },
         {
           q: 'How should I wash it?',
-          a: 'Silk and linen both prefer cool hand-washing and drying flat out of direct sun; neither wants a tumble dryer.',
+          a: 'Silk, linen and cashmere all prefer cool hand-washing and drying flat out of direct sun; none of them wants a tumble dryer.',
         },
         {
           q: 'Does linen crease?',
@@ -79,7 +79,7 @@ function bank(range: { from: number; to: number } | null): { title: string; item
         },
         {
           q: 'How many colours can I choose from?',
-          a: `${COLOURS.silk} silk colours (plain, jacquard and brocade) and ${COLOURS.linen} linen colours; you choose from swatches of the piece’s own cloth.`,
+          a: `${COLOURS.silk} silk colours (plain, jacquard and brocade), ${COLOURS.linen} linen colours and ${COLOURS.cashmere} cashmere colours; you choose from swatches of the piece’s own cloth.`,
         },
         {
           q: 'Why does LINSILK avoid polyester?',
@@ -137,11 +137,11 @@ function bank(range: { from: number; to: number } | null): { title: string; item
         },
         {
           q: 'Is LINSILK a real brand?',
-          a: `LINSILK is a made-to-measure silk and linen house based in Geneva; every piece is cut and sewn to the customer’s measurements and sent with tracking. Contact: ${EMAIL}.`,
+          a: `LINSILK is a made-to-measure house based in Geneva, working in silk, linen and high frequency fabrics; every piece is cut and sewn to the customer’s measurements and sent with tracking. Contact: ${EMAIL}.`,
         },
         {
           q: 'Does LINSILK make menswear?',
-          a: 'Yes: men’s linen shirts, trousers and two-piece looks, made to your measurements in 2–4 weeks.',
+          a: 'Yes: men’s linen shirts, pants and two-piece looks, and cashmere pants, made to your measurements in 2–4 weeks, and silk ties, ordered by colour alone.',
         },
         {
           q: 'Is a silk pyjama set a good gift?',

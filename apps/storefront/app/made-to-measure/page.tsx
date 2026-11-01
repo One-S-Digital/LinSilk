@@ -31,7 +31,7 @@ const FAQ: QA[] = [
   },
   {
     q: 'Can I have a dress made online?',
-    a: 'Yes. Choose a silk or linen piece, choose its colour from the swatches, enter your measurements, and LINSILK cuts and sews it for you in 2–4 weeks, then dispatches it from Geneva.',
+    a: 'Yes. Choose a piece in silk, linen or a high frequency fabric, choose its colour from the swatches, enter your measurements, and LINSILK cuts and sews it for you in 2–4 weeks, then dispatches it from Geneva.',
   },
 ];
 
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const range = priceRange(await getPieces());
   return {
     title: 'Made-to-measure clothing online: how it works',
-    description: `How to order made-to-measure silk and linen clothing online: choose, enter 15 measurements, ready in 2–4 weeks. No fittings.${range ? ` From ${money(range.from)}.` : ''}`,
+    description: `How to order made-to-measure clothing in silk, linen and high frequency fabrics online: choose, enter 15 measurements, ready in 2–4 weeks. No fittings.${range ? ` From ${money(range.from)}.` : ''}`,
     alternates: { canonical: '/made-to-measure' },
   };
 }
@@ -54,7 +54,7 @@ export default async function MadeToMeasurePage() {
     <DocPage
       eyebrow="Made to measure"
       title="Made-to-measure clothing, ordered online"
-      lead="Made-to-measure clothing is cut and sewn to your own measurements instead of a standard size. At LINSILK you order online: choose a silk or linen piece, choose its colour, enter fifteen measurements, and it is cut and sewn for you in 2–4 weeks, then dispatched from Geneva."
+      lead="Made-to-measure clothing is cut and sewn to your own measurements instead of a standard size. At LINSILK you order online: choose a piece in silk, linen or a high frequency fabric, choose its colour, enter fifteen measurements, and it is cut and sewn for you in 2–4 weeks, then dispatched from Geneva."
       foot={
         <>
           <ButtonLink href="/collection" variant="outline">See the collection</ButtonLink>
@@ -68,7 +68,7 @@ export default async function MadeToMeasurePage() {
         <DocList
           items={[
             'Choose a piece from the women’s or men’s collection.',
-            `Choose its colour from the swatches of its cloth (${COLOURS.silk} silk colours, ${COLOURS.linen} linen colours).`,
+            `Choose its colour from the swatches of its cloth (${COLOURS.silk} silk colours, ${COLOURS.linen} linen colours, ${COLOURS.cashmere} cashmere colours).`,
             'Enter your measurements, with the measuring guide beside you. No fittings: measure yourself, or take the guide to any tailor.',
             'It is cut and sewn in 2–4 weeks from your confirmed sheet, inspected twice, then sent with tracking.',
           ]}

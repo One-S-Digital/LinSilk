@@ -4,7 +4,7 @@ import { NAMED_SWATCHES, fabricLabel, swatchLabelIn, swatchName, zoneText } from
 import { switchPath } from './locale-routes';
 import { SWATCHES } from './swatches';
 
-const ALL = [...SWATCHES.silk, ...SWATCHES.linen];
+const ALL = [...SWATCHES.silk, ...SWATCHES.linen, ...SWATCHES.cashmere];
 
 describe('translated ordering words', () => {
   it('names every colour in German and French', () => {

@@ -53,9 +53,19 @@ const schema = z.object({
   /** Cloth and construction, shown under the name on every tile. */
   material: z.string().trim().min(1).max(200).optional(),
   /* What the piece is cut from, which decides the colours the client chooses
-     from: the silk swatches or the linen swatches. The house makes in nothing
+     from: the silk, linen or cashmere swatches. The house makes in nothing
      else, and a piece is never named for a colour. */
-  cloth: z.enum(["silk", "linen"]).optional(),
+  cloth: z.enum(["silk", "linen", "cashmere"]).optional(),
+  /* The colours the piece is offered in, as swatch codes, when that is not the
+     whole cloth (a plain tie offers the plain silks only). Left out, the piece
+     offers every colour of its cloth. An empty list retires the restriction. */
+  swatches: z
+    .array(z.string().regex(/^LS-[SJBLC]\d{2}$/, "is a swatch code such as 'LS-S04'"))
+    .max(60)
+    .optional(),
+  /* True for a piece that is not cut to a body — a tie — and so is ordered by
+     colour alone, with no measurement sheet. */
+  no_measurements: z.boolean().optional(),
   /** The handle of a season that already exists. */
   collection: z.string().trim().min(1).optional(),
   group: z.enum(["women", "men"]).optional(),
@@ -247,6 +257,8 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
         cloth: (meta.cloth as string) ?? null,
         price_chf: francs ?? null,
         length_kinds: (meta.length_kinds as string[]) ?? [],
+        swatches: (meta.swatches as string[]) ?? [],
+        no_measurements: meta.no_measurements === true,
         photographed: Boolean(p.thumbnail),
         /* What `images_action: 'remove'` takes URLs from. */
         images: ((p.images ?? []) as unknown as Imaged[]).map((img) => img.url),
@@ -418,6 +430,13 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     ...(piece.shot !== undefined ? { shot: piece.shot } : {}),
     ...(piece.sleep !== undefined ? { sleep: piece.sleep ? true : "" } : {}),
     ...(piece.length_kinds !== undefined ? { length_kinds: piece.length_kinds } : {}),
+    ...(piece.swatches !== undefined ? { swatches: piece.swatches.length ? piece.swatches : "" } : {}),
+    ...(piece.no_measurements !== undefined ? { no_measurements: piece.no_measurements ? true : "" } : {}),
+  }
+
+  /* A piece cannot be both: a sheet to fill in and no sheet at all. */
+  if (metadata.no_measurements === true && Array.isArray(metadata.length_kinds) && metadata.length_kinds.length) {
+    refuse("A piece ordered by colour alone asks for no lengths: leave length_kinds empty when no_measurements is true.")
   }
 
   /* A stock location is read here, ahead of the write, because both branches

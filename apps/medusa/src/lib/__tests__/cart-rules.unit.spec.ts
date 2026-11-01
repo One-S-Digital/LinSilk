@@ -215,3 +215,43 @@ describe("cartRefusal", () => {
     )
   })
 })
+
+describe("a tie, which is ordered by colour alone", () => {
+  const tie: GatedVariant = {
+    id: "variant_tie",
+    product: { title: "Silk tie", metadata: { no_measurements: true }, collection: autumn },
+  }
+
+  const plainTie: GatedVariant = {
+    id: "variant_plain_tie",
+    product: {
+      title: "Silk tie",
+      metadata: { no_measurements: true, swatches: ["LS-S01", "LS-S02"] },
+      collection: autumn,
+    },
+  }
+
+  it("needs no measurement sheet", () => {
+    expect(lineRefusals({ quantity: 1, metadata: {}, variant: tie })).toEqual([])
+  })
+
+  it("is sold only in the colours it offers", () => {
+    expect(lineRefusals({ quantity: 1, metadata: { fabric_key: "LS-S02" }, variant: plainTie })).toEqual([])
+    const refused = "Silk tie is not offered in that colour. Choose one of the colours shown for it."
+    expect(lineRefusals({ quantity: 1, metadata: { fabric_key: "LS-J01" }, variant: plainTie })).toEqual([refused])
+    expect(lineRefusals({ quantity: 1, metadata: {}, variant: plainTie })).toEqual([refused])
+    expect(lineRefusals({ quantity: 1, metadata: { fabric_key: 5 }, variant: plainTie })).toEqual([refused])
+  })
+
+  it("is still cut for one order at a time, and still gated by the season", () => {
+    expect(lineRefusals({ quantity: 2, metadata: {}, variant: tie })).toEqual([
+      "Each piece is cut for one person, so Silk tie is ordered one at a time.",
+    ])
+    const old: GatedVariant = { ...tie, product: { ...tie.product!, collection: summer } }
+    expect(lineRefusals({ quantity: 1, metadata: {}, variant: old })).toHaveLength(1)
+  })
+
+  it("does not excuse a garment: one that is not flagged still needs its sheet", () => {
+    expect(lineRefusals({ quantity: 1, metadata: {}, variant: coat })[0]).toContain("partial sheet")
+  })
+})

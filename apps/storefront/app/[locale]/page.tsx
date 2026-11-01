@@ -19,8 +19,8 @@ export async function generateMetadata(props: PageProps<'/[locale]'>): Promise<M
   const c = homeCopy(locale);
   const range = priceRange((await getPieces()).filter((p) => p.orderable && !p.retired));
   const colours = locale.startsWith('de')
-    ? `${COLOURS.silk} Seidenfarben und ${COLOURS.linen} Leinenfarben`
-    : `${COLOURS.silk} coloris de soie et ${COLOURS.linen} coloris de lin`;
+    ? `${COLOURS.silk} Seidenfarben, ${COLOURS.linen} Leinenfarben und ${COLOURS.cashmere} Kaschmirfarben`
+    : `${COLOURS.silk} coloris de soie, ${COLOURS.linen} de lin et ${COLOURS.cashmere} de cachemire`;
   return localeMetadata(locale, '/', c.title, c.description(colours, fromIn(range?.from, locale)), true);
 }
 

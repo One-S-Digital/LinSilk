@@ -62,6 +62,11 @@ export const LENGTH_ZONES: Record<string, Zone> = {
   robe: { key: "lengthRobe", label: "Robe length" },
 }
 
+/** A tie is not cut to a body: its product metadata says so, and its cart line
+    carries no sheet. Mirrors `noMeasurements` on the storefront's Piece. */
+export const needsNoMeasurements = (metadata: Record<string, unknown> | null | undefined) =>
+  metadata?.no_measurements === true
+
 /** The length kinds a piece declares, from its product metadata. */
 export function lengthKindsOf(metadata: Record<string, unknown> | null | undefined): string[] {
   const kinds = metadata?.length_kinds

@@ -7,12 +7,12 @@ import { TrackEvent } from '@/components/track-event';
 import styles from '@/app/piece/[id]/piece.module.css';
 import { collectionBySlug, getPieces, isOrderable, money, roman, type Piece } from '@/lib/catalog';
 import { garmentType } from '@/lib/garments';
-import { COLOURS } from '@/lib/house';
+import { coloursOf } from '@/lib/house';
 import { LANG, type Lang } from '@/lib/i18n';
 import { breadcrumbLd, productLd } from '@/lib/jsonld';
 import { localHref } from '@/lib/locale-routes';
 import { pieceName } from '@/lib/piece-names';
-import { altIn, piecePathIn, pieceText } from '@/lib/piece-i18n';
+import { altIn, fibreIn, piecePathIn, pieceText } from '@/lib/piece-i18n';
 import { Approx } from '@/lib/currency';
 import { getVariantId } from '@/lib/medusa';
 
@@ -28,8 +28,10 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
   const collection = (await collectionBySlug(piece.collection))!;
   const orderable = isOrderable(piece);
   const numeral = roman(collection.number);
-  const cloth = piece.cloth === 'linen' ? 'linen' : 'silk';
+  const cloth = piece.cloth ?? 'silk';
   const clothWord = t.cloth[cloth];
+  const fibre = fibreIn(lang, cloth);
+  const tie = Boolean(piece.noMeasurements);
   const type = garmentType(piece);
   const questions = t.questions[type];
   const alts = piece.images.map((src, i) => altIn(lang, piece, src, i));
@@ -57,7 +59,7 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
                 name,
                 path: here,
                 inLanguage: LANG[lang],
-                description: t.ldDescription(name, clothWord),
+                description: tie ? t.tie.ldDescription(name, fibre) : t.ldDescription(name, fibre),
               },
         )}
       />
@@ -119,11 +121,11 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
               )}
             </div>
 
-            <p className={styles.description}>{t.description(clothWord)}</p>
+            <p className={styles.description}>{tie ? t.tie.description(fibre) : t.description(fibre)}</p>
 
             <div className={styles.run}>
               <span>{t.run(numeral)}</span>
-              {orderable ? <span>{t.weeks}</span> : <span>{t.closed}</span>}
+              {orderable ? tie ? null : <span>{t.weeks}</span> : <span>{t.closed}</span>}
             </div>
           </Reveal>
 
@@ -138,16 +140,16 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
         <section className={styles.moreBlock} aria-labelledby="facts-heading">
           <h2 id="facts-heading" className={styles.moreTitle}>{t.factsH}</h2>
           <dl className={styles.facts}>
-            <div><dt>{t.factCloth}</dt><dd>100% {clothWord}</dd></div>
+            <div><dt>{t.factCloth}</dt><dd>{fibre.charAt(0).toUpperCase() + fibre.slice(1)}</dd></div>
             <div>
               <dt>{t.factColours}</dt>
               <dd>
-                {t.coloursLine(cloth, cloth === 'linen' ? COLOURS.linen : COLOURS.silk)}{' '}
+                {t.coloursLine(cloth, coloursOf(piece), Boolean(piece.swatches?.length))}{' '}
                 <Link href={to('/cloth')}>{t.seeCloth}</Link>
               </dd>
             </div>
-            <div><dt>{t.factMaking}</dt><dd>{t.makingLine}</dd></div>
-            <div><dt>{t.factCare}</dt><dd>{t.careLine}</dd></div>
+            <div><dt>{t.factMaking}</dt><dd>{tie ? t.tie.makingLine : t.makingLine}</dd></div>
+            {!tie && <div><dt>{t.factCare}</dt><dd>{t.careLine}</dd></div>}
             <div>
               <dt>{t.factDelivery}</dt>
               <dd>
@@ -158,19 +160,27 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
         </section>
 
         <section className={styles.moreBlock} aria-labelledby="how-heading">
-          <h2 id="how-heading" className={styles.moreTitle}>{t.howH}</h2>
+          <h2 id="how-heading" className={styles.moreTitle}>{tie ? t.tie.howH : t.howH}</h2>
           <ol className={styles.howList}>
-            <li>{t.howList[0]}</li>
-            <li>
-              {t.measuringPre}
-              <Link href={to('/care/measuring')}>{t.measuringLink}</Link>
-              {t.measuringPost}
-            </li>
-            <li>{t.howList[2]}</li>
+            {tie ? (
+              t.tie.howList.map((step) => <li key={step}>{step}</li>)
+            ) : (
+              <>
+                <li>{t.howList[0]}</li>
+                <li>
+                  {t.measuringPre}
+                  <Link href={to('/care/measuring')}>{t.measuringLink}</Link>
+                  {t.measuringPost}
+                </li>
+                <li>{t.howList[2]}</li>
+              </>
+            )}
           </ol>
-          <p className={styles.moreNote}>
-            <Link href={to('/made-to-measure')}>{t.howLink}</Link>
-          </p>
+          {!tie && (
+            <p className={styles.moreNote}>
+              <Link href={to('/made-to-measure')}>{t.howLink}</Link>
+            </p>
+          )}
         </section>
 
         <section className={styles.moreBlock} aria-labelledby="questions-heading">

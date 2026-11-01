@@ -121,6 +121,19 @@ describe("orderPlacedEmail", () => {
     expect(email.content.text).toContain("orders / order_01TEST")
   })
 
+  it("carries the same order, sheet and warnings in its HTML", () => {
+    const html = orderPlacedEmail(
+      order([shirt, commissioned], { payment_status: "authorized" }),
+      "hello@bylinsilk.com"
+    ).content.html
+    expect(html).toContain(shirt.title)
+    expect(html).toContain("38 cm")
+    expect(html).toContain("status: authorized")
+    expect(html).toContain("whole order")
+    expect(html).toContain("orders / order_01TEST")
+    expect(html).not.toContain("Dress, for Ada")
+  })
+
   it("leaves a commission's lines to commission-paid", () => {
     const email = orderPlacedEmail(order([shirt, commissioned]), "hello@bylinsilk.com")
     expect(email.content.text).toContain(shirt.title)
@@ -131,5 +144,34 @@ describe("orderPlacedEmail", () => {
     const mixed = orderPlacedEmail(order([shirt, commissioned]), "hello@bylinsilk.com")
     expect(mixed.content.text).toContain("whole order")
     expect(orderPlacedEmail(order([shirt]), "hello@bylinsilk.com").content.text).not.toContain("whole order")
+  })
+})
+
+describe("an order of ties, which have no sheet to confirm", () => {
+  const tie = {
+    title: "Silk tie",
+    total: 65,
+    commission: false,
+    metadata: { fabric_name: "Navy silk", fabric_key: "LS-S04", zone_count: 0 },
+  }
+
+  it("asks the client to confirm a colour, not a measurement sheet", () => {
+    const { text, html } = orderConfirmationEmail(order([tie], { item_total: 65, total: 65 })).content
+    expect(text).toContain("confirm your colour")
+    expect(html).toContain("confirm your colour")
+    expect(text).not.toContain("measurement sheet")
+    expect(html).not.toContain("measurement sheet")
+  })
+
+  it("asks the house to confirm the colour", () => {
+    const { text } = orderPlacedEmail(order([tie]), "atelier@example.com").content
+    expect(text).toContain("confirm the colour")
+    expect(text).not.toContain("read the sheet")
+  })
+
+  it("keeps the sheet wording when a garment is in the order too", () => {
+    const { text } = orderConfirmationEmail(order([tie, shirt])).content
+    expect(text).toContain("measurement sheet")
+    expect(text).not.toContain("confirm your colour")
   })
 })

@@ -129,12 +129,20 @@ server.registerTool(
       "person publishes it in the admin. A published piece's price cannot be moved here.",
     inputSchema: {
       handle: z.string().describe("The piece's own id and URL, e.g. 'w4' or 'coat-sand'"),
-      title: z.string().optional().describe("The piece's name. Never a colour, and never 'satin': the house sells silk and linen"),
+      title: z.string().optional().describe("The piece's name. Never a colour, and never 'satin'. It says pants, never trousers"),
       material: z.string().optional().describe("Cloth and construction, shown under the name"),
       cloth: z
-        .enum(["silk", "linen"])
+        .enum(["silk", "linen", "cashmere"])
         .optional()
-        .describe("Silk or linen: decides which colour swatches the client chooses from. Required for a new piece"),
+        .describe("Silk, linen or cashmere: decides which colour swatches the client chooses from. Required for a new piece"),
+      swatches: z
+        .array(z.string())
+        .optional()
+        .describe("Swatch codes the piece is offered in when that is not the whole cloth, e.g. ['LS-S01', 'LS-S02'] for a plain tie. Left out, every colour of the cloth. An empty list lifts the restriction"),
+      no_measurements: z
+        .boolean()
+        .optional()
+        .describe("True for a tie: ordered by colour alone with no measurement sheet. Then leave length_kinds empty"),
       collection: z.string().optional().describe("The handle of a season that already exists"),
       group: z.enum(["women", "men"]).optional(),
       price_chf: z.number().int().optional().describe("Whole Swiss francs; euro and sterling are derived"),
