@@ -353,7 +353,7 @@ Render dashboard → **New** → **Web Service**. Same repo, same branch.
 corepack enable && pnpm install --frozen-lockfile && pnpm --filter storefront exec payload migrate && pnpm --filter storefront exec payload run ./payload/seed.ts && pnpm --filter storefront build
 ```
 
-Once it deploys clean, put the Build Command back to the form in the table. The seed resets those pages to the copy in the repo every time it runs, so leaving it in would undo anything edited in Payload's admin on the next deploy.
+Since 2026-11-02 the storefront's `build` script runs the seed itself (`payload run ./payload/seed.ts && next build --webpack`), so the table's Build Command seeds on every deploy and the first-deploy form above is no longer needed. The seed resets those pages to the copy in the repo every time, which undoes anything edited in Payload's admin: change the Cloth and The house copy in `lib/catalog.ts` (`STORY`), not in the admin. A local `pnpm build` also seeds, so it needs the local Postgres up.
 
 If the build log shows the database host timing out or not resolving, the build cannot reach the Internal Database URL. Use the External Database URL in `DATABASE_URI` instead.
 
