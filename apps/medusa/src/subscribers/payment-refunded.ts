@@ -1,6 +1,7 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework"
 import { noticeForOrder, paymentWithOrder, sendOrderMail } from "../lib/order-notice"
 import { paymentRefundedEmail } from "../lib/order-updates"
+import { withdrawFirstOrderCredit } from "../lib/first-order-credit-run"
 
 /* Money has gone back to the client. The event names the payment, not the
    refund, so the amount is that of the most recent refund on it; each refund
@@ -12,6 +13,7 @@ export default async function paymentRefundedHandler({
   const payment = await paymentWithOrder(container, event.data.id)
   if (!payment?.latest_refund) return
 
+  await withdrawFirstOrderCredit(container, payment.order_id)
   const order = await noticeForOrder(container, payment.order_id)
   if (!order) return
 

@@ -9,6 +9,7 @@ import { fabricLabel } from '@/lib/i18n-order';
 import { localHref } from '@/lib/locale-routes';
 import { formatValue } from '@/lib/measurements';
 import { materialIn, shopText } from '@/lib/i18n-shop';
+import { offerText } from '@/lib/i18n-offer';
 import { pieceName } from '@/lib/piece-names';
 import { useLang } from '@/lib/use-lang';
 import styles from './cart.module.css';
@@ -17,6 +18,7 @@ export default function CartPage() {
   const { lines, ready, remove, subtotal, currency } = useCart();
   const lang = useLang();
   const t = shopText(lang).cart;
+  const offer = offerText(lang);
   /* The cart's own currency, not the catalogue's CHF: checkout can move this
      cart to another region, and a client coming back here afterwards must
      see the figures it is actually holding the pieces at. */
@@ -107,6 +109,9 @@ export default function CartPage() {
           <div className={styles.summary}>
             <p className={styles.terms}>
               {noSheet ? t.termsTie : t.terms}
+            </p>
+            <p className={styles.terms}>
+              {offer.note} {offer.noteTerms}
             </p>
 
             <div className={styles.totals}>

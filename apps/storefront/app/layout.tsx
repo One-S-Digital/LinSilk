@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { LocaleChrome, SkipLink } from '@/components/site/locale-chrome';
+import { FirstOrderPopup } from '@/components/site/first-order-popup';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { JsonLd } from '@/components/json-ld';
 import { organizationLd } from '@/lib/jsonld';
@@ -111,6 +112,7 @@ export default async function RootLayout({
             <main id="main">{children}</main>
             <SiteFooter />
             <LocaleChrome />
+            <FirstOrderPopup />
           </SmoothScroll>
          </CurrencyProvider>
         </CartProvider>

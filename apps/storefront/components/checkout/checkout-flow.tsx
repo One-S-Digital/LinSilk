@@ -24,6 +24,7 @@ import {
 } from '@/lib/checkout';
 import { Approx, ApproxNote } from '@/lib/currency';
 import { shopText } from '@/lib/i18n-shop';
+import { offerText } from '@/lib/i18n-offer';
 import { formatMoney } from '@/lib/medusa';
 import { useLang } from '@/lib/use-lang';
 import styles from '@/app/checkout/checkout.module.css';
@@ -76,6 +77,7 @@ export function CheckoutFlow({
   const router = useRouter();
   const lang = useLang();
   const t = shopText(lang).checkout;
+  const offer = offerText(lang);
   const [cart, setCart] = useState<ApiCheckoutCart | null>(null);
   const [options, setOptions] = useState<ApiShippingOption[]>([]);
   const [session, setSession] = useState<ApiPaymentSession | null>(null);
@@ -635,6 +637,7 @@ export function CheckoutFlow({
             ? t.reassureTie
             : t.reassure}
         </p>
+        <p className={styles.reassure}>{offer.note} {offer.noteTerms}</p>
       </aside>
     </div>
   );
