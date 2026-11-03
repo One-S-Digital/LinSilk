@@ -119,31 +119,26 @@ export function Stagger({
     );
   }
 
+  /* Each child watches for itself. A grid-wide trigger needs a share of the
+     whole grid on screen, which a phone's tall one-column grid can never
+     offer, so every card stayed at opacity 0 and its lazy photo never loaded.
+     The stagger delay repeats across a row (i % 4) so a card far down the
+     page does not wait on the ones above it. */
   return (
-    <motion.div
-      className={className}
-      style={style}
-      initial="rest"
-      whileInView="shown"
-      viewport={{ once: true, amount: 0.15 }}
-      variants={{
-        rest: {},
-        shown: { transition: { staggerChildren: step, delayChildren: delay } },
-      }}
-    >
+    <div className={className} style={style}>
       {items.map((child, i) => (
         <motion.div
           key={i}
           data-reveal
-          variants={{
-            rest: { opacity: 0, y },
-            shown: { opacity: 1, y: 0, transition: base(0.85) },
-          }}
+          initial={{ opacity: 0, y }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.05, margin: '0px 0px 200px 0px' }}
+          transition={base(0.85, delay + (i % 4) * step)}
         >
           {child}
         </motion.div>
       ))}
-    </motion.div>
+    </div>
   );
 }
 

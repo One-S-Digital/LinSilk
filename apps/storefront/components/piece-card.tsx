@@ -44,6 +44,7 @@ export function PieceCard({
         weave={piece.group === 'men' ? 'sand' : 'bone'}
         ratio={ratio}
         zoom
+        sizes="(max-width: 380px) 100vw, (max-width: 640px) 50vw, (max-width: 1200px) 33vw, 25vw"
       />
 
       <div className={styles.meta}>

@@ -14,6 +14,7 @@ export function ShotFrame({
   onDark = false,
   zoom = false,
   priority = false,
+  sizes = '(max-width: 900px) 100vw, 50vw',
   className,
   style,
   children,
@@ -30,6 +31,8 @@ export function ShotFrame({
   zoom?: boolean;
   /** Above-the-fold image: loaded eagerly. */
   priority?: boolean;
+  /** The width the frame renders at, for the browser's choice of file. */
+  sizes?: string;
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
@@ -47,7 +50,7 @@ export function ShotFrame({
             src={src}
             alt={alt ?? ''}
             fill
-            sizes="(max-width: 900px) 100vw, 50vw"
+            sizes={sizes}
             priority={priority}
           />
         ) : (
