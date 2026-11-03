@@ -49,5 +49,5 @@ Built 2026-11-01 on the `backend` branch, uncommitted at the time of writing. Th
 
 1. Merge, deploy the storefront and Medusa (the backend change is the cart rule and the route fields).
 2. Host the photographs on a host in `CATALOGUE_IMAGE_HOSTS`, then run `tools/post_pieces.py --images-base <that host/folder>` (or the MCP `upsert_piece` and `attach_images` with `site_import/pieces.json`): handles `071`–`076`, CHF 169 ×4 and 65 ×2, into the current season. A person publishes them in the Medusa admin.
-3. Run `pnpm --filter storefront seed:pages` to update the Payload pages.
+3. The Payload pages update themselves: the storefront's `build` script runs the seed before `next build`, so the deploy in step 1 does it (`pnpm --filter storefront seed:pages` still runs it by hand).
 4. After publishing: `/piece/silk-tie` etc. return 200, the sitemap lists the pieces and both new pages, `/feeds/google.xml` and `/feeds/openai.jsonl` carry them, and IndexNow fires from the product subscriber.
