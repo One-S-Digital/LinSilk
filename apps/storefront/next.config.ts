@@ -12,9 +12,6 @@ const nextConfig: NextConfig = {
      One resize at a time, nothing held in libvips' operation cache, and the
      result kept for a month so a photograph is encoded once, not per visit. */
   experimental: {
-    /* `next build --webpack` ran out of heap (~390 MB) inside this 512 MB
-       instance; this trades build speed for less memory. */
-    webpackMemoryOptimizations: true,
     imgOptConcurrency: 1,
     imgOptOperationCache: false,
     imgOptSequentialRead: true,
