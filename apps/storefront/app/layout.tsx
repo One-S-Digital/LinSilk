@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Archivo, Newsreader, Caveat } from 'next/font/google';
+import localFont from 'next/font/local';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { LocaleChrome, SkipLink } from '@/components/site/locale-chrome';
@@ -15,24 +15,29 @@ import './globals.css';
    interface, Newsreader for every display line, Caveat only ever for the
    tailor's chalk annotations. */
 
-const archivo = Archivo({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
+/* Self-hosted (Google's latin variable files in ./fonts) so the build never
+   has to reach Google Fonts; a bad answer from Google failed a deploy. */
+
+const archivo = localFont({
+  src: './fonts/archivo-latin.woff2',
+  weight: '300 500',
   variable: '--font-archivo',
   display: 'swap',
 });
 
-const newsreader = Newsreader({
-  subsets: ['latin'],
-  weight: ['200', '300', '400'],
-  style: ['normal', 'italic'],
+const newsreader = localFont({
+  src: [
+    { path: './fonts/newsreader-latin.woff2', weight: '200 400', style: 'normal' },
+    { path: './fonts/newsreader-italic-latin.woff2', weight: '200 400', style: 'italic' },
+  ],
   variable: '--font-newsreader',
   display: 'swap',
+  adjustFontFallback: 'Times New Roman',
 });
 
-const caveat = Caveat({
-  subsets: ['latin'],
-  weight: ['500'],
+const caveat = localFont({
+  src: './fonts/caveat-latin.woff2',
+  weight: '500',
   variable: '--font-caveat',
   display: 'swap',
 });
