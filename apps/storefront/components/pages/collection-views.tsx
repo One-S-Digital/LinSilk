@@ -7,7 +7,7 @@ import { ButtonLink } from '@/components/ui/button';
 import listing from '@/app/collection/[group]/listing.module.css';
 import styles from '@/app/collection/collection.module.css';
 import { byGroup, currentCollection, roman, type Group } from '@/lib/catalog';
-import { sectionsFor } from '@/lib/collection-sections';
+import { pageBlocks } from '@/lib/collection-sections';
 import { GROUP_EDITS } from '@/lib/edits';
 import { LANG, type Lang } from '@/lib/i18n';
 import { pagesText } from '@/lib/i18n-pages';
@@ -97,7 +97,7 @@ export async function CollectionGroupView({ group, lang }: { group: Group; lang:
     byGroup(group, true),
   ]);
   const label = group === 'women' ? t.women : t.men;
-  const sections = sectionsFor(group, main);
+  const blocks = pageBlocks(group, main, sleep);
 
   return (
     <div className={listing.page} lang={lang === 'en' ? undefined : LANG[lang]}>
@@ -122,11 +122,11 @@ export async function CollectionGroupView({ group, lang }: { group: Group; lang:
         <p className={listing.intro}>{t.intro(open?.closes)}</p>
       </Reveal>
 
-      {sections.length > 0 && (
+      {blocks.length > 0 && (
         <nav className={listing.jump} aria-label={t.jump}>
-          {sections.map(({ section }) => (
-            <a key={section} href={`#${section}`} className={listing.jumpLink}>
-              {t.sections[section]}
+          {blocks.map(({ id }) => (
+            <a key={id} href={`#${id}`} className={listing.jumpLink}>
+              {id === 'sleepwear' ? t.sleep : t.sections[id]}
             </a>
           ))}
         </nav>
@@ -140,43 +140,28 @@ export async function CollectionGroupView({ group, lang }: { group: Group; lang:
         {main.length > 0 && <span className={listing.groupCount}>{t.designs(roman(main.length))}</span>}
       </div>
 
-      {sections.map(({ section, pieces }, i) => (
-        <section key={section} id={section}>
-          {i > 0 && (
-            <div className={listing.subRule}>
-              <RuleDraw />
+      {blocks.map(({ id, pieces }, i) => {
+        const isSleep = id === 'sleepwear';
+        return (
+          <section key={id} id={id}>
+            {i > 0 && (
+              <div className={listing.subRule}>
+                <RuleDraw />
+              </div>
+            )}
+            <div className={listing.groupHead}>
+              <h3 className={listing.groupTitleSmall}>{isSleep ? t.sleepwear(label) : t.sections[id]}</h3>
+              <span className={listing.groupCount}>{t.designs(roman(pieces.length))}</span>
             </div>
-          )}
-          <div className={listing.groupHead}>
-            <h3 className={listing.groupTitleSmall}>{t.sections[section]}</h3>
-            <span className={listing.groupCount}>{t.designs(roman(pieces.length))}</span>
-          </div>
 
-          <Stagger className={listing.grid} step={0.07}>
-            {pieces.map((piece, index) => (
-              <PieceCard key={piece.id} piece={piece} index={index} lang={lang} />
-            ))}
-          </Stagger>
-        </section>
-      ))}
-
-      {sleep.length > 0 && (
-        <section id="sleepwear">
-          <div className={listing.subRule}>
-            <RuleDraw />
-          </div>
-          <div className={listing.groupHead}>
-            <h3 className={listing.groupTitleSmall}>{t.sleepwear(label)}</h3>
-            <span className={listing.groupCount}>{t.designs(roman(sleep.length))}</span>
-          </div>
-
-          <Stagger className={listing.grid} step={0.07}>
-            {sleep.map((piece) => (
-              <PieceCard key={piece.id} piece={piece} showView={false} lang={lang} />
-            ))}
-          </Stagger>
-        </section>
-      )}
+            <Stagger className={listing.grid} step={0.07}>
+              {pieces.map((piece, index) => (
+                <PieceCard key={piece.id} piece={piece} index={index} showView={!isSleep} lang={lang} />
+              ))}
+            </Stagger>
+          </section>
+        );
+      })}
 
       <SeoText eyebrow={t.aboutEyebrow} title={t.aboutTitle}>
         <p>
