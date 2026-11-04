@@ -43,17 +43,45 @@ export async function issueFirstOrderCredit(
   if (refunded) return
 
   const code = creditCode(order.id, secret())
-  if ((await promotions.listPromotions({ code: [code] })).length) return
+  const [existing] = await promotions.listPromotions(
+    { code: [code] },
+    { relations: ["application_method", "campaign"] }
+  )
+  /* Already issued: only the mail may be missing (a failed send is retried
+     with the same key, so a delivered one is never sent twice). */
+  if (existing) {
+    if (notify && existing.status === "active" && existing.application_method?.value != null && existing.campaign?.ends_at) {
+      await sendOrderMail(
+        container,
+        firstOrderCreditEmail(order as unknown as OrderRecord, {
+          code,
+          amount: Number(existing.application_method.value),
+          expires: new Date(existing.campaign.ends_at),
+        }),
+        order.id,
+        `first-order-credit:${order.id}`
+      )
+    }
+    return
+  }
 
   const created = new Date(order.created_at as string | Date)
-  const { data: others } = await query.graph({
+  /* By account and by email, whichever the order carries: a signed-in order
+     can follow a guest order made with the same email. */
+  const earlierFields = ["id", "status", "customer_id", "email", "shipping_address.*"]
+  const { data: byEmail } = await query.graph({
     entity: "order",
-    fields: ["id", "status", "customer_id", "email", "shipping_address.*"],
-    filters: {
-      ...(order.customer_id ? { customer_id: order.customer_id } : { email: order.email as string }),
-      created_at: { $lte: created },
-    },
+    fields: earlierFields,
+    filters: { email: order.email as string, created_at: { $lte: created } },
   })
+  const { data: byAccount } = order.customer_id
+    ? await query.graph({
+        entity: "order",
+        fields: earlierFields,
+        filters: { customer_id: order.customer_id, created_at: { $lte: created } },
+      })
+    : { data: [] }
+  const others = [...byEmail, ...byAccount]
   /* An earlier order to the same address under another email is found by
      address: the street, postcode and country of this order. */
   const a = order.shipping_address
@@ -92,6 +120,20 @@ export async function issueFirstOrderCredit(
     },
   })
   logger.info(`Order ${order.id} earned a first-order credit of ${amount} ${order.currency_code}.`)
+
+  /* A refund recorded while the credit was being made takes it back at once. */
+  const { data: [after] } = await query.graph({
+    entity: "order",
+    fields: ["status", "payment_collections.refunded_amount"],
+    filters: { id: order.id },
+  })
+  if (
+    after?.status === "canceled" ||
+    (after?.payment_collections ?? []).some((c) => Number(c?.refunded_amount ?? 0) > 0)
+  ) {
+    await withdrawFirstOrderCredit(container, order.id)
+    return
+  }
 
   if (!notify) return
   await sendOrderMail(

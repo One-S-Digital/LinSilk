@@ -12,22 +12,29 @@ export default async function deliveryCreatedHandler({
   if (!fulfillment) return
 
   /* The first-order credit is earned by the delivery, told or not. */
+  let failure: unknown
   try {
     await issueFirstOrderCredit(container, fulfillment.order_id, { notify: !event.data.no_notification })
   } catch (error) {
+    failure = error
     container.resolve("logger").error(`First-order credit for ${fulfillment.order_id} failed: ${(error as Error).message}`)
   }
-  if (event.data.no_notification) return
 
-  const order = await noticeForOrder(container, fulfillment.order_id)
-  if (!order) return
+  if (!event.data.no_notification) {
+    const order = await noticeForOrder(container, fulfillment.order_id)
+    if (order) {
+      await sendOrderMail(
+        container,
+        orderDeliveredEmail(order),
+        order.id,
+        `order-delivered:${fulfillment.id}`
+      )
+    }
+  }
 
-  await sendOrderMail(
-    container,
-    orderDeliveredEmail(order),
-    order.id,
-    `order-delivered:${fulfillment.id}`
-  )
+  /* The delivery notice is out; a failed credit is raised so the event is
+     tried again (both mails carry keys, so nothing is sent twice). */
+  if (failure) throw failure
 }
 
 export const config: SubscriberConfig = {

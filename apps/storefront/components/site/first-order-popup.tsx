@@ -26,7 +26,11 @@ export function FirstOrderPopup() {
   const quiet = isSharedRoute(pathname);
 
   useEffect(() => {
-    if (quiet) return;
+    if (quiet) {
+      /* Moved into checkout or an account while it was open. */
+      dialog.current?.close();
+      return;
+    }
     let seen = false;
     try {
       seen = Boolean(sessionStorage.getItem(SEEN));

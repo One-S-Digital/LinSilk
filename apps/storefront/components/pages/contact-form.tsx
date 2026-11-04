@@ -19,8 +19,8 @@ export function ContactForm({ lang }: { lang: Lang }) {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const value = (key: string) => String(data.get(key) ?? '');
-    if (!event.currentTarget.checkValidity()) {
+    const value = (key: string) => String(data.get(key) ?? '').trim();
+    if (!value('name') || !value('message') || !event.currentTarget.checkValidity()) {
       setProblem(t.invalid);
       return;
     }
@@ -52,7 +52,7 @@ export function ContactForm({ lang }: { lang: Lang }) {
   }
 
   return (
-    <form className={styles.form} onSubmit={submit} noValidate={false} aria-labelledby="contact-title">
+    <form className={styles.form} onSubmit={submit} noValidate aria-labelledby="contact-title">
       <h2 id="contact-title" className={styles.title}>
         {t.title}
       </h2>

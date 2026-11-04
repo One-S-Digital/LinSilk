@@ -9,11 +9,17 @@ export default async function orderCanceledHandler({
   event,
   container,
 }: SubscriberArgs<{ id: string }>) {
-  await withdrawFirstOrderCredit(container, event.data.id)
+  /* The notice goes out whatever happens to the credit; a failure to take
+     it back is raised afterwards so the event is tried again. */
+  let failure: unknown
+  try {
+    await withdrawFirstOrderCredit(container, event.data.id)
+  } catch (error) {
+    failure = error
+  }
   const order = await noticeForOrder(container, event.data.id)
-  if (!order) return
-
-  await sendOrderMail(container, orderCanceledEmail(order), order.id, `order-canceled:${order.id}`)
+  if (order) await sendOrderMail(container, orderCanceledEmail(order), order.id, `order-canceled:${order.id}`)
+  if (failure) throw failure
 }
 
 export const config: SubscriberConfig = {

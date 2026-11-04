@@ -4,13 +4,13 @@ import { createAttemptLimit } from "../../../lib/attempt-limit"
 import { CONTACT_EMAIL, contactEmail, contactSchema } from "../../../lib/contact-emails"
 
 /* A message from the contact form to the house. No account is needed. A form
-   that anyone can post to is limited: a few messages an hour from one address,
+   that anyone can post to is limited: a few messages an hour from one address (not per sender email, which
+   would let anyone lock a third party out),
    and a hidden field that only a program fills in is answered as if it had
    worked, so it learns nothing. */
 
 const HOUR = 60 * 60 * 1000
 const perAddress = createAttemptLimit({ max: 5, windowMs: HOUR })
-const perSender = createAttemptLimit({ max: 3, windowMs: HOUR })
 /* Whatever the addresses, the house's inbox is not flooded. */
 const everyone = createAttemptLimit({ max: 60, windowMs: HOUR })
 
@@ -30,9 +30,6 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   }
   if (parsed.data.website) return res.json({ sent: true })
 
-  const sender = parsed.data.email.toLowerCase()
-  if (perSender.waitSeconds(sender) > 0) throw tooMany()
-  perSender.fail(sender)
   everyone.fail("all")
 
   await req.scope
