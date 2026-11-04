@@ -8,10 +8,11 @@ import { LANG, LOCALES, type Lang } from '@/lib/i18n';
 import { isSharedRoute, setLangPref } from '@/lib/lang-pref';
 import { switchPath } from '@/lib/locale-routes';
 import { useLang } from '@/lib/use-lang';
+import { Flag } from './flag';
 import styles from './language-menu.module.css';
 
 const ALL: Lang[] = ['en', ...LOCALES];
-const SHORT: Record<Lang, string> = { en: 'EN', 'de-ch': 'DE·CH', 'fr-ch': 'FR·CH', de: 'DE', fr: 'FR' };
+const SHORT: Record<Lang, string> = { en: 'EN', 'de-ch': 'DE', 'fr-ch': 'FR', de: 'DE', fr: 'FR' };
 
 /* The language drop-down in the header. On pages with a translated address the
    choices are links to the same page in each language (so they can be crawled);
@@ -56,6 +57,7 @@ export function LanguageMenu() {
         aria-label={`${t.language}: ${LANGUAGE_NAMES[lang]}`}
         onClick={() => setOpen((o) => !o)}
       >
+        <Flag lang={lang} className={styles.flag} />
         {SHORT[lang]}
         <span className={styles.chevron} aria-hidden="true" data-open={open || undefined} />
       </button>
@@ -73,9 +75,12 @@ export function LanguageMenu() {
                     className={styles.item}
                     aria-current={current || undefined}
                     lang={code}
+                    aria-label={label}
+                    title={label}
                     onClick={() => choose(l)}
                   >
-                    {label}
+                    <Flag lang={l} className={styles.flag} />
+                    {SHORT[l]}
                   </button>
                 ) : (
                   <Link
@@ -84,9 +89,12 @@ export function LanguageMenu() {
                     aria-current={current || undefined}
                     hrefLang={code}
                     lang={code}
+                    aria-label={label}
+                    title={label}
                     onClick={() => setOpen(false)}
                   >
-                    {label}
+                    <Flag lang={l} className={styles.flag} />
+                    {SHORT[l]}
                   </Link>
                 )}
               </li>

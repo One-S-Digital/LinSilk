@@ -1,4 +1,5 @@
 import { DocList, DocP, DocPage, DocRows, DocSection } from '@/components/doc-page';
+import { ContactForm } from '@/components/pages/contact-form';
 import { StoryPage } from '@/components/story-page';
 import { ButtonLink } from '@/components/ui/button';
 import { ZONES } from '@/lib/catalog';
@@ -107,14 +108,17 @@ export async function ContactView({ lang }: { lang: Lang }) {
   const t = pagesText(lang).contact;
   return wrap(
     lang,
-    <StoryPage storyKey="contact" content={lang === 'en' ? undefined : t.story}>
-      <ButtonLink href="mailto:hello@bylinsilk.com" variant="outline">
-        hello@bylinsilk.com
-      </ButtonLink>
-      <ButtonLink href={localHref(lang, '/care/measuring')} variant="rule">
-        {t.help}
-      </ButtonLink>
-    </StoryPage>,
+    <>
+      <StoryPage storyKey="contact" content={lang === 'en' ? undefined : t.story}>
+        <ButtonLink href="mailto:hello@bylinsilk.com" variant="outline">
+          hello@bylinsilk.com
+        </ButtonLink>
+        <ButtonLink href={localHref(lang, '/care/measuring')} variant="rule">
+          {t.help}
+        </ButtonLink>
+      </StoryPage>
+      <ContactForm lang={lang} />
+    </>,
   );
 }
 

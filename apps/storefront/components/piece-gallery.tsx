@@ -2,7 +2,7 @@
 
 import { useLenis } from 'lenis/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ChalkMark, ClothWipe } from '@/components/motion';
+import { ClothWipe } from '@/components/motion';
 import { Photo } from '@/components/photo';
 import { canOptimise } from '@/lib/image-hosts';
 import { ShotFrame, type Weave } from '@/components/shot';
@@ -60,10 +60,6 @@ export function PieceGallery({
           >
             <ShotFrame src={images[index]} alt={alts[index]} ratio="4 / 5" priority />
           </button>
-          <ChalkMark
-            label="sleeve · 63"
-            style={{ position: 'absolute', right: -8, top: '34%', pointerEvents: 'none' }}
-          />
           {count > 1 && (
             <>
               <button

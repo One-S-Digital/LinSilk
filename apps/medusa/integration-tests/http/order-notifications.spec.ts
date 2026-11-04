@@ -200,7 +200,8 @@ medusaIntegrationTestRunner({
         await run(deliveryCreatedHandler, container, { id: fulfillment.id })
 
         const sent = await sentFor(order.id)
-        expect(sent.map((s) => s.template).sort()).toEqual(["order-delivered", "order-shipped"])
+        /* A first order also earns its credit on delivery (first-order-credit.spec.ts). */
+        expect(sent.map((s) => s.template).sort()).toEqual(["first-order-credit", "order-delivered", "order-shipped"])
         const shipped = sent.find((s) => s.template === "order-shipped")!
         expect(shipped.text).toContain("99.12.345")
         expect(shipped.html).toContain('href="https://track.example.com/99.12.345"')

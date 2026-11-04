@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Reveal } from '@/components/motion';
+import { PieceCard } from '@/components/piece-card';
 import { PieceGallery } from '@/components/piece-gallery';
 import { PieceOrderPanel } from '@/components/piece-order-panel';
 import { JsonLd } from '@/components/json-ld';
@@ -198,19 +199,18 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
           </p>
         </section>
 
-        {related.length > 0 && (
-          <section className={styles.moreBlock} aria-labelledby="related-heading">
-            <h2 id="related-heading" className={styles.moreTitle}>{t.alsoIn(clothWord)}</h2>
-            <ul className={styles.relatedList}>
-              {related.map((p) => (
-                <li key={p.id}>
-                  <Link href={piecePathIn(lang, p)}>{pieceName(p.name, lang)}</Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
       </div>
+
+      {related.length > 0 && (
+        <section className={styles.related} aria-labelledby="related-heading">
+          <h2 id="related-heading" className={styles.moreTitle}>{t.alsoIn(clothWord)}</h2>
+          <div className={styles.relatedGrid}>
+            {related.map((p, i) => (
+              <PieceCard key={p.id} piece={p} index={i} lang={lang} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

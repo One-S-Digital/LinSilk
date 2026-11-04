@@ -27,6 +27,9 @@ export function createAttemptLimit({
       return entry && entry.count >= max ? Math.ceil((entry.since + windowMs - now()) / 1000) : 0
     },
     fail(key: string) {
+      /* Keys that have been quiet for a window are dropped, so the map
+         cannot grow without end under a spread of addresses. */
+      if (failures.size > 1000) for (const k of [...failures.keys()]) live(k)
       const entry = live(key)
       failures.set(key, { count: (entry?.count ?? 0) + 1, since: entry?.since ?? now() })
     },
