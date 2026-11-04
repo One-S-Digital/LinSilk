@@ -18,6 +18,11 @@
   border-bottom-color: var(--gold);
 }
 
+.flag {
+  flex: none;
+  display: block;
+}
+
 .chevron {
   display: inline-block;
   width: 6px;
@@ -39,7 +44,7 @@
   top: calc(100% + 14px);
   right: 0;
   z-index: 70;
-  min-width: 270px;
+  min-width: 150px;
   padding: 6px 0;
   list-style: none;
   background: var(--bone);
@@ -49,7 +54,9 @@
 }
 
 .item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   padding: 11px 22px;
   text-align: left;
@@ -71,8 +78,8 @@
 
 .item[aria-current]::after {
   content: '✓';
-  float: right;
-  margin-left: 18px;
+  margin-left: auto;
+  padding-left: 18px;
   color: var(--gold);
 }
 
