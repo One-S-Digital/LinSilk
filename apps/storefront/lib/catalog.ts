@@ -383,7 +383,7 @@ export const COMMISSION_STEPS = [
 export const STORY = {
   cloth: {
     title: 'The cloth: pure silk, pure linen and cashmere',
-    lead: 'LINSILK makes in silk, linen and high frequency fabrics only: pure silk, pure linen and cashmere. There is no polyester and no blended cloth. You choose your piece’s colour from swatches of its own cloth, so this page shows what you are choosing from.',
+    lead: 'LINSILK makes in silk, linen and high frequency fabrics only: pure silk, pure linen and cashmere. There is no polyester and no synthetic fabric. You choose your piece’s colour from swatches of its own cloth, so this page shows what you are choosing from.',
     a: 'Silk is smooth and light, and keeps you comfortable when the temperature drops as well as when it rises. It comes in three weaves: plain (15 colours), jacquard (20 patterned colourways) and brocade (13 patterned colourways), 48 silk colours in all, used for the dresses, gowns, skirts, blouses and sleepwear.',
     b: 'Linen is crisp, airy and cooling, and softens with every wear; its 40 colours are used for all the menswear and the women’s waistcoat and pants sets. Natural fibre creases, moves and ages. A linen shirt worn through one summer will not look the way it did in the photograph, and that is what it is for. Synthetic blends hold a press longer and cost less to sew; LINSILK’s cloth is pure silk or pure linen. Cashmere, one of the house’s high frequency fabrics, is soft and warm, is used for the pants, and comes in 12 colours.',
   },

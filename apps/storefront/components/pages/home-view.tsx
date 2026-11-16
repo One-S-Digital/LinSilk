@@ -66,6 +66,9 @@ export async function HomeView({ lang }: { lang: Lang }) {
             >
               {c.heroLines[2]}
             </span>
+            <span className={styles.heroLine} style={{ display: 'block' }}>
+              {c.heroLines[3]}
+            </span>
           </LineRise>
 
           <div className={styles.heroCtas}>

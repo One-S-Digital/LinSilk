@@ -8,7 +8,7 @@ export type HomeCopy = {
   title: string;
   description: (colours: string, from: string) => string;
   kicker: string;
-  heroLines: [string, string, string];
+  heroLines: [string, string, string, string];
   women: string;
   men: string;
   introH: string;
@@ -45,7 +45,7 @@ export const HOME_EN: HomeCopy = {
   description: (colours, from) =>
     `LINSILK makes clothing in silk, linen and high frequency fabrics to your own measurements in 2–4 weeks. ${colours}${from}. No fittings needed. From Geneva.`,
   kicker: 'Made-to-measure clothing in silk, linen and high frequency fabrics, from Geneva',
-  heroLines: ['Cut from silk.', 'Woven by hand.', 'Fitted to you.'],
+  heroLines: ['Exceptional style,', 'Made personal.', 'Made-to-measure.', 'Linen · Silk · Cashmere'],
   women: 'Women’s collection',
   men: 'Men’s collection',
   introH: 'How ordering works',
@@ -61,7 +61,7 @@ export const HOME_EN: HomeCopy = {
   pillars: [
     {
       title: 'Luxury, premium-quality material',
-      body: 'Silk, linen and high frequency fabrics of the finest grade, chosen for how they feel against the skin before how they look on a hanger. Every LINSILK garment is made in 100% silk, 100% linen or high frequency fabric: no polyester and no blended cloth.',
+      body: 'Silk, linen and high frequency fabrics of the finest grade, chosen for how they feel against the skin before how they look on a hanger. Every LINSILK garment is made in 100% silk, 100% linen or high frequency fabric: no polyester and no synthetic fabric.',
     },
     {
       title: 'Made to your fit and measurements',
@@ -106,7 +106,7 @@ export const HOME_EN: HomeCopy = {
   eyebrowCloth: 'The Cloth',
   clothH: 'Silk, linen and high frequency fabrics. Nothing else enters the room.',
   clothP1:
-    'Premium silk, premium linen and high frequency fabrics, and nothing else: no polyester and no blended cloth. Synthetic fibre is cheaper to sew and it holds a press longer, which is precisely why so much clothing is made from it.',
+    'Premium silk, premium linen and high frequency fabrics, and nothing else: no polyester and no synthetic fabric. Synthetic fibre is cheaper to sew and it holds a press longer, which is precisely why so much clothing is made from it.',
   clothP2:
     'Natural fibre moves, creases and ages. A linen shirt worn through one summer will not look the way it looked in the photograph, and that is the point of it. Silk, linen and high frequency fabrics rest lightly on the skin, which is why comfort comes first.',
   statCloth: 'silk, linen or high frequency cloth',
@@ -118,7 +118,7 @@ const HOME_DE_CH: HomeCopy = {
   description: (colours, from) =>
     `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren eigenen Massen, innert 2–4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
   kicker: 'Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass, aus Genf',
-  heroLines: ['Aus Seide geschnitten.', 'Von Hand gewebt.', 'Auf Sie abgestimmt.'],
+  heroLines: ['Aussergewöhnlicher Stil,', 'Ganz persönlich.', 'Nach Mass.', 'Leinen · Seide · Kaschmir'],
   women: 'Damenkollektion',
   men: 'Herrenkollektion',
   introH: 'So funktioniert die Bestellung',
@@ -134,7 +134,7 @@ const HOME_DE_CH: HomeCopy = {
   pillars: [
     {
       title: 'Luxuriöses Material von höchster Qualität',
-      body: 'Seide, Leinen und hochfrequente Stoffe von feinster Güte, ausgewählt dafür, wie sie sich auf der Haut anfühlen, bevor es darum geht, wie sie am Bügel aussehen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen gefertigt: kein Polyester und kein Mischgewebe.',
+      body: 'Seide, Leinen und hochfrequente Stoffe von feinster Güte, ausgewählt dafür, wie sie sich auf der Haut anfühlen, bevor es darum geht, wie sie am Bügel aussehen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen gefertigt: kein Polyester und kein synthetischer Stoff.',
     },
     {
       title: 'Nach Ihrer Passform und Ihren Massen',
@@ -179,7 +179,7 @@ const HOME_DE_CH: HomeCopy = {
   eyebrowCloth: 'Der Stoff',
   clothH: 'Seide, Leinen und hochfrequente Stoffe. Sonst kommt nichts in den Raum.',
   clothP1:
-    'Erstklassige Seide, erstklassiges Leinen und hochfrequente Stoffe, und sonst nichts: kein Polyester und kein Mischgewebe. Synthetische Faser ist günstiger zu nähen und hält die Bügelfalte länger, und genau deshalb wird so viel Kleidung daraus gefertigt.',
+    'Erstklassige Seide, erstklassiges Leinen und hochfrequente Stoffe, und sonst nichts: kein Polyester und kein synthetischer Stoff. Synthetische Faser ist günstiger zu nähen und hält die Bügelfalte länger, und genau deshalb wird so viel Kleidung daraus gefertigt.',
   clothP2:
     'Naturfaser bewegt sich, knittert und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht nicht mehr so aus wie auf dem Foto, und darin liegt sein Sinn. Seide, Leinen und hochfrequente Stoffe liegen leicht auf der Haut, weshalb Komfort an erster Stelle steht.',
   statCloth: 'Seide, Leinen oder hochfrequenter Stoff',
@@ -191,7 +191,7 @@ const HOME_FR: HomeCopy = {
   description: (colours, from) =>
     `LINSILK réalise des vêtements en soie, en lin et en tissus à haute fréquence à vos propres mesures en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
   kicker: 'Vêtements sur mesure en soie, en lin et en tissus à haute fréquence, depuis Genève',
-  heroLines: ['Taillé dans la soie.', 'Tissé à la main.', 'Ajusté à vous.'],
+  heroLines: ['Un style d’exception,', 'Fait pour vous.', 'Sur mesure.', 'Lin · Soie · Cachemire'],
   women: 'Collection femme',
   men: 'Collection homme',
   introH: 'Comment commander',
@@ -207,7 +207,7 @@ const HOME_FR: HomeCopy = {
   pillars: [
     {
       title: 'Une matière de luxe, de qualité supérieure',
-      body: 'Soie, lin et tissus à haute fréquence de la plus belle qualité, choisis pour ce qu’ils font sentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est fait en 100 % soie, 100 % lin ou en tissus à haute fréquence : ni polyester ni tissu mélangé.',
+      body: 'Soie, lin et tissus à haute fréquence de la plus belle qualité, choisis pour ce qu’ils font sentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est fait en 100 % soie, 100 % lin ou en tissus à haute fréquence : ni polyester ni tissu synthétique.',
     },
     {
       title: 'Fait à votre coupe et à vos mesures',
@@ -252,7 +252,7 @@ const HOME_FR: HomeCopy = {
   eyebrowCloth: 'Le tissu',
   clothH: 'La soie, le lin et les tissus à haute fréquence. Rien d’autre n’entre dans la pièce.',
   clothP1:
-    'Une soie, un lin et des tissus à haute fréquence de première qualité, et rien d’autre : ni polyester ni tissu mélangé. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, et c’est précisément pourquoi tant de vêtements en sont faits.',
+    'Une soie, un lin et des tissus à haute fréquence de première qualité, et rien d’autre : ni polyester ni tissu synthétique. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, et c’est précisément pourquoi tant de vêtements en sont faits.',
   clothP2:
     'La fibre naturelle bouge, se froisse et vieillit. Une chemise en lin portée tout un été ne ressemblera plus à ce qu’elle était sur la photo, et c’est tout son intérêt. La soie, le lin et les tissus à haute fréquence reposent légèrement sur la peau, c’est pourquoi le confort passe en premier.',
   statCloth: 'tissu de soie, de lin ou à haute fréquence',
