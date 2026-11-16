@@ -11,15 +11,14 @@ const COLOUR_WORDS = /\b(satin|rouge|rot|noir|schwarz|ivoire|elfenbein|beige|ble
 
 describe('translated pages', () => {
   it('finds a page by locale and slug, and nothing else', () => {
-    expect(editForSlug('de-ch', 'schlafmode/seide')?.enPath).toBe('/collection/sleepwear');
+    expect(editForSlug('de', 'schlafmode/seide')?.enPath).toBe('/collection/sleepwear');
     expect(editForSlug('fr', 'pyjamas/soie')?.path).toBe('/fr/pyjamas/soie');
     expect(editForSlug('fr', 'schlafmode/seide')).toBeUndefined();
     expect(enPathOf('de', 'nach-mass')).toBe('/made-to-measure');
   });
 
-  it('writes /de/ with Maß and /de-ch/ with Mass', () => {
+  it('writes /de/ in standard German, with Maß', () => {
     const range = { from: 159, to: 359 };
-    expect(editForSlug('de-ch', 'schlafmode/seide')!.intro(range)).toContain('nach Ihren Massen gefertigt, aus');
     const de = editForSlug('de', 'schlafmode/seide')!;
     expect(de.intro(range)).toContain('nach Ihren Maßen');
     expect(de.intro(range)).not.toContain('innert');
@@ -33,10 +32,10 @@ describe('translated pages', () => {
     expect(l['de-LI']).toBe(l['de-CH']);
     expect(l['fr-LU']).toBe('https://bylinsilk.com/fr/pyjamas/soie');
     expect(languagesFor('/uae')).toEqual({});
-    expect(languagesFor('/')['de-CH']).toBe('https://bylinsilk.com/de-ch');
+    expect(languagesFor('/')['de-CH']).toBe('https://bylinsilk.com/de');
   });
 
-  it('translates every English category page into all four locales', () => {
+  it('translates every English category page into both locales', () => {
     for (const e of Object.values(EDITS)) {
       expect(ROUTES[e.path]).toBeDefined();
       for (const l of LOCALES) expect(editForSlug(l, ROUTES[e.path][l.startsWith('de') ? 'de' : 'fr'])).toBeDefined();
@@ -63,15 +62,15 @@ describe('translated pages', () => {
 describe('language switcher', () => {
   it('goes to the same page in another language, or that language home', () => {
     expect(switchPath('/made-to-measure', 'en', 'fr')).toBe('/fr/sur-mesure');
-    expect(switchPath('/de-ch/nach-mass', 'de-ch', 'en')).toBe('/made-to-measure');
-    expect(switchPath('/de-ch/nach-mass', 'de-ch', 'de')).toBe('/de/nach-mass');
-    expect(switchPath('/uae', 'en', 'de-ch')).toBe('/de-ch');
-    expect(translatedPath('fr-ch', '/')).toBe('/fr-ch');
+    expect(switchPath('/de/nach-mass', 'de', 'en')).toBe('/made-to-measure');
+    expect(switchPath('/de/nach-mass', 'de', 'fr')).toBe('/fr/sur-mesure');
+    expect(switchPath('/uae', 'en', 'de')).toBe('/de');
+    expect(translatedPath('fr', '/')).toBe('/fr');
   });
 
   it('keeps the same piece when the language changes', () => {
-    expect(switchPath('/piece/silk-slip-mini-dress', 'en', 'de-ch')).toBe('/de-ch/stueck/seiden-slip-minikleid');
-    expect(switchPath('/de-ch/stueck/seiden-slip-minikleid', 'de-ch', 'fr')).toBe('/fr/piece/mini-robe-nuisette-en-soie');
+    expect(switchPath('/piece/silk-slip-mini-dress', 'en', 'de')).toBe('/de/stueck/seiden-slip-minikleid');
+    expect(switchPath('/de/stueck/seiden-slip-minikleid', 'de', 'fr')).toBe('/fr/piece/mini-robe-nuisette-en-soie');
     expect(switchPath('/fr/piece/mini-robe-nuisette-en-soie', 'fr', 'en')).toBe('/piece/silk-slip-mini-dress');
     expect(switchPath('/piece/not-a-known-piece', 'en', 'fr')).toBe('/fr');
   });
@@ -84,7 +83,7 @@ describe('piece names', () => {
       const names = entries.map(([, n]) => n[key]);
       expect(new Set(names).size).toBe(names.length);
       for (const n of names) expect(n).not.toMatch(COLOUR_WORDS);
-      expect(new Set(names.map((n) => localSlug(key === 'de' ? 'de-ch' : 'fr', n))).size).toBe(names.length);
+      expect(new Set(names.map((n) => localSlug(key, n))).size).toBe(names.length);
     }
   });
 
@@ -113,9 +112,9 @@ describe('slugs', () => {
 
 describe('language suggestion', () => {
   it('maps a browser language to the nearest locale, and offers nothing for English', () => {
-    expect(suggestLocale('de-CH')).toBe('de-ch');
+    expect(suggestLocale('de-CH')).toBe('de');
     expect(suggestLocale('de-AT')).toBe('de');
-    expect(suggestLocale('fr-CH')).toBe('fr-ch');
+    expect(suggestLocale('fr-CH')).toBe('fr');
     expect(suggestLocale('fr')).toBe('fr');
     expect(suggestLocale('en-GB')).toBeNull();
   });

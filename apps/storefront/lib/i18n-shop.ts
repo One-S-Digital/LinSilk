@@ -336,14 +336,14 @@ const FR: ShopText = {
 
 export function shopText(lang: Lang): ShopText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return deepDe(DE_CH);
 }
 
 /** A piece's material line ('100% silk') in the reader's language. */
 export function materialIn(material: string, lang: Lang): string {
   if (lang === 'en') return material;
-  const fr = lang === 'fr' || lang === 'fr-ch';
+  const fr = lang === 'fr';
   return material
     .replace(/\bsilk\b/gi, fr ? 'soie' : 'Seide')
     .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen')

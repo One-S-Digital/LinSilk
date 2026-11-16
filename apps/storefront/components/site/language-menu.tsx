@@ -12,7 +12,7 @@ import { Flag } from './flag';
 import styles from './language-menu.module.css';
 
 const ALL: Lang[] = ['en', ...LOCALES];
-const SHORT: Record<Lang, string> = { en: 'EN', 'de-ch': 'DE', 'fr-ch': 'FR', de: 'DE', fr: 'FR' };
+const SHORT: Record<Lang, string> = { en: 'EN', de: 'DE', fr: 'FR' };
 
 /* The language drop-down in the header. On pages with a translated address the
    choices are links to the same page in each language (so they can be crawled);

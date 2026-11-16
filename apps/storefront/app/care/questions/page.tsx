@@ -71,7 +71,7 @@ function bank(range: { from: number; to: number } | null): { title: string; item
         },
         {
           q: 'How should I wash it?',
-          a: 'Silk, linen and cashmere all prefer cool hand-washing and drying flat out of direct sun; none of them wants a tumble dryer.',
+          a: 'Plain silk by hand in cool water; jacquard and brocade silk by a professional cleaner only. Linen goes to a professional cleaner for its first wash, then a gentle 30 °C cycle. Cashmere by hand in cool water or on a 30 °C wool cycle. None of them goes in the tumble dryer. The care guide at bylinsilk.com/care has every step.',
         },
         {
           q: 'Does linen crease?',

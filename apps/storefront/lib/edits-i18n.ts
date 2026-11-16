@@ -40,15 +40,13 @@ const toDeCopy = (c: Copy): Copy => ({
 
 type Entry = { copy: Copy; ui: EditUi };
 
-/* One page in all four locales: the Swiss text is written, /de/ derives from
-   it, and the French serves both fr-ch and fr. */
+/* One page in both locales: the German text is written once (in the Swiss
+   spelling of the source tables) and put into standard spelling for /de/. */
 const page = (deCh: Copy, fr: Copy): Record<Locale, Entry> => ({
-  'de-ch': { copy: deCh, ui: DE_CH_UI },
   de: {
     copy: toDeCopy(deCh),
     ui: Object.fromEntries(Object.entries(DE_CH_UI).map(([k, v]) => [k, toDe(v)])) as EditUi,
   },
-  'fr-ch': { copy: fr, ui: FR_UI },
   fr: { copy: fr, ui: FR_UI },
 });
 

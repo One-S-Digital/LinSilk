@@ -292,8 +292,8 @@ const FR: OrderText = {
 
 export function orderText(lang: Lang): OrderText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return deepDe(DE_CH);
 }
 
 /* ---- Colour names, by library code ---- */
@@ -352,7 +352,7 @@ export function swatchName(swatch: { key: string; name: string }, lang: Lang): s
   if (lang === 'en') return swatch.name;
   const pair = NAMES[swatch.key];
   if (!pair) return swatch.name;
-  const fr = lang === 'fr' || lang === 'fr-ch';
+  const fr = lang === 'fr';
   const name = fr ? pair[1] : pair[0];
   return lang === 'de' ? deepDe(name) : name;
 }

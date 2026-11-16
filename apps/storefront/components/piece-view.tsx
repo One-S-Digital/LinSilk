@@ -150,7 +150,14 @@ export async function PieceView({ piece, lang }: { piece: Piece; lang: Lang }) {
               </dd>
             </div>
             <div><dt>{t.factMaking}</dt><dd>{tie ? t.tie.makingLine : t.makingLine}</dd></div>
-            {!tie && <div><dt>{t.factCare}</dt><dd>{t.careLine}</dd></div>}
+            {!tie && (
+              <div>
+                <dt>{t.factCare}</dt>
+                <dd>
+                  {t.careLine(cloth)} <Link href={`${to('/care')}#${cloth}`}>{t.careLink}</Link>
+                </dd>
+              </div>
+            )}
             <div>
               <dt>{t.factDelivery}</dt>
               <dd>

@@ -47,6 +47,6 @@ const FR: OfferText = {
 
 export function offerText(lang: Lang): OfferText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return deepDe(DE_CH);
 }

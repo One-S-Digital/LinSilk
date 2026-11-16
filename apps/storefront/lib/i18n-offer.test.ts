@@ -13,8 +13,7 @@ describe('first-order offer copy', () => {
 
   it('differs by language, and the German market spells Maß-style words with ß', () => {
     expect(offerText('fr').cta).not.toBe(offerText('en').cta);
-    expect(offerText('de-ch').cta).toBe('Kollektion entdecken');
-    expect(offerText('de-ch').close).toBe('Schliessen');
+    expect(offerText('de').cta).toBe('Kollektion entdecken');
     expect(offerText('de').close).toBe('Schließen');
   });
 

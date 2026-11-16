@@ -46,6 +46,6 @@ const FR: ContactText = {
 
 export function contactText(lang: Lang): ContactText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return deepDe(DE_CH);
 }

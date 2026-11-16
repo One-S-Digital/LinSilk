@@ -20,6 +20,7 @@ const STATIC_PATHS = [
   '/contact',
   '/uae',
   '/de/ballkleid-seide',
+  '/care',
   '/care/measuring',
   '/care/questions',
   '/care/returns',

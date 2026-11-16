@@ -32,7 +32,8 @@ export type PieceText = {
   factMaking: string;
   makingLine: string;
   factCare: string;
-  careLine: string;
+  careLine: (cloth: Cloth) => string;
+  careLink: string;
   factDelivery: string;
   deliveryLine: string;
   shippingLink: string;
@@ -75,11 +76,11 @@ export type PieceText = {
 
 const CARE_SILK: QA = {
   q: 'Wie pflege ich es?',
-  a: 'Seide mag kühle Handwäsche und liegendes Trocknen ohne direkte Sonne; sie gehört nicht in den Tumbler.',
+  a: 'Schlichte Seide wird kühl von Hand gewaschen und liegend im Schatten getrocknet; Jacquard- und Brokatseide nur in die professionelle Reinigung. Nie in den Tumbler. Die LINSILK-Pflegeanleitung unter bylinsilk.com/care zeigt jeden Schritt.',
 };
 const CARE_LINEN: QA = {
   q: 'Wie pflege ich es?',
-  a: 'Leinen mag kühle Handwäsche und liegendes Trocknen ohne direkte Sonne; es gehört nicht in den Tumbler.',
+  a: 'LINSILK-Leinen ist nicht vorgewaschen, daher geht die erste Wäsche in die Reinigung. Danach Schonwaschgang bei 30 °C und auf dem Bügel im Schatten trocknen; nie in den Tumbler. Die LINSILK-Pflegeanleitung unter bylinsilk.com/care zeigt jeden Schritt.',
 };
 const CREASE: QA = {
   q: 'Knittert Leinen?',
@@ -96,7 +97,7 @@ const DRESS_LENGTH: QA = {
 
 const DE_CARE_CASHMERE: QA = {
   q: 'Wie pflege ich es?',
-  a: 'Kaschmir mag kühle Handwäsche und liegendes Trocknen ohne direkte Sonne; es gehört nicht in den Tumbler.',
+  a: 'Kaschmir wird kühl von Hand oder im Wollprogramm bei 30 °C gewaschen und liegend, fern von Wärme, getrocknet; nie in den Tumbler. Zwischen dem Tragen genügen Bürsten und Lüften. Die LINSILK-Pflegeanleitung unter bylinsilk.com/care zeigt jeden Schritt.',
 };
 
 const DE_QUESTIONS: Record<GarmentType, QA[]> = {
@@ -209,11 +210,11 @@ const DE_QUESTIONS: Record<GarmentType, QA[]> = {
 
 const FR_CARE_SILK: QA = {
   q: 'Comment l’entretenir ?',
-  a: 'La soie préfère un lavage à la main à l’eau fraîche et un séchage à plat, à l’abri du soleil direct ; elle n’aime pas le sèche-linge.',
+  a: 'La soie unie se lave à la main à l’eau fraîche et sèche à plat à l’ombre ; la soie jacquard et brocart va uniquement chez un professionnel. Jamais de sèche-linge. Le guide d’entretien LINSILK sur bylinsilk.com/care détaille chaque étape.',
 };
 const FR_CARE_LINEN: QA = {
   q: 'Comment l’entretenir ?',
-  a: 'Le lin préfère un lavage à la main à l’eau fraîche et un séchage à plat, à l’abri du soleil direct ; il n’aime pas le sèche-linge.',
+  a: 'Le lin LINSILK n’est pas prélavé : son premier lavage se fait chez un professionnel. Ensuite, cycle délicat à 30 °C et séchage sur cintre à l’ombre ; jamais de sèche-linge. Le guide d’entretien LINSILK sur bylinsilk.com/care détaille chaque étape.',
 };
 const FR_CREASE: QA = {
   q: 'Le lin se froisse-t-il ?',
@@ -230,7 +231,7 @@ const FR_DRESS_LENGTH: QA = {
 
 const FR_CARE_CASHMERE: QA = {
   q: 'Comment l’entretenir ?',
-  a: 'Le cachemire préfère un lavage à la main à l’eau fraîche et un séchage à plat, à l’abri du soleil direct ; il n’aime pas le sèche-linge.',
+  a: 'Le cachemire se lave à la main à l’eau fraîche ou en programme laine à 30 °C, puis sèche à plat loin de la chaleur ; jamais de sèche-linge. Entre deux ports, un coup de brosse et un peu d’air suffisent. Le guide d’entretien LINSILK sur bylinsilk.com/care détaille chaque étape.',
 };
 
 const FR_QUESTIONS: Record<GarmentType, QA[]> = {
@@ -368,7 +369,13 @@ const DE_CH: PieceText = {
   factMaking: 'Fertigungszeit',
   makingLine: '2–4 Wochen ab Ihrem bestätigten Massblatt',
   factCare: 'Pflege',
-  careLine: 'Kühle Handwäsche, liegend trocknen, nicht in direkter Sonne',
+  careLine: (cloth) =>
+    ({
+      silk: 'Kühle Handwäsche (Jacquard und Brokat: nur professionelle Reinigung), liegend im Schatten trocknen.',
+      linen: 'Erste Wäsche in der Reinigung, danach Schonwaschgang bei 30 °C; kein Trockner.',
+      cashmere: 'Kühle Handwäsche oder Wollprogramm bei 30 °C; liegend trocknen.',
+    })[cloth],
+  careLink: 'Pflegeanleitung',
   factDelivery: 'Lieferung',
   deliveryLine:
     'Schweiz 2–3 Tage, EU und Grossbritannien 3–6, übrige Welt 5–10, nach dem Versand ab Genf, mit Sendungsverfolgung.',
@@ -470,7 +477,13 @@ const FR: PieceText = {
   factMaking: 'Délai de confection',
   makingLine: '2 à 4 semaines à partir de votre fiche de mesures confirmée',
   factCare: 'Entretien',
-  careLine: 'Lavage à la main à l’eau fraîche, séchage à plat à l’abri du soleil direct',
+  careLine: (cloth) =>
+    ({
+      silk: 'Lavage à la main à l’eau fraîche (jacquard et brocart : nettoyage professionnel uniquement), séchage à plat à l’ombre.',
+      linen: 'Premier lavage chez un professionnel, puis cycle délicat à 30 °C ; pas de sèche-linge.',
+      cashmere: 'Lavage à la main à l’eau fraîche ou programme laine à 30 °C ; séchage à plat.',
+    })[cloth],
+  careLink: 'Guide d’entretien',
   factDelivery: 'Livraison',
   deliveryLine:
     'Suisse 2 à 3 jours, UE et Royaume-Uni 3 à 6, reste du monde 5 à 10, une fois expédié depuis Genève, avec suivi.',
@@ -546,9 +559,7 @@ const FR: PieceText = {
 };
 
 export const PIECE_TEXT: Record<Exclude<Lang, 'en'>, PieceText> = {
-  'de-ch': DE_CH,
   de: deepDe(DE_CH),
-  'fr-ch': FR,
   fr: FR,
 };
 
@@ -579,7 +590,13 @@ const EN: PieceText = {
   factMaking: 'Making time',
   makingLine: '2–4 weeks from your confirmed measurement sheet',
   factCare: 'Care',
-  careLine: 'Cool hand-wash, dry flat out of direct sun',
+  careLine: (cloth) =>
+    ({
+      silk: 'Cool hand wash (jacquard and brocade: professional cleaning only), dry flat in shade.',
+      linen: 'First wash by a professional cleaner, then a gentle 30 °C cycle; no dryer.',
+      cashmere: 'Cool hand wash or a 30 °C wool cycle; dry flat.',
+    })[cloth],
+  careLink: 'Care guide',
   factDelivery: 'Delivery',
   deliveryLine:
     'Switzerland 2–3 days, EU and UK 3–6, rest of world 5–10, once dispatched from Geneva, with tracking.',

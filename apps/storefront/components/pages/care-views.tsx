@@ -124,5 +124,5 @@ export async function ContactView({ lang }: { lang: Lang }) {
 
 /* DocPage's default eyebrow is English ("Client care"). */
 function eyebrow(lang: Lang) {
-  return lang === 'fr' || lang === 'fr-ch' ? 'Service client' : 'Kundenservice';
+  return lang === 'fr' ? 'Service client' : 'Kundenservice';
 }

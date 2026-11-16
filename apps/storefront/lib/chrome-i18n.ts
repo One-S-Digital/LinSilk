@@ -31,6 +31,7 @@ const EN = {
     '/collection/women/silk': 'Silk dresses and gowns',
     '/collection/sleepwear': 'Silk sleepwear',
     '/collection/men/shirts': 'Linen shirts',
+    '/care': 'Care guide',
     '/care/shipping': 'Shipping',
     '/care/measuring': 'Measurement guide',
     '/care/returns': 'Returns',
@@ -80,6 +81,7 @@ const DE_CH: Chrome = {
     '/collection/women/silk': 'Seidenkleider und Abendkleider',
     '/collection/sleepwear': 'Schlafmode aus Seide',
     '/collection/men/shirts': 'Leinenhemden',
+    '/care': 'Pflegeanleitung',
     '/care/shipping': 'Versand',
     '/care/measuring': 'Messanleitung',
     '/care/returns': 'Rückgabe',
@@ -127,6 +129,7 @@ const FR: Chrome = {
     '/collection/women/silk': 'Robes en soie et robes de soirée',
     '/collection/sleepwear': 'Vêtements de nuit en soie',
     '/collection/men/shirts': 'Chemises en lin',
+    '/care': 'Guide d’entretien',
     '/care/shipping': 'Livraison',
     '/care/measuring': 'Guide de mesure',
     '/care/returns': 'Retours',
@@ -149,17 +152,13 @@ const FR: Chrome = {
 
 export const CHROME: Record<Lang, Chrome> = {
   en: EN,
-  'de-ch': DE_CH,
   de: deepDe(DE_CH),
-  'fr-ch': FR,
   fr: FR,
 };
 
 /** Names of the languages, each in its own language. */
 export const LANGUAGE_NAMES: Record<Lang, string> = {
   en: 'English',
-  'de-ch': 'Deutsch (Schweiz)',
-  de: 'Deutsch (Österreich, Deutschland)',
-  'fr-ch': 'Français (Suisse)',
-  fr: 'Français (France, Luxembourg)',
+  de: 'Deutsch',
+  fr: 'Français',
 };
