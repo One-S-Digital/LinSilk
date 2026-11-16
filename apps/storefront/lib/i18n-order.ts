@@ -3,7 +3,7 @@
  * native-speaker pass before they go live (docs/seo/SEO-GEO-PLAN.md §13.7).
  * What is sent to the atelier (fabric names, zone labels) stays English. */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 import { SWATCHES } from './swatches';
 
 const ALL_SWATCHES = [...SWATCHES.silk, ...SWATCHES.linen, ...SWATCHES.cashmere];
@@ -104,38 +104,38 @@ const EN = {
 
 export type OrderText = typeof EN;
 
-const DE_CH: OrderText = {
+const DE: OrderText = {
   panel: {
     archivedH: 'Archiviert',
     archived: (season) =>
-      `Dieses Modell ist mit ${season} ausgelaufen und wird nicht mehr gefertigt. Das Schnittmuster bleibt in der Werkstatt, und die Angaben zum Stoff bleiben beim Stück – aber nichts aus einer abgeschlossenen Kollektion wird ein zweites Mal zugeschnitten.`,
+      `Dieses Modell ist mit ${season} ausgelaufen und wird nicht mehr gefertigt. Der Schnitt bleibt in der Werkstatt, aber aus einer abgeschlossenen Kollektion wird nichts ein zweites Mal zugeschnitten.`,
     itsSeason: 'seiner Saison',
     seeOpen: 'Jetzt offene Modelle ansehen',
     commission: 'Etwas Ähnliches in Auftrag geben',
     noCloth:
-      'Der Stoff für dieses Stück ist noch nicht bestätigt, es lässt sich deshalb im Moment nicht bestellen. Schreiben Sie an hello@bylinsilk.com, das Atelier teilt Ihnen mit, aus welchem Stoff es gefertigt wird.',
+      'Der Stoff für dieses Stück steht noch nicht fest, deshalb lässt es sich im Moment nicht bestellen. Schreiben Sie an hello@bylinsilk.com, dann nennt Ihnen das Atelier den Stoff.',
     steps: 'Bestellschritte',
     stepColour: '01 Farbe',
     stepMeasure: '02 Masse',
     madeIn: (cloth) =>
-      `Dieses Stück wird aus ${cloth} gefertigt. Wählen Sie Ihre Farbe aus den ${cloth}-Stoffmustern und nehmen Sie dann Ihre Masse.`,
+      `Dieses Stück entsteht aus ${cloth}. Wählen Sie Ihre Farbe anhand der Stoffmuster und tragen Sie dann Ihre Masse ein.`,
     madeInTie: (cloth) =>
-      `Diese Krawatte wird aus ${cloth} gefertigt. Wählen Sie Ihre Farbe aus den dafür angebotenen Mustern; Masse sind nicht nötig.`,
+      `Diese Krawatte entsteht aus ${cloth}. Wählen Sie Ihre Farbe anhand der Muster; Masse brauchen Sie nicht.`,
     selectColour: 'Farbe wählen',
     changeColour: 'Farbe ändern',
     useColour: 'Diese Farbe verwenden',
     toMeasure: 'Weiter zu den Massen',
-    moment: 'Einen Moment…',
+    moment: 'Einen Moment …',
     checkout: 'Weiter zur Kasse',
     unreachable:
-      'Das Atelier ist im Moment nicht erreichbar, deshalb kann nichts bestellt werden. Schreiben Sie an hello@bylinsilk.com, das Atelier reserviert das Stück von Hand für Sie.',
+      'Das Atelier ist im Moment nicht erreichbar, deshalb lässt sich nichts bestellen. Schreiben Sie an hello@bylinsilk.com, dann reserviert das Atelier das Stück für Sie.',
     allNeeded: (n) =>
-      `Das Massblatt bestimmt das Kleidungsstück, deshalb braucht es alle ${n} Masse, bevor ein Stück bestellt werden kann.`,
-    moreToTake: (n) => `Noch ${n} zu nehmen. Das Atelier kann nicht nach einem unvollständigen Massblatt zuschneiden.`,
+      `Das Massblatt entscheidet über das Kleidungsstück, deshalb brauchen wir alle ${n} Masse, bevor Sie bestellen können.`,
+    moreToTake: (n) => `Es fehlen noch ${n}. Nach einem unvollständigen Massblatt kann das Atelier nicht zuschneiden.`,
     note:
-      'Mit der Bestellung wird das Modell in der begrenzten Auflage der Saison für Sie reserviert. Das Atelier schreibt Ihnen innert zwei Tagen, um das Massblatt zu bestätigen, bevor der Zuschnitt beginnt.',
+      'Mit Ihrer Bestellung wird das Modell in der begrenzten Auflage der Saison für Sie reserviert. Innerhalb von zwei Tagen schreibt Ihnen das Atelier, um das Massblatt zu bestätigen. Erst danach beginnt der Zuschnitt.',
     noteTie:
-      'Mit der Bestellung wird die Krawatte in der begrenzten Auflage der Saison für Sie reserviert. Das Atelier schreibt Ihnen innert zwei Tagen, um Ihre Farbe zu bestätigen, bevor sie gefertigt wird.',
+      'Mit Ihrer Bestellung wird die Krawatte in der begrenzten Auflage der Saison für Sie reserviert. Innerhalb von zwei Tagen schreibt Ihnen das Atelier, um Ihre Farbe zu bestätigen. Erst danach wird sie gefertigt.',
   },
   swatch: {
     title: 'Wählen Sie Ihre Farbe',
@@ -149,26 +149,26 @@ const DE_CH: OrderText = {
     title: 'Ihre Masse',
     units: 'Einheiten',
     intro: (n) =>
-      `Es gibt kein S, M oder L. ${n} Masse, über eng anliegender Kleidung genommen, das Massband flach am Körper. Einige davon sind Längen statt Umfänge – sie sorgen dafür, dass ein flaches Schnittmuster auf Ihrem Körper sitzt, und kein Brust- oder Taillenumfang ersetzt sie. Nehmen Sie sich Zeit; dieser Teil der Bestellung entscheidet über das Kleidungsstück.`,
-    guideWomen: 'Massanleitung, Damen',
-    guideMen: 'Massanleitung, Herren',
+      `Ein S, M oder L gibt es bei uns nicht. Wir brauchen ${n} Masse, genommen über eng anliegender Kleidung, das Massband flach am Körper. Einige davon sind Längen statt Umfänge: Sie sorgen dafür, dass der Schnitt auf Ihrem Körper sitzt, und lassen sich durch keinen Brust- oder Taillenumfang ersetzen. Nehmen Sie sich Zeit, denn dieser Teil der Bestellung entscheidet über das Kleidungsstück.`,
+    guideWomen: 'Anleitung zum Massnehmen, Damen',
+    guideMen: 'Anleitung zum Massnehmen, Herren',
     tapeSits: 'wo das Massband liegt',
     showWomen: 'Damen-Anleitung zeigen',
     showMen: 'Herren-Anleitung zeigen',
-    allTaken: (n) => `Alle ${n} genommen`,
+    allTaken: (n) => `Alle ${n} Masse eingetragen`,
     progress: (i, n) => `Mass ${i} von ${n}`,
     garmentH: 'Das Kleidungsstück',
     garmentNote:
-      'Kein Mass Ihres Körpers, sondern eine Entscheidung über das Stück. Ihre Masse bestimmen, wie es sitzen soll; hier legen Sie fest, wie lang es sein soll.',
-    tailor: 'Masse von einer Schneiderin oder einem Schneider nehmen lassen',
+      'Das ist kein Körpermass, sondern Ihre Entscheidung über das Stück: Ihre Masse bestimmen, wie es sitzt; hier legen Sie fest, wie lang es sein soll.',
+    tailor: 'Masse in einer Schneiderei nehmen lassen',
     saveFail: 'Speichern im Moment nicht möglich. Versuchen Sie es gleich noch einmal.',
-    saving: 'Wird gespeichert…',
+    saving: 'Wird gespeichert …',
     save: 'Dieses Profil speichern',
     savedAccount: 'In Ihrem Konto gespeichert',
     savedDevice: 'Auf diesem Gerät gespeichert',
     review: 'Übersicht',
     range: (lo, hi, unit) =>
-      `Üblich sind Werte zwischen ${lo} und ${hi} ${unit}. Prüfen Sie das Massband oder schreiben Sie dem Atelier, wenn der Wert stimmt.`,
+      `Üblich sind Werte zwischen ${lo} und ${hi} ${unit}. Bitte prüfen Sie das Massband noch einmal. Stimmt der Wert, schreiben Sie dem Atelier.`,
   },
   zones: {
     neck: ['Hals', 'Um den Halsansatz, ein Finger Spielraum.'],
@@ -201,59 +201,59 @@ const FR: OrderText = {
   panel: {
     archivedH: 'Archivé',
     archived: (season) =>
-      `Ce modèle s’est clos avec ${season} et n’est plus fabriqué. Le patron est conservé à l’atelier et la fiche du tissu reste avec la pièce, mais rien d’une collection close n’est coupé une seconde fois.`,
+      `Ce modèle a quitté la collection avec ${season} et n’est plus fabriqué. Son patron reste à l’atelier, mais aucune pièce d’une collection terminée n’est coupée une seconde fois.`,
     itsSeason: 'sa saison',
-    seeOpen: 'Voir ce qui est ouvert maintenant',
-    commission: 'Commander quelque chose de semblable',
+    seeOpen: 'Voir les modèles disponibles',
+    commission: 'Commander une pièce similaire',
     noCloth:
-      'Le tissu de cette pièce n’est pas encore confirmé, elle ne peut donc pas être commandée pour le moment. Écrivez à hello@bylinsilk.com : l’atelier vous dira dans quel tissu elle est coupée.',
+      'Le tissu de cette pièce n’est pas encore arrêté : elle ne peut donc pas être commandée pour le moment. Écrivez à hello@bylinsilk.com et l’atelier vous indiquera le tissu.',
     steps: 'Étapes de la commande',
-    stepColour: '01 Couleur',
+    stepColour: '01 Coloris',
     stepMeasure: '02 Mesures',
     madeIn: (cloth) =>
-      `Cette pièce est confectionnée en ${cloth}. Choisissez votre couleur parmi les échantillons de ${cloth}, puis prenez vos mesures.`,
+      `Cette pièce est réalisée en ${cloth}. Choisissez votre coloris parmi les échantillons, puis indiquez vos mesures.`,
     madeInTie: (cloth) =>
-      `Cette cravate est confectionnée en ${cloth}. Choisissez votre couleur parmi les échantillons proposés ; aucune mesure n’est nécessaire.`,
-    selectColour: 'Choisir la couleur',
-    changeColour: 'Changer de couleur',
-    useColour: 'Utiliser cette couleur',
-    toMeasure: 'Continuer vers les mesures',
+      `Cette cravate est réalisée en ${cloth}. Choisissez votre coloris parmi les échantillons ; aucune mesure n’est nécessaire.`,
+    selectColour: 'Choisir le coloris',
+    changeColour: 'Changer de coloris',
+    useColour: 'Choisir ce coloris',
+    toMeasure: 'Passer aux mesures',
     moment: 'Un instant…',
     checkout: 'Passer à la caisse',
     unreachable:
-      'L’atelier est injoignable pour le moment, rien ne peut donc être commandé. Écrivez à hello@bylinsilk.com : l’atelier réservera la pièce à la main.',
+      'L’atelier est injoignable pour le moment : aucune commande n’est possible. Écrivez à hello@bylinsilk.com et l’atelier vous réservera la pièce.',
     allNeeded: (n) =>
-      `La fiche de mesures détermine le vêtement : les ${n} mesures sont nécessaires avant de pouvoir commander une pièce.`,
-    moreToTake: (n) => `Encore ${n} à prendre. L’atelier ne peut pas couper à partir d’une fiche incomplète.`,
+      `La fiche de mesures décide du vêtement : il nous faut les ${n} mesures avant que vous puissiez commander.`,
+    moreToTake: (n) => `Il en manque encore ${n}. L’atelier ne peut pas couper d’après une fiche incomplète.`,
     note:
-      'La commande réserve le modèle dans la série limitée de la saison. L’atelier vous écrit sous deux jours pour confirmer la fiche avant le début de la coupe.',
+      'Votre commande réserve le modèle dans la série limitée de la saison. L’atelier vous écrit dans les deux jours pour confirmer la fiche ; la coupe ne commence qu’ensuite.',
     noteTie:
-      'La commande réserve la cravate dans la série limitée de la saison. L’atelier vous écrit sous deux jours pour confirmer votre coloris avant la confection.',
+      'Votre commande réserve la cravate dans la série limitée de la saison. L’atelier vous écrit dans les deux jours pour confirmer votre coloris ; la confection ne commence qu’ensuite.',
   },
   swatch: {
-    title: 'Choisissez votre couleur',
-    lead: (n, cloth) => `${n} couleurs en ${cloth}. Choisissez celle dans laquelle cette pièce est coupée.`,
+    title: 'Choisissez votre coloris',
+    lead: (n, cloth) => `${n} coloris en ${cloth}. Choisissez celui dans lequel cette pièce sera réalisée.`,
     close: 'Fermer',
-    none: 'Aucune couleur choisie',
+    none: 'Aucun coloris choisi',
     group: (weave, cloth) => `${cloth}, ${weave}`,
-    colours: (cloth) => `Couleurs de ${cloth.toLowerCase()}`,
+    colours: (cloth) => `Coloris en ${cloth.toLowerCase()}`,
   },
   sheet: {
     title: 'Vos mesures',
     units: 'Unités',
     intro: (n) =>
-      `Il n’y a ni S, ni M, ni L. ${n} mesures, prises sur des vêtements près du corps, le mètre ruban à plat contre le corps. Certaines sont des hauteurs plutôt que des tours : ce sont elles qui permettent à un patron plat de tomber sur votre corps, et aucun tour de poitrine ni de taille ne les remplace. Prenez votre temps ; c’est cette étape de la commande qui décide du vêtement.`,
+      `Chez nous, ni S, ni M, ni L : ${n} mesures, prises sur des vêtements ajustés, le mètre ruban bien à plat contre le corps. Certaines sont des longueurs plutôt que des tours ; ce sont elles qui permettent au patron de tomber juste sur votre corps, et aucun tour de poitrine ni de taille ne peut les remplacer. Prenez votre temps : c’est cette étape qui décide de la façon dont la pièce vous ira.`,
     guideWomen: 'Guide de mesures, femmes',
     guideMen: 'Guide de mesures, hommes',
     tapeSits: 'où se place le mètre ruban',
     showWomen: 'Afficher le guide femmes',
     showMen: 'Afficher le guide hommes',
-    allTaken: (n) => `Les ${n} sont prises`,
+    allTaken: (n) => `Les ${n} mesures sont renseignées`,
     progress: (i, n) => `Mesure ${i} sur ${n}`,
     garmentH: 'Le vêtement',
     garmentNote:
-      'Ce n’est pas une donnée de votre corps mais une décision sur la pièce. Vos mesures disent comment elle doit tomber ; ceci dit quelle longueur elle doit avoir.',
-    tailor: 'Faire prendre vos mesures par un tailleur',
+      'Il ne s’agit pas d’une mesure de votre corps, mais d’un choix pour la pièce : vos mesures déterminent sa coupe, celle-ci en fixe la longueur.',
+    tailor: 'Faire prendre vos mesures chez un tailleur',
     saveFail: 'Enregistrement impossible pour le moment. Réessayez dans un instant.',
     saving: 'Enregistrement…',
     save: 'Enregistrer ce profil',
@@ -261,13 +261,13 @@ const FR: OrderText = {
     savedDevice: 'Enregistré sur cet appareil',
     review: 'Récapitulatif',
     range: (lo, hi, unit) =>
-      `En général entre ${lo} et ${hi} ${unit}. Vérifiez le mètre ruban, ou écrivez au tailleur si la valeur est exacte.`,
+      `En général entre ${lo} et ${hi} ${unit}. Vérifiez votre mètre ruban ; si la valeur est exacte, écrivez à l’atelier.`,
   },
   zones: {
     neck: ['Cou', 'Autour de la base du cou, un doigt d’aisance.'],
     shoulder: ['Épaules', 'Sur le dos, d’un os de l’épaule à l’autre.'],
     bust: ['Poitrine', 'Au point le plus fort, le mètre ruban bien à l’horizontale tout autour.'],
-    bustPoint: ['Pointe de poitrine', 'Du haut de l’épaule, droit jusqu’au point le plus fort de la poitrine.'],
+    bustPoint: ['Pointe de poitrine', 'Du haut de l’épaule, à la verticale, jusqu’au point le plus fort de la poitrine.'],
     frontWaist: ['Longueur devant jusqu’à la taille', 'Du haut de l’épaule, sur la poitrine, jusqu’à la taille naturelle.'],
     backWaist: ['Longueur dos jusqu’à la taille', 'De l’os à la base du cou, droit le long du dos, jusqu’à la taille naturelle.'],
     waist: ['Taille', 'Au point le plus étroit, en général juste au-dessus du nombril.'],
@@ -279,11 +279,11 @@ const FR: OrderText = {
     bicep: ['Haut du bras', 'Autour de la partie la plus large, bras détendu.'],
     wrist: ['Poignet', 'Au-dessus de l’os du poignet.'],
     rise: ['Fourche', 'Assis sur une chaise dure : de la taille naturelle devant, entre les jambes, à la taille naturelle derrière.'],
-    lengthDress: ['Longueur de la robe', 'Du haut de l’épaule, sur la poitrine, droit jusqu’à l’endroit où l’ourlet doit tomber. Mesurez sur une robe que vous possédez déjà et aimez.'],
+    lengthDress: ['Longueur de la robe', 'Du haut de l’épaule, sur la poitrine, droit jusqu’à l’endroit où l’ourlet doit tomber. Le plus simple : mesurez une robe que vous possédez déjà et que vous aimez.'],
     lengthSkirt: ['Longueur de la jupe', 'De la taille naturelle, droit jusqu’à l’endroit où l’ourlet doit tomber.'],
     lengthTrouser: ['Longueur du pantalon', 'De la taille naturelle, le long de l’extérieur de la jambe, jusqu’à l’endroit où l’ourlet doit tomber, sans chaussures.'],
-    lengthTop: ['Longueur souhaitée', 'De la couture d’épaule, droit jusqu’à l’endroit où l’ourlet doit tomber. Mesurez sur un vêtement que vous possédez déjà et aimez.'],
-    lengthRobe: ['Longueur du peignoir', 'De la couture d’épaule, droit jusqu’à l’endroit où le peignoir doit tomber. Mesurez sur un peignoir que vous possédez déjà et aimez.'],
+    lengthTop: ['Longueur souhaitée', 'De la couture d’épaule, droit jusqu’à l’endroit où l’ourlet doit tomber. Le plus simple : mesurez un vêtement que vous possédez déjà et que vous aimez.'],
+    lengthRobe: ['Longueur du peignoir', 'De la couture d’épaule, droit jusqu’à l’endroit où le peignoir doit tomber. Le plus simple : mesurez un peignoir que vous possédez déjà et que vous aimez.'],
   },
   cloth: { silk: 'Soie', linen: 'Lin', cashmere: 'Cachemire' },
   weave: { Plain: 'Uni', Jacquard: 'Jacquard', Brocade: 'Brocart' },
@@ -293,12 +293,12 @@ const FR: OrderText = {
 export function orderText(lang: Lang): OrderText {
   if (lang === 'en') return EN;
   if (lang === 'fr') return FR;
-  return deepDe(DE_CH);
+  return DE;
 }
 
 /* ---- Colour names, by library code ---- */
 
-type Names = Record<string, [string, string]>; // key -> [German (Swiss), French]
+type Names = Record<string, [string, string]>; // key -> [German, French]
 
 const NAMES: Names = {
   'LS-S01': ['Silberflieder', 'Lilas argenté'], 'LS-S02': ['Kobalt', 'Cobalt'], 'LS-S03': ['Olive', 'Olive'],
@@ -352,9 +352,7 @@ export function swatchName(swatch: { key: string; name: string }, lang: Lang): s
   if (lang === 'en') return swatch.name;
   const pair = NAMES[swatch.key];
   if (!pair) return swatch.name;
-  const fr = lang === 'fr';
-  const name = fr ? pair[1] : pair[0];
-  return lang === 'de' ? deepDe(name) : name;
+  return lang === 'fr' ? pair[1] : pair[0];
 }
 
 /** 'Cobalt silk', in the reader's language, for display. */

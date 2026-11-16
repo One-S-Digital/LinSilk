@@ -6,7 +6,7 @@
 import { CATEGORY, QUESTIONS, type GarmentType, type QA } from './garments';
 import type { Cloth, Piece } from './catalog';
 import { PURE } from './house';
-import { deepDe, LOCALES, type Lang, type Locale } from './i18n';
+import { LOCALES, type Lang, type Locale } from './i18n';
 import { piecePath, pieceLanguages } from './locale-routes';
 import { pieceName } from './piece-names';
 import { slugify } from './slug';
@@ -176,7 +176,7 @@ const DE_QUESTIONS: Record<GarmentType, QA[]> = {
   sleepwear: [
     {
       q: 'Kann ich es verschenken?',
-      a: 'Ja, mit einer Einschränkung: Es wird nach Mass gefertigt, daher brauchen Sie die Masse der beschenkten Person. Schicken Sie ihr die Messanleitung, oder bitten Sie sie, die fünfzehn Masse bei einer Schneiderei nehmen zu lassen.',
+      a: 'Ja, mit einer Einschränkung: Es wird nach Mass gefertigt, daher brauchen Sie die Masse der beschenkten Person. Schicken Sie ihr die Anleitung zum Massnehmen, oder bitten Sie sie, die fünfzehn Masse bei einer Schneiderei nehmen zu lassen.',
     },
     {
       q: 'Ist Seide gut zum Schlafen?',
@@ -342,7 +342,7 @@ const FR_QUESTIONS: Record<GarmentType, QA[]> = {
   ],
 };
 
-const DE_CH: PieceText = {
+const DE: PieceText = {
   collection: 'Kollektion',
   view: 'Ansehen',
   men: 'Herren',
@@ -372,7 +372,7 @@ const DE_CH: PieceText = {
   careLine: (cloth) =>
     ({
       silk: 'Kühle Handwäsche (Jacquard und Brokat: nur professionelle Reinigung), liegend im Schatten trocknen.',
-      linen: 'Erste Wäsche in der Reinigung, danach Schonwaschgang bei 30 °C; kein Trockner.',
+      linen: 'Erste Wäsche in der Reinigung, danach Schonwaschgang bei 30 °C; kein Tumbler.',
       cashmere: 'Kühle Handwäsche oder Wollprogramm bei 30 °C; liegend trocknen.',
     })[cloth],
   careLink: 'Pflegeanleitung',
@@ -383,13 +383,13 @@ const DE_CH: PieceText = {
   howH: 'So entsteht es nach Mass',
   howList: [
     'Wählen Sie Ihre Farbe aus den Mustern seines Stoffs.',
-    'Geben Sie Ihre Masse ein; die Messanleitung hilft dabei.',
+    'Geben Sie Ihre Masse ein; die Anleitung zum Massnehmen hilft dabei.',
     'Es wird in 2–4 Wochen zugeschnitten und genäht und mit Sendungsverfolgung versandt.',
   ],
   measuringPre: 'Geben Sie Ihre Masse ein; die ',
-  measuringLink: 'Messanleitung',
+  measuringLink: 'Anleitung zum Massnehmen',
   measuringPost: ' hilft dabei.',
-  howLink: 'So funktioniert Nach-Mass bei LINSILK',
+  howLink: 'So funktioniert die Massanfertigung bei LINSILK',
   questionsH: (c) => `Fragen zu ${c}`,
   moreQuestions: 'Lieferzeit, Zoll und Rückgabe:',
   allQuestions: 'alle Fragen',
@@ -458,10 +458,10 @@ const FR: PieceText = {
   archive: 'Archives',
   cloth: { silk: 'soie', linen: 'lin', cashmere: 'cachemire' },
   description: (cloth) =>
-    `Fait sur mesure en ${cloth} : coupé et cousu à vos propres mesures en deux à quatre semaines à partir de votre fiche confirmée, inspecté deux fois, puis expédié depuis Genève. Coupé à plat à la main d’après un patron tracé sur votre fiche, puis assemblé à la machine et fini à l’établi – ourlet, parementures et doublure à la main.`,
+    `Réalisation sur mesure en ${cloth} : coupe et couture d’après vos propres mesures en deux à quatre semaines à partir de votre fiche confirmée, deux contrôles, puis expédition depuis Genève. Coupe à plat à la main d’après un patron tracé sur votre fiche, assemblage à la machine, finitions à l’établi – ourlet, parementures et doublure à la main.`,
   run: (n) => `Collection ${n}`,
   weeks: 'deux à quatre semaines',
-  closed: 'close',
+  closed: 'collection terminée',
   factsH: 'L’essentiel',
   factCloth: 'Tissu',
   factColours: 'Coloris',
@@ -486,17 +486,17 @@ const FR: PieceText = {
   careLink: 'Guide d’entretien',
   factDelivery: 'Livraison',
   deliveryLine:
-    'Suisse 2 à 3 jours, UE et Royaume-Uni 3 à 6, reste du monde 5 à 10, une fois expédié depuis Genève, avec suivi.',
+    'Suisse 2 à 3 jours, UE et Royaume-Uni 3 à 6 jours, reste du monde 5 à 10 jours, une fois la pièce expédiée depuis Genève, avec suivi.',
   shippingLink: 'Livraison et douane',
-  howH: 'Comment il est fait sur mesure',
+  howH: 'Une pièce réalisée sur mesure',
   howList: [
     'Choisissez votre coloris parmi les échantillons de son tissu.',
-    'Indiquez vos mesures ; le guide de mesure vous aide.',
-    'Il est coupé et cousu en 2 à 4 semaines et envoyé avec suivi.',
+    'Indiquez vos mesures ; le guide pour prendre vos mesures vous accompagne.',
+    'La pièce est coupée et cousue en 2 à 4 semaines, puis envoyée avec suivi.',
   ],
   measuringPre: 'Indiquez vos mesures ; le ',
-  measuringLink: 'guide de mesure',
-  measuringPost: ' vous aide.',
+  measuringLink: 'guide pour prendre vos mesures',
+  measuringPost: ' vous accompagne.',
   howLink: 'Comment fonctionne le sur-mesure chez LINSILK',
   questionsH: (c) => `Questions sur ${c}`,
   moreQuestions: 'Délais, douane et retours :',
@@ -504,13 +504,13 @@ const FR: PieceText = {
   alsoIn: (cloth) => `Aussi en ${cloth}`,
   title: (name) => `${name}, sur mesure | LINSILK`,
   meta: (name, cloth, colours, price) =>
-    `${name} en ${cloth}, coupé et cousu à vos mesures en 2 à 4 semaines. ${colours}. ${price}.`,
+    `${name} en ${cloth}, coupe et couture à vos mesures en 2 à 4 semaines. ${colours}. ${price}.`,
   metaClosed: (name, cloth, season) => `${name} en ${cloth}, de ${season}.`,
   altWho: { women: 'Femme', men: 'Homme' },
-  altLine: (who, name, view) => `${who} portant ${name.charAt(0).toLowerCase()}${name.slice(1)}, fait sur mesure, ${view}`,
+  altLine: (who, name, view) => `${who} portant ${name.charAt(0).toLowerCase()}${name.slice(1)}, sur mesure, ${view}`,
   viewN: (n) => `vue ${n}`,
   ldDescription: (name, cloth) =>
-    `${name}, fait sur mesure en ${cloth} : coupé et cousu à vos propres mesures en 2 à 4 semaines, puis expédié depuis Genève.`,
+    `${name}, sur mesure en ${cloth} : coupe et couture à vos propres mesures en 2 à 4 semaines, puis expédition depuis Genève.`,
   views: {
     FULL_FRONT: 'vue de face',
     UPPER: 'détail du haut du corps',
@@ -519,7 +519,7 @@ const FR: PieceText = {
     BACK: 'vue de dos',
     ALT_DETAIL: 'vue de trois quarts',
     FULL_LOOK: 'tenue complète avec la pièce assortie',
-    LONG_PANTS: 'porté avec un pantalon long',
+    LONG_PANTS: 'avec un pantalon long',
   },
   category: {
     gown: 'les robes de soirée',
@@ -559,7 +559,7 @@ const FR: PieceText = {
 };
 
 export const PIECE_TEXT: Record<Exclude<Lang, 'en'>, PieceText> = {
-  de: deepDe(DE_CH),
+  de: DE,
   fr: FR,
 };
 

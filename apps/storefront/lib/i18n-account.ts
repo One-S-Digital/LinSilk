@@ -3,7 +3,7 @@
  * source; German and French are for a native-speaker pass before they go live
  * (docs/seo/SEO-GEO-PLAN.md §13.7). */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 const EN = {
   eyebrow: 'The house',
@@ -161,12 +161,12 @@ const EN = {
 
 export type AccountText = typeof EN;
 
-const DE_CH: AccountText = {
+const DE: AccountText = {
   eyebrow: 'Das Haus',
   yourAccount: 'Ihr Konto',
   home: {
     metaTitle: 'Konto',
-    metaDescription: 'Ihre Bestellungen, Ihr gespeichertes Massprofil und die Schnittmuster, die das Atelier für Sie aufbewahrt.',
+    metaDescription: 'Ihre Bestellungen, Ihr gespeichertes Massprofil und die Schnitte, die das Atelier für Sie aufbewahrt.',
     title: 'Ihr Konto',
     closed: 'Ihr Konto ist geschlossen. Bereits Bestelltes bleibt wie bei Gästen über den Link in der Bestätigungs-E-Mail erreichbar.',
     lead: 'Ein Konto speichert die fünfzehn Masse, damit Sie sie nie zweimal eintippen, führt jede Bestellung mit ihrem Produktionsstand und hält die Papierschnitte fest, die das Atelier für Sie gezeichnet hat.',
@@ -194,7 +194,7 @@ const DE_CH: AccountText = {
     order: (ref) => `Bestellung ${ref}`,
     no: (n) => `Nr. ${n}`,
     status: {
-      pending: 'In Bearbeitung', completed: 'Abgeschlossen', canceled: 'Storniert', requires_action: 'Ihre Rückmeldung nötig',
+      pending: 'In Bearbeitung', completed: 'Abgeschlossen', canceled: 'Storniert', requires_action: 'Ihre Rückmeldung erforderlich',
       archived: 'Archiviert', draft: 'Entwurf',
     },
   },
@@ -250,7 +250,7 @@ const DE_CH: AccountText = {
     eight: 'Mindestens acht Zeichen.',
     signingIn: 'Anmeldung läuft…',
     forgot: 'Passwort vergessen?',
-    opening: 'Wird eröffnet…',
+    opening: 'Konto wird eröffnet …',
     firstName: 'Vorname',
     lastName: 'Nachname',
     phone: 'Telefon',
@@ -270,7 +270,7 @@ const DE_CH: AccountText = {
     cancel: 'Abbrechen',
   },
   address: {
-    apartment: 'Wohnung, Stockwerk usw. (optional)',
+    apartment: 'Adresszusatz (optional)',
     address: 'Adresse',
     postal: 'Postleitzahl',
     city: 'Ort',
@@ -305,10 +305,10 @@ const DE_CH: AccountText = {
     nameNeeded: 'Ein Name wird benötigt.',
     bothPasswords: 'Das aktuelle und ein neues Passwort werden beide benötigt.',
     newEight: 'Das neue Passwort braucht mindestens acht Zeichen.',
-    wrongCurrent: 'Das ist nicht das aktuelle Passwort.',
+    wrongCurrent: 'Das aktuelle Passwort stimmt nicht.',
     addressNeeded: 'Adresse, Ort und Land werden alle benötigt.',
     addressFail: 'Die Adresse konnte nicht gespeichert werden. Versuchen Sie es gleich noch einmal.',
-    passwordConfirms: 'Ihr Passwort bestätigt dies – geben Sie es ein, um fortzufahren.',
+    passwordConfirms: 'Zur Sicherheit geben Sie bitte Ihr Passwort ein, um fortzufahren.',
     signInFirst: 'Bitte zuerst anmelden.',
     sendFail: 'Senden nicht möglich. Versuchen Sie es gleich noch einmal.',
     sentJustNow: (min) => `Ein Link wurde soeben gesendet. Versuchen Sie es in ${min} Minuten erneut.`,
@@ -323,17 +323,17 @@ const FR: AccountText = {
     metaDescription: 'Vos commandes, votre profil de mesures enregistré et les patrons que l’atelier garde pour vous.',
     title: 'Votre compte',
     closed: 'Votre compte est fermé. Ce qui a déjà été commandé reste accessible comme pour un invité, par le lien de l’e-mail de confirmation.',
-    lead: 'Un compte conserve les quinze mesures pour que vous ne les saisissiez jamais deux fois, garde chaque commande et son état de fabrication, et consigne les patrons papier que l’atelier a dessinés pour vous.',
-    welcome: 'Bon retour',
-    enter: 'Entrer dans la collection',
+    lead: 'Votre compte garde vos quinze mesures pour que vous ne les saisissiez qu’une fois, suit chaque commande jusqu’à sa réalisation et conserve les patrons que l’atelier a tracés pour vous.',
+    welcome: 'Ravis de vous revoir',
+    enter: 'Découvrir la collection',
     signOut: 'Se déconnecter',
     measurements: 'Vos mesures',
     saved: (n) => (n > 0 ? `${n} sur 15 enregistrées.` : 'Rien d’enregistré pour l’instant.'),
-    measurementsNote: 'Utilisées sur chaque page de pièce et dans « Concevoir sur mesure », pour ne jamais les saisir deux fois.',
+    measurementsNote: 'Elles sont reprises sur chaque page de pièce et dans « Créer votre pièce », sans ressaisie.',
     review: 'Revoir votre fiche',
     save: 'Enregistrer votre fiche',
     orders: 'Vos commandes',
-    ordersNote: 'Chaque commande et chaque commande sur mesure, avec sa fiche confirmée.',
+    ordersNote: 'Chaque commande et chaque création sur commande, avec sa fiche de mesures confirmée.',
     viewOrders: 'Voir les commandes',
     settings: 'Paramètres',
     settingsNote: 'Votre nom et votre téléphone, votre mot de passe, vos adresses enregistrées.',
@@ -341,10 +341,10 @@ const FR: AccountText = {
   },
   orders: {
     metaTitle: 'Vos commandes',
-    metaDescription: 'Chaque commande et chaque commande sur mesure, et où elle en est.',
+    metaDescription: 'Chacune de vos commandes et créations sur commande, avec son état d’avancement.',
     title: 'Vos commandes',
-    lead: 'Chaque commande et chaque commande sur mesure que vous avez payée, la plus ancienne en dernier.',
-    none: 'Rien pour l’instant — une commande ou une commande sur mesure acceptée apparaîtra ici.',
+    lead: 'Toutes vos commandes réglées, des plus récentes aux plus anciennes.',
+    none: 'Rien pour l’instant : votre prochaine commande apparaîtra ici.',
     order: (ref) => `Commande ${ref}`,
     no: (n) => `n° ${n}`,
     status: {
@@ -358,13 +358,13 @@ const FR: AccountText = {
     details: 'Vos informations',
     password: 'Mot de passe',
     addresses: 'Adresses',
-    addressesNote: 'Enregistrées ici pour la prochaine fois — la caisse vous demande tout de même d’en confirmer une.',
+    addressesNote: 'Enregistrées ici pour la prochaine fois — la caisse vous demandera tout de même de confirmer une adresse.',
     close: 'Fermer votre compte',
   },
   measures: {
     metaTitle: 'Vos mesures',
     metaDescription: 'La fiche de quinze mesures que l’atelier conserve pour vous.',
-    lead: 'Enregistrées une fois ici, vous ne les saisissez plus jamais — depuis une page de pièce, depuis « Concevoir sur mesure », ou ici.',
+    lead: 'Enregistrées une fois ici, vous ne les saisissez plus jamais — depuis une page de pièce, depuis « Créer votre pièce » ou ici.',
     profile: 'Votre profil enregistré',
   },
   verify: {
@@ -372,8 +372,8 @@ const FR: AccountText = {
     metaDescription: 'Ouvrir le lien reçu par e-mail confirme l’adresse de votre compte.',
     ok: 'E-mail confirmé',
     bad: 'Ce lien n’a pas fonctionné',
-    okLead: 'Votre adresse est confirmée. Votre compte est entièrement ouvert.',
-    badLead: 'Il a expiré ou était incomplet. Connectez-vous et demandez-en un nouveau depuis la page de votre compte.',
+    okLead: 'Votre adresse est confirmée. Votre compte est pleinement activé.',
+    badLead: 'Il a expiré ou il est incomplet. Connectez-vous et demandez-en un nouveau depuis la page de votre compte.',
     go: 'Aller à votre compte',
     bannerTitle: 'Confirmer votre e-mail',
     bannerNote: (email) =>
@@ -387,7 +387,7 @@ const FR: AccountText = {
     metaDescription: 'Demandez un lien, ou utilisez celui qui vous a déjà été envoyé par e-mail.',
     title: 'Réinitialiser votre mot de passe',
     leadToken: 'Choisissez un nouveau mot de passe. Ce lien ne fonctionne qu’une fois, et seulement quinze minutes après son envoi.',
-    lead: 'Indiquez l’e-mail du compte et nous vous enverrons un lien pour en choisir un nouveau.',
+    lead: 'Indiquez l’adresse e-mail de votre compte : nous vous enverrons un lien pour choisir un nouveau mot de passe.',
     sent: 'Si cet e-mail correspond à un compte, un lien de réinitialisation est en route — il est valable quinze minutes.',
     sending: 'Envoi…',
     send: 'Envoyer le lien',
@@ -397,18 +397,18 @@ const FR: AccountText = {
   },
   form: {
     signIn: 'Se connecter',
-    open: 'Ouvrir un compte',
+    open: 'Créer un compte',
     email: 'E-mail',
     password: 'Mot de passe',
     name: 'Nom',
     eight: 'Au moins huit caractères.',
     signingIn: 'Connexion…',
     forgot: 'Mot de passe oublié ?',
-    opening: 'Ouverture…',
+    opening: 'Création du compte…',
     firstName: 'Prénom',
     lastName: 'Nom',
     phone: 'Téléphone',
-    phoneNote: 'Pour le transporteur, si une livraison demande un mot avec vous.',
+    phoneNote: 'Pour le transporteur, au cas où une livraison nécessiterait de vous joindre.',
     savedOk: 'Enregistré.',
     saving: 'Enregistrement…',
     saveChanges: 'Enregistrer les modifications',
@@ -416,7 +416,7 @@ const FR: AccountText = {
     newPassword: 'Nouveau mot de passe',
     changed: 'Modifié.',
     change: 'Changer le mot de passe',
-    deleteNote: 'Cela ferme le compte et vous déconnecte partout. Vos commandes passées restent consignées, comme pour un invité — rien d’autre n’est conservé.',
+    deleteNote: 'Votre compte sera fermé et vous serez déconnecté partout. Vos commandes passées restent consultables comme pour un invité ; rien d’autre n’est conservé.',
     closeMine: 'Fermer mon compte',
     confirmPassword: 'Saisissez votre mot de passe pour confirmer',
     closing: 'Fermeture…',
@@ -424,7 +424,7 @@ const FR: AccountText = {
     cancel: 'Annuler',
   },
   address: {
-    apartment: 'Appartement, étage, etc. (facultatif)',
+    apartment: 'Complément d’adresse (facultatif)',
     address: 'Adresse',
     postal: 'Code postal',
     city: 'Ville',
@@ -434,7 +434,7 @@ const FR: AccountText = {
     save: 'Enregistrer l’adresse',
     edit: 'Modifier',
     remove: 'Retirer',
-    removing: 'Suppression…',
+    removing: 'Retrait…',
     add: '+ Ajouter une adresse',
     countries: {
       ch: 'Suisse', at: 'Autriche', be: 'Belgique', de: 'Allemagne', dk: 'Danemark', es: 'Espagne',
@@ -443,26 +443,26 @@ const FR: AccountText = {
     },
   },
   err: {
-    emailPassword: 'Un e-mail et un mot de passe sont tous deux nécessaires.',
-    noMatch: 'Cet e-mail et ce mot de passe ne correspondent à aucun compte.',
+    emailPassword: 'Veuillez saisir votre adresse e-mail et votre mot de passe.',
+    noMatch: 'Cette adresse e-mail et ce mot de passe ne correspondent à aucun compte.',
     signInFail: 'Connexion impossible. Réessayez dans un instant.',
-    nameEmailPassword: 'Un nom, un e-mail et un mot de passe sont tous nécessaires.',
+    nameEmailPassword: 'Veuillez saisir votre nom, votre adresse e-mail et un mot de passe.',
     eight: 'Le mot de passe doit comporter au moins huit caractères.',
-    exists: 'Cet e-mail a déjà un compte. Connectez-vous plutôt.',
-    openFail: 'Impossible d’ouvrir le compte. Réessayez dans un instant.',
-    emailNeeded: 'Un e-mail est nécessaire.',
+    exists: 'Un compte existe déjà pour cette adresse e-mail. Connectez-vous plutôt.',
+    openFail: 'Impossible de créer le compte. Réessayez dans un instant.',
+    emailNeeded: 'Veuillez saisir une adresse e-mail.',
     linkMissing: 'Il manque des éléments à ce lien. Demandez-en un nouveau.',
     linkExpired: 'Ce lien a expiré ou a déjà été utilisé. Demandez-en un nouveau.',
     signInToSave: 'Connectez-vous pour enregistrer un profil.',
     notVerified: 'Confirmez d’abord votre e-mail — le lien a été envoyé lors de votre inscription.',
     saveFail: 'Enregistrement impossible. Réessayez dans un instant.',
-    nameNeeded: 'Un nom est nécessaire.',
-    bothPasswords: 'Le mot de passe actuel et un nouveau sont tous deux nécessaires.',
+    nameNeeded: 'Veuillez saisir un nom.',
+    bothPasswords: 'Veuillez saisir votre mot de passe actuel et le nouveau.',
     newEight: 'Le nouveau mot de passe doit comporter au moins huit caractères.',
-    wrongCurrent: 'Ce n’est pas le mot de passe actuel.',
-    addressNeeded: 'Une adresse, une ville et un pays sont tous nécessaires.',
+    wrongCurrent: 'Le mot de passe actuel est incorrect.',
+    addressNeeded: 'Veuillez indiquer une adresse, une ville et un pays.',
     addressFail: 'Impossible d’enregistrer cette adresse. Réessayez dans un instant.',
-    passwordConfirms: 'Votre mot de passe le confirme — saisissez-le pour continuer.',
+    passwordConfirms: 'Par sécurité, saisissez votre mot de passe pour continuer.',
     signInFirst: 'Connectez-vous d’abord.',
     sendFail: 'Envoi impossible. Réessayez dans un instant.',
     sentJustNow: (min) => `Un lien vient d’être envoyé. Réessayez dans ${min} minutes.`,
@@ -472,5 +472,5 @@ const FR: AccountText = {
 export function accountText(lang: Lang): AccountText {
   if (lang === 'en') return EN;
   if (lang === 'fr') return FR;
-  return deepDe(DE_CH);
+  return DE;
 }

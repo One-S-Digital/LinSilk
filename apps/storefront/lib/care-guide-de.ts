@@ -1,6 +1,6 @@
 /* Die Pflegeanleitung auf Deutsch. Geschrieben in der Sprache, wie ein Haus
  * für Seide, Leinen und Kaschmir sie einer Kundin oder einem Kunden gegenüber
- * spricht: Hochdeutsch mit ß, Sie-Form, kurze Sätze, die gängigen Wörter der
+ * spricht: Hochdeutsch mit ss, Sie-Form, kurze Sätze, die gängigen Wörter der
  * Textilpflege (Feinwaschmittel, Schonwaschgang, Wollprogramm, Reinigung).
  * Nicht aus dem Englischen übertragen; die Regeln dahinter sind dieselben wie
  * in care-guide.ts (docs/care/CARE-GUIDE-PLAN.md §0). */
@@ -10,13 +10,13 @@ import type { CareCopy, ClothCare } from './care-guide';
 const silk: ClothCare = {
   name: 'Seide',
   forCloth: 'Seide',
-  feel: 'Fließend, kühl, federleicht auf der Haut',
+  feel: 'Fliessend, kühl, federleicht auf der Haut',
   texture: '/swatches/silk/LS-S07.webp',
   glance: [
     { icon: 'washHand', label: 'Handwäsche, 30°' },
     { icon: 'noBleach', label: 'Nicht bleichen' },
     { icon: 'dryFlatShade', label: 'Liegend, im Schatten' },
-    { icon: 'noTumble', label: 'Kein Trockner' },
+    { icon: 'noTumble', label: 'Kein Tumbler' },
     { icon: 'iron1', label: 'Niedrig bügeln' },
     { icon: 'dryCleanP', label: 'Reinigung möglich' },
   ],
@@ -27,7 +27,7 @@ const silk: ClothCare = {
   ],
   notice: {
     title: 'Jacquard- oder Brokatseide?',
-    body: 'Seiden mit gewebtem Muster gehören ausschließlich in die professionelle Reinigung. Das Muster steckt im Gewebe selbst und kann sich beim Waschen zu Hause wellen oder verziehen. Die Schritte unten gelten für schlichte Seide.',
+    body: 'Seiden mit gewebtem Muster gehören ausschliesslich in die professionelle Reinigung. Das Muster steckt im Gewebe selbst und kann sich beim Waschen zu Hause wellen oder verziehen. Die Schritte unten gelten für schlichte Seide.',
   },
   washH: 'Von Hand waschen',
   washIntro: 'Fünf ruhige Minuten am Waschbecken, mehr braucht schlichte Seide nicht.',
@@ -36,7 +36,7 @@ const silk: ClothCare = {
     { icon: 'bottle', title: 'Ein Schuss Seidenwaschmittel', body: 'Eine Kappe pH-neutrales Feinwaschmittel für Seide. Ohne Enzyme, ohne Bleichmittel, ohne Weichspüler.' },
     { icon: 'swirl', title: 'Auf links, ganz sanft', body: 'Das Stück auf links drehen und drei bis fünf Minuten durchs Wasser bewegen. Nicht reiben, nicht schrubben.' },
     { icon: 'rinse', title: 'Kühl nachspülen', body: 'In klarem, kühlem Wasser spülen, bis keine Seifenreste mehr da sind.' },
-    { icon: 'pressPalms', title: 'Drücken statt wringen', body: 'Das Wasser zwischen flachen Händen ausdrücken. Nasse Seidenfasern reißen, wenn man sie wringt.' },
+    { icon: 'pressPalms', title: 'Drücken statt wringen', body: 'Das Wasser zwischen flachen Händen ausdrücken. Nasse Seidenfasern reissen, wenn man sie wringt.' },
     { icon: 'towelRoll', title: 'Im Handtuch ausrollen', body: 'Auf ein sauberes Handtuch legen, aufrollen und einmal andrücken, damit die Restfeuchte herauszieht.' },
   ],
   washAlt: {
@@ -48,7 +48,7 @@ const silk: ClothCare = {
     { icon: 'shade', text: 'Drinnen oder im Schatten, weg von Sonne und Heizkörpern.' },
     { icon: 'clock', text: 'Seide trocknet schnell, meist ist sie nach ein paar Stunden fertig.' },
   ],
-  dryNever: 'Nie in den Wäschetrockner',
+  dryNever: 'Nie in den Tumbler',
   heat: 1,
   heatLabel: 'Niedrig, Stufe für Seide',
   press: [
@@ -80,9 +80,9 @@ const silk: ClothCare = {
     'Gepolsterte Bügel und Baumwollhüllen',
   ],
   avoid: [
-    'Heißes Wasser, Bleichmittel, Weichspüler, Enzyme',
+    'Heisses Wasser, Bleichmittel, Weichspüler, Enzyme',
     'Wringen, Schrubben, Reiben an Flecken',
-    'Wäschetrockner und Heizkörper',
+    'Tumbler und Heizkörper',
     'Wasser beim Bügeln aufsprühen',
     'Plastikhüllen und starke Sonne',
   ],
@@ -98,22 +98,22 @@ const linen: ClothCare = {
     { icon: 'wash30Gentle', label: 'Danach 30°, schonend' },
     { icon: 'noBleach', label: 'Nicht bleichen' },
     { icon: 'lineDryShade', label: 'Aufhängen' },
-    { icon: 'noTumble', label: 'Kein Trockner' },
+    { icon: 'noTumble', label: 'Kein Tumbler' },
     { icon: 'iron2', label: 'Mittel bügeln' },
   ],
   rules: [
     'Die erste Wäsche übernimmt eine professionelle Reinigung.',
-    'Danach: 30 °C, Schonwaschgang, kein Trockner.',
+    'Danach: 30 °C, Schonwaschgang, kein Tumbler.',
     'Leinen bügelt man, solange es noch leicht feucht ist.',
   ],
   notice: {
     title: 'Die erste Wäsche gehört in die Reinigung',
-    body: 'Leinen geht beim ersten Waschen am meisten ein, und das Leinen von LINSILK ist nicht vorgewaschen. Zu Hause gewaschen, kann es dabei einige Zentimeter verlieren, und damit auch den Sitz, der nach Ihren Maßen gearbeitet wurde. Lassen Sie es beim ersten Mal schonend reinigen. Ab der zweiten Wäsche geht es bequem zu Hause.',
+    body: 'Leinen geht beim ersten Waschen am meisten ein, und das Leinen von LINSILK ist nicht vorgewaschen. Zu Hause gewaschen, kann es dabei einige Zentimeter verlieren, und damit auch den Sitz, der nach Ihren Massen gearbeitet wurde. Lassen Sie es beim ersten Mal schonend reinigen. Ab der zweiten Wäsche geht es bequem zu Hause.',
   },
   washH: 'Ab der zweiten Wäsche',
   washIntro: 'Leinen ist das unkomplizierteste der drei Gewebe und wird mit jeder Wäsche weicher.',
   wash: [
-    { icon: 'insideOut', title: 'Schließen und wenden', body: 'Knöpfe schließen, Taschen leeren und das Stück auf links drehen.' },
+    { icon: 'insideOut', title: 'Schliessen und wenden', body: 'Knöpfe schliessen, Taschen leeren und das Stück auf links drehen.' },
     { icon: 'meshBag', title: 'Ins Wäschenetz', body: 'Im Netz bleiben Knöpfe und Nähte nicht an der Trommel hängen.' },
     { icon: 'wash30Gentle', title: 'Schonend, 30 °C', body: 'Schon- oder Pflegeleichtprogramm bei 30 °C mit mildem Waschmittel. Kein Bleichmittel.' },
     { icon: 'similar', title: 'Mit Ähnlichem', body: 'Zusammen mit Leinen oder Baumwolle in ähnlichem Farbton waschen und die Trommel nicht überfüllen.' },
@@ -125,7 +125,7 @@ const linen: ClothCare = {
     { icon: 'shade', text: 'Im Schatten oder drinnen: Starke Sonne kann dunkles Leinen ausbleichen.' },
     { icon: 'clock', text: 'Wer bügeln möchte, nimmt es ab, solange es noch leicht feucht ist.' },
   ],
-  dryNever: 'Nie in den Wäschetrockner',
+  dryNever: 'Nie in den Tumbler',
   heat: 2,
   heatLabel: 'Mittel, solange es noch leicht feucht ist',
   press: [
@@ -158,8 +158,8 @@ const linen: ClothCare = {
   ],
   avoid: [
     'Die erste Wäsche zu Hause',
-    'Heißwäsche und Bleichmittel',
-    'Der Wäschetrockner',
+    'Heisswäsche und Bleichmittel',
+    'Der Tumbler',
     'Dunkles Leinen auf der Vorderseite bügeln',
     'Luftdichtes Plastik bei langer Lagerung',
   ],
@@ -175,7 +175,7 @@ const cashmere: ClothCare = {
     { icon: 'wash30Wool', label: 'Oder Wollprogramm, 30°' },
     { icon: 'noBleach', label: 'Nicht bleichen' },
     { icon: 'dryFlat', label: 'Liegend trocknen' },
-    { icon: 'noTumble', label: 'Kein Trockner' },
+    { icon: 'noTumble', label: 'Kein Tumbler' },
     { icon: 'iron2', label: 'Mit Tuch bügeln' },
   ],
   rules: [
@@ -202,14 +202,14 @@ const cashmere: ClothCare = {
     { icon: 'shade', text: 'Fern von Heizkörpern und Sonne, beides macht die Faser hart.' },
     { icon: 'clock', text: 'Einen Tag oder länger einplanen und erst wegräumen, wenn es ganz trocken ist.' },
   ],
-  dryNever: 'Nie in den Wäschetrockner',
+  dryNever: 'Nie in den Tumbler',
   heat: 2,
   heatLabel: 'Wollstufe, mit feuchtem Tuch',
   press: [
     { icon: 'pressCloth', text: 'Immer ein feuchtes Baumwolltuch zwischen Bügeleisen und Kaschmir legen.' },
     { icon: 'crease', text: 'Die Bügelfalte an ihrer Linie nachziehen; das Eisen anheben, nicht schieben.' },
     { icon: 'steamer', text: 'Zwischen dem Tragen mit dem Dampfglätter von der Rückseite aus, eine Handbreit Abstand.' },
-    { icon: 'noShine', text: 'Ein heißes Eisen direkt auf dem Stoff macht ihn glänzend und drückt den Flor platt.' },
+    { icon: 'noShine', text: 'Ein heisses Eisen direkt auf dem Stoff macht ihn glänzend und drückt den Flor platt.' },
   ],
   wear: [
     { icon: 'brush', text: 'Nach dem Tragen mit dem Strich leicht ausbürsten, das nimmt Staub auf.' },
@@ -235,9 +235,9 @@ const cashmere: ClothCare = {
   ],
   avoid: [
     'Nach jedem Tragen waschen',
-    'Heißes Wasser oder Temperaturwechsel',
-    'Wringen und Wäschetrockner',
-    'Ein heißes Eisen direkt auf dem Stoff',
+    'Heisses Wasser oder Temperaturwechsel',
+    'Wringen und Tumbler',
+    'Ein heisses Eisen direkt auf dem Stoff',
     'Getragenes ungewaschen einlagern',
   ],
 };
@@ -250,7 +250,7 @@ const ties: ClothCare = {
   glance: [
     { icon: 'noWash', label: 'Nicht waschen' },
     { icon: 'noBleach', label: 'Nicht bleichen' },
-    { icon: 'noTumble', label: 'Kein Trockner' },
+    { icon: 'noTumble', label: 'Kein Tumbler' },
     { icon: 'noIron', label: 'Nicht bügeln' },
     { icon: 'steamer', label: 'Dämpfen, mit Abstand' },
     { icon: 'dryCleanP', label: 'Fachreinigung' },
@@ -263,7 +263,7 @@ const ties: ClothCare = {
   washH: 'Wenn etwas daneben geht',
   washIntro: 'Eine Seidenkrawatte wird nie gewaschen. Schnell handeln, dann übernimmt eine Fachreinigung.',
   wash: [
-    { icon: 'blot', title: 'Sofort abtupfen', body: 'Mit einem sauberen weißen Tuch oder einer Serviette aufnehmen. Tupfen, nie reiben.' },
+    { icon: 'blot', title: 'Sofort abtupfen', body: 'Mit einem sauberen weissen Tuch oder einer Serviette aufnehmen. Tupfen, nie reiben.' },
     { icon: 'noSpray', title: 'Kein Wasser', body: 'Weder Wasser noch Sprudel auf den Fleck geben: Auf Seide bleibt ein Rand zurück.' },
     { icon: 'dryCleanP', title: 'Zur Fachreinigung', body: 'Eine Reinigung wählen, die mit Krawatten umgeht, und darum bitten, dass die Kanten gerollt bleiben und nicht plattgebügelt werden.' },
   ],
@@ -278,7 +278,7 @@ const ties: ClothCare = {
   heatLabel: 'Nicht bügeln: nur dämpfen',
   press: [
     { icon: 'steamer', text: 'Den Dampfglätter eine Handbreit entfernt halten und den Dampf wirken lassen.' },
-    { icon: 'shower', text: 'Kein Dampfglätter zur Hand? Im Bad aufhängen, während Sie heiß duschen.' },
+    { icon: 'shower', text: 'Kein Dampfglätter zur Hand? Im Bad aufhängen, während Sie heiss duschen.' },
     { icon: 'noIron', text: 'Ein Bügeleisen drückt die gerollten Kanten für immer platt.' },
   ],
   wear: [
@@ -306,7 +306,7 @@ const ties: ClothCare = {
     'Waschen, von Hand oder in der Maschine',
     'Das schmale Ende durch den Knoten ziehen',
     'Wasser oder Sprudel auf Flecken',
-    'Ein heißes Bügeleisen',
+    'Ein heisses Bügeleisen',
     'An der Schlaufe an einen Haken hängen',
   ],
 };
@@ -320,12 +320,12 @@ export const CARE_DE: CareCopy = {
       icon: 'wine',
       label: 'Rotwein',
       linen: [
-        'Sofort mit einem sauberen weißen Tuch abtupfen. Nicht reiben.',
-        'Den Fleck von der Rückseite her unter kaltem, fließendem Wasser ausspülen, damit er nicht tiefer in den Stoff gedrückt wird.',
+        'Sofort mit einem sauberen weissen Tuch abtupfen. Nicht reiben.',
+        'Den Fleck von der Rückseite her unter kaltem, fliessendem Wasser ausspülen, damit er nicht tiefer in den Stoff gedrückt wird.',
         'Danach bei 30 °C wie gewohnt waschen, bevor der Fleck antrocknet.',
       ],
       delicate: [
-        'Sofort mit einem sauberen weißen Tuch abtupfen. Nicht reiben und kein Wasser dazugeben.',
+        'Sofort mit einem sauberen weissen Tuch abtupfen. Nicht reiben und kein Wasser dazugeben.',
         'Antrocknen lassen, ohne Salz, Sprudel oder Hausmittel.',
         'Innerhalb von ein, zwei Tagen in die Reinigung bringen und sagen, dass es Rotwein ist.',
       ],
@@ -337,7 +337,7 @@ export const CARE_DE: CareCopy = {
       linen: [
         'Verschüttetes sofort abtupfen.',
         'Von der Rückseite her kalt ausspülen.',
-        'Mit mildem Waschmittel bei 30 °C waschen, nie heißer: Hitze fixiert die Gerbstoffe.',
+        'Mit mildem Waschmittel bei 30 °C waschen, nie heisser: Hitze fixiert die Gerbstoffe.',
       ],
       delicate: [
         'Sofort mit einem sauberen, trockenen Tuch abtupfen.',
@@ -366,7 +366,7 @@ export const CARE_DE: CareCopy = {
       label: 'Make-up',
       linen: [
         'Puder abklopfen, nicht abwischen.',
-        'Make-up oder Lippenstift mit einem Tropfen mildem Waschmittel auf einem feuchten weißen Tuch von außen nach innen betupfen.',
+        'Make-up oder Lippenstift mit einem Tropfen mildem Waschmittel auf einem feuchten weissen Tuch von aussen nach innen betupfen.',
         'Kühl ausspülen und wie gewohnt waschen.',
       ],
       delicate: [
@@ -380,12 +380,12 @@ export const CARE_DE: CareCopy = {
       icon: 'deodorant',
       label: 'Deodorant',
       linen: [
-        'Frische weiße Spuren lassen sich oft mit einer trockenen, sauberen Socke abreiben.',
+        'Frische weisse Spuren lassen sich oft mit einer trockenen, sauberen Socke abreiben.',
         'Sonst bald nach dem Tragen auf links kühl waschen.',
         'Das nächste Mal das Deodorant ganz trocknen lassen, bevor Sie sich anziehen.',
       ],
       delicate: [
-        'Frische weiße Spuren mit einer trockenen, sauberen Socke oder einer weichen Bürste sanft abreiben.',
+        'Frische weisse Spuren mit einer trockenen, sauberen Socke oder einer weichen Bürste sanft abreiben.',
         'Seide bald danach waschen: Salze, die in der Faser bleiben, schwächen sie unter den Armen.',
         'Was nicht mehr hergeht, gehört in die Reinigung.',
       ],
@@ -401,8 +401,8 @@ export const CARE_DE: CareCopy = {
       ],
       delicate: [
         'Ein Tropfen kann auf Seide einen Rand hinterlassen. Nicht tupfen und nicht reiben.',
-        'Die ganze Fläche gleichmäßig aus einer Handbreit Abstand dämpfen; der Rand verläuft meist von selbst.',
-        'Bleibt er, hilft gleichmäßiges Waschen des ganzen Stücks oder die Reinigung.',
+        'Die ganze Fläche gleichmässig aus einer Handbreit Abstand dämpfen; der Rand verläuft meist von selbst.',
+        'Bleibt er, hilft gleichmässiges Waschen des ganzen Stücks oder die Reinigung.',
       ],
     },
   ],
@@ -423,7 +423,7 @@ export const CARE_DE: CareCopy = {
       family: 'Waschen',
       items: [
         { icon: 'wash30', title: '30 °C', body: 'Normalwaschgang bis höchstens 30 °C.' },
-        { icon: 'wash30Gentle', title: '30 °C, schonend', body: 'Ein Balken unter dem Waschbottich heißt Schonwaschgang mit geringerer Schleuderzahl.' },
+        { icon: 'wash30Gentle', title: '30 °C, schonend', body: 'Ein Balken unter dem Waschbottich heisst Schonwaschgang mit geringerer Schleuderzahl.' },
         { icon: 'wash30Wool', title: '30 °C, sehr schonend', body: 'Zwei Balken: besonders schonendes Programm, wie für Wolle oder Seide.' },
         { icon: 'washHand', title: 'Handwäsche', body: 'Von Hand waschen, bis höchstens 40 °C. LINSILK empfiehlt 30 °C.' },
         { icon: 'noWash', title: 'Nicht waschen', body: 'Weder von Hand noch in der Maschine waschen.' },
@@ -439,12 +439,12 @@ export const CARE_DE: CareCopy = {
     {
       family: 'Trocknen',
       items: [
-        { icon: 'tumble', title: 'Wäschetrockner', body: 'Der Kreis im Quadrat heißt: Trocknen im Wäschetrockner ist erlaubt.' },
-        { icon: 'noTumble', title: 'Nicht in den Trockner', body: 'Nie in den Wäschetrockner. Gilt für jedes Stück von LINSILK.' },
+        { icon: 'tumble', title: 'Tumbler', body: 'Der Kreis im Quadrat heisst: Trocknen im Tumbler ist erlaubt.' },
+        { icon: 'noTumble', title: 'Nicht in den Tumbler', body: 'Nie in den Tumbler. Gilt für jedes Stück von LINSILK.' },
         { icon: 'lineDry', title: 'Aufhängen', body: 'An der Leine oder auf dem Bügel trocknen.' },
         { icon: 'dryFlat', title: 'Liegend trocknen', body: 'Flach hinlegen, damit das Stück seine Form behält.' },
         { icon: 'dripDry', title: 'Tropfnass aufhängen', body: 'Nass aufhängen, ohne zu schleudern oder zu wringen.' },
-        { icon: 'dryFlatShade', title: 'Im Schatten trocknen', body: 'Der Strich in der Ecke heißt: nicht in der prallen Sonne.' },
+        { icon: 'dryFlatShade', title: 'Im Schatten trocknen', body: 'Der Strich in der Ecke heisst: nicht in der prallen Sonne.' },
       ],
     },
     {

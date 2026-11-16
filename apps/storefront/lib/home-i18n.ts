@@ -117,35 +117,35 @@ export const HOME_EN: HomeCopy = {
    customer in each language, not translated line by line from English
    (CLAUDE.md, "Native writing in every language"). */
 const HOME_DE: HomeCopy = {
-  title: 'LINSILK | Maßgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
+  title: 'LINSILK | Massgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
   description: (colours, from) =>
-    `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren Maßen, in 2 bis 4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
-  kicker: 'Maßgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
-  heroLines: ['Außergewöhnlicher Stil,', 'ganz persönlich.', 'Maßgefertigt.', 'Leinen · Seide · Kaschmir'],
+    `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren Massen, in 2 bis 4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
+  kicker: 'Massgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
+  heroLines: ['Aussergewöhnlicher Stil,', 'ganz persönlich.', 'Massgefertigt.', 'Leinen · Seide · Kaschmir'],
   women: 'Damenkollektion',
   men: 'Herrenkollektion',
   introH: 'So bestellen Sie',
   introLead:
-    'LINSILK ist ein Modehaus aus Genf und fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen ganz nach Maß. Sie suchen sich ein Stück aus, wählen die Farbe anhand von Stoffmustern, geben Ihre Maße ein, und innerhalb von zwei bis vier Wochen wird es für Sie zugeschnitten und genäht.',
+    'LINSILK ist ein Modehaus aus Genf und fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen ganz nach Mass. Sie suchen sich ein Stück aus, wählen die Farbe anhand von Stoffmustern, geben Ihre Masse ein, und innert zwei bis vier Wochen wird es für Sie zugeschnitten und genäht.',
   steps: (silk, linen, cashmere) => [
     'Suchen Sie sich ein Stück aus der Damen- oder Herrenkollektion aus.',
     `Wählen Sie die Farbe: ${silk} Farben in Seide, ${linen} in Leinen, ${cashmere} in Kaschmir.`,
-    'Geben Sie Ihre Maße ein. Eine Anprobe gibt es nicht: Sie nehmen Ihre Maße selbst, oder Sie gehen mit unserer Anleitung zu einer Schneiderei Ihrer Wahl.',
-    'Nach Ihrer Bestätigung wird das Stück innerhalb von zwei bis vier Wochen zugeschnitten und genäht und anschließend mit Sendungsverfolgung verschickt.',
+    'Geben Sie Ihre Masse ein. Eine Anprobe gibt es nicht: Sie nehmen Ihre Masse selbst, oder Sie gehen mit unserer Anleitung zu einer Schneiderei Ihrer Wahl.',
+    'Nach Ihrer Bestätigung wird das Stück innert zwei bis vier Wochen zugeschnitten und genäht und anschliessend mit Sendungsverfolgung verschickt.',
   ],
-  introCta: 'So funktioniert Maßanfertigung',
+  introCta: 'So funktioniert Massanfertigung',
   pillars: [
     {
       title: 'Hochwertigste Materialien',
       body: 'Seide, Leinen und hochfrequente Stoffe in bester Qualität, ausgewählt danach, wie sie sich auf der Haut anfühlen, nicht danach, wie sie auf dem Bügel wirken. Jedes Stück von LINSILK besteht aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen: kein Polyester, kein synthetisches Gewebe.',
     },
     {
-      title: 'Ihre Passform, Ihre Maße',
-      body: 'Keine Größentabelle, keine „ungefähr passende“ Größe. Jedes Stück wird erst zugeschnitten, wenn Ihre Maße vorliegen. So sitzt, fällt und bewegt es sich mit Ihrem Körper und mit keinem anderen.',
+      title: 'Ihre Passform, Ihre Masse',
+      body: 'Keine Grössentabelle, keine «ungefähr passende» Grösse. Jedes Stück wird erst zugeschnitten, wenn Ihre Masse vorliegen. So sitzt, fällt und bewegt es sich mit Ihrem Körper und mit keinem anderen.',
     },
     {
       title: 'Hochfrequenter Stoff, der aufrichtet',
-      body: 'Naturstoff aus lebender Faser: leicht auf dem Körper, ruhig im Tragen. Wir fertigen ihn dafür, dass er mehr kann, als sich gut anzufühlen. Er soll heben, wie Sie sich fühlen und wie Sie sich bewegen.',
+      body: 'Naturstoff aus lebender Faser: leicht auf dem Körper, ruhig im Tragen. Er soll mehr leisten, als sich gut anzufühlen: Er hebt, wie Sie sich fühlen und wie Sie sich bewegen.',
     },
   ],
   seasonH: 'Diese Saison',
@@ -154,13 +154,13 @@ const HOME_DE: HomeCopy = {
   eyebrowDesign: 'Selbst entwerfen',
   designH: 'Ein Stück, das es nur gibt, weil Sie es beschrieben haben.',
   designBody:
-    'Sie wählen eine Grundsilhouette und den Stoff, schreiben der Schneiderin oder dem Schneider, was Sie sich vorstellen, und senden Ihre Maße. Danach entsteht ein einzelnes Kleidungsstück nach Ihrem Auftrag. Nur auf diesem Weg gehört der Entwurf zuerst Ihnen und dann erst uns.',
+    'Sie wählen eine Grundsilhouette und den Stoff, schreiben der Schneiderin oder dem Schneider, was Sie sich vorstellen, und senden Ihre Masse. Danach entsteht ein einzelnes Kleidungsstück nach Ihrem Auftrag. Das Modell gehört so zuerst Ihnen und erst danach uns.',
   designCta: 'Auftrag beginnen',
   designAlt: 'Seide mit aufgezeichnetem Schnittmuster, daneben Schere, Stecknadeln und Faden',
   eyebrowAtelier: 'Die Schneiderei',
   atelierH: 'Kleidung, wie sie schon immer sein sollte.',
   atelierBody:
-    'LINSILK stellt keine Massenware her, keine Kleidung von geringer Qualität, keine Kunstfaser. Jedes Stück entsteht nach Ihren eigenen Maßen, sodass das Kleidungsstück Ihrem Körper folgt und nicht umgekehrt. Erst diese Passform lässt glatte, atmungsaktive Seide, Leinen und hochfrequente Stoffe das tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
+    'LINSILK stellt keine Massenware her, keine Kleidung von geringer Qualität, keine Kunstfaser. Jedes Stück entsteht nach Ihren eigenen Massen, sodass das Kleidungsstück Ihrem Körper folgt und nicht umgekehrt. Erst diese Passform lässt glatte, atmungsaktive Seide, Leinen und hochfrequente Stoffe das tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
   atelierAlts: ['Hände nähen von Hand eine geblümte Seide', 'Hände stecken ein Seidenoberteil an einer Schneiderpuppe ab'],
   chalk: 'Schulter · 41',
   eyebrowFreq: 'Hohe Frequenz',
@@ -168,15 +168,15 @@ const HOME_DE: HomeCopy = {
   freq: [
     {
       title: 'Alles ist Energie',
-      body: 'Die Physik sagt das seit hundert Jahren. Einsteins E = mc² zeigt, dass Masse Energie in sehr dichter Form ist. Betrachten Sie genau, was Sie anfassen können, einen Stein, eine Hand, ein Stück Seide: Sie finden Atome, die fast nur aus leerem Raum bestehen, und Teilchen, die man am besten als Schwingungen zugrunde liegender Felder beschreibt. Was sich fest anfühlt, ist verdichtete Energie.',
+      body: 'Die Physik weiss es seit hundert Jahren: Nach Einsteins E = mc² ist Masse stark verdichtete Energie. Wer genau hinsieht, bei einem Stein, einer Hand, einem Stück Seide, findet Atome, die fast nur aus leerem Raum bestehen, und Teilchen, die sich am besten als Schwingungen zugrunde liegender Felder beschreiben lassen. Was sich fest anfühlt, ist verdichtete Energie.',
     },
     {
-      title: 'Jede Energie hat eine Frequenz',
-      body: 'Energie schwingt, und jede Form schwingt anders: Licht, Schall, Wärme und die Aktivität Ihres eigenen Körpers. Stoff liegt den ganzen Tag an Ihrer Haut, deshalb gehört er für uns in dieses Bild. Unsere Kleidung soll sich nicht nur angenehm anfühlen, sondern Ihre natürliche Frequenz anheben. Seide, Leinen und Kaschmir stammen von Lebewesen, vom Seidenspinner, von der Flachspflanze und von der Kaschmirziege, und wir sind überzeugt, dass sie dieses Leben in das Kleidungsstück tragen.',
+      title: 'Jede Energie schwingt in ihrer Frequenz',
+      body: 'Energie schwingt, und jede Form auf ihre Weise: Licht, Klang, Wärme, auch die Aktivität Ihres Körpers. Stoff liegt den ganzen Tag auf Ihrer Haut und gehört deshalb dazu. Kleidung von LINSILK soll sich nicht nur angenehm tragen, sondern Ihre natürliche Frequenz anheben. Seide, Leinen und Kaschmir stammen von Lebewesen, vom Seidenspinner, von der Flachspflanze, von der Kaschmirziege, und sie tragen dieses Leben ins Kleidungsstück.',
     },
     {
       title: 'Was Kunstfasern nehmen',
-      body: 'PU, Polyester, Nylon und andere Stoffe auf Kunststoffbasis werden aus Erdölprodukten hergestellt. Sie stauen Wärme und Feuchtigkeit auf der Haut, setzen beim Tragen und Waschen Mikroplastikfasern frei und enthalten häufig Ausrüstungschemikalien, die täglich stundenlang auf Ihrer Haut liegen. Über Jahre kann das zu Reizungen und Unbehagen führen, und die Folgen langer Kunststoffbelastung für den Körper werden noch erforscht. Ein Stoff ohne Leben dämpft aus unserer Sicht Ihre Energie, statt sie zu heben. Deshalb verwenden wir keinen.',
+      body: 'PU, Polyester, Nylon und andere Kunststoffgewebe stammen aus der Petrochemie. Sie stauen Wärme und Feuchtigkeit auf der Haut, setzen beim Tragen und Waschen Mikroplastik frei und sind oft mit Chemikalien ausgerüstet, die täglich stundenlang auf Ihrer Haut liegen. Über Jahre kann das zu Hautreizungen und Unbehagen führen; was langer Kontakt mit Kunststoff im Körper bewirkt, wird noch erforscht. Ein Stoff ohne Leben dämpft Ihre Energie, statt sie zu heben. Deshalb verwenden wir keinen.',
     },
   ],
   eyebrowCloth: 'Der Stoff',
@@ -241,15 +241,15 @@ const HOME_FR: HomeCopy = {
   freq: [
     {
       title: 'Tout est énergie',
-      body: 'La physique l’affirme depuis un siècle. Le E = mc² d’Einstein montre que la masse est de l’énergie sous une forme très dense. Regardez de près tout ce que vous pouvez toucher, une pierre, une main, un coupon de soie : vous trouvez des atomes presque entièrement vides, faits de particules que l’on décrit le mieux comme des vibrations de champs sous-jacents. Ce qui paraît solide est de l’énergie condensée.',
+      body: 'La physique le sait depuis un siècle : selon le E = mc² d’Einstein, la matière est de l’énergie très concentrée. Observez de près une pierre, une main, un coupon de soie : vous y trouvez des atomes presque entièrement vides, composés de particules que l’on décrit au mieux comme des vibrations de champs. Ce qui semble solide est de l’énergie condensée.',
     },
     {
       title: 'Toute énergie a une fréquence',
-      body: 'L’énergie vibre, et chaque forme vibre à sa façon : la lumière, le son, la chaleur, l’activité de votre propre corps. Le tissu reste contre vous toute la journée ; il a donc sa place dans ce tableau. Nous voulons que nos vêtements soient plus que confortables : qu’ils élèvent votre fréquence naturelle. La soie, le lin et le cachemire viennent d’êtres vivants, le ver à soie, la plante de lin et la chèvre cachemire, et nous sommes convaincus qu’ils transmettent cette vie au vêtement.',
+      body: 'L’énergie vibre, chaque forme à sa manière : la lumière, le son, la chaleur, l’activité de votre corps. Un tissu reste contre votre peau toute la journée, il fait donc partie de cet ensemble. Un vêtement LINSILK ne se contente pas d’être confortable : il élève votre fréquence naturelle. La soie, le lin et le cachemire viennent d’êtres vivants, le ver à soie, le lin cultivé et la chèvre du Cachemire, et ils portent cette vie jusque dans le vêtement.',
     },
     {
       title: 'Ce que retirent les fibres synthétiques',
-      body: 'Le PU, le polyester, le nylon et les autres tissus à base de plastique sont fabriqués à partir de produits pétrochimiques. Ils retiennent la chaleur et l’humidité contre la peau, libèrent des microfibres de plastique au porté comme au lavage, et sont souvent traités avec des produits de finition qui restent des heures par jour sur votre peau. Au fil des années, cela peut provoquer irritations et inconfort, et les effets d’une longue exposition au plastique sur le corps sont encore à l’étude. Selon nous, un tissu sans vie amortit votre énergie au lieu de l’élever, et c’est pourquoi nous n’en utilisons aucun.',
+      body: 'Le PU, le polyester, le nylon et les autres tissus à base de plastique sont fabriqués à partir de produits pétrochimiques. Ils retiennent la chaleur et l’humidité contre la peau, libèrent des microfibres de plastique au porté comme au lavage, et sont souvent traités avec des produits de finition qui restent des heures par jour sur votre peau. Au fil des années, cela peut provoquer irritations et inconfort ; les effets d’un contact prolongé avec le plastique sur l’organisme font encore l’objet de recherches. Un tissu sans vie étouffe votre énergie au lieu de l’élever : c’est pourquoi nous n’en utilisons aucun.',
     },
   ],
   eyebrowCloth: 'Le tissu',

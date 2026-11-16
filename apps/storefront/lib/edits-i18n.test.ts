@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EDITS } from './edits';
 import { editForSlug } from './edits-i18n';
-import { LOCALES, suggestLocale, toDe } from './i18n';
+import { LOCALES, suggestLocale } from './i18n';
 import { slugify } from './slug';
 import { enPathOf, languagesFor, ROUTES, switchPath, translatedPath } from './locale-routes';
 import { PIECE_NAMES, pieceName } from './piece-names';
@@ -17,11 +17,11 @@ describe('translated pages', () => {
     expect(enPathOf('de', 'nach-mass')).toBe('/made-to-measure');
   });
 
-  it('writes /de/ in standard German, with Maß', () => {
+  it('writes /de/ in Swiss standard German, with Mass', () => {
     const range = { from: 159, to: 359 };
     const de = editForSlug('de', 'schlafmode/seide')!;
-    expect(de.intro(range)).toContain('nach Ihren Maßen');
-    expect(de.intro(range)).not.toContain('innert');
+    expect(de.intro(range)).toContain('nach Ihren Massen');
+    expect(de.intro(range)).toContain('innert 2–4 Wochen');
     expect(de.intro(range)).toContain('ab CHF 159 bis CHF 359');
   });
 
@@ -90,16 +90,6 @@ describe('piece names', () => {
   it('falls back to the English title when a piece is not listed', () => {
     expect(pieceName('Silk mock-neck blouse', 'fr')).toBe('Chemisier en soie à col montant');
     expect(pieceName('Unlisted piece', 'de')).toBe('Unlisted piece');
-  });
-});
-
-describe('German-market spelling', () => {
-  it('turns Swiss ss into ß without breaking phrases', () => {
-    expect(toDe('in der Regel innert eines Tages')).toBe('in der Regel innerhalb eines Tages');
-    expect(toDe('gefertigt innert 2–4 Wochen')).toBe('gefertigt in 2–4 Wochen');
-    expect(toDe('ausserhalb der Aussenseite, Grössen, heiss, einschliesst')).toBe(
-      'außerhalb der Außenseite, Größen, heiß, einschließt',
-    );
   });
 });
 

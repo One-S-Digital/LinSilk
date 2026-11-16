@@ -7,14 +7,14 @@ describe('first-order offer copy', () => {
     for (const lang of ['en', ...LOCALES] as const) {
       const t = offerText(lang);
       for (const text of Object.values(t)) expect(text.length).toBeGreaterThan(0);
-      expect(t.title).toContain('20%');
+      expect(t.title).toMatch(/20 ?%/);
     }
   });
 
-  it('differs by language, and the German market spells Maß-style words with ß', () => {
+  it('differs by language, and the Swiss German spells Mass-style words with ss', () => {
     expect(offerText('fr').cta).not.toBe(offerText('en').cta);
     expect(offerText('de').cta).toBe('Kollektion entdecken');
-    expect(offerText('de').close).toBe('Schließen');
+    expect(offerText('de').close).toBe('Schliessen');
   });
 
   it('says no colour name, satin or trousers', () => {

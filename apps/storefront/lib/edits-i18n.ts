@@ -5,7 +5,7 @@
 
 import { money } from './catalog';
 import { EDITS, type Edit, type EditUi } from './edits';
-import { toDe, type Locale } from './i18n';
+import type { Locale } from './i18n';
 import { enPathOf, translatedPath } from './locale-routes';
 
 type Copy = Pick<Edit, 'title' | 'h1' | 'sections' | 'faqs'> & {
@@ -13,11 +13,11 @@ type Copy = Pick<Edit, 'title' | 'h1' | 'sections' | 'faqs'> & {
   intro: (span: string) => string;
 };
 
-const DE_CH_UI: EditUi = {
-  howH2: 'So funktioniert Nach-Mass bei LINSILK',
+const DE_UI: EditUi = {
+  howH2: 'So funktioniert die Massanfertigung bei LINSILK',
   howBody:
     'Wählen Sie das Stück, wählen Sie die Farbe aus den Mustern seines Stoffs und geben Sie Ihre Masse ein. Es wird innert 2–4 Wochen nach Ihrem bestätigten Massblatt zugeschnitten und genäht.',
-  howLink: 'So funktioniert Nach-Mass',
+  howLink: 'So funktioniert die Massanfertigung',
   questions: 'Fragen',
 };
 
@@ -29,24 +29,11 @@ const FR_UI: EditUi = {
   questions: 'Questions',
 };
 
-const toDeCopy = (c: Copy): Copy => ({
-  title: toDe(c.title),
-  h1: toDe(c.h1),
-  description: (f) => toDe(c.description(f)),
-  intro: (s) => toDe(c.intro(s)),
-  sections: c.sections.map((x) => ({ h2: toDe(x.h2), body: toDe(x.body) })),
-  faqs: c.faqs.map((x) => ({ q: toDe(x.q), a: toDe(x.a) })),
-});
-
 type Entry = { copy: Copy; ui: EditUi };
 
-/* One page in both locales: the German text is written once (in the Swiss
-   spelling of the source tables) and put into standard spelling for /de/. */
-const page = (deCh: Copy, fr: Copy): Record<Locale, Entry> => ({
-  de: {
-    copy: toDeCopy(deCh),
-    ui: Object.fromEntries(Object.entries(DE_CH_UI).map(([k, v]) => [k, toDe(v)])) as EditUi,
-  },
+/* One page in both locales, each written in its own language. */
+const page = (de: Copy, fr: Copy): Record<Locale, Entry> => ({
+  de: { copy: de, ui: DE_UI },
   fr: { copy: fr, ui: FR_UI },
 });
 
@@ -88,7 +75,7 @@ const COPY: Record<string, Record<Locale, Entry>> = {
       sections: [
         {
           h2: 'Als Geschenk',
-          body: 'Ein Geschenk nach Mass braucht die Masse der beschenkten Person: Schicken Sie ihr die Messanleitung, oder bestellen Sie für sich selbst mit einer Geschenknotiz. Für die Lieferung vor den Festtagen bestätigen Sie das Massblatt bis zum 20. November in der Schweiz, bis zum 17. November in der EU und in Grossbritannien und bis zum 13. November für die Vereinigten Arabischen Emirate und den Rest der Welt.',
+          body: 'Ein Geschenk nach Mass braucht die Masse der beschenkten Person: Schicken Sie ihr die Anleitung zum Massnehmen, oder bestellen Sie für sich selbst mit einer Geschenknotiz. Für die Lieferung vor den Festtagen bestätigen Sie das Massblatt bis zum 20. November in der Schweiz, bis zum 17. November in der EU und in Grossbritannien und bis zum 13. November für die Vereinigten Arabischen Emirate und den Rest der Welt.',
         },
         {
           h2: 'Warum Seide zum Schlafen',
@@ -98,7 +85,7 @@ const COPY: Record<string, Record<Locale, Entry>> = {
       faqs: [
         {
           q: 'Ist ein Seidenpyjama ein gutes Geschenk?',
-          a: 'Ja, mit einer Einschränkung: Er wird nach Mass gefertigt, daher braucht es die Masse der beschenkten Person. Schicken Sie ihr die Messanleitung, oder bitten Sie sie, die fünfzehn Masse bei einer Schneiderei nehmen zu lassen.',
+          a: 'Ja, mit einer Einschränkung: Er wird nach Mass gefertigt, daher braucht es die Masse der beschenkten Person. Schicken Sie ihr die Anleitung zum Massnehmen, oder bitten Sie sie, die fünfzehn Masse bei einer Schneiderei nehmen zu lassen.',
         },
         LEAD_DE,
       ],

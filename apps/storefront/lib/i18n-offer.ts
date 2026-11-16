@@ -3,7 +3,7 @@
  * English is the source; German and French are for a native-speaker pass
  * before they go live (docs/seo/SEO-GEO-PLAN.md §13.7). */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 export const OFFER_PERCENT = 20;
 
@@ -21,32 +21,32 @@ const EN = {
 
 export type OfferText = typeof EN;
 
-const DE_CH: OfferText = {
-  eyebrow: 'Für Ihre erste Bestellung',
-  title: `${OFFER_PERCENT}% zurück auf Ihr erstes Stück`,
-  lead: `Bestellen Sie Ihr erstes Stück nach Mass in Seide, Leinen oder Kaschmir, und ${OFFER_PERCENT}% davon erhalten Sie nach der Lieferung als Guthaben für das nächste zurück.`,
+const DE: OfferText = {
+  eyebrow: 'Zu Ihrer ersten Bestellung',
+  title: `${OFFER_PERCENT} % Guthaben auf Ihr erstes Stück`,
+  lead: `Bestellen Sie Ihr erstes massgefertigtes Stück aus Seide, Leinen oder Kaschmir: ${OFFER_PERCENT} % des Preises schreiben wir Ihnen nach der Lieferung als Guthaben für das nächste Stück gut.`,
   terms:
-    'Berechnet auf die Stücke, ohne Versand, Steuern und Zölle. Das Guthaben kommt per E-Mail als Code für eine einmalige Verwendung, gilt zwölf Monate und lässt sich nicht mit einem anderen Code verbinden. Ein Angebot pro Kundin oder Kunde.',
+    'Berechnet wird das Guthaben auf den Preis der Stücke, ohne Versand, Steuern und Zölle. Sie erhalten es per E-Mail als Code, der einmal einlösbar ist, zwölf Monate gilt und sich nicht mit einem anderen Code verbinden lässt. Das Angebot gilt einmal pro Kundin oder Kunde.',
   cta: 'Kollektion entdecken',
   close: 'Schliessen',
-  note: `Ihre erste Bestellung bringt Ihnen ${OFFER_PERCENT}% als Guthaben für die nächste, sobald sie geliefert ist.`,
-  noteTerms: 'Ohne Versand, Steuern und Zölle. Einmal verwendbar, zwölf Monate gültig, nicht mit einem anderen Code kombinierbar.',
+  note: `Zu Ihrer ersten Bestellung erhalten Sie ${OFFER_PERCENT} % als Guthaben für die nächste, sobald sie geliefert ist.`,
+  noteTerms: 'Ohne Versand, Steuern und Zölle. Einmal einlösbar, zwölf Monate gültig, nicht mit anderen Codes kombinierbar.',
 };
 
 const FR: OfferText = {
   eyebrow: 'Pour votre première commande',
-  title: `${OFFER_PERCENT}% de retour sur votre première pièce`,
-  lead: `Commandez votre première pièce sur mesure en soie, en lin ou en cachemire : ${OFFER_PERCENT}% de son prix vous revient en crédit pour la suivante, une fois la commande livrée.`,
+  title: `${OFFER_PERCENT} % de crédit sur votre première pièce`,
+  lead: `Commandez votre première pièce sur mesure en soie, en lin ou en cachemire : une fois la commande livrée, ${OFFER_PERCENT} % de son prix vous est reversé sous forme de crédit pour la suivante.`,
   terms:
-    'Calculé sur les pièces, hors livraison, taxes et droits de douane. Le crédit arrive par e-mail sous la forme d’un code à usage unique, valable douze mois, non cumulable avec un autre code. Une offre par cliente ou client.',
+    'Le crédit est calculé sur le prix des pièces, hors livraison, taxes et droits de douane. Vous le recevez par e-mail sous la forme d’un code à usage unique, valable douze mois et non cumulable avec un autre code. L’offre est limitée à une par client.',
   cta: 'Découvrir la collection',
   close: 'Fermer',
-  note: `Votre première commande vous rend ${OFFER_PERCENT}% en crédit pour la suivante, une fois livrée.`,
+  note: `Votre première commande vous donne droit à ${OFFER_PERCENT} % de crédit sur la suivante, une fois livrée.`,
   noteTerms: 'Hors livraison, taxes et droits de douane. Usage unique, valable douze mois, non cumulable avec un autre code.',
 };
 
 export function offerText(lang: Lang): OfferText {
   if (lang === 'en') return EN;
   if (lang === 'fr') return FR;
-  return deepDe(DE_CH);
+  return DE;
 }
