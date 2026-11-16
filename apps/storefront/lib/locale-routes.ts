@@ -13,6 +13,7 @@ export const ROUTES: Record<string, { de: string; fr: string }> = {
   '/made-to-measure': { de: 'nach-mass', fr: 'sur-mesure' },
   '/about': { de: 'ueber-uns', fr: 'a-propos' },
   '/cloth': { de: 'stoff', fr: 'tissu' },
+  '/care': { de: 'pflege', fr: 'entretien' },
   '/care/questions': { de: 'fragen', fr: 'questions' },
   '/care/shipping': { de: 'versand', fr: 'livraison' },
   '/care/returns': { de: 'rueckgabe', fr: 'retours' },

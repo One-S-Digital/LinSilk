@@ -25,12 +25,12 @@ const BALL_IDS = ['001', '003', '004', '010', '011', '006', '007'];
 
 const FAQ: QA[] = [
   {
-    q: 'Kann ich ein Ballkleid online nach Maß bestellen?',
-    a: 'Ja. Sie wählen das Kleid, wählen die Seidenfarbe aus 48 Farben und geben Ihre Maße ein. LINSILK schneidet und näht das Kleid nach Ihren eigenen Maßen, ohne Anprobe. Sie messen selbst nach unserer Anleitung oder gehen damit zu einer Schneiderei in Ihrer Nähe.',
+    q: 'Kann ich ein Ballkleid online nach Mass bestellen?',
+    a: 'Ja. Sie wählen das Kleid, wählen die Seidenfarbe aus 48 Farben und geben Ihre Masse ein. LINSILK schneidet und näht das Kleid nach Ihren eigenen Massen, ohne Anprobe. Sie messen selbst nach unserer Anleitung oder gehen damit zu einer Schneiderei in Ihrer Nähe.',
   },
   {
     q: 'Wie lange vorher muss ich bestellen?',
-    a: 'Die Fertigung dauert 2–4 Wochen ab Ihrem bestätigten Maßblatt, die Lieferung nach Österreich 3–6 Tage nach Versand aus Genf. Bestellen Sie sechs bis acht Wochen vor Ihrem Ball.',
+    a: 'Die Fertigung dauert 2–4 Wochen ab Ihrem bestätigten Massblatt, die Lieferung nach Österreich 3–6 Tage nach Versand aus Genf. Bestellen Sie sechs bis acht Wochen vor Ihrem Ball.',
   },
   {
     q: 'Wie hoch ist die Zollgebühr nach Österreich?',
@@ -38,15 +38,15 @@ const FAQ: QA[] = [
   },
   {
     q: 'Kann ich das Kleid zurückgeben?',
-    a: 'Ein Kleid nach Maß wird für Sie allein gefertigt und kann nicht aus Gründen des Gefallens zurückgegeben werden. Bis zu Ihrer schriftlichen Bestätigung des Maßblatts wird nichts zugeschnitten; bis dahin können Sie die Bestellung ohne Begründung zurückziehen. Ein Fertigungsfehler wird repariert oder das Kleid ersetzt.',
+    a: 'Ein Kleid nach Mass wird für Sie allein gefertigt und kann nicht aus Gründen des Gefallens zurückgegeben werden. Bis zu Ihrer schriftlichen Bestätigung des Massblatts wird nichts zugeschnitten; bis dahin können Sie die Bestellung ohne Begründung zurückziehen. Ein Fertigungsfehler wird repariert oder das Kleid ersetzt.',
   },
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
   const range = priceRange(await ballPieces());
   return {
-    title: 'Ballkleid aus Seide nach Maß | LINSILK Genf',
-    description: `Ballkleider aus 100 % Seide, nach Ihren Maßen gefertigt in 2–4 Wochen, 48 Seidenfarben. Von einem Genfer Modehaus. Jetzt für die Ballsaison bestellen.${range ? ` Ab ${money(range.from)}.` : ''}`,
+    title: 'Ballkleid aus Seide nach Mass | LINSILK Genf',
+    description: `Ballkleider aus 100 % Seide, nach Ihren Massen gefertigt in 2–4 Wochen, 48 Seidenfarben. Von einem Genfer Modehaus. Jetzt für die Ballsaison bestellen.${range ? ` Ab ${money(range.from)}.` : ''}`,
     alternates: { canonical: PATH, languages: { 'de-AT': absolute(PATH) } },
     openGraph: { locale: 'de_AT' },
   };
@@ -64,17 +64,17 @@ export default async function BallkleidPage() {
       <JsonLd
         data={breadcrumbLd([
           { name: 'LINSILK', path: '/' },
-          { name: 'Ballkleid aus Seide nach Maß', path: PATH },
+          { name: 'Ballkleid aus Seide nach Mass', path: PATH },
         ])}
       />
       <JsonLd data={faqLd(FAQ)} />
 
-      <h1 className={styles.title}>Ballkleid aus Seide nach Maß, für die Wiener Ballsaison</h1>
+      <h1 className={styles.title}>Ballkleid aus Seide nach Mass, für die Wiener Ballsaison</h1>
       <Reveal>
         <p className={styles.intro}>
-          Ein Ballkleid aus Seide nach Maß von LINSILK, dem Genfer Modehaus, wird nach
-          Ihren eigenen Maßen zugeschnitten und genäht, in 2–4 Wochen ab bestätigtem
-          Maßblatt, in 48 Seidenfarben
+          Ein Ballkleid aus Seide nach Mass von LINSILK, dem Genfer Modehaus, wird nach
+          Ihren eigenen Massen zugeschnitten und genäht, in 2–4 Wochen ab bestätigtem
+          Massblatt, in 48 Seidenfarben
           {range ? `, von ${money(range.from)} bis ${money(range.to)}` : ''}. Bestellen Sie
           sechs bis acht Wochen vor Ihrem Ball.
         </p>
@@ -108,7 +108,7 @@ export default async function BallkleidPage() {
           <p className={styles.p}>
             Bodenlange Abendkleider aus Seide: Neckholder, hoher Ausschnitt, Schlitz,
             Schleppe. Lange Wickelkleider eignen sich für kleinere Bälle. Alle Kleider
-            sind 100 % Seide; die Länge legen Sie mit Ihren Maßen selbst fest.
+            sind 100 % Seide; die Länge legen Sie mit Ihren Massen selbst fest.
           </p>
         </section>
         <section className={styles.section}>

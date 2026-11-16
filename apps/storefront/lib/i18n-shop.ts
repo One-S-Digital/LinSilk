@@ -3,7 +3,7 @@
  * live (docs/seo/SEO-GEO-PLAN.md §13.7). Messages the backend or the payment
  * provider writes are shown as they arrive. */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 const EN = {
   cart: {
@@ -116,19 +116,19 @@ const EN = {
 
 export type ShopText = typeof EN;
 
-const DE_CH: ShopText = {
+const DE: ShopText = {
   cart: {
     title: 'Ihr Warenkorb',
     lede:
-      'Nichts wird zugeschnitten, bevor das Atelier Ihr Massblatt gelesen und Ihnen geantwortet hat. Bis dahin reserviert die Bestellung das Modell in der begrenzten Auflage der Saison.',
+      'Nichts wird zugeschnitten, bevor das Atelier Ihr Massblatt gelesen und Ihnen geantwortet hat. Bis dahin ist das Modell für Sie in der begrenzten Auflage der Saison reserviert.',
     ledeTie:
-      'Nichts wird gefertigt, bevor das Atelier Ihre Farbe bestätigt hat. Bis dahin reserviert die Bestellung das Stück in der begrenzten Auflage der Saison.',
+      'Nichts wird gefertigt, bevor das Atelier Ihre Farbe bestätigt hat. Bis dahin ist das Stück für Sie in der begrenzten Auflage der Saison reserviert.',
     empty: 'Ihr Warenkorb ist leer.',
     enter: 'Zur Kollektion',
-    design: 'Ein Outfit entwerfen',
+    design: 'Selbst entwerfen',
     cloth: 'Stoff',
     sheet: 'Massblatt',
-    taken: (n, of) => `${n} von ${of} genommen`,
+    taken: (n, of) => `${n} von ${of} Massen eingetragen`,
     chest: 'Brust',
     remove: 'Entfernen',
     terms:
@@ -142,22 +142,22 @@ const DE_CH: ShopText = {
     total: 'Total',
     toCheckout: 'Weiter zur Kasse',
     estimate:
-      'Jeder Betrag hier ist der Preis des Stücks. Ein Auftrag nach Mass wird separat offeriert: Eine Schneiderin oder ein Schneider liest Ihre Angaben und schreibt Ihnen mit dem Preis.',
+      'Alle Beträge hier sind Stückpreise. Für einen Auftrag erhalten Sie eine gesonderte Offerte: Das Atelier liest Ihre Angaben und schreibt Ihnen den Preis.',
   },
   checkout: {
     title: 'Kasse',
     nothing:
-      'Es gibt nichts zu bezahlen. Bestellen Sie ein Stück aus der Saison oder beginnen Sie einen Auftrag nach Mass, dann erscheint es hier.',
+      'Ihr Warenkorb ist leer. Wählen Sie ein Stück aus der Saison oder beginnen Sie einen Auftrag, dann erscheint es hier.',
     begin: 'Auftrag beginnen',
     labels: {
       email: 'E-Mail', firstName: 'Vorname', lastName: 'Nachname', address1: 'Adresse',
-      address2: 'Wohnung, Stockwerk (optional)', postcode: 'Postleitzahl', city: 'Ort', country: 'Land',
+      address2: 'Adresszusatz (optional)', postcode: 'Postleitzahl', city: 'Stadt', country: 'Land',
       phone: 'Telefon',
     },
     required: 'Pflichtfeld',
-    checkAddress: 'Bitte Adresse prüfen',
+    checkAddress: 'Bitte prüfen Sie die Adresse',
     invalidCode: 'Dieser Code ist für diese Bestellung nicht gültig.',
-    noPayment: 'Das Atelier kann in dieser Region noch keine Zahlung entgegennehmen.',
+    noPayment: 'In dieser Region ist die Bezahlung noch nicht möglich.',
     notPlaced: 'Die Bestellung konnte nicht aufgegeben werden. Es wurde nichts belastet.',
     notCompleted: 'Die Zahlung wurde nicht abgeschlossen. Es wurde nichts belastet.',
     confirming: 'Ihre Zahlung wird bestätigt…',
@@ -168,15 +168,15 @@ const DE_CH: ShopText = {
     remove: 'Entfernen',
     edit: 'Ändern',
     s1: 'Wohin es geht',
-    s2: 'Wie es reist',
+    s2: 'Lieferart',
     s3: 'Zahlung',
-    phoneNote: 'Die Telefonnummer verlangt der Kurier für die Zollabfertigung. Sie wird für nichts anderes verwendet.',
+    phoneNote: 'Den Kurier braucht Ihre Telefonnummer für die Zollabfertigung. Wir verwenden sie für nichts anderes.',
     saving: 'Wird gespeichert…',
     toShipping: 'Weiter zum Versand',
     shipping: 'Versand',
     included: 'Inbegriffen',
     includedLower: 'inbegriffen',
-    noShip: 'Das Atelier liefert noch nicht an diese Adresse. Schreiben Sie an hello@bylinsilk.com, das Atelier organisiert es.',
+    noShip: 'An diese Adresse liefern wir noch nicht. Schreiben Sie an hello@bylinsilk.com, wir finden eine Lösung.',
     moment: 'Einen Moment…',
     toPayment: 'Weiter zur Zahlung',
     yourOrder: 'Ihre Bestellung',
@@ -187,7 +187,7 @@ const DE_CH: ShopText = {
     reassureTie: 'Nichts wird gefertigt, bevor das Atelier Ihre Farbe schriftlich bestätigt hat.',
   },
   pay: {
-    notConfigured: 'Die Zahlung ist in diesem Shop noch nicht eingerichtet. Schreiben Sie an hello@bylinsilk.com, das Atelier übernimmt von dort.',
+    notConfigured: 'Die Zahlung ist in diesem Shop noch nicht eingerichtet. Schreiben Sie an hello@bylinsilk.com, das Atelier übernimmt von dort aus.',
     notTaken: 'Die Zahlung wurde nicht ausgeführt. Es wurde nichts belastet.',
     taking: 'Zahlung wird ausgeführt…',
     pay: (amount) => `${amount} bezahlen`,
@@ -205,7 +205,7 @@ const DE_CH: ShopText = {
     eyebrow: 'Das Haus',
     metaTitle: 'Ihre Bestellung',
     metaDescription: 'Was das Atelier hat und was als Nächstes geschieht.',
-    title: 'Vielen Dank – es ist im Atelier',
+    title: 'Vielen Dank, Ihre Bestellung ist im Atelier eingegangen',
     leadCommission: 'Ihr Auftrag ist bezahlt und liegt in der Werkstatt. Bevor zugeschnitten wird, entsteht ein Schnittmuster nach Ihrem Massblatt.',
     lead: 'Ihre Bestellung ist bezahlt. Es wird nichts zugeschnitten, bevor das Atelier Ihr Massblatt gelesen und Ihnen zur Bestätigung geschrieben hat.',
     leadTie: 'Ihre Bestellung ist bezahlt. Es wird nichts gefertigt, bevor das Atelier Ihnen zur Bestätigung Ihrer Farbe geschrieben hat.',
@@ -233,11 +233,11 @@ const FR: ShopText = {
     ledeTie:
       'Rien n’est confectionné avant que l’atelier ait confirmé votre coloris. D’ici là, la commande réserve la pièce dans la série limitée de la saison.',
     empty: 'Votre panier est vide.',
-    enter: 'Entrer dans la collection',
-    design: 'Concevoir une tenue',
+    enter: 'Découvrir la collection',
+    design: 'Créer votre pièce',
     cloth: 'Tissu',
     sheet: 'Fiche de mesures',
-    taken: (n, of) => `${n} sur ${of} prises`,
+    taken: (n, of) => `${n} mesures sur ${of} renseignées`,
     chest: 'poitrine',
     remove: 'Retirer',
     terms:
@@ -251,22 +251,22 @@ const FR: ShopText = {
     total: 'Total',
     toCheckout: 'Passer à la caisse',
     estimate:
-      'Chaque montant ici est le prix de la pièce. Une commande sur mesure est chiffrée séparément : un tailleur lit votre brief et vous écrit avec son prix.',
+      'Les montants affichés sont les prix des pièces. Une commande personnalisée fait l’objet d’un devis à part : l’atelier lit votre demande et vous écrit avec le prix.',
   },
   checkout: {
     title: 'Caisse',
     nothing:
-      'Il n’y a rien à régler. Commandez une pièce de la saison, ou commencez une commande sur mesure, et elle apparaîtra ici.',
-    begin: 'Commencer une commande sur mesure',
+      'Votre panier est vide. Choisissez une pièce de la saison ou lancez une commande personnalisée : elle apparaîtra ici.',
+    begin: 'Créer votre pièce',
     labels: {
       email: 'E-mail', firstName: 'Prénom', lastName: 'Nom', address1: 'Adresse',
-      address2: 'Appartement, étage (facultatif)', postcode: 'Code postal', city: 'Ville', country: 'Pays',
+      address2: 'Complément d’adresse (facultatif)', postcode: 'Code postal', city: 'Ville', country: 'Pays',
       phone: 'Téléphone',
     },
     required: 'Obligatoire',
-    checkAddress: 'Vérifiez cette adresse',
+    checkAddress: 'Veuillez vérifier l’adresse',
     invalidCode: 'Ce code n’est pas valable pour cette commande.',
-    noPayment: 'L’atelier ne peut pas encore encaisser de paiement dans cette région.',
+    noPayment: 'Le paiement n’est pas encore possible dans cette région.',
     notPlaced: 'La commande n’a pas pu être passée. Rien n’a été débité.',
     notCompleted: 'Le paiement n’a pas abouti. Rien n’a été débité.',
     confirming: 'Confirmation de votre paiement…',
@@ -276,16 +276,16 @@ const FR: ShopText = {
     code: (code) => `Code ${code}`,
     remove: 'Retirer',
     edit: 'Modifier',
-    s1: 'Où ça va',
-    s2: 'Comment ça voyage',
+    s1: 'Adresse de livraison',
+    s2: 'Mode de livraison',
     s3: 'Paiement',
-    phoneNote: 'Le transporteur exige un numéro de téléphone pour le dédouanement. Il n’est utilisé pour rien d’autre.',
+    phoneNote: 'Le transporteur a besoin de votre numéro de téléphone pour le dédouanement. Nous ne l’utilisons à aucune autre fin.',
     saving: 'Enregistrement…',
     toShipping: 'Continuer vers la livraison',
     shipping: 'Livraison',
     included: 'Incluse',
     includedLower: 'incluse',
-    noShip: 'L’atelier ne livre pas encore à cette adresse. Écrivez à hello@bylinsilk.com : l’atelier s’en occupera.',
+    noShip: 'Nous ne livrons pas encore à cette adresse. Écrivez à hello@bylinsilk.com : nous chercherons une solution avec vous.',
     moment: 'Un instant…',
     toPayment: 'Continuer vers le paiement',
     yourOrder: 'Votre commande',
@@ -314,11 +314,11 @@ const FR: ShopText = {
     eyebrow: 'La maison',
     metaTitle: 'Votre commande',
     metaDescription: 'Ce que l’atelier a reçu, et la suite.',
-    title: 'Merci — c’est à l’atelier',
-    leadCommission: 'Votre commande sur mesure est payée et l’établi l’a reçue. Un patron est dessiné d’après votre fiche avant toute coupe.',
+    title: 'Merci, votre commande est bien arrivée à l’atelier',
+    leadCommission: 'Votre commande personnalisée est réglée et l’atelier l’a reçue. Un patron est tracé d’après votre fiche avant toute coupe.',
     lead: 'Votre commande est payée. Rien n’est coupé avant que l’atelier ait lu votre fiche de mesures et vous ait écrit pour la confirmer.',
     leadTie: 'Votre commande est payée. Rien n’est confectionné avant que l’atelier vous ait écrit pour confirmer votre coloris.',
-    enter: 'Entrer dans la collection',
+    enter: 'Découvrir la collection',
     questions: 'Questions',
     heading: (ref) => `Commande ${ref}`,
     no: (n) => `n° ${n}`,
@@ -326,9 +326,9 @@ const FR: ShopText = {
     yourEmail: 'votre adresse e-mail',
     next: 'La suite',
     nextCommission: 'De deux à quatre semaines à l’établi à partir d’aujourd’hui.',
-    nextOrder: 'L’atelier vous écrit sous deux jours pour confirmer votre fiche de mesures. La coupe commence dès que vous l’avez approuvée et dure de deux à quatre semaines.',
-    nextTie: 'L’atelier vous écrit sous deux jours pour confirmer votre coloris. La cravate est confectionnée dès que vous l’avez approuvé.',
-    change: 'Quelque chose à modifier, ou une question sur la fiche ? Écrivez à',
+    nextOrder: 'L’atelier vous écrit dans les deux jours pour confirmer votre fiche de mesures. La coupe commence dès que vous l’avez approuvée et dure de deux à quatre semaines.',
+    nextTie: 'L’atelier vous écrit dans les deux jours pour confirmer votre coloris. La cravate est confectionnée dès que vous l’avez approuvé.',
+    change: 'Une modification à apporter, une question sur votre fiche ? Écrivez à',
     theHouse: 'la maison',
     quote: 'en indiquant cette commande.',
   },
@@ -336,14 +336,14 @@ const FR: ShopText = {
 
 export function shopText(lang: Lang): ShopText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return DE;
 }
 
 /** A piece's material line ('100% silk') in the reader's language. */
 export function materialIn(material: string, lang: Lang): string {
   if (lang === 'en') return material;
-  const fr = lang === 'fr' || lang === 'fr-ch';
+  const fr = lang === 'fr';
   return material
     .replace(/\bsilk\b/gi, fr ? 'soie' : 'Seide')
     .replace(/\blinen\b/gi, fr ? 'lin' : 'Leinen')

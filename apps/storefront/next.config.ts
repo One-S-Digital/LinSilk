@@ -25,6 +25,16 @@ const nextConfig: NextConfig = {
       hostname: h.startsWith('*.') ? `**.${h.slice(2)}` : h,
     })),
   },
+  /* The Swiss variants of German and French were folded into /de/ and /fr/
+     on 2026-11-16; their old addresses keep working. */
+  async redirects() {
+    return [
+      { source: '/de-ch', destination: '/de', permanent: true },
+      { source: '/de-ch/:path*', destination: '/de/:path*', permanent: true },
+      { source: '/fr-ch', destination: '/fr', permanent: true },
+      { source: '/fr-ch/:path*', destination: '/fr/:path*', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

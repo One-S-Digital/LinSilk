@@ -2,7 +2,7 @@
  * is the source; German and French are for a native-speaker pass before they
  * go live (docs/seo/SEO-GEO-PLAN.md §13.7). */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 export type HomeCopy = {
   title: string;
@@ -113,154 +113,156 @@ export const HOME_EN: HomeCopy = {
   statDesigns: (season) => (season ? `designs in ${season}` : 'designs this season'),
 };
 
-const HOME_DE_CH: HomeCopy = {
-  title: 'LINSILK | Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass, aus Genf',
+/* German and French are written natively, as a Geneva house would address a
+   customer in each language, not translated line by line from English
+   (CLAUDE.md, "Native writing in every language"). */
+const HOME_DE: HomeCopy = {
+  title: 'LINSILK | Massgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
   description: (colours, from) =>
-    `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren eigenen Massen, innert 2–4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
-  kicker: 'Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Mass, aus Genf',
-  heroLines: ['Aussergewöhnlicher Stil,', 'Ganz persönlich.', 'Nach Mass.', 'Leinen · Seide · Kaschmir'],
+    `LINSILK fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen nach Ihren Massen, in 2 bis 4 Wochen. ${colours}${from}. Ohne Anprobe. Aus Genf.`,
+  kicker: 'Massgefertigte Kleidung aus Seide, Leinen und hochfrequenten Stoffen, aus Genf',
+  heroLines: ['Aussergewöhnlicher Stil,', 'ganz persönlich.', 'Massgefertigt.', 'Leinen · Seide · Kaschmir'],
   women: 'Damenkollektion',
   men: 'Herrenkollektion',
-  introH: 'So funktioniert die Bestellung',
+  introH: 'So bestellen Sie',
   introLead:
-    'LINSILK ist ein Genfer Modehaus für Seide, Leinen und hochfrequente Stoffe nach Mass. Sie wählen ein Stück, wählen seine Farbe aus Mustern des Stoffs, geben Ihre eigenen Masse ein, und es wird innert 2–4 Wochen für Sie zugeschnitten und genäht.',
+    'LINSILK ist ein Modehaus aus Genf und fertigt Kleidung aus Seide, Leinen und hochfrequenten Stoffen ganz nach Mass. Sie suchen sich ein Stück aus, wählen die Farbe anhand von Stoffmustern, geben Ihre Masse ein, und innert zwei bis vier Wochen wird es für Sie zugeschnitten und genäht.',
   steps: (silk, linen, cashmere) => [
-    'Wählen Sie ein Stück aus der Damen- oder Herrenkollektion.',
-    `Wählen Sie seine Farbe: ${silk} Seidenfarben, ${linen} Leinenfarben, ${cashmere} Kaschmirfarben.`,
-    'Geben Sie Ihre Masse ein. Ohne Anprobe: Sie messen selbst, oder Sie gehen mit der Anleitung zu einer beliebigen Schneiderei.',
-    'Es wird in 2–4 Wochen ab Ihrem bestätigten Blatt zugeschnitten und genäht und dann mit Sendungsverfolgung versandt.',
+    'Suchen Sie sich ein Stück aus der Damen- oder Herrenkollektion aus.',
+    `Wählen Sie die Farbe: ${silk} Farben in Seide, ${linen} in Leinen, ${cashmere} in Kaschmir.`,
+    'Geben Sie Ihre Masse ein. Eine Anprobe gibt es nicht: Sie nehmen Ihre Masse selbst, oder Sie gehen mit unserer Anleitung zu einer Schneiderei Ihrer Wahl.',
+    'Nach Ihrer Bestätigung wird das Stück innert zwei bis vier Wochen zugeschnitten und genäht und anschliessend mit Sendungsverfolgung verschickt.',
   ],
-  introCta: 'So funktioniert Nach-Mass',
+  introCta: 'So funktioniert Massanfertigung',
   pillars: [
     {
-      title: 'Luxuriöses Material von höchster Qualität',
-      body: 'Seide, Leinen und hochfrequente Stoffe von feinster Güte, ausgewählt dafür, wie sie sich auf der Haut anfühlen, bevor es darum geht, wie sie am Bügel aussehen. Jedes LINSILK-Kleidungsstück ist aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen gefertigt: kein Polyester und kein synthetischer Stoff.',
+      title: 'Hochwertigste Materialien',
+      body: 'Seide, Leinen und hochfrequente Stoffe in bester Qualität, ausgewählt danach, wie sie sich auf der Haut anfühlen, nicht danach, wie sie auf dem Bügel wirken. Jedes Stück von LINSILK besteht aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen: kein Polyester, kein synthetisches Gewebe.',
     },
     {
-      title: 'Nach Ihrer Passform und Ihren Massen',
-      body: 'Keine Grössentabelle, keine nächstgelegene Grösse. Jedes Stück wird zugeschnitten, nachdem Sie Ihre Masse gesendet haben, sodass es mit Ihrem Körper sitzt, fällt und sich bewegt und mit keinem anderen.',
+      title: 'Ihre Passform, Ihre Masse',
+      body: 'Keine Grössentabelle, keine «ungefähr passende» Grösse. Jedes Stück wird erst zugeschnitten, wenn Ihre Masse vorliegen. So sitzt, fällt und bewegt es sich mit Ihrem Körper und mit keinem anderen.',
     },
     {
-      title: 'Hochfrequenter Stoff, der Sie aufrichtet',
-      body: 'Naturstoff aus lebender Faser, leicht auf dem Körper und ruhig zu tragen. Wir fertigen ihn, damit er mehr tut, als sich gut anzufühlen: Er soll heben, wie Sie sich fühlen und wie Sie sich bewegen.',
+      title: 'Hochfrequenter Stoff, der aufrichtet',
+      body: 'Naturstoff aus lebender Faser: leicht auf dem Körper, ruhig im Tragen. Er soll mehr leisten, als sich gut anzufühlen: Er hebt, wie Sie sich fühlen und wie Sie sich bewegen.',
     },
   ],
   seasonH: 'Diese Saison',
   seasonRail: 'Diese Saison',
-  railHint: 'Ziehen, scrollen oder die Pfeile nutzen, um durch die Saison zu blättern',
+  railHint: 'Ziehen, scrollen oder mit den Pfeilen durch die Saison blättern',
   eyebrowDesign: 'Selbst entwerfen',
-  designH: 'Ein Stück, das existiert, weil Sie es beschrieben haben.',
+  designH: 'Ein Stück, das es nur gibt, weil Sie es beschrieben haben.',
   designBody:
-    'Wählen Sie eine Grundsilhouette, wählen Sie den Stoff, schreiben Sie der Schneiderin oder dem Schneider, senden Sie Ihre Masse. Das Atelier baut ein Kleidungsstück nach diesem Auftrag. Es ist der einzige Weg, auf dem der Entwurf Ihnen gehört, bevor er uns gehört.',
-  designCta: 'Einen Auftrag beginnen',
-  designAlt: 'Seide mit aufgezeichnetem Schnittmuster, dazu Schere, Nadeln und Faden',
-  eyebrowAtelier: 'Das Atelier',
-  atelierH: 'Kleidung, so gefertigt, wie sie immer gedacht war.',
+    'Sie wählen eine Grundsilhouette und den Stoff, schreiben der Schneiderin oder dem Schneider, was Sie sich vorstellen, und senden Ihre Masse. Danach entsteht ein einzelnes Kleidungsstück nach Ihrem Auftrag. Das Modell gehört so zuerst Ihnen und erst danach uns.',
+  designCta: 'Auftrag beginnen',
+  designAlt: 'Seide mit aufgezeichnetem Schnittmuster, daneben Schere, Stecknadeln und Faden',
+  eyebrowAtelier: 'Die Schneiderei',
+  atelierH: 'Kleidung, wie sie schon immer sein sollte.',
   atelierBody:
-    'LINSILK fertigt keine massenproduzierte, minderwertige, synthetische Kleidung. Jedes Stück wird nach Ihren eigenen Massen gefertigt, sodass das Kleidungsstück Ihrem Körper folgt, statt zu verlangen, dass Ihr Körper ihm folgt. Diese Passform lässt glatte, atmungsaktive Seide, Leinen und hochfrequente Stoffe tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
-  atelierAlts: ['Hände, die eine Blumenseide von Hand nähen', 'Hände, die ein Seidenoberteil an einer Schneiderpuppe feststecken'],
+    'LINSILK stellt keine Massenware her, keine Kleidung von geringer Qualität, keine Kunstfaser. Jedes Stück entsteht nach Ihren eigenen Massen, sodass das Kleidungsstück Ihrem Körper folgt und nicht umgekehrt. Erst diese Passform lässt glatte, atmungsaktive Seide, Leinen und hochfrequente Stoffe das tun, was sie am besten können: leicht auf der Haut liegen, sich mit Ihnen bewegen und von der ersten bis zur letzten Stunde angenehm bleiben.',
+  atelierAlts: ['Hände nähen von Hand eine geblümte Seide', 'Hände stecken ein Seidenoberteil an einer Schneiderpuppe ab'],
   chalk: 'Schulter · 41',
   eyebrowFreq: 'Hohe Frequenz',
-  freqH: 'Was wir mit hoher Frequenz meinen.',
+  freqH: 'Was wir unter hoher Frequenz verstehen.',
   freq: [
     {
       title: 'Alles ist Energie',
-      body: 'Die Physik sagt es seit einem Jahrhundert. Einsteins E = mc² zeigt, dass Masse Energie in sehr dichter Form ist. Betrachten Sie alles, was Sie berühren können, einen Stein, eine Hand, ein Stück Seide, genau, und Sie finden Atome, die fast vollständig leerer Raum sind, aus Teilchen, die sich am besten als Schwingungen in zugrunde liegenden Feldern beschreiben lassen. Was fest wirkt, ist verdichtete Energie.',
+      body: 'Die Physik weiss es seit hundert Jahren: Nach Einsteins E = mc² ist Masse stark verdichtete Energie. Wer genau hinsieht, bei einem Stein, einer Hand, einem Stück Seide, findet Atome, die fast nur aus leerem Raum bestehen, und Teilchen, die sich am besten als Schwingungen zugrunde liegender Felder beschreiben lassen. Was sich fest anfühlt, ist verdichtete Energie.',
     },
     {
-      title: 'Jede Energie hat eine Frequenz',
-      body: 'Energie schwingt, und jede Art schwingt anders: Licht, Schall, Wärme und die Aktivität Ihres eigenen Körpers. Stoff liegt den ganzen Tag an Ihnen an, darum gehört er unserer Überzeugung nach in dieses Bild. Wir möchten, dass unsere Kleidung sich nicht nur angenehm anfühlt, sondern Ihre natürliche Frequenz anhebt. Seide, Leinen und Kaschmir stammen von lebenden Wesen, der Seidenraupe, der Flachspflanze und der Kaschmirziege, und wir sind überzeugt, dass sie dieses Leben in das Kleidungsstück tragen.',
+      title: 'Jede Energie schwingt in ihrer Frequenz',
+      body: 'Energie schwingt, und jede Form auf ihre Weise: Licht, Klang, Wärme, auch die Aktivität Ihres Körpers. Stoff liegt den ganzen Tag auf Ihrer Haut und gehört deshalb dazu. Kleidung von LINSILK soll sich nicht nur angenehm tragen, sondern Ihre natürliche Frequenz anheben. Seide, Leinen und Kaschmir stammen von Lebewesen, vom Seidenspinner, von der Flachspflanze, von der Kaschmirziege, und sie tragen dieses Leben ins Kleidungsstück.',
     },
     {
-      title: 'Was Synthetik nimmt',
-      body: 'PU, Polyester, Nylon und andere Stoffe auf Kunststoffbasis werden aus Petrochemikalien hergestellt. Sie stauen Wärme und Feuchtigkeit auf der Haut, geben beim Tragen und Waschen Mikroplastikfasern ab und tragen oft Ausrüstungschemikalien, die stundenlang täglich auf Ihrer Haut liegen. Über Jahre kann das Reizungen und Unwohlsein bedeuten, und die Wirkung langer Kunststoffbelastung auf den Körper wird noch erforscht. Unserer Ansicht nach dämpft ein Stoff ohne Leben Ihre Energie, statt sie zu heben, weshalb wir keinen verwenden.',
+      title: 'Was Kunstfasern nehmen',
+      body: 'PU, Polyester, Nylon und andere Kunststoffgewebe stammen aus der Petrochemie. Sie stauen Wärme und Feuchtigkeit auf der Haut, setzen beim Tragen und Waschen Mikroplastik frei und sind oft mit Chemikalien ausgerüstet, die täglich stundenlang auf Ihrer Haut liegen. Über Jahre kann das zu Hautreizungen und Unbehagen führen; was langer Kontakt mit Kunststoff im Körper bewirkt, wird noch erforscht. Ein Stoff ohne Leben dämpft Ihre Energie, statt sie zu heben. Deshalb verwenden wir keinen.',
     },
   ],
   eyebrowCloth: 'Der Stoff',
-  clothH: 'Seide, Leinen und hochfrequente Stoffe. Sonst kommt nichts in den Raum.',
+  clothH: 'Seide, Leinen und hochfrequente Stoffe. Mehr kommt nicht ins Haus.',
   clothP1:
-    'Erstklassige Seide, erstklassiges Leinen und hochfrequente Stoffe, und sonst nichts: kein Polyester und kein synthetischer Stoff. Synthetische Faser ist günstiger zu nähen und hält die Bügelfalte länger, und genau deshalb wird so viel Kleidung daraus gefertigt.',
+    'Erstklassige Seide, erstklassiges Leinen und hochfrequente Stoffe, sonst nichts: kein Polyester, kein synthetisches Gewebe. Kunstfaser ist billiger zu verarbeiten und hält die Bügelfalte länger, und genau deshalb besteht so viel Kleidung daraus.',
   clothP2:
-    'Naturfaser bewegt sich, knittert und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht nicht mehr so aus wie auf dem Foto, und darin liegt sein Sinn. Seide, Leinen und hochfrequente Stoffe liegen leicht auf der Haut, weshalb Komfort an erster Stelle steht.',
+    'Naturfaser bewegt sich, knittert und altert. Ein Leinenhemd, das einen Sommer lang getragen wurde, sieht danach nicht mehr aus wie auf dem Foto, und das ist ihr Reiz. Seide, Leinen und hochfrequente Stoffe liegen leicht auf der Haut, deshalb steht der Tragekomfort an erster Stelle.',
   statCloth: 'Seide, Leinen oder hochfrequenter Stoff',
-  statDesigns: (season) => (season ? `Entwürfe in ${season}` : 'Entwürfe diese Saison'),
+  statDesigns: (season) => (season ? `Entwürfe in ${season}` : 'Entwürfe in dieser Saison'),
 };
 
 const HOME_FR: HomeCopy = {
   title: 'LINSILK | Vêtements sur mesure en soie, en lin et en tissus à haute fréquence, depuis Genève',
   description: (colours, from) =>
-    `LINSILK réalise des vêtements en soie, en lin et en tissus à haute fréquence à vos propres mesures en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
+    `LINSILK réalise des vêtements en soie, en lin et en tissus à haute fréquence, à vos mesures, en 2 à 4 semaines. ${colours}${from}. Sans essayage. Depuis Genève.`,
   kicker: 'Vêtements sur mesure en soie, en lin et en tissus à haute fréquence, depuis Genève',
-  heroLines: ['Un style d’exception,', 'Fait pour vous.', 'Sur mesure.', 'Lin · Soie · Cachemire'],
+  heroLines: ['Un style d’exception,', 'fait pour vous.', 'Sur mesure.', 'Lin · Soie · Cachemire'],
   women: 'Collection femme',
   men: 'Collection homme',
   introH: 'Comment commander',
   introLead:
-    'LINSILK est une maison genevoise de vêtements sur mesure en soie, en lin et en tissus à haute fréquence. Vous choisissez une pièce, son coloris parmi des échantillons du tissu, vous indiquez vos propres mesures, et elle est coupée et cousue pour vous en 2 à 4 semaines.',
+    'LINSILK est une maison genevoise de vêtements sur mesure qui travaille la soie, le lin et les tissus à haute fréquence. Vous choisissez une pièce, son coloris parmi les échantillons de l’étoffe, vous saisissez vos mesures, et elle est coupée et cousue pour vous en deux à quatre semaines.',
   steps: (silk, linen, cashmere) => [
     'Choisissez une pièce dans la collection femme ou homme.',
-    `Choisissez son coloris : ${silk} coloris de soie, ${linen} coloris de lin, ${cashmere} coloris de cachemire.`,
-    'Indiquez vos mesures. Sans essayage : vous vous mesurez vous-même, ou vous emportez le guide chez n’importe quel tailleur.',
-    'Elle est coupée et cousue en 2 à 4 semaines à partir de votre fiche confirmée, puis envoyée avec suivi.',
+    `Choisissez son coloris : ${silk} en soie, ${linen} en lin, ${cashmere} en cachemire.`,
+    'Saisissez vos mesures. Pas d’essayage : vous vous mesurez vous-même, ou vous confiez notre guide à un tailleur de votre choix.',
+    'Après confirmation de votre fiche, la pièce est coupée et cousue en deux à quatre semaines, puis expédiée avec suivi.',
   ],
   introCta: 'Comment fonctionne le sur-mesure',
   pillars: [
     {
-      title: 'Une matière de luxe, de qualité supérieure',
-      body: 'Soie, lin et tissus à haute fréquence de la plus belle qualité, choisis pour ce qu’ils font sentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est fait en 100 % soie, 100 % lin ou en tissus à haute fréquence : ni polyester ni tissu synthétique.',
+      title: 'Des matières d’exception',
+      body: 'Soie, lin et tissus à haute fréquence de première qualité, choisis pour ce qu’ils font ressentir sur la peau avant ce qu’ils donnent à voir sur un cintre. Chaque vêtement LINSILK est en 100 % soie, 100 % lin ou en tissus à haute fréquence : ni polyester, ni tissu synthétique.',
     },
     {
-      title: 'Fait à votre coupe et à vos mesures',
-      body: 'Pas de guide des tailles, pas de taille la plus proche. Chaque pièce est coupée après l’envoi de vos mesures, afin qu’elle tombe et bouge avec votre corps, et avec aucun autre.',
+      title: 'À votre coupe, à vos mesures',
+      body: 'Pas de tableau des tailles, pas de « taille la plus proche ». Chaque pièce n’est coupée qu’une fois vos mesures reçues : elle tombe et bouge avec votre corps, et avec aucun autre.',
     },
     {
-      title: 'Un tissu à haute fréquence qui vous élève',
-      body: 'Un tissu naturel issu d’une fibre vivante, léger sur le corps et apaisant à porter. Nous le faisons pour qu’il fasse plus que bien se sentir : qu’il élève ce que vous ressentez et la façon dont vous vous portez.',
+      title: 'Un tissu à haute fréquence qui élève',
+      body: 'Une étoffe naturelle, issue d’une fibre vivante, légère sur le corps et paisible à porter. Nous la façonnons pour qu’elle fasse plus que bien tomber : qu’elle élève ce que vous ressentez et votre façon de vous tenir.',
     },
   ],
   seasonH: 'Cette saison',
   seasonRail: 'Cette saison',
-  railHint: 'Faites glisser, défilez ou utilisez les flèches pour parcourir la saison',
-  eyebrowDesign: 'Créer votre pièce',
-  designH: 'Une pièce qui existe parce que vous l’avez décrite.',
+  railHint: 'Faites glisser, faites défiler ou utilisez les flèches pour parcourir la saison',
+  eyebrowDesign: 'Créer sa pièce',
+  designH: 'Une pièce qui existe parce que vous l’avez imaginée.',
   designBody:
-    'Choisissez une silhouette de base, choisissez le tissu, écrivez au tailleur, envoyez vos mesures. L’atelier construit un vêtement selon ce brief. C’est la seule voie où le modèle est à vous avant d’être à nous.',
+    'Vous choisissez une silhouette de base et l’étoffe, vous écrivez au tailleur ce que vous souhaitez, vous envoyez vos mesures. Un seul vêtement est alors réalisé selon votre demande. C’est la seule voie où le modèle est à vous avant d’être à nous.',
   designCta: 'Commencer une commande',
-  designAlt: 'Soie marquée à la craie d’un patron, avec ciseaux, épingles et fil',
+  designAlt: 'Une soie marquée à la craie d’un patron, avec ciseaux, épingles et fil',
   eyebrowAtelier: 'L’atelier',
-  atelierH: 'Des vêtements faits comme ils auraient toujours dû l’être.',
+  atelierH: 'Des vêtements comme ils auraient toujours dû être faits.',
   atelierBody:
-    'LINSILK ne fait pas de vêtements produits en série, de qualité médiocre et synthétiques. Chaque pièce est faite à vos propres mesures, si bien que le vêtement suit votre corps au lieu de demander à votre corps de le suivre. C’est cette coupe qui laisse la soie, le lin et les tissus à haute fréquence, lisses et respirants, faire ce qu’ils font de mieux : reposer légèrement sur la peau, bouger avec vous et rester confortables de la première heure à la dernière.',
-  atelierAlts: ['Des mains cousant à la main une soie à fleurs', 'Des mains épinglant un haut en soie sur un mannequin'],
+    'LINSILK ne fait ni vêtements fabriqués en série, ni qualité médiocre, ni synthétique. Chaque pièce est réalisée à vos propres mesures : c’est le vêtement qui suit votre corps, et non l’inverse. C’est cette coupe qui permet à la soie, au lin et aux tissus à haute fréquence, lisses et respirants, de faire ce qu’ils font de mieux : se poser légèrement sur la peau, bouger avec vous et rester agréables de la première heure à la dernière.',
+  atelierAlts: ['Des mains cousent à la main une soie fleurie', 'Des mains épinglent un haut en soie sur un mannequin'],
   chalk: 'épaule · 41',
   eyebrowFreq: 'Haute fréquence',
   freqH: 'Ce que nous entendons par haute fréquence.',
   freq: [
     {
       title: 'Tout est énergie',
-      body: 'La physique le dit depuis un siècle. Le E = mc² d’Einstein montre que la masse est de l’énergie sous une forme très dense. Regardez de près tout ce que vous pouvez toucher, une pierre, une main, une longueur de soie, et vous trouvez des atomes presque entièrement vides, faits de particules que l’on décrit au mieux comme des vibrations de champs sous-jacents. Ce qui paraît solide est de l’énergie condensée.',
+      body: 'La physique le sait depuis un siècle : selon le E = mc² d’Einstein, la matière est de l’énergie très concentrée. Observez de près une pierre, une main, un coupon de soie : vous y trouvez des atomes presque entièrement vides, composés de particules que l’on décrit au mieux comme des vibrations de champs. Ce qui semble solide est de l’énergie condensée.',
     },
     {
       title: 'Toute énergie a une fréquence',
-      body: 'L’énergie vibre, et chaque forme vibre différemment : la lumière, le son, la chaleur et l’activité de votre propre corps. Le tissu reste contre vous toute la journée, nous pensons donc qu’il a sa place dans ce tableau. Nous voulons que nos vêtements soient non seulement confortables, mais qu’ils élèvent votre fréquence naturelle. La soie, le lin et le cachemire viennent d’êtres vivants, le ver à soie, le lin cultivé et la chèvre cachemire, et nous tenons qu’ils portent cette vie dans le vêtement.',
+      body: 'L’énergie vibre, chaque forme à sa manière : la lumière, le son, la chaleur, l’activité de votre corps. Un tissu reste contre votre peau toute la journée, il fait donc partie de cet ensemble. Un vêtement LINSILK ne se contente pas d’être confortable : il élève votre fréquence naturelle. La soie, le lin et le cachemire viennent d’êtres vivants, le ver à soie, le lin cultivé et la chèvre du Cachemire, et ils portent cette vie jusque dans le vêtement.',
     },
     {
-      title: 'Ce que les synthétiques enlèvent',
-      body: 'Le PU, le polyester, le nylon et les autres tissus à base de plastique sont faits à partir de produits pétrochimiques. Ils retiennent la chaleur et l’humidité contre la peau, libèrent des microfibres de plastique quand on les porte et les lave, et portent souvent des produits de finition qui restent des heures par jour sur votre peau. Sur des années, cela peut signifier irritation et inconfort, et l’effet d’une longue exposition au plastique sur le corps est encore à l’étude. À notre avis, un tissu sans vie amortit votre énergie au lieu de l’élever, et c’est pourquoi nous n’en utilisons aucun.',
+      title: 'Ce que retirent les fibres synthétiques',
+      body: 'Le PU, le polyester, le nylon et les autres tissus à base de plastique sont fabriqués à partir de produits pétrochimiques. Ils retiennent la chaleur et l’humidité contre la peau, libèrent des microfibres de plastique au porté comme au lavage, et sont souvent traités avec des produits de finition qui restent des heures par jour sur votre peau. Au fil des années, cela peut provoquer irritations et inconfort ; les effets d’un contact prolongé avec le plastique sur l’organisme font encore l’objet de recherches. Un tissu sans vie étouffe votre énergie au lieu de l’élever : c’est pourquoi nous n’en utilisons aucun.',
     },
   ],
   eyebrowCloth: 'Le tissu',
-  clothH: 'La soie, le lin et les tissus à haute fréquence. Rien d’autre n’entre dans la pièce.',
+  clothH: 'Soie, lin et tissus à haute fréquence. Rien d’autre n’entre ici.',
   clothP1:
-    'Une soie, un lin et des tissus à haute fréquence de première qualité, et rien d’autre : ni polyester ni tissu synthétique. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, et c’est précisément pourquoi tant de vêtements en sont faits.',
+    'De la soie, du lin et des tissus à haute fréquence de première qualité, et rien d’autre : ni polyester, ni tissu synthétique. La fibre synthétique coûte moins cher à coudre et tient mieux le pli, c’est précisément pour cela que tant de vêtements en sont faits.',
   clothP2:
-    'La fibre naturelle bouge, se froisse et vieillit. Une chemise en lin portée tout un été ne ressemblera plus à ce qu’elle était sur la photo, et c’est tout son intérêt. La soie, le lin et les tissus à haute fréquence reposent légèrement sur la peau, c’est pourquoi le confort passe en premier.',
-  statCloth: 'tissu de soie, de lin ou à haute fréquence',
+    'La fibre naturelle bouge, se froisse, vieillit. Une chemise en lin portée tout un été n’aura plus l’allure de la photo, et c’est ce qui en fait le charme. La soie, le lin et les tissus à haute fréquence se posent légèrement sur la peau : voilà pourquoi le confort passe d’abord.',
+  statCloth: 'soie, lin ou tissu à haute fréquence',
   statDesigns: (season) => (season ? `modèles en ${season}` : 'modèles cette saison'),
 };
 
 export const homeCopy = (lang: Lang): HomeCopy => {
   if (lang === 'en') return HOME_EN;
-  if (lang.startsWith('fr')) return HOME_FR;
-  return lang === 'de' ? deepDe(HOME_DE_CH) : HOME_DE_CH;
+  return lang === 'fr' ? HOME_FR : HOME_DE;
 };

@@ -2,7 +2,7 @@
  * language names. German and French are for a native-speaker pass before they
  * go live (docs/seo/SEO-GEO-PLAN.md §13.7). */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 const EN = {
   home: 'LINSILK — home',
@@ -31,6 +31,7 @@ const EN = {
     '/collection/women/silk': 'Silk dresses and gowns',
     '/collection/sleepwear': 'Silk sleepwear',
     '/collection/men/shirts': 'Linen shirts',
+    '/care': 'Care guide',
     '/care/shipping': 'Shipping',
     '/care/measuring': 'Measurement guide',
     '/care/returns': 'Returns',
@@ -53,8 +54,8 @@ const EN = {
 
 type Chrome = typeof EN;
 
-const DE_CH: Chrome = {
-  home: 'LINSILK — Startseite',
+const DE: Chrome = {
+  home: 'LINSILK – Startseite',
   skip: 'Zum Inhalt springen',
   primary: 'Hauptnavigation',
   menu: 'Menü',
@@ -64,44 +65,45 @@ const DE_CH: Chrome = {
   where: 'Genf, Schweiz',
   nav: {
     '/collection': 'Kollektion',
-    '/made-to-measure': 'Nach Mass',
+    '/made-to-measure': 'Massanfertigung',
     '/design': 'Selbst entwerfen',
     '/cloth': 'Der Stoff',
     '/archive': 'Frühere Kollektionen',
     '/contact': 'Kontakt',
   },
   blurb:
-    'Seide, Leinen und hochfrequente Stoffe nach Mass, aus Genf. Nach Ihren Massen zugeschnitten und genäht, innert 2–4 Wochen. Vier kleine Kollektionen im Jahr.',
+    'Seide, Leinen und hochfrequente Stoffe nach Mass, aus Genf. Nach Ihren Massen zugeschnitten und genäht, in zwei bis vier Wochen. Vier kleine Kollektionen im Jahr.',
   shop: 'Shop',
-  care: 'Kundendienst',
+  care: 'Kundenservice',
   house: 'Das Haus',
-  connect: 'Kontakt aufnehmen',
+  connect: 'Folgen Sie uns',
   links: {
-    '/collection/women/silk': 'Seidenkleider und Abendkleider',
+    '/collection/women/silk': 'Kleider und Roben aus Seide',
     '/collection/sleepwear': 'Schlafmode aus Seide',
-    '/collection/men/shirts': 'Leinenhemden',
-    '/care/shipping': 'Versand',
-    '/care/measuring': 'Messanleitung',
+    '/collection/men/shirts': 'Hemden aus Leinen',
+    '/care': 'Pflegeanleitung',
+    '/care/shipping': 'Lieferung',
+    '/care/measuring': 'Anleitung zum Massnehmen',
     '/care/returns': 'Rückgabe',
-    '/care/questions': 'Fragen',
-    '/about': 'Über uns',
+    '/care/questions': 'Häufige Fragen',
+    '/about': 'Über LINSILK',
     '/season-letter': 'Saisonbrief',
     '/legal/terms': 'AGB',
     '/legal/privacy': 'Datenschutz',
   },
   prices: 'Preise in CHF',
-  credit: 'Realisiert von:',
+  credit: 'Umsetzung:',
   currencyLabel: 'Zusätzlich ungefähr anzeigen in',
   francsOnly: 'Nur Franken',
   currencies: { EUR: 'Euro (EUR)', GBP: 'Pfund (GBP)', USD: 'US-Dollar (USD)', AED: 'VAE-Dirham (AED)' },
   language: 'Sprache',
   suggestOwn: 'Diese Seite gibt es auch auf Deutsch.',
-  suggestGo: 'Auf Deutsch ansehen',
+  suggestGo: 'Auf Deutsch lesen',
   dismiss: 'Schliessen',
 };
 
 const FR: Chrome = {
-  home: 'LINSILK — accueil',
+  home: 'LINSILK – accueil',
   skip: 'Aller au contenu',
   primary: 'Navigation principale',
   menu: 'Menu',
@@ -118,48 +120,45 @@ const FR: Chrome = {
     '/contact': 'Contact',
   },
   blurb:
-    'Soie et lin sur mesure, depuis Genève. Coupés et cousus à vos mesures en 2 à 4 semaines. Quatre petites collections par an.',
+    'Soie, lin et tissus à haute fréquence sur mesure, depuis Genève. Coupés et cousus d’après vos mesures, en deux à quatre semaines. Quatre petites collections par an.',
   shop: 'Boutique',
   care: 'Service client',
   house: 'La maison',
   connect: 'Suivez-nous',
   links: {
-    '/collection/women/silk': 'Robes en soie et robes de soirée',
+    '/collection/women/silk': 'Robes et robes longues en soie',
     '/collection/sleepwear': 'Vêtements de nuit en soie',
     '/collection/men/shirts': 'Chemises en lin',
+    '/care': 'Guide d’entretien',
     '/care/shipping': 'Livraison',
-    '/care/measuring': 'Guide de mesure',
+    '/care/measuring': 'Guide pour prendre vos mesures',
     '/care/returns': 'Retours',
-    '/care/questions': 'Questions',
+    '/care/questions': 'Questions fréquentes',
     '/about': 'À propos',
     '/season-letter': 'Lettre de saison',
     '/legal/terms': 'CGV',
     '/legal/privacy': 'Confidentialité',
   },
   prices: 'Prix en CHF',
-  credit: 'Réalisé par :',
-  currencyLabel: 'Afficher aussi approximativement en',
-  francsOnly: 'Francs seulement',
+  credit: 'Réalisation :',
+  currencyLabel: 'Afficher aussi, à titre indicatif, en',
+  francsOnly: 'Francs suisses uniquement',
   currencies: { EUR: 'Euro (EUR)', GBP: 'Livre sterling (GBP)', USD: 'Dollar américain (USD)', AED: 'Dirham des EAU (AED)' },
   language: 'Langue',
   suggestOwn: 'Cette page existe aussi en français.',
-  suggestGo: 'Voir en français',
+  suggestGo: 'Lire en français',
   dismiss: 'Fermer',
 };
 
 export const CHROME: Record<Lang, Chrome> = {
   en: EN,
-  'de-ch': DE_CH,
-  de: deepDe(DE_CH),
-  'fr-ch': FR,
+  de: DE,
   fr: FR,
 };
 
 /** Names of the languages, each in its own language. */
 export const LANGUAGE_NAMES: Record<Lang, string> = {
   en: 'English',
-  'de-ch': 'Deutsch (Schweiz)',
-  de: 'Deutsch (Österreich, Deutschland)',
-  'fr-ch': 'Français (Suisse)',
-  fr: 'Français (France, Luxembourg)',
+  de: 'Deutsch',
+  fr: 'Français',
 };

@@ -18,7 +18,7 @@ const SHOP = [
   '/made-to-measure',
   '/design',
 ];
-const CARE = ['/care/shipping', '/care/measuring', '/care/returns', '/care/questions'];
+const CARE = ['/care', '/care/shipping', '/care/measuring', '/care/returns', '/care/questions'];
 const HOUSE = ['/about', '/cloth', '/contact'];
 
 const LANGS: Lang[] = ['en', ...LOCALES];

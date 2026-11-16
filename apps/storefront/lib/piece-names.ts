@@ -67,55 +67,55 @@ const N: Record<string, Name> = {
   },
   'Linen shirt and wide-leg pants set': {
     de: 'Leinen-Set aus Hemd und weiter Hose',
-    fr: 'Ensemble en lin chemise et pantalon large',
+    fr: 'Ensemble en lin : chemise et pantalon large',
   },
   'Linen tie-front vest and wide-leg pants set': {
     de: 'Leinen-Set aus Weste zum Binden und weiter Hose',
-    fr: 'Ensemble en lin gilet à nouer et pantalon large',
+    fr: 'Ensemble en lin : gilet à nouer et pantalon large',
   },
   'Linen button-front waistcoat and patch-pocket pants set': {
     de: 'Leinen-Set aus geknöpfter Weste und Hose mit aufgesetzten Taschen',
-    fr: 'Ensemble en lin gilet boutonné et pantalon à poches plaquées',
+    fr: 'Ensemble en lin : gilet boutonné et pantalon à poches plaquées',
   },
   'Linen crop top and drawstring pants set': {
     de: 'Leinen-Set aus Crop-Top und Hose mit Kordelzug',
-    fr: 'Ensemble en lin top court et pantalon à cordon',
+    fr: 'Ensemble en lin : top court et pantalon à cordon',
   },
   'Linen waistcoat and pleated wide-leg pants set': {
     de: 'Leinen-Set aus Weste und weiter Bundfaltenhose',
-    fr: 'Ensemble en lin gilet et pantalon large à pinces',
+    fr: 'Ensemble en lin : gilet et pantalon large à pinces',
   },
   'Linen wrap-tie waistcoat and relaxed pants set': {
     de: 'Leinen-Set aus Wickelweste zum Binden und lockerer Hose',
-    fr: 'Ensemble en lin gilet cache-cœur à nouer et pantalon ample',
+    fr: 'Ensemble en lin : gilet cache-cœur à nouer et pantalon ample',
   },
   'Linen longline duster vest and wide-leg pants set': {
     de: 'Leinen-Set aus langer Duster-Weste und weiter Hose',
-    fr: 'Ensemble en lin gilet long type duster et pantalon large',
+    fr: 'Ensemble en lin : gilet long type duster et pantalon large',
   },
   'Linen deep-V waistcoat and wide-leg pants set': {
     de: 'Leinen-Set aus Weste mit tiefem V-Ausschnitt und weiter Hose',
-    fr: 'Ensemble en lin gilet à décolleté en V profond et pantalon large',
+    fr: 'Ensemble en lin : gilet à décolleté en V profond et pantalon large',
   },
   'Linen asymmetric-button waistcoat and wide-leg pants set': {
     de: 'Leinen-Set aus Weste mit asymmetrischer Knopfleiste und weiter Hose',
-    fr: 'Ensemble en lin gilet à boutonnage asymétrique et pantalon large',
+    fr: 'Ensemble en lin : gilet à boutonnage asymétrique et pantalon large',
   },
   'Linen mock-neck longline vest and pleated pants set': {
     de: 'Leinen-Set aus langer Weste mit Stehkragen und Bundfaltenhose',
-    fr: 'Ensemble en lin gilet long à col montant et pantalon à pinces',
+    fr: 'Ensemble en lin : gilet long à col montant et pantalon à pinces',
   },
   'Linen wrap-tie waistcoat and pleated pants set': {
     de: 'Leinen-Set aus Wickelweste zum Binden und Bundfaltenhose',
-    fr: 'Ensemble en lin gilet cache-cœur à nouer et pantalon à pinces plissé',
+    fr: 'Ensemble en lin : gilet cache-cœur à nouer et pantalon à pinces plissé',
   },
   'Linen cascade-panel top and cropped wide-leg pants set': {
     de: 'Leinen-Set aus Top mit Kaskadenpartie und verkürzter weiter Hose',
-    fr: 'Ensemble en lin top à panneau cascade et pantalon large court',
+    fr: 'Ensemble en lin : top à panneau cascade et pantalon large court',
   },
   'Linen button-front waistcoat and slant-pocket pants set': {
     de: 'Leinen-Set aus geknöpfter Weste und Hose mit Schrägtaschen',
-    fr: 'Ensemble en lin gilet boutonné et pantalon à poches obliques',
+    fr: 'Ensemble en lin : gilet boutonné et pantalon à poches obliques',
   },
   'Silk slip mini dress': {
     de: 'Seiden-Slip-Minikleid',
@@ -123,27 +123,27 @@ const N: Record<string, Name> = {
   },
   'Silk short-sleeve pyjama shirt and shorts set': {
     de: 'Seiden-Pyjama-Set aus kurzärmeligem Hemd und Shorts',
-    fr: 'Pyjama en soie chemise à manches courtes et short',
+    fr: 'Pyjama en soie : chemise à manches courtes et short',
   },
   'Silk tie-halter cami and shorts set': {
     de: 'Seiden-Set aus Neckholder-Cami zum Binden und Shorts',
-    fr: 'Ensemble en soie caraco dos-nu à nouer et short',
+    fr: 'Ensemble en soie : caraco dos-nu à nouer et short',
   },
   'Silk tie-halter cami and wide-leg pants set': {
     de: 'Seiden-Set aus Neckholder-Cami zum Binden und weiter Hose',
-    fr: 'Ensemble en soie caraco dos-nu à nouer et pantalon large',
+    fr: 'Ensemble en soie : caraco dos-nu à nouer et pantalon large',
   },
   'Silk boxy tee and wide-leg pants set': {
     de: 'Seiden-Set aus Boxy-Shirt und weiter Hose',
-    fr: 'Ensemble en soie tee-shirt boxy et pantalon large',
+    fr: 'Ensemble en soie : tee-shirt boxy et pantalon large',
   },
   'Silk tank and dolphin-hem shorts set': {
     de: 'Seiden-Set aus Tanktop und Shorts mit Delfin-Saum',
-    fr: 'Ensemble en soie débardeur et short dauphin',
+    fr: 'Ensemble en soie : débardeur et short dauphin',
   },
   'Silk pyjama tee and dolphin-hem shorts set': {
     de: 'Seiden-Set aus Pyjama-Shirt und Shorts mit Delfin-Saum',
-    fr: 'Ensemble en soie tee-shirt de pyjama et short dauphin',
+    fr: 'Ensemble en soie : tee-shirt de pyjama et short dauphin',
   },
   'Silk three-piece set: kimono robe, cami and shorts': {
     de: 'Dreiteiliges Seiden-Set: Kimono-Morgenmantel, Cami und Shorts',
@@ -151,15 +151,15 @@ const N: Record<string, Name> = {
   },
   'Silk long wrap robe and midi slip dress set': {
     de: 'Seiden-Set aus langem Wickel-Morgenmantel und Midi-Slipkleid',
-    fr: 'Ensemble en soie long peignoir portefeuille et robe nuisette midi',
+    fr: 'Ensemble en soie : long peignoir portefeuille et robe nuisette midi',
   },
   'Silk wrap-front pyjama shirt and pants set': {
     de: 'Seiden-Pyjama-Set aus Wickelhemd und Hose',
-    fr: 'Pyjama en soie chemise cache-cœur et pantalon',
+    fr: 'Pyjama en soie : chemise cache-cœur et pantalon',
   },
   'Linen camp-collar shirt and shorts set': {
     de: 'Leinen-Set aus Camp-Kragen-Hemd und Shorts',
-    fr: 'Ensemble en lin chemise à col cubain et short',
+    fr: 'Ensemble en lin : chemise à col cubain et short',
   },
   'Linen spread-collar shirt': {
     de: 'Leinenhemd mit Kentkragen',

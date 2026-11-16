@@ -9,6 +9,8 @@ import {
 } from '@/components/pages/translated';
 import { ContactView, MeasuringView, ReturnsView, ShippingView } from '@/components/pages/care-views';
 import { CollectionGroupView, CollectionHubView } from '@/components/pages/collection-views';
+import { CarePage } from '@/components/care/care-page';
+import { careCopy } from '@/lib/care-guide';
 import { DesignView } from '@/components/pages/design-view';
 import { PieceView } from '@/components/piece-view';
 import { collectionBySlug, currentCollection, getPieces, isOrderable, money, type Piece } from '@/lib/catalog';
@@ -86,6 +88,8 @@ export async function generateMetadata(props: PageProps<'/[locale]/[...path]'>):
       const c = clothCopy(locale);
       return localeMetadata(locale, enPath, c.title, c.description);
     }
+    case '/care':
+      return localeMetadata(locale, enPath, careCopy(locale).PAGE.metaTitle, careCopy(locale).PAGE.description);
     case '/care/questions': {
       const c = bankCopy(locale);
       return localeMetadata(locale, enPath, c.title, c.description);
@@ -130,6 +134,8 @@ export default async function LocalePage(props: PageProps<'/[locale]/[...path]'>
       return <AboutTranslated locale={t.locale} />;
     case '/cloth':
       return <ClothTranslated locale={t.locale} />;
+    case '/care':
+      return <CarePage lang={t.locale} />;
     case '/care/questions':
       return <QuestionsTranslated locale={t.locale} />;
     case '/care/shipping':

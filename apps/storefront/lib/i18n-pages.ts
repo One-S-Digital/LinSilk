@@ -4,7 +4,7 @@
  * §13.7). The terms, privacy and legal-notice pages are placeholders awaiting a
  * lawyer and stay in English until the real text exists. */
 
-import { deepDe, type Lang } from './i18n';
+import type { Lang } from './i18n';
 
 const EN = {
   collection: {
@@ -152,23 +152,23 @@ const EN = {
 
 export type PagesText = typeof EN;
 
-const DE_CH: PagesText = {
+const DE: PagesText = {
   collection: {
     title: 'Die Kollektion: Seide, Leinen und hochfrequente Stoffe nach Mass',
     description: (open) =>
-      `${open}Damen- und Herrenstücke aus 100 % Seide, 100 % Leinen und hochfrequenten Stoffen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht.`,
-    none: 'Im Moment ist keine Kollektion geöffnet. Sobald die nächste Saison zugeschnitten ist, erscheinen ihre Stücke hier.',
+      `${open}Mode für Damen und Herren aus 100 % Seide, 100 % Leinen und hochfrequenten Stoffen, jedes Stück nach Ihren Massen zugeschnitten und genäht, innert zwei bis vier Wochen.`,
+    none: 'Zurzeit ist keine Kollektion geöffnet. Sobald die nächste Saison zugeschnitten ist, finden Sie ihre Stücke hier.',
     commission: 'Ein Stück in Auftrag geben',
     designs: (n) => `${n} Modelle`,
-    enter: (who) => `Zur ${who}-Kollektion`,
+    enter: (who) => `Zur ${who}kollektion`,
     women: 'Damen',
     men: 'Herren',
-    womenAlt: 'Eine Frau in einem Wickelkleid aus Seide nach Mass auf einer sonnigen Loggia über dem Meer',
-    menAlt: 'Ein Mann in Hemd und Hose aus Leinen nach Mass, auf Kalksteinstufen über dem Meer sitzend',
+    womenAlt: 'Eine Frau in einem massgefertigten Wickelkleid aus Seide auf einer sonnigen Loggia über dem Meer',
+    menAlt: 'Ein Mann in massgefertigtem Leinenhemd und Leinenhose, auf Kalksteinstufen über dem Meer sitzend',
     aboutEyebrow: 'Über die Kollektion',
-    aboutTitle: 'Seide, Leinen und hochfrequente Stoffe nach Mass',
+    aboutTitle: 'Seide, Leinen und hochfrequente Stoffe, ganz nach Mass',
     about: (open) =>
-      `${open}Jedes LINSILK-Stück wird nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht, aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen. Wählen Sie ein Stück, wählen Sie seine Farbe aus den Stoffmustern seines Stoffs und geben Sie Ihre Masse ein: Es gibt keine Konfektionsgrössen und keine Anproben. Vier kleine Kollektionen im Jahr, aus Genf.`,
+      `${open}Jedes Stück von LINSILK wird nach Ihren eigenen Massen zugeschnitten und genäht, innert zwei bis vier Wochen, aus 100 % Seide, 100 % Leinen oder hochfrequenten Stoffen. Sie suchen sich ein Stück aus, wählen die Farbe anhand der Stoffmuster und geben Ihre Masse ein. Konfektionsgrössen und Anproben gibt es nicht. Vier kleine Kollektionen im Jahr, aus Genf.`,
     links: {
       '/collection/women/silk': 'Kleider und Roben aus Seide',
       '/collection/women/silk-separates': 'Röcke und Blusen aus Seide',
@@ -183,21 +183,21 @@ const DE_CH: PagesText = {
     women: 'Damen',
     men: 'Herren',
     crumb: 'Kollektion',
-    titleWomen: 'Damenmode aus Seide, Leinen und hochfrequente Stoffe nach Mass',
-    titleMen: 'Herrenmode aus Seide, Leinen und hochfrequenten Stoffen nach Mass',
+    titleWomen: 'Damenmode nach Mass aus Seide, Leinen und hochfrequenten Stoffen',
+    titleMen: 'Herrenmode nach Mass aus Seide, Leinen und hochfrequenten Stoffen',
     descWomen:
-      'Kleider, Roben, Röcke, Blusen und Schlafmode aus Seide, zweiteilige Sets aus Leinen sowie Kaschmirhosen, jedes nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht. Aus Genf.',
+      'Kleider, Roben, Röcke, Blusen und Schlafmode aus Seide, zweiteilige Sets aus Leinen und Kaschmirhosen: jedes Stück nach Ihren Massen zugeschnitten und genäht, innert zwei bis vier Wochen. Aus Genf.',
     descMen:
-      'Hemden und Hosen aus Leinen, Kaschmirhosen und Seidenkrawatten für Herren. Die Kleidung wird nach Ihren Massen in 2–4 Wochen zugeschnitten und genäht. Aus Genf.',
+      'Hemden und Hosen aus Leinen, Kaschmirhosen und Seidenkrawatten für Herren. Alles wird nach Ihren Massen zugeschnitten und genäht, innert zwei bis vier Wochen. Aus Genf.',
     intro: (closes) =>
-      `Jedes Stück wird nach Ihren Massen zugeschnitten und in begrenzter Auflage gefertigt. ${
+      `Jedes Stück wird nach Ihren Massen zugeschnitten und nur in begrenzter Auflage gefertigt. ${
         closes
-          ? `Wenn die Saison im ${closes} endet, werden diese Modelle archiviert und nicht mehr gefertigt.`
-          : 'Wenn die Saison endet, werden diese Modelle archiviert und nicht mehr gefertigt.'
+          ? `Endet die Saison im ${closes}, werden diese Modelle archiviert und nicht wieder aufgelegt.`
+          : 'Mit dem Ende der Saison werden diese Modelle archiviert und nicht wieder aufgelegt.'
       }`,
     designs: (n) => `${n} Modelle`,
-    sleepwear: (label) => `${label} – Schlafmode`,
-    jump: 'Springen zu',
+    sleepwear: (label) => `${label}: Schlafmode`,
+    jump: 'Direkt zu',
     sections: {
       dresses: 'Kleider und Roben',
       skirts: 'Röcke',
@@ -210,89 +210,90 @@ const DE_CH: PagesText = {
     aboutEyebrow: 'Über die Kollektion',
     aboutTitle: 'Nach Ihren Massen gefertigt',
     aboutWomen:
-      'Die Damenstücke von LINSILK aus 100 % Seide, 100 % Leinen und Kaschmir, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht.',
-    aboutMen: 'Die Herrenstücke von LINSILK aus 100 % Leinen und Kaschmir, jedes nach Ihren eigenen Massen in 2–4 Wochen zugeschnitten und genäht, und Seidenkrawatten, die nur nach Farbe bestellt werden.',
-    colour: 'Die Farbe wählen Sie auf der Seite des Stücks aus den Stoffmustern seines Stoffs.',
+      'Damenmode von LINSILK aus 100 % Seide, 100 % Leinen und Kaschmir: jedes Stück nach Ihren eigenen Massen zugeschnitten und genäht, innert zwei bis vier Wochen.',
+    aboutMen:
+      'Herrenmode von LINSILK aus 100 % Leinen und Kaschmir, jedes Stück nach Ihren eigenen Massen zugeschnitten und genäht, innert zwei bis vier Wochen. Dazu Seidenkrawatten, bei denen Sie nur die Farbe wählen.',
+    colour: 'Die Farbe wählen Sie auf der Seite des Stücks anhand der Stoffmuster.',
     wedding: 'Kleider für Hochzeitsgäste aus Seide',
     sleep: 'Schlafmode aus Seide',
   },
   design: {
     title: 'Kleid, Hemd oder Hose aus Seide, Leinen oder Kaschmir selbst entwerfen',
     description:
-      'Entwerfen Sie Ihr eigenes Stück: Wählen Sie eine Grundsilhouette und den Stoff, schreiben Sie ein Briefing, geben Sie Ihre Masse an. Das Atelier liest es und antwortet mit einem Preis. Seide, Leinen oder Kaschmir.',
+      'Entwerfen Sie Ihr eigenes Stück: Sie wählen eine Grundsilhouette und den Stoff, beschreiben Ihre Vorstellung und geben Ihre Masse an. Das Atelier liest Ihren Auftrag und antwortet mit einem Preis. In Seide, Leinen oder Kaschmir.',
     aboutTitle: 'Selbst entwerfen, nach Ihren Massen gefertigt',
     about:
-      '«Selbst entwerfen» ist der Auftragsservice von LINSILK: Sie wählen eine Grundsilhouette und den Stoff, schreiben dem Atelier ein Briefing und geben Ihre Masse an; das Atelier fertigt danach ein einziges Kleidungsstück und antwortet mit einem Preis, bevor etwas zugeschnitten wird. Jeder Auftrag wird aus 100 % Seide, 100 % Leinen oder Kaschmir gefertigt.',
-    mtmLink: 'So funktioniert Mass-Anfertigung',
-    unreachablePre: 'Aufträge lassen sich im Moment nicht senden – das Atelier ist nicht erreichbar. Schreiben Sie an ',
-    unreachablePost: ', dann nimmt das Atelier Ihr Briefing stattdessen per E-Mail entgegen.',
+      '«Selbst entwerfen» ist der Auftragsservice von LINSILK. Sie wählen eine Grundsilhouette und den Stoff, schreiben dem Atelier, was Ihnen vorschwebt, und senden Ihre Masse. Das Atelier fertigt daraufhin ein einzelnes Kleidungsstück und nennt Ihnen den Preis, bevor etwas zugeschnitten wird. Jeder Auftrag entsteht aus 100 % Seide, 100 % Leinen oder Kaschmir.',
+    mtmLink: 'So funktioniert die Massanfertigung',
+    unreachablePre: 'Aufträge lassen sich im Moment nicht übermitteln, das Atelier ist nicht erreichbar. Schreiben Sie an ',
+    unreachablePost: ', dann nimmt das Atelier Ihren Auftrag stattdessen per E-Mail entgegen.',
     questions: 'Fragen',
     faq: [
-      { q: 'Kann ich mein Kleid online selbst entwerfen?', a: 'Ja. Wählen Sie eine Grundsilhouette und den Stoff, schreiben Sie dem Atelier eine Notiz und geben Sie Ihre Masse an. Das Atelier fertigt ein Kleidungsstück nach diesem Briefing.' },
-      { q: 'Wie wird ein Auftrag berechnet?', a: 'Jede Silhouette zeigt einen Richtwert. Das Atelier liest jedes Briefing und antwortet mit dem Preis für Ihr Stück, bevor etwas zugeschnitten wird.' },
-      { q: 'Wie lange dauert ein Auftrag?', a: 'Zwei bis vier Wochen in der Werkstatt ab Ihrem bestätigten Massblatt, wie bei einem Stück aus der Kollektion, plus Lieferung.' },
+      { q: 'Kann ich mein Kleid online selbst entwerfen?', a: 'Ja. Sie wählen eine Grundsilhouette und den Stoff, schreiben dem Atelier, was Sie sich vorstellen, und geben Ihre Masse ein. Das Atelier fertigt ein Kleidungsstück nach Ihrem Auftrag.' },
+      { q: 'Wie wird der Preis eines Auftrags bestimmt?', a: 'Zu jeder Silhouette sehen Sie einen Ausgangspreis. Das Atelier liest jeden Auftrag und nennt Ihnen den Preis für Ihr Stück, bevor etwas zugeschnitten wird.' },
+      { q: 'Wie lange dauert ein Auftrag?', a: 'Zwei bis vier Wochen ab dem Tag, an dem Sie Ihr Massblatt bestätigt haben, genau wie bei einem Stück aus der Kollektion, dazu die Lieferzeit.' },
     ],
   },
   shipping: {
-    title: 'Versand',
-    description: 'Alles wird auf Bestellung gefertigt und von Genf aus versandt. Lieferzeiten, Zoll und Sendungsverfolgung.',
-    lead: 'Jedes Kleidungsstück wird nach Ihrem Massblatt zugeschnitten und fertiggestellt, zweimal geprüft und dann von Genf aus versandt.',
+    title: 'Lieferung',
+    description: 'Jedes Stück wird auf Bestellung gefertigt und von Genf aus verschickt. Lieferzeiten, Zoll und Sendungsverfolgung.',
+    lead: 'Jedes Kleidungsstück wird nach Ihrem Massblatt zugeschnitten und fertiggestellt, zweimal geprüft und dann von Genf aus auf den Weg gebracht.',
     returns: 'Rückgabe',
     questions: 'Fragen',
     timeH: 'Wie lange es dauert',
-    time: 'Die Frist beginnt, wenn Ihr Massblatt schriftlich bestätigt ist, nicht bei der Bestellung. Ein Stück braucht zwei bis vier Wochen in der Werkstatt, ob es aus einer Kollektion oder aus einem Auftrag nach Mass stammt.',
+    time: 'Gerechnet wird ab dem Tag, an dem Sie Ihr Massblatt schriftlich bestätigt haben, nicht ab der Bestellung. Ob Stück aus der Kollektion oder Auftragsarbeit: Die Fertigung dauert zwei bis vier Wochen.',
     rows: [
-      ['Schweiz', 'Zwei bis drei Tage nach dem Versand. Zoll inbegriffen.'],
-      ['Europäische Union', 'Drei bis sechs Tage. Zoll im Preis inbegriffen.'],
-      ['Vereinigtes Königreich', 'Drei bis sechs Tage. Einfuhrmehrwertsteuer bei Ankunft zahlbar.'],
-      ['Übrige Welt', 'Fünf bis zehn Tage. Zölle und Einfuhrabgaben bei Ankunft zahlbar.'],
+      ['Schweiz', 'Zwei bis drei Tage nach dem Versand. Zoll inklusive.'],
+      ['Europäische Union', 'Drei bis sechs Tage. Zoll ist im Preis enthalten.'],
+      ['Vereinigtes Königreich', 'Drei bis sechs Tage. Die Einfuhr-Mehrwertsteuer wird bei Ankunft fällig.'],
+      ['Übrige Welt', 'Fünf bis zehn Tage. Zoll und Einfuhrabgaben werden bei Ankunft fällig.'],
     ],
     dutyH: 'Zoll und Steuern',
-    duty: 'Die Preise verstehen sich in Schweizer Franken und enthalten den Zoll innerhalb der Schweiz und der Europäischen Union – der vereinbarte Betrag ist der Betrag, den Sie zahlen. Ausserhalb dieser Märkte erhebt der Frachtführer Zoll und Einfuhrabgaben bei der Lieferung, festgelegt von Ihrer eigenen Zollbehörde. Das Haus deklariert Pakete nicht als Geschenke und gibt ihren Wert nicht zu niedrig an.',
+    duty: 'Alle Preise verstehen sich in Schweizer Franken und schliessen den Zoll innerhalb der Schweiz und der Europäischen Union ein: Der Betrag, den Sie bestätigen, ist der Betrag, den Sie zahlen. In allen anderen Ländern erhebt der Zusteller Zoll und Einfuhrabgaben bei der Lieferung; ihre Höhe legt die Zollbehörde Ihres Landes fest. Pakete werden weder als Geschenk deklariert noch mit einem zu niedrigen Warenwert angegeben.',
     trackH: 'Sendungsverfolgung',
-    track: 'Wir schreiben Ihnen, wenn das Schnittmuster zugeschnitten ist, wenn das Stück seine zweite Kontrolle bestanden hat und wenn es mit einer Sendungsnummer versandt wird. Bleibt ein Paket beim Zoll hängen, schreiben Sie an hello@bylinsilk.com, das Büro in Genf kümmert sich darum, statt Sie darum zu bitten.',
+    track: 'Wir schreiben Ihnen, sobald Ihr Schnitt zugeschnitten ist, sobald das Stück die zweite Kontrolle bestanden hat und sobald es mit Sendungsnummer unterwegs ist. Hängt ein Paket im Zoll fest, genügt eine Nachricht an hello@bylinsilk.com: Das Büro in Genf kümmert sich darum, Sie müssen nicht selbst nachhaken.',
   },
   returns: {
     title: 'Rückgabe',
-    description: 'Warum Mass-Anfertigungen nicht zurückgenommen werden, was bei einem Mangel geschieht und wann eine Bestellung freigegeben werden kann.',
-    lead: 'Ein nach den Massen einer einzelnen Person gefertigtes Kleidungsstück lässt sich nicht weiterverkaufen, deshalb bietet das Haus bei Mass-Anfertigungen kein allgemeines Rückgaberecht an.',
+    description: 'Warum massgefertigte Stücke nicht zurückgenommen werden, was bei einem Mangel geschieht und bis wann Sie eine Bestellung stornieren können.',
+    lead: 'Ein Kleidungsstück, das nach den Massen eines einzelnen Menschen gefertigt wurde, lässt sich nicht weiterverkaufen. Deshalb gibt es bei massgefertigten Stücken kein allgemeines Rückgaberecht.',
     write: 'Dem Haus schreiben',
     faultsH: 'Mängel',
-    faults: 'Naturfasern knittern, werden weicher und bewegen sich, und nichts davon ist ein Mangel. Ein Herstellungsfehler – eine aufgegangene Naht, ein ausgefallener Saum oder ein abgerissener Knopf – wird repariert oder das Stück ersetzt, je nachdem, was die Werkstatt für richtig hält.',
+    faults: 'Naturfasern knittern, werden weicher und geben nach; das alles ist kein Mangel. Ein Fehler in der Verarbeitung, etwa eine aufgegangene Naht, ein ausgefallener Saum oder ein Knopf, der sich löst, wird repariert, oder das Stück wird ersetzt, je nachdem, was die Werkstatt für richtig hält.',
     beforeH: 'Bevor etwas zugeschnitten wird',
-    before: 'Es wird nichts zugeschnitten, bevor Sie Ihr Massblatt schriftlich bestätigt haben; deshalb kann eine Bestellung bis zu dieser Antwort jederzeit freigegeben werden, vollständig und ohne Begründung.',
+    before: 'Zugeschnitten wird erst, wenn Sie Ihr Massblatt schriftlich bestätigt haben. Bis zu dieser Bestätigung können Sie Ihre Bestellung jederzeit zurückziehen, vollständig und ohne Begründung.',
   },
   measuring: {
-    title: 'Massanleitung',
-    metaTitle: 'So nehmen Sie Ihre Masse für ein Kleid: 15 Masse',
-    description: 'Eine Schritt-für-Schritt-Anleitung zu den 15 Körpermassen für Mass-Anfertigungen: zehn Minuten, ein weiches Massband und eine Helferin oder ein Helfer, oder jede Schneiderei.',
-    lead: 'Es gibt kein S, M oder L. Fünfzehn Masse bestimmen das Kleidungsstück, und sie sind der Teil der Bestellung, für den man sich Zeit nehmen sollte. Zehn Minuten mit einem weichen Massband und jemandem, der hilft, genügen.',
+    title: 'Anleitung zum Massnehmen',
+    metaTitle: 'So nehmen Sie Ihre Masse für ein Kleid: 15 Masse in zehn Minuten',
+    description: 'Schritt für Schritt zu den 15 Körpermassen für massgefertigte Kleidung: zehn Minuten, ein weiches Massband und eine helfende Hand, oder gleich bei einer Schneiderei.',
+    lead: 'Ein S, M oder L gibt es bei uns nicht. Fünfzehn Masse bestimmen, wie das Stück sitzt, und sie sind der Teil der Bestellung, für den Sie sich Zeit nehmen sollten. Zehn Minuten mit einem weichen Massband und einer helfenden Hand genügen.',
     enter: 'Zur Kollektion',
     help: 'Hilfe anfragen',
     beforeH: 'Bevor Sie beginnen',
     before: [
-      'Tragen Sie eng anliegende Kleidung oder gar keine. Nie über einem Pullover messen.',
-      'Verwenden Sie ein weiches Massband. Ein Metallbandmass vom Bau folgt dem Körper nicht.',
-      'Halten Sie das Massband flach am Körper und rundum waagrecht – prüfen Sie den Rücken im Spiegel.',
-      'Stehen Sie so, wie Sie normalerweise stehen. Wer die Schultern zurückzieht, verändert das Kleidungsstück.',
-      'Lassen Sie, wenn möglich, jemand anderen Rücken und Schultern messen.',
-      'Schreiben Sie Zentimeter, wenn Sie sie haben. Die Website rechnet Zoll um, aber das Massband lässt sich in cm leichter ablesen.',
+      'Tragen Sie eng anliegende Kleidung oder gar keine. Messen Sie nie über einem Pullover.',
+      'Nehmen Sie ein weiches Massband. Ein Bandmass aus Metall vom Bau schmiegt sich nicht an den Körper.',
+      'Halten Sie das Massband flach am Körper und rundherum waagrecht. Den Rücken prüfen Sie am besten im Spiegel.',
+      'Stehen Sie so, wie Sie normalerweise stehen. Wer die Schultern nach hinten zieht, verfälscht das Mass.',
+      'Lassen Sie Rücken und Schultern nach Möglichkeit von jemand anderem messen.',
+      'Notieren Sie die Werte in Zentimetern, wenn Sie können. Die Website rechnet Zoll um, aber am Massband liest man Zentimeter leichter ab.',
     ],
     fifteenH: 'Die fünfzehn Masse',
-    ratherH: 'Wenn Sie es lieber nicht selbst tun',
-    rather: 'Jede Schneiderei oder Änderungsschneiderei nimmt diese fünfzehn Masse in wenigen Minuten, oft kostenlos. Drucken Sie diese Seite aus oder zeigen Sie die Liste auf dem Telefon.',
-    wrongH: 'Wenn ein Mass falsch aussieht',
-    wrong: 'Das Massblatt markiert einen Wert ausserhalb des üblichen Bereichs dieser Stelle. Das ist eine Aufforderung, das Massband zu prüfen, keine Ablehnung – Körper sind verschieden, und das Atelier schneidet lieber nach einem ungewöhnlichen Wert, den Sie bestätigt haben, als nach einem Tippfehler, den Sie nicht bemerkt haben.',
+    ratherH: 'Wenn Sie es lieber nicht selbst machen',
+    rather: 'Jede Schneiderei nimmt diese fünfzehn Masse in wenigen Minuten, oft ohne Berechnung. Drucken Sie diese Seite aus, oder zeigen Sie die Liste auf Ihrem Telefon.',
+    wrongH: 'Wenn ein Mass nicht stimmig wirkt',
+    wrong: 'Liegt ein Wert ausserhalb des üblichen Bereichs für die jeweilige Körperstelle, markiert das Massblatt ihn. Das ist ein Hinweis, das Massband noch einmal anzusetzen, keine Ablehnung: Körper sind verschieden, und das Atelier schneidet lieber nach einem ungewöhnlichen Wert, den Sie bestätigt haben, als nach einem Tippfehler, den niemand bemerkt hat.',
   },
   contact: {
     metaTitle: 'Das Haus kontaktieren',
     story: {
       title: 'Das Haus',
-      lead: 'LINSILK wurde gegründet, um eine Sache richtig zu machen: Kleidung aus reiner Seide und reinem Leinen, für einen einzigen Körper zugeschnitten, in vier kleinen Kollektionen im Jahr.',
-      a: 'Bestellungen und Kundenservice werden von Genf aus betreut. Die Preise verstehen sich in Schweizer Franken und enthalten den Zoll innerhalb der Schweiz und der EU. Ein Stück braucht ab dem bestätigten Massblatt zwei bis vier Wochen.',
-      b: 'Schreiben Sie an hello@bylinsilk.com, wenn Sie Fragen zu einem Stück oder zu Ihrer Bestellung haben.',
+      lead: 'LINSILK entstand mit dem Wunsch, eines wirklich gut zu machen: Kleidung aus reiner Seide, reinem Leinen und hochfrequenten Stoffen, zugeschnitten für einen einzigen Körper, in vier kleinen Kollektionen im Jahr.',
+      a: 'Bestellungen und Kundenbetreuung laufen über Genf. Die Preise gelten in Schweizer Franken und schliessen den Zoll innerhalb der Schweiz und der EU ein. Ein Stück braucht ab Ihrem bestätigten Massblatt zwei bis vier Wochen.',
+      b: 'Bei Fragen zu einem Stück oder zu Ihrer Bestellung schreiben Sie an hello@bylinsilk.com.',
     },
-    help: 'Hilfe beim Messen',
+    help: 'Hilfe beim Massnehmen',
   },
 };
 
@@ -300,26 +301,26 @@ const FR: PagesText = {
   collection: {
     title: 'La collection : soie, lin et tissus à haute fréquence sur mesure',
     description: (open) =>
-      `${open}Pièces femme et homme en 100 % soie, 100 % lin et tissus à haute fréquence, chacune coupée et cousue à vos mesures en 2 à 4 semaines.`,
-    none: 'Aucune collection n’est ouverte pour le moment. Lorsque la prochaine saison sera coupée, ses pièces apparaîtront ici.',
+      `${open}Pièces pour femme et pour homme en 100 % soie, 100 % lin et tissus à haute fréquence, chacune coupée et cousue d’après vos mesures, en deux à quatre semaines.`,
+    none: 'Aucune collection n’est ouverte pour le moment. Dès que la prochaine saison sera coupée, ses pièces s’afficheront ici.',
     commission: 'Commander une pièce sur mesure',
     designs: (n) => `${n} modèles`,
-    enter: (who) => `Entrer dans la collection ${who}`,
+    enter: (who) => `Découvrir la collection ${who.toLowerCase()}`,
     women: 'Femme',
     men: 'Homme',
-    womenAlt: 'Une femme dans une robe portefeuille en soie sur mesure, sur une loggia ensoleillée au-dessus de la mer',
+    womenAlt: 'Une femme dans une robe portefeuille en soie sur mesure, sur une loggia ensoleillée dominant la mer',
     menAlt: 'Un homme en chemise et pantalon de lin sur mesure, assis sur des marches de calcaire au-dessus de la mer',
     aboutEyebrow: 'À propos de la collection',
-    aboutTitle: 'Soie et lin sur mesure',
+    aboutTitle: 'Soie, lin et tissus à haute fréquence, sur mesure',
     about: (open) =>
-      `${open}Chaque pièce LINSILK est coupée et cousue à vos propres mesures en 2 à 4 semaines, en 100 % soie, 100 % lin ou en tissus à haute fréquence. Choisissez une pièce, choisissez sa couleur parmi les échantillons de son tissu et saisissez vos mesures : pas de tailles, pas d’essayages. Quatre petites collections par an, depuis Genève.`,
+      `${open}Chaque pièce LINSILK est coupée et cousue d’après vos propres mesures, en deux à quatre semaines, en 100 % soie, 100 % lin ou en tissus à haute fréquence. Vous choisissez une pièce, son coloris parmi les échantillons du tissu, puis vous indiquez vos mesures : ni tailles, ni essayages. Quatre petites collections par an, depuis Genève.`,
     links: {
       '/collection/women/silk': 'Robes et robes longues en soie',
       '/collection/women/silk-separates': 'Jupes et chemisiers en soie',
-      '/collection/women/linen': 'Ensembles femme en lin',
+      '/collection/women/linen': 'Ensembles en lin pour femme',
       '/collection/sleepwear': 'Vêtements de nuit en soie',
-      '/collection/men/shirts': 'Chemises homme en lin',
-      '/collection/men/trousers': 'Pantalons homme en lin',
+      '/collection/men/shirts': 'Chemises en lin pour homme',
+      '/collection/men/trousers': 'Pantalons en lin pour homme',
       '/occasion/wedding-guest': 'Robes d’invitée de mariage',
     },
   },
@@ -327,21 +328,21 @@ const FR: PagesText = {
     women: 'Femme',
     men: 'Homme',
     crumb: 'Collection',
-    titleWomen: 'Vêtements femme en soie, en lin et en tissus à haute fréquence, sur mesure',
-    titleMen: 'Vêtements homme en soie, en lin et en tissus à haute fréquence, sur mesure',
+    titleWomen: 'Mode femme sur mesure en soie, en lin et en tissus à haute fréquence',
+    titleMen: 'Mode homme sur mesure en soie, en lin et en tissus à haute fréquence',
     descWomen:
-      'Robes, robes longues, jupes, chemisiers et vêtements de nuit en soie, ensembles deux pièces en lin et pantalons en cachemire, chacun coupé et cousu à vos mesures en 2 à 4 semaines. Depuis Genève.',
+      'Robes, robes longues, jupes, chemisiers et vêtements de nuit en soie, ensembles deux pièces en lin et pantalons en cachemire : chaque pièce est coupée et cousue d’après vos mesures, en deux à quatre semaines. Depuis Genève.',
     descMen:
-      'Chemises et pantalons en lin, pantalons en cachemire et cravates en soie pour homme. Les vêtements sont coupés et cousus à vos mesures en 2 à 4 semaines. Depuis Genève.',
+      'Chemises et pantalons en lin, pantalons en cachemire et cravates en soie pour homme. Tout est coupé et cousu d’après vos mesures, en deux à quatre semaines. Depuis Genève.',
     intro: (closes) =>
-      `Chaque pièce est coupée à vos mesures et fabriquée en série limitée. ${
+      `Chaque pièce est coupée d’après vos mesures et réalisée en quantité limitée. ${
         closes
-          ? `Lorsque la saison se clôt en ${closes}, ces modèles sont archivés et ne sont plus refaits.`
-          : 'Lorsque la saison se clôt, ces modèles sont archivés et ne sont plus refaits.'
+          ? `À la fin de la saison, en ${closes}, ces modèles sont archivés et ne sont pas refaits.`
+          : 'À la fin de la saison, ces modèles sont archivés et ne sont pas refaits.'
       }`,
     designs: (n) => `${n} modèles`,
-    sleepwear: (label) => `${label} — vêtements de nuit`,
-    jump: 'Aller à',
+    sleepwear: (label) => `${label} : vêtements de nuit`,
+    jump: 'Accès direct',
     sections: {
       dresses: 'Robes et robes longues',
       skirts: 'Jupes',
@@ -354,87 +355,88 @@ const FR: PagesText = {
     aboutEyebrow: 'À propos de la collection',
     aboutTitle: 'Faite à vos mesures',
     aboutWomen:
-      'Les pièces femme de LINSILK en 100 % soie, 100 % lin et cachemire, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines.',
-    aboutMen: 'Les pièces homme de LINSILK en 100 % lin et en cachemire, chacune coupée et cousue à vos propres mesures en 2 à 4 semaines, et des cravates en soie commandées par coloris seulement.',
-    colour: 'Choisissez la couleur parmi les échantillons de son tissu, sur la page de la pièce.',
+      'La mode femme de LINSILK en 100 % soie, 100 % lin et cachemire : chaque pièce est coupée et cousue d’après vos propres mesures, en deux à quatre semaines.',
+    aboutMen:
+      'La mode homme de LINSILK en 100 % lin et en cachemire, chaque pièce coupée et cousue d’après vos propres mesures en deux à quatre semaines, ainsi que des cravates en soie où vous ne choisissez que le coloris.',
+    colour: 'Le coloris se choisit sur la page de la pièce, parmi les échantillons de son tissu.',
     wedding: 'Robes d’invitée de mariage en soie',
     sleep: 'Vêtements de nuit en soie',
   },
   design: {
-    title: 'Concevoir votre robe, chemise ou pantalon en soie, en lin ou en cachemire',
+    title: 'Créer votre robe, chemise ou pantalon en soie, en lin ou en cachemire',
     description:
-      'Concevez votre propre pièce : choisissez une silhouette de base et le tissu, rédigez un brief, ajoutez vos mesures. Un tailleur le lit et vous répond avec un prix. Soie, lin ou cachemire.',
-    aboutTitle: 'Concevoir sur mesure, à vos mesures',
+      'Créez votre propre pièce : choisissez une silhouette de base et le tissu, décrivez ce que vous imaginez, indiquez vos mesures. L’atelier lit votre demande et vous répond avec un prix. En soie, en lin ou en cachemire.',
+    aboutTitle: 'Créer votre pièce, à vos mesures',
     about:
-      '« Concevoir sur mesure » est le service de commande de LINSILK : vous choisissez une silhouette de base et le tissu, rédigez un brief au tailleur et envoyez vos mesures ; l’atelier fabrique un seul vêtement d’après ce brief et répond avec un prix avant toute coupe. Chaque commande est réalisée en 100 % soie, 100 % lin ou en cachemire.',
+      '« Créer votre pièce » est le service de commande de LINSILK. Vous choisissez une silhouette de base et le tissu, vous décrivez à l’atelier ce que vous imaginez et vous envoyez vos mesures. L’atelier réalise alors un unique vêtement et vous annonce le prix avant toute coupe. Chaque commande est réalisée en 100 % soie, 100 % lin ou en cachemire.',
     mtmLink: 'Comment fonctionne le sur-mesure',
-    unreachablePre: 'Les commandes ne peuvent pas être envoyées pour le moment — le bureau de l’atelier est injoignable. Écrivez à ',
-    unreachablePost: ' et un tailleur prendra votre brief par e-mail à la place.',
+    unreachablePre: 'Les commandes ne peuvent pas être transmises pour le moment : l’atelier est injoignable. Écrivez à ',
+    unreachablePost: ' : l’atelier recevra votre demande par e-mail.',
     questions: 'Questions',
     faq: [
-      { q: 'Puis-je concevoir ma robe en ligne ?', a: 'Oui. Choisissez une silhouette de base et le tissu, écrivez une note au tailleur et saisissez vos mesures. L’atelier fabrique un vêtement d’après ce brief.' },
-      { q: 'Comment une commande sur mesure est-elle chiffrée ?', a: 'Chaque silhouette affiche un chiffre de départ. Un tailleur lit chaque brief et répond avec le prix de votre pièce avant toute coupe.' },
-      { q: 'Combien de temps prend une commande sur mesure ?', a: 'De deux à quatre semaines à l’établi à partir de votre fiche de mesures confirmée, comme pour une pièce de la collection, plus la livraison.' },
+      { q: 'Puis-je créer ma robe en ligne ?', a: 'Oui. Vous choisissez une silhouette de base et le tissu, vous décrivez votre idée à l’atelier et vous indiquez vos mesures. L’atelier réalise un vêtement d’après votre demande.' },
+      { q: 'Comment le prix d’une commande est-il fixé ?', a: 'Chaque silhouette affiche un prix de départ. L’atelier lit chaque demande et vous indique le prix de votre pièce avant toute coupe.' },
+      { q: 'Quel est le délai d’une commande ?', a: 'De deux à quatre semaines à partir de la confirmation de votre fiche de mesures, comme pour une pièce de la collection, auxquelles s’ajoute la livraison.' },
     ],
   },
   shipping: {
     title: 'Livraison',
-    description: 'Tout est fabriqué sur commande et expédié depuis Genève. Délais, droits de douane et suivi.',
-    lead: 'Chaque vêtement est coupé et terminé d’après votre fiche de mesures, contrôlé deux fois, puis expédié depuis Genève.',
+    description: 'Chaque pièce est réalisée sur commande et expédiée depuis Genève. Délais, droits de douane et suivi du colis.',
+    lead: 'Chaque vêtement est coupé et fini d’après votre fiche de mesures, contrôlé à deux reprises, puis expédié depuis Genève.',
     returns: 'Retours',
     questions: 'Questions',
-    timeH: 'Combien de temps cela prend',
-    time: 'Le délai commence lorsque votre fiche de mesures est confirmée par écrit, pas à la commande. Une pièce demande de deux à quatre semaines à l’établi, qu’elle vienne d’une collection ou d’une commande sur mesure.',
+    timeH: 'Combien de temps faut-il compter',
+    time: 'Le délai court à partir du jour où vous avez confirmé votre fiche de mesures par écrit, et non à partir de la commande. Qu’il s’agisse d’une pièce de la collection ou d’une création sur commande, la réalisation prend de deux à quatre semaines.',
     rows: [
-      ['Suisse', 'Deux à trois jours après l’expédition. Droits de douane inclus.'],
-      ['Union européenne', 'Trois à six jours. Droits de douane inclus dans le prix.'],
-      ['Royaume-Uni', 'Trois à six jours. TVA à l’importation à payer à l’arrivée.'],
-      ['Reste du monde', 'Cinq à dix jours. Droits de douane et taxes à l’importation à payer à l’arrivée.'],
+      ['Suisse', 'Deux à trois jours après l’expédition. Droits de douane compris.'],
+      ['Union européenne', 'Trois à six jours. Droits de douane compris dans le prix.'],
+      ['Royaume-Uni', 'Trois à six jours. La TVA à l’importation est due à l’arrivée.'],
+      ['Reste du monde', 'Cinq à dix jours. Droits de douane et taxes à l’importation dus à l’arrivée.'],
     ],
     dutyH: 'Droits de douane et taxes',
-    duty: 'Les prix sont en francs suisses et comprennent les droits de douane en Suisse et dans l’Union européenne — le montant convenu est celui que vous payez. En dehors de ces marchés, le transporteur perçoit les droits et taxes à la livraison, fixés par votre propre administration douanière. La maison ne déclare pas les colis comme des cadeaux et ne sous-évalue pas leur valeur.',
-    trackH: 'Suivi',
-    track: 'Nous vous écrivons lorsque le patron est coupé, lorsque la pièce passe son second contrôle et lorsqu’elle est expédiée avec un numéro de suivi. Si un colis reste bloqué en douane, écrivez à hello@bylinsilk.com : le bureau de Genève s’en charge au lieu de vous le demander.',
+    duty: 'Les prix sont indiqués en francs suisses et incluent les droits de douane en Suisse et dans l’Union européenne : le montant que vous validez est celui que vous payez. Partout ailleurs, le transporteur perçoit les droits et taxes à la livraison, selon le barème de l’administration douanière de votre pays. Les colis ne sont jamais déclarés comme des cadeaux, et leur valeur n’est jamais minorée.',
+    trackH: 'Suivi du colis',
+    track: 'Nous vous écrivons lorsque votre patron est coupé, lorsque la pièce a passé son second contrôle et lorsqu’elle part avec son numéro de suivi. Si un colis reste bloqué en douane, un message à hello@bylinsilk.com suffit : le bureau de Genève s’en charge, sans que vous ayez à relancer qui que ce soit.',
   },
   returns: {
     title: 'Retours',
-    description: 'Pourquoi le sur-mesure n’est pas repris, ce qui est fait en cas de défaut et quand une commande peut être annulée.',
-    lead: 'Un vêtement coupé aux mesures d’une seule personne ne peut pas être revendu : la maison n’offre donc pas de droit de retour général sur le sur-mesure.',
+    description: 'Pourquoi les pièces sur mesure ne sont pas reprises, ce qui se passe en cas de défaut et jusqu’à quand une commande peut être annulée.',
+    lead: 'Un vêtement coupé aux mesures d’une seule personne ne peut pas être revendu. C’est pourquoi la maison n’accorde pas de droit de retour général sur le sur-mesure.',
     write: 'Écrire à la maison',
     faultsH: 'Défauts',
-    faults: 'Les fibres naturelles se froissent, s’assouplissent et bougent, et rien de cela n’est un défaut. Un défaut de fabrication — une couture qui lâche, un ourlet qui tombe ou un bouton qui se détache — est réparé, ou la pièce remplacée, selon ce que l’atelier juge juste.',
+    faults: 'Les fibres naturelles se froissent, s’assouplissent et prennent le mouvement du corps : rien de tout cela n’est un défaut. Un défaut de fabrication, comme une couture qui lâche, un ourlet qui tombe ou un bouton qui se détache, donne lieu à une réparation ou à un remplacement de la pièce, selon ce que l’atelier juge le plus juste.',
     beforeH: 'Avant toute coupe',
-    before: 'Rien n’est coupé tant que vous n’avez pas confirmé votre fiche par écrit : une commande peut donc être annulée à tout moment jusqu’à cette réponse, intégralement et sans motif.',
+    before: 'Rien n’est coupé tant que vous n’avez pas confirmé votre fiche par écrit. Jusqu’à cette confirmation, vous pouvez annuler votre commande à tout moment, intégralement et sans avoir à vous justifier.',
   },
   measuring: {
-    title: 'Guide de mesures',
-    metaTitle: 'Comment prendre vos mesures pour une robe : 15 mesures',
-    description: 'Un guide pas à pas des 15 mesures du corps pour le sur-mesure : dix minutes, un mètre ruban souple et une aide, ou n’importe quel tailleur.',
-    lead: 'Il n’y a ni S, ni M, ni L. Quinze mesures décident du vêtement, et c’est la partie de la commande pour laquelle il vaut la peine de ralentir. Dix minutes avec un mètre ruban souple et quelqu’un pour vous aider suffisent.',
-    enter: 'Entrer dans la collection',
+    title: 'Guide pour prendre vos mesures',
+    metaTitle: 'Comment prendre vos mesures pour une robe : 15 mesures en dix minutes',
+    description: 'Le guide pas à pas des 15 mesures du corps pour un vêtement sur mesure : dix minutes, un mètre ruban souple et une paire de mains pour vous aider, ou directement chez un tailleur.',
+    lead: 'Chez nous, ni S, ni M, ni L. Ce sont quinze mesures qui décident de la façon dont la pièce vous va, et c’est l’étape de la commande qui mérite que l’on prenne son temps. Dix minutes, un mètre ruban souple et quelqu’un pour vous aider suffisent.',
+    enter: 'Découvrir la collection',
     help: 'Demander de l’aide',
     beforeH: 'Avant de commencer',
     before: [
-      'Portez des vêtements près du corps, ou aucun. Ne mesurez jamais par-dessus un pull.',
-      'Utilisez un mètre ruban souple. Un mètre de chantier en métal ne suit pas le corps.',
-      'Gardez le ruban à plat contre vous et bien à l’horizontale tout autour — vérifiez le dos dans un miroir.',
-      'Tenez-vous comme vous le faites d’habitude. Tirer les épaules en arrière change le vêtement.',
-      'Demandez à quelqu’un de prendre les mesures du dos et des épaules si possible.',
-      'Notez en centimètres si vous le pouvez. Le site convertit les pouces, mais le ruban se lit plus facilement en cm.',
+      'Portez des vêtements ajustés, ou aucun. Ne prenez jamais vos mesures par-dessus un pull.',
+      'Prenez un mètre ruban souple. Un mètre de chantier en métal n’épouse pas le corps.',
+      'Gardez le ruban à plat contre le corps et bien horizontal sur tout le tour. Vérifiez le dos dans un miroir.',
+      'Tenez-vous comme à votre habitude. Rejeter les épaules en arrière fausserait la mesure.',
+      'Si possible, faites prendre le dos et les épaules par quelqu’un d’autre.',
+      'Notez les valeurs en centimètres si vous le pouvez. Le site convertit les pouces, mais le ruban se lit plus aisément en centimètres.',
     ],
     fifteenH: 'Les quinze mesures',
-    ratherH: 'Si vous préférez ne pas le faire vous-même',
-    rather: 'N’importe quel tailleur ou atelier de retouches prend ces quinze mesures en quelques minutes, souvent gratuitement. Imprimez cette page, ou montrez-leur la liste sur votre téléphone.',
-    wrongH: 'Si une mesure paraît fausse',
-    wrong: 'La fiche signale une valeur située hors de la plage habituelle pour cette zone. C’est une invitation à vérifier le ruban, pas un refus — les corps varient, et l’atelier préfère couper à une valeur inhabituelle que vous avez confirmée plutôt qu’à une faute de frappe que vous n’avez pas remarquée.',
+    ratherH: 'Si vous préférez ne pas vous en charger',
+    rather: 'N’importe quel tailleur prend ces quinze mesures en quelques minutes, souvent sans rien facturer. Imprimez cette page ou montrez-lui la liste sur votre téléphone.',
+    wrongH: 'Si une mesure vous semble douteuse',
+    wrong: 'Lorsqu’une valeur sort de la plage habituelle pour la zone concernée, la fiche la signale. C’est une invitation à reprendre le ruban, pas un refus : les corps diffèrent, et l’atelier préfère couper d’après une valeur inhabituelle que vous avez confirmée plutôt que d’après une faute de frappe passée inaperçue.',
   },
   contact: {
     metaTitle: 'Contacter la maison',
     story: {
       title: 'La maison',
-      lead: 'LINSILK a été fondée pour faire une seule chose correctement : des vêtements en soie pure et en lin pur, coupés pour un seul corps, en quatre petites collections par an.',
-      a: 'Les commandes et le service client sont assurés depuis Genève. Les prix sont en francs suisses et comprennent les droits de douane en Suisse et dans l’UE. Une pièce demande de deux à quatre semaines à partir de la fiche de mesures confirmée.',
-      b: 'Écrivez à hello@bylinsilk.com pour toute question sur une pièce ou sur votre commande.',
+      lead: 'LINSILK est née d’une envie : faire une seule chose, et la faire bien. Des vêtements en soie pure, en lin pur et en tissus à haute fréquence, coupés pour un seul corps, en quatre petites collections par an.',
+      a: 'Les commandes et le service client sont gérés depuis Genève. Les prix sont indiqués en francs suisses et incluent les droits de douane en Suisse et dans l’UE. Une pièce demande de deux à quatre semaines à partir de votre fiche de mesures confirmée.',
+      b: 'Pour toute question sur une pièce ou sur votre commande, écrivez à hello@bylinsilk.com.',
     },
     help: 'Aide pour les mesures',
   },
@@ -442,6 +444,6 @@ const FR: PagesText = {
 
 export function pagesText(lang: Lang): PagesText {
   if (lang === 'en') return EN;
-  if (lang === 'fr' || lang === 'fr-ch') return FR;
-  return lang === 'de-ch' ? DE_CH : deepDe(DE_CH);
+  if (lang === 'fr') return FR;
+  return DE;
 }

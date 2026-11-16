@@ -47,17 +47,17 @@ export type QA = { q: string; a: string };
 
 const CARE_SILK: QA = {
   q: 'How do I care for it?',
-  a: 'Silk prefers cool hand-washing and drying flat out of direct sun; it does not want a tumble dryer.',
+  a: 'Plain silk is washed by hand in cool water and dried flat in shade; jacquard and brocade silks go to a professional cleaner only. Never the tumble dryer. The LINSILK care guide at bylinsilk.com/care has every step.',
 };
 
 const CARE_LINEN: QA = {
   q: 'How do I care for it?',
-  a: 'Linen prefers cool hand-washing and drying flat out of direct sun; it does not want a tumble dryer.',
+  a: 'LINSILK linen is not pre-washed, so its first wash goes to a professional cleaner. After that, a gentle 30 °C cycle and drying on a hanger in shade; never the tumble dryer. The LINSILK care guide at bylinsilk.com/care has every step.',
 };
 
 const CARE_CASHMERE: QA = {
   q: 'How do I care for it?',
-  a: 'Cashmere prefers cool hand-washing and drying flat out of direct sun; it does not want a tumble dryer.',
+  a: 'Cashmere is washed by hand in cool water, or on a 30 °C wool cycle, and dried flat away from heat; never the tumble dryer. Between wears, brushing and airing are enough. The care guide on this site has every step.',
 };
 
 const CREASE: QA = {

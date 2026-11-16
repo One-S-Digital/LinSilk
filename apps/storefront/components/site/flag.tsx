@@ -1,21 +1,12 @@
 import type { Lang } from '@/lib/i18n';
 
 /* The country behind each language, as inline SVG: emoji flags do not draw on
-   Windows. English is the United Kingdom, both Swiss languages are
-   Switzerland, and German and French are Germany and France. */
+   Windows. English is the United Kingdom, German is Germany and
+   French is France. */
 export function Flag({ lang, className }: { lang: Lang; className?: string }) {
   const common = { viewBox: '0 0 30 20', width: 22, height: 15, 'aria-hidden': true, focusable: false, className };
   const frame = <rect x=".5" y=".5" width="29" height="19" fill="none" stroke="rgba(42,38,32,.25)" />;
   switch (lang) {
-    case 'de-ch':
-    case 'fr-ch':
-      return (
-        <svg {...common}>
-          <rect width="30" height="20" fill="#d52b1e" />
-          <path d="M13 4h4v5h5v4h-5v5h-4v-5H8V9h5z" fill="#fff" transform="translate(0 -1.5)" />
-          {frame}
-        </svg>
-      );
     case 'de':
       return (
         <svg {...common}>
