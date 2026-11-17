@@ -1144,8 +1144,8 @@
 /* ---------------- Print: the chosen cloth on paper ---------------- */
 
 @media print {
-  :global(header),
-  :global(footer),
+  :global(body):has(.page) :global(header),
+  :global(body):has(.page) :global(footer),
   .heroMedia,
   .heroScrim,
   .choose,
